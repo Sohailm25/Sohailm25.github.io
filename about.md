@@ -8,14 +8,18 @@ comments: false
 Test text
 {: style="color:gray; font-size: 80%; text-align: center;"}
 
-<center> I'm an incoming Masters Student at UTD, specializing in Machine Learning. 
+I'm an incoming Masters Student at UTD, specializing in Machine Learning. 
+{: style="color:white; font-size: 100%; text-align: center;"}
 
 I'm the Executive Director of Programs and Branding of [ALM, the first Muslim interest fraternity in America](https://www.alphalambdamu.org/).
+{: style="color:white; font-size: 100%; text-align: center;"}
 
 This blog is for Public Learning. Generally going to talk about productivity, mindfulness, Islam, honestly anything so I won't put myself in a box.
+{: style="color:white; font-size: 100%; text-align: center;"}
 
 If you have criticism, comments, really anything to say, hit my line. 
-</center>
+{: style="color:white; font-size: 120%; text-align: center;"}
+
 ##### Where to hit my line
 
 - [Email](sohailm25@gmail.com)

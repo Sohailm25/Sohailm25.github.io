@@ -1,32 +1,46 @@
 # Site settings
-title: Klise Theme # site title
+title: Sohail Mohammad
 description: >- # site description
-  He's writing in Bahasa about web technology and experience as a journal 
-  for documentation things that he learned, meet him <a href="https://github.com/piharpi" target="_blank" rel="noopener">@github</a>.
+  tbh just tryna create things target="_blank" rel="noopener">@github</a>.
 lang: en-US # default lang
-timezone: Asia/Jakarta # set your timezone
+#timezone: Asia/Jakarta # set your timezone
 image: assets/img/ogp.png # This image used for Open Graph more info https://ogp.me/
 repo: https://github.com/piharpi/jekyll-klise # site repo [optional]
 mode: dark # default theme "dark" | "light"
 
 # Profile settings
 author:
-  name: Your Name # author name
+  name: Sohail Mohammad # author name
   bio: >- # tell to the world
-    The minimalist Jekyll theme, light and dark mode support, for running a personal site and blog, 
-    meet Klisé theme at <a href="https://github.com/piharpi/jekyll-klise" target="_blank" rel="noopener">@github</a>.
+    Student at UTD
   username: username # author username
-  github: github_username
-  twitter: twitter_username
+  github: sohailm25
+  twitter: sohailm25
   facebook: facebook_username
-  email: your-email@email.com # your contact adress
+  email: sohailm25@gmail.com # your contact adress
   avatar: /assets/img/avatar.jpg # change with your own avatar
 
+# Includes an icon in the footer for each username you enter
+footer-links:
+  dribbble:
+  email: sohailm25@gmail.com
+  facebook:
+  flickr:
+  github: sohailm25
+  instagram: sohailm25
+  linkedin:
+  pinterest:
+  rss: # just type anything here for a working RSS icon
+  twitter: sohailm25
+  stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
+  youtube: # channel/<your_long_string> or user/<user-name>
+  googleplus: # anything in your profile username that comes after plus.google.com/
+
 # Url settings
-url: "https://klise.now.sh"
+url: http://sohailm25.github.io
 baseurl:
 permalink: /:title/
-google_analytics:
+google_analytics: UA-175391406-1
 fb_appid:
 
 # Collection setting

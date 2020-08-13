@@ -5,8 +5,11 @@ layout: page
 excerpt: Is this where I say I'm an influencer? 
 comments: false
 ---
+Test text
+{: style="color:gray; font-size: 80%; text-align: center;"}
 
 I'm an incoming Masters Student at UTD, specializing in Machine Learning. 
+
 I'm the Executive Director of Programs and Branding of [ALM, the first Muslim interest fraternity in America](https://www.alphalambdamu.org/).
 
 This blog is for Public Learning. Generally going to talk about productivity, mindfulness, Islam, honestly anything so I won't put myself in a box.

@@ -89,7 +89,7 @@
   }
 
   a {
-    color: $text-link-blue;
+    color: #3B8E91;
     text-decoration: none;
     &[target="_blank"]::after {
       content: " \2197";
@@ -101,7 +101,7 @@
     }
 
     &:hover {
-      color: $text-link-blue-active;
+      color: #946846;
     }
 
     &:focus {

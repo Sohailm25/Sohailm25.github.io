@@ -191,7 +191,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: $black;
+  color: #214F4B;
   font-weight: $bold-weight;
   & + ul,
   & + ol {
@@ -221,15 +221,15 @@ h6 > a {
 
 // Link
 a {
-  color: inherit;
+  color: #251605;
   text-decoration-color: $smoke;
 
   &:hover {
-    color: $text-link-blue;
+    color: #715B64;
   }
 
   &:focus {
-    outline: 3px solid rgba(0, 54, 199, 0.6);
+    outline: 3px solid #715B64;
     outline-offset: 2px;
   }
 }

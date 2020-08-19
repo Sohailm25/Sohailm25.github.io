@@ -3,8 +3,8 @@
   external: false
 
 - title: thinking aloud
-  url: /thinking-aloud/
-  external: false
+  url: https://anchor.fm/sohailmo
+  external: true
 
 - title: about
   url: /about/

@@ -6,6 +6,10 @@
   url: https://anchor.fm/sohailmo
   external: true
 
+- title: pod with Yasin
+  url: https://anchor.fm/yands
+  external: true
+
 - title: about
   url: /about/
   external: false

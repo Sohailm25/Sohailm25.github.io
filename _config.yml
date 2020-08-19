@@ -48,6 +48,7 @@ collections:
   posts:
     output: true
 
+
 # Markdown settings
 markdown: kramdown
 highlighter: rouge

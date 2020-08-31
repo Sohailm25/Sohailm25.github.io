@@ -26,7 +26,7 @@ If you have criticism, comments, really anything to say, let me know.
 ##### Contact
 {: style="font-size: 120%; text-align: center;"}
 
-- [Email](sohailm25@gmail.com)
+- [Email](mailto:sohailm25@gmail.com)
 {: style="font-size: 110%; text-align: center;"}
 - [LinkedIn](https://www.linkedin.com/in/sohail-mohammad-ba550987/)
 {: style="font-size: 110%; text-align: center;"}

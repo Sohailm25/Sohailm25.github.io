@@ -1,7 +1,5 @@
 # Sohail's Blog Site
 
-Built a personal Blog 
+Built a Personal Blog, starting with a base Jekyll theme Klisé.
 
-Used HTML, CSS, Markdown, as well as Jekyll and a custom theme Klisé
-
-Forked from Klisé 
+Used HTML, CSS, Markdown, and Jekyll to update the site weekly.

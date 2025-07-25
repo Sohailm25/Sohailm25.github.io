@@ -222,6 +222,7 @@ const ProductPage: React.FC = () => {
                     variant="outlined"
                     size="large"
                     startIcon={<CloudUpload />}
+                    onClick={() => navigate('/data')}
                     sx={{
                       py: 1.5,
                       px: 4,
@@ -231,7 +232,7 @@ const ProductPage: React.FC = () => {
                       textTransform: 'none',
                     }}
                   >
-                    Upload Data
+                    Browse Data Catalog
                   </Button>
                 </Stack>
               </Paper>
@@ -289,9 +290,19 @@ const ProductPage: React.FC = () => {
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
               >
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-                  Try These Sample Queries
-                </Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    Try These Sample Queries
+                  </Typography>
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={() => navigate('/data')}
+                    sx={{ textTransform: 'none', fontWeight: 600 }}
+                  >
+                    Browse All Data →
+                  </Button>
+                </Stack>
                 <Box 
                   sx={{ 
                     display: 'grid', 

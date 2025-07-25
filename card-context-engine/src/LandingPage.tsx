@@ -32,43 +32,70 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-// Animated counter hook
+// Animated counter hook with IntersectionObserver fallback
 const useAnimatedCounter = (end: number, duration: number = 2000, delay: number = 0) => {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-          setTimeout(() => {
-            let start = 0;
-            const increment = end / (duration / 16);
-            const timer = setInterval(() => {
-              start += increment;
-              if (start >= end) {
-                setCount(end);
-                clearInterval(timer);
-              } else {
-                // Easing function for smooth deceleration
-                const progress = start / end;
-                const eased = 1 - Math.pow(1 - progress, 3);
-                setCount(Math.floor(eased * end));
-              }
-            }, 16);
-          }, delay);
-        }
-      },
-      { threshold: 0.3 }
-    );
+    // Check if IntersectionObserver is available (browser environment)
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && !isVisible) {
+            setIsVisible(true);
+            setTimeout(() => {
+              let start = 0;
+              const increment = end / (duration / 16);
+              const timer = setInterval(() => {
+                start += increment;
+                if (start >= end) {
+                  setCount(end);
+                  clearInterval(timer);
+                } else {
+                  // Easing function for smooth deceleration
+                  const progress = start / end;
+                  const eased = 1 - Math.pow(1 - progress, 3);
+                  setCount(Math.floor(eased * end));
+                }
+              }, 16);
+            }, delay);
+          }
+        },
+        { threshold: 0.3 }
+      );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+
+      return () => observer.disconnect();
+    } else {
+      // Fallback for environments without IntersectionObserver (SSR, tests, etc.)
+      // Start animation immediately after a short delay
+      const fallbackTimer = setTimeout(() => {
+        setIsVisible(true);
+        setTimeout(() => {
+          let start = 0;
+          const increment = end / (duration / 16);
+          const timer = setInterval(() => {
+            start += increment;
+            if (start >= end) {
+              setCount(end);
+              clearInterval(timer);
+            } else {
+              // Easing function for smooth deceleration
+              const progress = start / end;
+              const eased = 1 - Math.pow(1 - progress, 3);
+              setCount(Math.floor(eased * end));
+            }
+          }, 16);
+        }, delay);
+      }, 100); // Small delay to simulate intersection
+
+      return () => clearTimeout(fallbackTimer);
     }
-
-    return () => observer.disconnect();
   }, [end, duration, delay, isVisible]);
 
   return { count, ref };

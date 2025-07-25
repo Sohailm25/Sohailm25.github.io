@@ -3,9 +3,6 @@ import {
   Box,
   Container,
   Typography,
-  Button,
-  Card,
-  CardContent,
   AppBar,
   Toolbar,
   TextField,
@@ -38,8 +35,6 @@ import {
   ViewColumn,
   NavigateNext,
   Storage,
-  Lock,
-  Public,
   Visibility,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';

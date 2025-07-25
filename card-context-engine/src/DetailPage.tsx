@@ -324,7 +324,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
               sx={{ 
                 mr: 2,
                 '&:hover': { 
-                  bgcolor: alpha('white', 0.1),
+                  bgcolor: alpha('#ffffff', 0.1),
                   transform: 'scale(1.05)',
                 },
                 transition: 'all 0.2s ease',
@@ -343,7 +343,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
                 color="inherit"
                 onClick={handleBookmark}
                 sx={{ 
-                  '&:hover': { bgcolor: alpha('white', 0.1) },
+                  '&:hover': { bgcolor: alpha('#ffffff', 0.1) },
                   transition: 'all 0.2s ease',
                 }}
               >
@@ -354,7 +354,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
               <IconButton
                 color="inherit"
                 sx={{ 
-                  '&:hover': { bgcolor: alpha('white', 0.1) },
+                  '&:hover': { bgcolor: alpha('#ffffff', 0.1) },
                   transition: 'all 0.2s ease',
                 }}
               >
@@ -365,7 +365,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
               label="Enterprise Solution" 
               variant="outlined" 
               sx={{ 
-                color: 'white', 
+                color: 'common.white', 
                 borderColor: 'rgba(255,255,255,0.3)',
                 fontSize: '0.75rem'
               }} 
@@ -379,7 +379,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
             height: 2,
             bgcolor: 'transparent',
             '& .MuiLinearProgress-bar': {
-              bgcolor: alpha('white', 0.8),
+              bgcolor: alpha('#ffffff', 0.8),
             }
           }} 
         />
@@ -493,7 +493,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
                           sx={{
                             '& .MuiBadge-badge': {
                               bgcolor: getQualityColor(currentData.qualityScore),
-                              color: 'white',
+                              color: 'common.white',
                               fontWeight: 600,
                             }
                           }}
@@ -545,8 +545,8 @@ const DetailPage: React.FC<DetailPageProps> = () => {
                           onClick={() => handleCopyToClipboard(currentData.id, 'id')}
                           sx={{
                             bgcolor: copiedField === 'id' ? 'success.main' : alpha(theme.palette.primary.main, 0.1),
-                            color: copiedField === 'id' ? 'white' : 'primary.main',
-                            '&:hover': { bgcolor: 'primary.main', color: 'white' },
+                            color: copiedField === 'id' ? 'common.white' : 'primary.main',
+                            '&:hover': { bgcolor: 'primary.main', color: 'common.white' },
                             transition: 'all 0.2s ease',
                           }}
                         >
@@ -561,7 +561,7 @@ const DetailPage: React.FC<DetailPageProps> = () => {
                             color: 'primary.main',
                             '&:hover': { 
                               bgcolor: 'primary.main', 
-                              color: 'white',
+                              color: 'common.white',
                               transform: 'rotate(180deg)',
                             },
                             transition: 'all 0.3s ease',

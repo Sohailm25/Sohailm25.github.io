@@ -546,12 +546,12 @@ nav a:hover {
 
   .hero-wrapper {
     flex-direction: column;
-    gap: var(--spacing-md);
+    align-items: flex-start;
+    gap: var(--spacing-sm);
   }
 
-  .hero-image img {
-    width: 150px;
-    height: 150px;
+  .hero-image {
+    display: none;
   }
 
   .hero-name {

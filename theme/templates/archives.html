@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Posts - {{ SITENAME }}{% endblock %}
+{% block nav_posts %} class="active" aria-current="page"{% endblock %}
+
+{% block content %}
+<div class="section-header">
+  <div class="section-title">> All Posts</div>
+  <span class="section-link">{{ dates|length }} post{{ 's' if dates|length != 1 }}</span>
+</div>
+
+<div class="blog-list">
+  {% for article in dates %}
+  <div class="blog-card">
+    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
+      <div class="card-content">
+        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+        <div class="card-title">{{ article.title }}</div>
+        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -15,4 +15,3 @@ jobs:
     with:
       settings: "publishconf.py"
       requirements: "-r requirements.txt"
-      theme: "https://github.com/alexandrevicenzi/Flex.git"

@@ -6,41 +6,36 @@ PATH = "content"
 TIMEZONE = "America/Chicago"
 DEFAULT_LANG = "en"
 
-# Feeds — explicitly disabled
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None
 TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
-# Theme
-THEME = "Flex"
+THEME = "theme"
 
-# Flex theme config
-SITETITLE = "Sohail Mohammad"
-SITESUBTITLE = "Personal & Technical Blog"
-SITEDESCRIPTION = "Thoughts on tech, AI, and life."
-SITELOGO = ""
-
-# Links
-MAIN_MENU = True
-MENUITEMS = (
-    ("Archives", "/archives.html"),
-    ("About", "/pages/about/"),
+SOCIAL = (
+    ("github", "https://github.com/Sohailm25"),
+    ("twitter", "https://x.com/Sohailmo"),
+    ("linkedin", "https://www.linkedin.com/in/sohail-mo/"),
+    ("email", "mailto:sohailmo.ai@gmail.com"),
 )
 
-SOCIAL = (("github", "https://github.com/Sohailm25"),)
+CLOUDFLARE_ANALYTICS_TOKEN = ""
 
 DEFAULT_PAGINATION = 10
 RELATIVE_URLS = True
 
-# CNAME preservation — CRITICAL
 STATIC_PATHS = ["images", "extra/CNAME"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
 }
 
-# Disable features not requested
+PAGE_URL = "pages/{slug}/"
+PAGE_SAVE_AS = "pages/{slug}/index.html"
+ARTICLE_URL = "{slug}/"
+ARTICLE_SAVE_AS = "{slug}/index.html"
+ARCHIVES_SAVE_AS = "posts/index.html"
 TAG_SAVE_AS = ""
 CATEGORY_SAVE_AS = ""
 AUTHOR_SAVE_AS = ""
@@ -48,7 +43,6 @@ TAGS_SAVE_AS = ""
 CATEGORIES_SAVE_AS = ""
 AUTHORS_SAVE_AS = ""
 
-# Markdown config with syntax highlighting
 MARKDOWN = {
     "extension_configs": {
         "markdown.extensions.codehilite": {"css_class": "highlight"},

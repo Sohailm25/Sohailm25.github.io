@@ -463,7 +463,7 @@ nav a:hover {
   max-width: 400px;
   width: 100%;
   height: auto;
-  margin: var(--spacing-md) 0;
+  margin: var(--spacing-md) auto;
   display: block;
   border: 1px solid var(--border-color);
 }

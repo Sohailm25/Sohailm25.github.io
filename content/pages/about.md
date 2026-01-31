@@ -1,22 +1,20 @@
 Title: About
 Slug: about
 
-I build ML systems that actually ship.
+![With Maha]({static}/images/maha-sohail.jpg)
 
-Most of my work is boring infrastructure—the kind that stays up at 3am. Enterprise RAG with compliance constraints. GPU optimization for inference at scale. RLHF pipelines that don't explode. Multi-tenant architectures that don't leak data.
+I'm Sohail. I build AI systems at Amazon.
 
-Currently at JPMorgan Chase building AI platforms for analysts. Before that: MLOps at Jack Henry, GPU infrastructure at Wendy's, ML systems at Capgemini.
+Right now I'm working on agent platforms for 1.5M+ employees. Before this I built a RAG system at JPMorgan Chase that went from 0 to 50,000 users. Before that: MLOps at Jack Henry, GPU stuff at Wendy's, ML systems at Capgemini.
 
-The stuff I care about: production reliability, tradeoffs that matter, systems that scale without drama. I don't chase novelty—I chase uptime.
+I care about things that work in production. Not what's trendy—what actually ships and stays up. Enterprise constraints, multi-tenancy, compliance, the boring stuff that makes systems reliable.
 
-I write here about what broke, what worked, and why. No tutorials. No "10 ways to X." Just production lessons with numbers attached.
+I write here when I learn something worth sharing. Usually about what broke, what I'd do differently, or tradeoffs I had to make. No fluff.
 
-Open source when I can. Contributed to Unsloth (NF4 kernels), MLX-LM (PagedAttention), and a few RLHF frameworks that probably need better documentation.
+Married to Maha. Four cats. Wake up at 5:30am for the gym because it works better than motivation.
 
-Based in Dallas. Married to Maha. Four cats. Wake up at 5:30am for the gym because discipline beats motivation.
+Open source when it makes sense. Contributed to Unsloth, MLX-LM, and some RLHF stuff.
 
-**What I'm optimizing for right now:** Getting better at building systems that don't need me to keep running. Writing more. Learning in public without the cringe.
+[GitHub](https://github.com/Sohailm25) · [LinkedIn](https://linkedin.com/in/sohail-mo) · [X](https://x.com/Sohailmo)
 
-Find me: [GitHub](https://github.com/Sohailm25) · [LinkedIn](https://linkedin.com/in/sohail-mo) · [X](https://x.com/Sohailmo)
-
-Email: sohailmo.ai@gmail.com
+sohailmo.ai@gmail.com

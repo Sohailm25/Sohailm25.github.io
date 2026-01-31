@@ -2,9 +2,9 @@
   --bg-color: #0d0d0d;
   --text-color: #e8e8e8;
   --text-muted: #888888;
-  --primary-color: #D4AF37;
-  --secondary-color: #c9a227;
-  --accent-color: #e8c547;
+  --primary-color: #8B2635;
+  --secondary-color: #6B1C23;
+  --accent-color: #A63446;
   --header-bg: #0a0a0a;
   --card-bg: #1a1a1a;
   --code-bg: #111111;
@@ -40,7 +40,7 @@ body {
 .container {
   max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  padding: 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -50,6 +50,8 @@ body {
   border-right: 1px solid var(--border-color);
   min-height: calc(100vh - 65px);
   padding: 0;
+  margin: 0 auto;
+  max-width: var(--container-width);
 }
 
 .post-page .main-container {
@@ -69,6 +71,8 @@ header {
 }
 
 .header-inner {
+  max-width: var(--container-width);
+  margin: 0 auto;
   border-left: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);

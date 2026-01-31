@@ -545,13 +545,24 @@ nav a:hover {
   }
 
   .hero-wrapper {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
+    justify-content: space-between;
     gap: var(--spacing-sm);
   }
 
+  .hero-content {
+    flex: 1;
+    min-width: 0;
+  }
+
   .hero-image {
-    display: none;
+    flex-shrink: 0;
+  }
+
+  .hero-image img {
+    width: 100px;
+    height: 100px;
   }
 
   .hero-name {

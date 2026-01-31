@@ -1,5 +1,5 @@
 AUTHOR = "Sohail Mohammad"
-SITENAME = "Sohail Mohammad"
+SITENAME = "sohail mohammad"
 SITEURL = ""
 
 PATH = "content"

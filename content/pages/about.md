@@ -1,20 +1,16 @@
 Title: About
 Slug: about
 
-![With Maha]({static}/images/maha-sohail.jpg)
+![with maha]({static}/images/maha-sohail.jpg)
 
-I'm Sohail. I build AI systems at Amazon.
+i'm sohail. i'm building ai systems at amazon.
 
-Right now I'm working on agent platforms for 1.5M+ employees. Before this I built a RAG system at JPMorgan Chase that went from 0 to 50,000 users. Before that: MLOps at Jack Henry, GPU stuff at Wendy's, ML systems at Capgemini.
+right now i'm working on agent platforms for 1.5m+ employees. before this i built a rag system at jpmorgan chase that went from 0 to 10k+ users. before that: mlops at wendy's (genai in the drive thru), gpu stuff at jack henry, ml systems at capgemini.
 
-I care about things that work in production. Not what's trendy—what actually ships and stays up. Enterprise constraints, multi-tenancy, compliance, the boring stuff that makes systems reliable.
+i like my wife. i like the gym. i like our cats.
 
-I write here when I learn something worth sharing. Usually about what broke, what I'd do differently, or tradeoffs I had to make. No fluff.
+contributed to unsloth, mlx-lm, and some rlhf stuff.
 
-Married to Maha. Four cats. Wake up at 5:30am for the gym because it works better than motivation.
-
-Open source when it makes sense. Contributed to Unsloth, MLX-LM, and some RLHF stuff.
-
-[GitHub](https://github.com/Sohailm25) · [LinkedIn](https://linkedin.com/in/sohail-mo) · [X](https://x.com/Sohailmo)
+[github](https://github.com/sohailm25) · [linkedin](https://linkedin.com/in/sohail-mo) · [x](https://x.com/sohailmo)
 
 sohailmo.ai@gmail.com

@@ -460,7 +460,8 @@ nav a:hover {
 }
 
 .page-content img {
-  max-width: 100%;
+  max-width: 400px;
+  width: 100%;
   height: auto;
   margin: var(--spacing-md) 0;
   display: block;

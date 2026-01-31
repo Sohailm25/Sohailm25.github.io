@@ -15,3 +15,5 @@ jobs:
     with:
       settings: "publishconf.py"
       requirements: "-r requirements.txt"
+      siteurl: "https://sohailmo.ai"
+      feed_domain: "https://sohailmo.ai"

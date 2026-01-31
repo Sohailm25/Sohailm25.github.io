@@ -4,18 +4,12 @@
 
 {% block title %}Videos - {{ super() }}{% endblock %}
 
-{% block body_class %} class="post-page"{% endblock %}
-
 {% block content %}
-<div class="back-link">
-  <a href="{{ SITEURL }}/">← Back</a>
+<div class="section-header">
+  <div class="section-title">> ALL VIDEOS</div>
 </div>
 
-<div class="page-header">
-  <h1 class="page-title">Videos</h1>
-</div>
-
-<div class="page-content">
+<div class="page-content" style="padding: 0 var(--spacing-md);">
   {{ page.content }}
 </div>
 {% endblock %}

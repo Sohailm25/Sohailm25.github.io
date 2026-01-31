@@ -190,9 +190,28 @@ nav a:hover {
   margin-bottom: 0;
 }
 
+.hero-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
 .hero-content {
   position: relative;
   z-index: 1;
+  flex: 1;
+}
+
+.hero-image {
+  flex-shrink: 0;
+}
+
+.hero-image img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 .hero-greeting {
@@ -523,6 +542,16 @@ nav a:hover {
 
   .hero {
     padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .hero-wrapper {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .hero-image img {
+    width: 150px;
+    height: 150px;
   }
 
   .hero-name {

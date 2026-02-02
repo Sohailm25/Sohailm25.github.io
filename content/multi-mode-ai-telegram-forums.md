@@ -239,10 +239,16 @@ Open Journal > Morning Journal topic. Brain dump in Neovim (or directly in Teleg
 **Throughout the day:**  
 When I have an idea, drop it in the Ideas topic. Wispr Flow makes this easy: dictate via voice, transcribes into Telegram. Agent logs it to `blog-ideas.md`. No mental overhead.
 
+![Ideas topic in action]({static}/images/telegram-ideas-topic.png)
+
 For content work (like drafting this article), I use the Content Work topic. Agent remembers where we left off. No need to re-explain context.
+
+![Content Work topic during article extraction]({static}/images/telegram-content-work-topic.png)
 
 **The accountability check-in:**  
 At 9 AM, the cron job fires. Today it said: *"You wrote yesterday and added some good ideas. Keep going today."* That got me to start working on this article.
+
+![Accountability topic with proactive check-in]({static}/images/telegram-accountability-topic.png)
 
 **Context switching:**  
 Switching topics feels like switching meetings with different departments. No cognitive cost. Each topic knows its own history.

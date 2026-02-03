@@ -7,7 +7,7 @@ i'm sohail. i'm building ai systems at amazon.
 
 right now i'm working on agent platforms for 1.5m+ employees. before this i built a rag system at jpmorgan chase that went from 0 to 10k+ users. before that: mlops at wendy's (genai in the drive thru), gpu stuff at jack henry, ml systems at capgemini.
 
-i like my wife. i like the gym. i like our cats.
+i love my wife. i love the gym. i love our cats.
 
 contributed to unsloth, mlx-lm, and some rlhf stuff.
 

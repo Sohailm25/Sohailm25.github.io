@@ -1,6 +1,6 @@
 // Section wrapper for hierarchical indentation
 document.addEventListener('DOMContentLoaded', function() {
-  const content = document.querySelector('.post-content');
+  const content = document.querySelector('.page-content') || document.querySelector('.post-content') || document.querySelector('main');
   if (!content) return;
 
   const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');

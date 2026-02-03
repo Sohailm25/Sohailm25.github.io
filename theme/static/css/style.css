@@ -2,17 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Fira+Code:wght@400;500;600&display=swap');
 
 :root {
-  --bg-color: #0d0d0d;
+  --bg-color: #2d353b;
   --text-color: #e8e8e8;
   --text-muted: #888888;
-  --primary-color: #8B2635;
-  --secondary-color: #6B1C23;
-  --accent-color: #A63446;
-  --header-bg: #0a0a0a;
-  --card-bg: #1a1a1a;
+  --primary-color: #A7C080;
+  --secondary-color: #859e7a;
+  --accent-color: #83C092;
+  --header-bg: #232a2e;
+  --card-bg: #343f44;
   --code-bg: #111111;
   --code-text: #e0e0e0;
-  --border-color: #333333;
+  --border-color: #4a555b;
   --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-code: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
   --container-width: 900px;
@@ -638,7 +638,7 @@ nav a:hover {
 
 /* 2. Dual-tone sections - pure black hero */
 .hero {
-  background-color: #000000 !important;
+  background-color: #232a2e !important;
   margin: 0;
   padding: var(--spacing-xl) var(--spacing-md);
 }
@@ -663,7 +663,7 @@ h1, .hero-name {
 /* h2 - top level sections, full brightness */
 h2, .card-title {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #A63446 !important; /* Medium crimson for h2 */
+  color: #A7C080 !important; /* Sage green for h2 */
   letter-spacing: -0.01em;
   font-weight: 600;
 }
@@ -671,7 +671,7 @@ h2, .card-title {
 /* h3 - first level of detail, full brightness */
 h3 {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #C44D5E !important; /* Lighter crimson for h3 */
+  color: #83C092 !important; /* Mint green for h3 */
   letter-spacing: -0.01em;
   font-weight: 500;
 }
@@ -679,29 +679,29 @@ h3 {
 /* h4 nested inside h3 - 85% opacity */
 .section-h2 > .section-h3 > .section-h4 > h4,
 .section-h2 > .section-h4 > h4 {
-  color: rgba(196, 77, 94, 0.85) !important; /* #C44D5E at 85% */
+  color: rgba(127, 187, 179, 0.85) !important; /* #7FBBB3 teal at 85% */
 }
 
 /* h5 nested inside h4 - 70% opacity */
 .section-h2 > .section-h3 > .section-h4 > .section-h5 > h5 {
-  color: rgba(216, 102, 118, 0.70) !important; /* #D86676 at 70% */
+  color: rgba(158, 196, 159, 0.70) !important; /* #9ec49f light mint at 70% */
 }
 
 /* h6 nested inside h5 - 55% opacity */
 .section-h2 > .section-h3 > .section-h4 > .section-h5 > .section-h6 > h6 {
-  color: rgba(232, 134, 142, 0.55) !important; /* #E8868E at 55% */
+  color: rgba(180, 212, 181, 0.55) !important; /* #b4d4b5 pale mint at 55% */
 }
 
 /* Default h4/h5/h6 when not nested (fallback) */
 h4 {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #D86676 !important; /* Even lighter for h4 */
+  color: #7FBBB3 !important; /* Teal for h4 */
   font-weight: 500;
 }
 
 h5, h6 {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #E8868E !important; /* Lightest crimson for h5/h6 */
+  color: #9ec49f !important; /* Light mint for h5/h6 */
   font-weight: 400;
 }
 
@@ -722,8 +722,8 @@ body::before {
     0deg,
     transparent,
     transparent 2px,
-    rgba(139, 38, 53, 0.03) 2px,
-    rgba(139, 38, 53, 0.03) 4px
+    rgba(131, 192, 146, 0.02) 2px,
+    rgba(131, 192, 146, 0.02) 4px
   );
   pointer-events: none;
   z-index: 1;
@@ -763,41 +763,41 @@ header, .container, .main-container, main {
 /* h3 nested inside h2 - first level of indentation - full opacity */
 .section-h2 > .section-h3 {
   padding-left: 24px;
-  border-left: 3px solid rgba(166, 52, 70, 1.0);  /* #A63446 at 100% */
+  border-left: 3px solid rgba(131, 192, 146, 1.0);  /* #A63446 at 100% */
   margin-left: 0;
 }
 
 /* h4 nested inside h3 - second level - 85% opacity bar */
 .section-h2 > .section-h3 > .section-h4 {
   padding-left: 24px;
-  border-left: 3px solid rgba(196, 77, 94, 0.85);  /* #C44D5E at 85% */
+  border-left: 3px solid rgba(127, 187, 179, 0.85);  /* #C44D5E at 85% */
   margin-left: 0;
 }
 
 /* h5 nested inside h4 - third level - 70% opacity bar */
 .section-h2 > .section-h3 > .section-h4 > .section-h5 {
   padding-left: 24px;
-  border-left: 3px solid rgba(216, 102, 118, 0.70);  /* #D86676 at 70% */
+  border-left: 3px solid rgba(158, 196, 159, 0.70);  /* #D86676 at 70% */
   margin-left: 0;
 }
 
 /* h6 nested inside h5 - fourth level - 55% opacity bar */
 .section-h2 > .section-h3 > .section-h4 > .section-h5 > .section-h6 {
   padding-left: 24px;
-  border-left: 3px solid rgba(232, 134, 142, 0.55);  /* #E8868E at 55% */
+  border-left: 3px solid rgba(180, 212, 181, 0.55);  /* #E8868E at 55% */
   margin-left: 0;
 }
 
 /* Edge case: h3 directly under h1 (no h2 parent) */
 .section-h1 > .section-h3 {
   padding-left: 24px;
-  border-left: 3px solid rgba(166, 52, 70, 1.0);
+  border-left: 3px solid rgba(131, 192, 146, 1.0);
 }
 
 /* Edge case: h4 directly under h2 (skipped h3) */
 .section-h2 > .section-h4 {
   padding-left: 24px;
-  border-left: 3px solid rgba(196, 77, 94, 0.85);
+  border-left: 3px solid rgba(127, 187, 179, 0.85);
 }
 
 /* Reduce spacing inside sections */
@@ -810,11 +810,11 @@ header, .container, .main-container, main {
   margin-bottom: var(--spacing-sm);
 }
 
-/* Horizontal rule separator - subtle crimson gradient */
+/* Horizontal rule separator - subtle sage gradient */
 hr {
   border: none;
   height: 2px;
-  background: linear-gradient(to right, #A63446, rgba(166, 52, 70, 0.3), transparent);
+  background: linear-gradient(to right, #83C092, rgba(131, 192, 146, 0.3), transparent);
   margin: var(--spacing-lg) 0;
   opacity: 0.6;
 }

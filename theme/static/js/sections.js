@@ -18,10 +18,24 @@ document.addEventListener('DOMContentLoaded', function() {
     let sibling = heading.nextElementSibling;
 
     while (sibling) {
+      // Stop at next heading of same/higher level
       if (sibling.matches('h1, h2, h3, h4, h5, h6')) {
         const siblingLevel = getLevel(sibling);
         if (siblingLevel <= level) break;
       }
+      
+      // Also stop at already-wrapped sections of same/higher level
+      let shouldStop = false;
+      if (sibling.classList) {
+        for (let i = 1; i <= level; i++) {
+          if (sibling.classList.contains('section-h' + i)) {
+            shouldStop = true;
+            break;
+          }
+        }
+      }
+      if (shouldStop) break;
+      
       elements.push(sibling);
       sibling = sibling.nextElementSibling;
     }

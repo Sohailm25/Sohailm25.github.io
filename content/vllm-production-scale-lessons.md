@@ -468,7 +468,3 @@ Honestly, the biggest lesson is _production inference is a distributed systems p
 If you're building this, start with the system design (regional vs central, single vs multi-model, monitoring, fallbacks). Then optimize (quantization, offloading, chunked prefill, speculative decoding).
 
 The system design decisions constrain what optimizations are even possible.
-
----
-
-*(Draft complete)*

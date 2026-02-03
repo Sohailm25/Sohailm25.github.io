@@ -11,6 +11,7 @@
   <script>document.addEventListener('DOMContentLoaded', function(){hljs.highlightAll();});</script>
 </head>
 <body{% block body_class %}{% endblock %}>
+  <div id="reading-progress"></div>
   <header>
     <div class="container">
       <div class="header-inner">
@@ -60,6 +61,15 @@
       </main>
     </div>
   </div>
+  <script>
+    // Reading progress bar
+    window.addEventListener('scroll', function() {
+      var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      var scrolled = (winScroll / height) * 100;
+      document.getElementById("reading-progress").style.width = scrolled + "%";
+    });
+  </script>
   {% if CLOUDFLARE_ANALYTICS_TOKEN %}
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "{{ CLOUDFLARE_ANALYTICS_TOKEN }}"}'></script>
   {% endif %}

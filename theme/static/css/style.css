@@ -418,7 +418,6 @@ nav a:hover {
 .page-content h2,
 .page-content h3,
 .page-content h4 {
-  color: var(--text-color);
   margin-top: var(--spacing-lg);
   margin-bottom: var(--spacing-sm);
   font-weight: 600;
@@ -654,34 +653,34 @@ body, .card-excerpt, p, li, .hero-bio, nav, a {
 /* 4. Hierarchical heading colors - different crimson shades per level */
 h1, .hero-name {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: var(--primary-color); /* Brightest crimson for h1 */
+  color: var(--primary-color) !important; /* Brightest crimson for h1 */
   letter-spacing: -0.01em;
   font-weight: 700;
 }
 
 h2, .card-title {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #A63446; /* Medium crimson for h2 */
+  color: #A63446 !important; /* Medium crimson for h2 */
   letter-spacing: -0.01em;
   font-weight: 600;
 }
 
 h3 {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #C44D5E; /* Lighter crimson for h3 */
+  color: #C44D5E !important; /* Lighter crimson for h3 */
   letter-spacing: -0.01em;
   font-weight: 500;
 }
 
 h4 {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #D86676; /* Even lighter for h4 */
+  color: #D86676 !important; /* Even lighter for h4 */
   font-weight: 500;
 }
 
 h5, h6 {
   font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-  color: #E8868E; /* Lightest crimson for h5/h6 */
+  color: #E8868E !important; /* Lightest crimson for h5/h6 */
   font-weight: 400;
 }
 

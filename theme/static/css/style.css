@@ -638,11 +638,6 @@ nav a:hover {
   padding: var(--spacing-xl) var(--spacing-md);
 }
 
-/* 3. Serif headings for post titles */
-h1, h2, .card-title, .hero-name {
-  font-family: Georgia, 'Times New Roman', serif;
-  letter-spacing: -0.02em;
-}
 
 
 .blog-card:hover {
@@ -651,13 +646,46 @@ h1, h2, .card-title, .hero-name {
   border-color: var(--primary-color);
 }
 
-/* 5. Drop caps - first letter of post content */
+
+/* Body text also monospace */
+body, .card-excerpt, p, .hero-bio {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(139, 38, 53, 0.02) 2px,
+    rgba(139, 38, 53, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Ensure content is above texture */
+header, .container, .main-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Remove drop caps (too editorial for monospace theme) */
 .post-content > p:first-of-type::first-letter {
-  font-size: 4em;
-  line-height: 0.8;
-  float: left;
-  margin: 0.1em 0.1em 0 0;
-  color: var(--primary-color);
-  font-family: Georgia, serif;
-  font-weight: bold;
+  font-size: inherit;
+  line-height: inherit;
+  float: none;
+  margin: 0;
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
 }

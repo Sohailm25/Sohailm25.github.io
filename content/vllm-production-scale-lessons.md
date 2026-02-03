@@ -6,8 +6,6 @@ Summary: Memory fragmentation, throughput cliffs, and quantization accuracy issu
 
 ---
 
-# Optimizing vLLM at Production Scale: Lessons from Conversational AI Infrastructure
-
 **Disclaimer:** This post reflects patterns and lessons learned from building vLLM-based inference systems at production scale. Technical details have been generalized, and no proprietary information from any specific organization is disclosed.
 
 ---

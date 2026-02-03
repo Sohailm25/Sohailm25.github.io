@@ -617,3 +617,51 @@ nav a:hover {
     padding: 0 var(--spacing-sm);
   }
 }
+/* Visual Differentiators - 2026-02-02 */
+
+/* 1. Reading Progress Bar */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--primary-color);
+  z-index: 9999;
+  width: 0%;
+  transition: width 0.1s ease;
+}
+
+/* 2. Dual-tone sections - pure black hero */
+.hero {
+  background-color: #000000;
+  margin: 0;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+/* 3. Serif headings for post titles */
+h1, h2, .card-title, .hero-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.02em;
+}
+
+/* 4. Crimson glow on card hover */
+.blog-card {
+  transition: all 0.3s ease;
+}
+
+.blog-card:hover {
+  box-shadow: 0 0 24px rgba(139, 38, 53, 0.4);
+  transform: translateY(-4px);
+  border-color: var(--primary-color);
+}
+
+/* 5. Drop caps - first letter of post content */
+.post-content > p:first-of-type::first-letter {
+  font-size: 4em;
+  line-height: 0.8;
+  float: left;
+  margin: 0.1em 0.1em 0 0;
+  color: var(--primary-color);
+  font-family: Georgia, serif;
+  font-weight: bold;
+}

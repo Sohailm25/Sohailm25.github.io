@@ -714,3 +714,98 @@ header, .container, .main-container, main {
   position: relative;
   z-index: 2;
 }
+
+/* ========================================
+   Hierarchical Section Indentation
+   ======================================== */
+
+/* Base section styling */
+.section-h1,
+.section-h2,
+.section-h3,
+.section-h4,
+.section-h5,
+.section-h6 {
+  margin: var(--spacing-md) 0;
+}
+
+/* Cumulative left borders - each level adds its own */
+
+/* h1 sections - no border (top level) */
+.section-h1 {
+  padding-left: 0;
+}
+
+/* h2 sections - 1 line (brightest crimson from h1 color) */
+.section-h2 {
+  padding-left: 24px;
+  border-left: 3px solid #8B2635;
+  margin-left: 0;
+}
+
+/* h3 sections - nested inside h2, adds its own line */
+.section-h2 .section-h3 {
+  padding-left: 24px;
+  border-left: 3px solid #A63446;
+  margin-left: 0;
+}
+
+/* h4 sections - nested inside h3, adds its own line */
+.section-h2 .section-h3 .section-h4 {
+  padding-left: 24px;
+  border-left: 3px solid #C44D5E;
+  margin-left: 0;
+}
+
+/* h5 sections - nested inside h4 */
+.section-h2 .section-h3 .section-h4 .section-h5 {
+  padding-left: 24px;
+  border-left: 3px solid #D86676;
+  margin-left: 0;
+}
+
+/* h6 sections - nested inside h5 */
+.section-h2 .section-h3 .section-h4 .section-h5 .section-h6 {
+  padding-left: 24px;
+  border-left: 3px solid #E8868E;
+  margin-left: 0;
+}
+
+/* Also handle h3 directly under h1 (no h2 parent) */
+.section-h1 .section-h3 {
+  padding-left: 24px;
+  border-left: 3px solid #A63446;
+}
+
+/* And h4 directly under h2 */
+.section-h2 .section-h4 {
+  padding-left: 24px;
+  border-left: 3px solid #C44D5E;
+}
+
+/* Reduce spacing inside sections */
+.section-h2 > h2,
+.section-h3 > h3,
+.section-h4 > h4,
+.section-h5 > h5,
+.section-h6 > h6 {
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Horizontal rule separator - subtle crimson gradient */
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, #A63446, rgba(166, 52, 70, 0.3), transparent);
+  margin: var(--spacing-lg) 0;
+  opacity: 0.6;
+}
+
+/* Alternative: if you want a solid line that matches h2 color */
+/* hr {
+  border: none;
+  border-top: 2px solid #A63446;
+  opacity: 0.4;
+  margin: var(--spacing-lg) 0;
+} */

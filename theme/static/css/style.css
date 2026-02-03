@@ -1,3 +1,6 @@
+/* Import monospace fonts - MUST be first */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Fira+Code:wght@400;500;600&display=swap');
+
 :root {
   --bg-color: #0d0d0d;
   --text-color: #e8e8e8;
@@ -617,7 +620,10 @@ nav a:hover {
     padding: 0 var(--spacing-sm);
   }
 }
-/* Visual Differentiators - 2026-02-02 */
+
+/* ========================================
+   Visual Differentiators - 2026-02-03
+   ======================================== */
 
 /* 1. Reading Progress Bar */
 #reading-progress {
@@ -633,28 +639,58 @@ nav a:hover {
 
 /* 2. Dual-tone sections - pure black hero */
 .hero {
-  background-color: #000000;
+  background-color: #000000 !important;
   margin: 0;
   padding: var(--spacing-xl) var(--spacing-md);
 }
 
-
-
-.blog-card:hover {
-  box-shadow: 0 0 24px rgba(139, 38, 53, 0.4);
-  transform: translateY(-4px);
-  border-color: var(--primary-color);
-}
-
-
-/* Body text also monospace */
-body, .card-excerpt, p, .hero-bio {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+/* 3. Full monospace typography */
+body, .card-excerpt, p, li, .hero-bio, nav, a {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
   font-size: 15px;
   line-height: 1.7;
 }
 
-/* Paper texture overlay */
+/* 4. Hierarchical heading colors - different crimson shades per level */
+h1, .hero-name {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: var(--primary-color); /* Brightest crimson for h1 */
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+h2, .card-title {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: #A63446; /* Medium crimson for h2 */
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+h3 {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: #C44D5E; /* Lighter crimson for h3 */
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+h4 {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: #D86676; /* Even lighter for h4 */
+  font-weight: 500;
+}
+
+h5, h6 {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: #E8868E; /* Lightest crimson for h5/h6 */
+  font-weight: 400;
+}
+
+.logo {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-weight: 600;
+}
+
+/* 5. Paper texture overlay */
 body::before {
   content: '';
   position: fixed;
@@ -666,26 +702,15 @@ body::before {
     0deg,
     transparent,
     transparent 2px,
-    rgba(139, 38, 53, 0.02) 2px,
-    rgba(139, 38, 53, 0.02) 4px
+    rgba(139, 38, 53, 0.03) 2px,
+    rgba(139, 38, 53, 0.03) 4px
   );
   pointer-events: none;
   z-index: 1;
 }
 
 /* Ensure content is above texture */
-header, .container, .main-container {
+header, .container, .main-container, main {
   position: relative;
   z-index: 2;
-}
-
-/* Remove drop caps (too editorial for monospace theme) */
-.post-content > p:first-of-type::first-letter {
-  font-size: inherit;
-  line-height: inherit;
-  float: none;
-  margin: 0;
-  color: inherit;
-  font-family: inherit;
-  font-weight: inherit;
 }

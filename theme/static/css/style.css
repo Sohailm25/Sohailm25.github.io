@@ -644,10 +644,6 @@ h1, h2, .card-title, .hero-name {
   letter-spacing: -0.02em;
 }
 
-/* 4. Crimson glow on card hover */
-.blog-card {
-  transition: all 0.3s ease;
-}
 
 .blog-card:hover {
   box-shadow: 0 0 24px rgba(139, 38, 53, 0.4);

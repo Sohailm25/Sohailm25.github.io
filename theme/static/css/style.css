@@ -818,3 +818,146 @@ hr {
   margin: var(--spacing-lg) 0;
   opacity: 0.6;
 }
+
+/* ========================================
+   Neovim-Style Enhancements
+   ======================================== */
+
+/* Line numbering setup */
+.page-content {
+  counter-reset: line;
+  position: relative;
+}
+
+/* Line numbers for paragraphs, headings, lists */
+.page-content > p,
+.page-content > h2,
+.page-content > h3,
+.page-content > h4,
+.page-content > h5,
+.page-content > h6,
+.page-content > ul,
+.page-content > ol,
+.page-content > pre,
+.page-content > blockquote,
+.section-h2 > h2,
+.section-h3 > h3,
+.section-h4 > h4,
+.section-h5 > h5,
+.section-h6 > h6 {
+  counter-increment: line;
+  position: relative;
+  padding-left: 60px; /* Space for line numbers */
+}
+
+/* Line number display (hidden by default) */
+.page-content > p::before,
+.page-content > h2::before,
+.page-content > h3::before,
+.page-content > h4::before,
+.page-content > h5::before,
+.page-content > h6::before,
+.page-content > ul::before,
+.page-content > ol::before,
+.page-content > pre::before,
+.page-content > blockquote::before,
+.section-h2 > h2::before,
+.section-h3 > h3::before,
+.section-h4 > h4::before,
+.section-h5 > h5::before,
+.section-h6 > h6::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 40px;
+  text-align: right;
+  color: rgba(136, 136, 136, 0);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  user-select: none;
+  transition: color 0.2s ease;
+  padding-right: 12px;
+  border-right: 1px solid rgba(136, 136, 136, 0);
+  transition: all 0.2s ease;
+}
+
+/* Show line numbers on content hover */
+.page-content:hover > p::before,
+.page-content:hover > h2::before,
+.page-content:hover > h3::before,
+.page-content:hover > h4::before,
+.page-content:hover > h5::before,
+.page-content:hover > h6::before,
+.page-content:hover > ul::before,
+.page-content:hover > ol::before,
+.page-content:hover > pre::before,
+.page-content:hover > blockquote::before,
+.page-content:hover .section-h2 > h2::before,
+.page-content:hover .section-h3 > h3::before,
+.page-content:hover .section-h4 > h4::before,
+.page-content:hover .section-h5 > h5::before,
+.page-content:hover .section-h6 > h6::before {
+  color: rgba(136, 136, 136, 0.4);
+  border-right-color: rgba(136, 136, 136, 0.15);
+}
+
+/* Heading background highlights - fade to right */
+
+/* h2 - no background (top level) */
+.page-content > h2,
+.section-h2 > h2 {
+  background: transparent;
+}
+
+/* h3 - medium crimson fade */
+.page-content > h3,
+.section-h3 > h3 {
+  background: linear-gradient(to right, rgba(166, 52, 70, 0.12), rgba(166, 52, 70, 0.06), transparent 60%);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-left: -60px;
+  padding-left: 60px;
+  padding-right: 20px;
+}
+
+/* h4 - lighter crimson fade */
+.section-h2 > .section-h3 > .section-h4 > h4,
+.section-h2 > .section-h4 > h4 {
+  background: linear-gradient(to right, rgba(196, 77, 94, 0.10), rgba(196, 77, 94, 0.05), transparent 60%);
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-left: -60px;
+  padding-left: 60px;
+  padding-right: 20px;
+}
+
+/* h5 - very subtle fade */
+.section-h2 > .section-h3 > .section-h4 > .section-h5 > h5 {
+  background: linear-gradient(to right, rgba(216, 102, 118, 0.08), rgba(216, 102, 118, 0.04), transparent 60%);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-left: -60px;
+  padding-left: 60px;
+  padding-right: 20px;
+}
+
+/* h6 - minimal fade */
+.section-h2 > .section-h3 > .section-h4 > .section-h5 > .section-h6 > h6 {
+  background: linear-gradient(to right, rgba(232, 134, 142, 0.06), rgba(232, 134, 142, 0.03), transparent 60%);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-left: -60px;
+  padding-left: 60px;
+  padding-right: 20px;
+}
+
+/* Current line highlight on hover (subtle) */
+.page-content > p:hover,
+.page-content > ul:hover,
+.page-content > ol:hover {
+  background: rgba(255, 255, 255, 0.02);
+  margin-left: -60px;
+  padding-left: 60px;
+  padding-right: 20px;
+  transition: background 0.15s ease;
+}

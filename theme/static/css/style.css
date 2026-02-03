@@ -148,7 +148,7 @@ nav a {
 
 nav a.active,
 nav a[aria-current="page"] {
-  color: var(--text-color);
+  color: var(--primary-color);
   font-weight: 500;
 }
 
@@ -638,7 +638,7 @@ nav a:hover {
 
 /* 2. Dual-tone sections - pure black hero */
 .hero {
-  background-color: #232a2e !important;
+  background-color: #2d353b !important;
   margin: 0;
   padding: var(--spacing-xl) var(--spacing-md);
 }

@@ -10,7 +10,7 @@ Then a friend asked a simple question.
 
 ## The Question
 
-Yasin asked: "Why Telegram and not Slack?"
+[Yasin](https://www.linkedin.com/in/yasin-arshad/) asked: "Why Telegram and not Slack?"
 
 My immediate reaction was to defend the choice. Slack feels cluttered. Telegram feels cleaner, more conversational. I use Slack for work, and I wanted something separate for journaling and writing. Slack = corporate. Telegram = personal.
 

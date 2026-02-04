@@ -23,16 +23,16 @@ So I built it.
 
 Automated feed scraper that:
 - Fetches 100 tweets from my "For You" timeline daily at 6 PM
-- Analyzes them with Claude (via Clawdbot)
+- Analyzes them with Claude (via OpenClaw)
 - Triages to 10-15 significant items
 - Fetches community replies to assess sentiment
 - Delivers a formatted digest to Slack
 
-Built with **Bird CLI** (cookie-based X scraper) + **Clawdbot** (multi-agent bot framework) + **Claude**.
+Built with **Bird CLI** (cookie-based X scraper) + **OpenClaw** (multi-agent bot framework) + **Claude**.
 
 High-level flow:
 ```
-Cron Job → Clawdbot Agent → Bird CLI (fetch tweets) → Claude (analyze) → Slack
+Cron Job → OpenClaw Agent → Bird CLI (fetch tweets) → Claude (analyze) → Slack
 ```
 
 Scheduled task triggers agent → agent runs Bird CLI to fetch timeline → saves raw JSON → analyzes with Claude → fetches replies for top tweets → formats digest → delivers to Slack.
@@ -73,9 +73,9 @@ bird home --json --count 10
 
 If it works, you'll see JSON output with tweet objects (id, text, author, engagement metrics).
 
-### Clawdbot: Multi-Agent Bot Framework
+### OpenClaw: Multi-Agent Bot Framework
 
-Clawdbot is a multi-agent bot framework for Claude. It runs agents across multiple channels (Slack, Telegram, Discord) and handles session management, scheduled tasks, and tool execution.
+OpenClaw (previously moltbot/openclaw) is a personal AI assistant you run on your own devices. It's a multi-agent bot framework that works with Claude and other models. It runs agents across multiple channels (Slack, Telegram, Discord, WhatsApp, Signal, iMessage, and more) and handles session management, scheduled tasks, and tool execution.
 
 **Why I chose it:**
 - Already using it for my content workflow (journaling, writing, accountability)
@@ -89,11 +89,13 @@ Clawdbot is a multi-agent bot framework for Claude. It runs agents across multip
 - Agent analyzes output with Claude
 - Agent delivers formatted digest to Slack
 
-If you don't have Clawdbot, you can replace it with a Python script. Same flow, different tools. I'll explain that later.
+If you don't have OpenClaw, you can replace it with a Python script. Same flow, different tools. I'll explain that later.
+
+**Learn more:** [OpenClaw on GitHub](https://github.com/openclaw/openclaw)
 
 ### Cron Job: Scheduled Execution
 
-The job runs daily at 6 PM CST. It's configured in `~/.clawdbot/cron/jobs.json`:
+The job runs daily at 6 PM CST. It's configured in `~/.openclaw/cron/jobs.json`:
 
 ```json
 {
@@ -150,7 +152,7 @@ The full prompt is ~300 words. I won't paste the whole thing here, but the patte
 
 ### Slack Integration: Delivery
 
-Clawdbot delivers the digest to a dedicated Slack channel. Configuration in `~/.clawdbot/clawdbot.json`:
+OpenClaw delivers the digest to a dedicated Slack channel. Configuration in `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -197,18 +199,18 @@ bird home --json --count 10
 
 If it works, you'll see JSON output. If not, Bird might need browser cookies. Make sure you're logged into X in your default browser.
 
-### Step 2: Configure Clawdbot Agent
+### Step 2: Configure OpenClaw Agent
 
-If you're using Clawdbot, create or use an existing agent with:
+If you're using OpenClaw, create or use an existing agent with:
 - **Workspace:** `~/assistant/data/feed/` (for saving raw JSON)
 - **Tools:** `exec` (to run `bird` commands)
 - **Model:** Claude Sonnet 4.5
 
-If you're not using Clawdbot, skip this. You'll write a custom script instead (see "Clawdbot vs Custom Script" below).
+If you're not using OpenClaw, skip this. You'll write a custom script instead (see "OpenClaw vs Custom Script" below).
 
 ### Step 3: Create Cron Job
 
-Add this to `~/.clawdbot/cron/jobs.json`:
+Add this to `~/.openclaw/cron/jobs.json`:
 
 ```json
 {
@@ -236,7 +238,7 @@ Replace `<YOUR_SLACK_CHANNEL_ID>` with your actual channel ID.
 
 ### Step 4: Configure Slack Channel
 
-Add the channel to `~/.clawdbot/clawdbot.json`:
+Add the channel to `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -274,17 +276,17 @@ Bind the channel to your agent:
 
 ### Step 5: Restart Gateway + Test
 
-Restart the Clawdbot gateway to load the new config:
+Restart the OpenClaw gateway to load the new config:
 
 ```bash
-pkill -9 -f clawdbot-gateway
-nohup pnpm clawdbot gateway &
+pkill -9 -f openclaw-gateway
+nohup pnpm openclaw gateway &
 ```
 
 Force-run the job to test:
 
 ```bash
-pnpm clawdbot cron run --force feed-highlights-slack --timeout 300000
+pnpm openclaw cron run --force feed-highlights-slack --timeout 300000
 ```
 
 Check Slack for the digest. If it works, it'll run automatically at 6 PM daily.
@@ -337,7 +339,7 @@ The format is consistent. Easy to scan. Community quotes add context I'd miss if
 
 ### OAuth vs API Keys
 
-Clawdbot uses OAuth through my Claude Pro subscription:
+OpenClaw uses OAuth through my Claude Pro subscription:
 - No per-token API billing
 - Usage counts against Claude Pro limits (5h/day)
 - Tokens auto-refresh via background service
@@ -347,17 +349,17 @@ Clawdbot uses OAuth through my Claude Pro subscription:
 - Well within Claude Pro limits
 - No separate API billing
 
-**If you don't have Clawdbot:** Use the official Claude API with the `anthropic` Python SDK. Same prompt, different execution layer.
+**If you don't have OpenClaw:** Use the official Claude API with the `anthropic` Python SDK. Same prompt, different execution layer.
 
-### Clawdbot vs Custom Script
+### OpenClaw vs Custom Script
 
-**Why I used Clawdbot:**
+**Why I used OpenClaw:**
 - Already using it for other workflows (journaling, writing, accountability)
 - Built-in cron support
 - Built-in Slack integration
 - Session management handled
 
-**If you don't have Clawdbot:**
+**If you don't have OpenClaw:**
 
 Write a Python script with:
 - `subprocess` to call `bird` CLI
@@ -417,7 +419,7 @@ I know other people struggle with the same problem: wanting to stay connected wi
 
 ## Final Thoughts
 
-This is a simple automation that saves me real time. Bird CLI + Claude + Clawdbot = automated feed curation. If you're drowning in Twitter, try it. If you don't have Clawdbot, replace it with a Python script. Same flow, different tools.
+This is a simple automation that saves me real time. Bird CLI + Claude + OpenClaw = automated feed curation. If you're drowning in Twitter, try it. If you don't have OpenClaw, replace it with a Python script. Same flow, different tools.
 
 The code is just glue. The real value is the prompt. Triage → sentiment analysis → digest. That's the pattern.
 

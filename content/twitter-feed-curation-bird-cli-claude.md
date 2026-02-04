@@ -75,17 +75,17 @@ If it works, you'll see JSON output with tweet objects (id, text, author, engage
 
 ### OpenClaw: Multi-Agent Bot Framework
 
-OpenClaw (previously moltbot/openclaw) is a personal AI assistant you run on your own devices. It's a multi-agent bot framework that works with Claude and other models. It runs agents across multiple channels (Slack, Telegram, Discord, WhatsApp, Signal, iMessage, and more) and handles session management, scheduled tasks, and tool execution.
+OpenClaw is a personal AI assistant framework I use for managing multiple agents across different channels. I wrote about my [multi-agent setup with OpenClaw](https://sohailmo.ai/multi-mode-ai-telegram-forums/) in a previous article.
 
-**Why I chose it:**
-- Already using it for my content workflow (journaling, writing, accountability)
-- OAuth through Claude Pro subscription (no API key billing)
+**Why I chose it for this:**
+- Already using it for my content workflow
 - Built-in cron job support
 - Agents can run shell commands (like `bird`)
+- OAuth through Claude Pro subscription (no API key billing)
 
 **How it works in this setup:**
 - Cron job triggers the agent in an isolated session
-- Agent runs shell commands (`bird home --json`)
+- Agent runs `bird home --json` to fetch tweets
 - Agent analyzes output with Claude
 - Agent delivers formatted digest to Slack
 

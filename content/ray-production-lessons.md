@@ -29,6 +29,59 @@ Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk th
 
 ---
 
+<style>
+#back-to-toc {
+  position: fixed;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 24px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  max-width: 33%;
+  text-align: center;
+}
+#back-to-toc.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+#back-to-toc:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateX(-50%) translateY(-1px);
+}
+@media (max-width: 768px) {
+  #back-to-toc {
+    font-size: 12px;
+    padding: 6px 16px;
+    max-width: 50%;
+  }
+}
+</style>
+
+<a href="#table-of-contents" id="back-to-toc">↑ Back to Contents</a>
+
+<script>
+window.addEventListener('scroll', function() {
+  var btn = document.getElementById('back-to-toc');
+  if (window.scrollY > 500) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+});
+</script>
+
+<div id="table-of-contents"></div>
+
 **Table of Contents:**
 
 1. [The Mental Model](#part-1-the-mental-model)

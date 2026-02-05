@@ -32,14 +32,14 @@ Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk th
 <style>
 #back-to-toc {
   position: fixed;
-  top: 8px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1001;
   background: rgba(40, 44, 52, 0.95);
   border: 1px solid rgba(152, 195, 121, 0.3);
   color: #98c379;
-  padding: 10px 20px;
+  padding: 10px 16px;
   border-radius: 24px;
   text-decoration: none;
   font-size: 13px;
@@ -64,7 +64,7 @@ Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk th
 @media (max-width: 768px) {
   #back-to-toc {
     font-size: 12px;
-    padding: 9px 18px;
+    padding: 9px 14px;
   }
 }
 </style>

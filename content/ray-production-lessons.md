@@ -27,7 +27,7 @@ There's almost nothing in between for the engineer who's actually trying to ship
 
 Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk through the real problems I faced and how Ray fit (or didn't fit) into solving them. The ugly parts are included because they're the parts that actually matter. Nobody's perfect
 
-![Everybody makes mistakes, everybody has those days](images/hannah-montana-mistakes.png)
+![Everybody makes mistakes, everybody has those days](/images/hannah-montana-mistakes.png)
 
 ---
 
@@ -109,7 +109,7 @@ The driver launched thousands of tasks across the training run. Each return Obje
 
 Downstream tasks that depended on them started throwing `ObjectLostError`, which cascaded through the entire training pipeline.
 
-![Crying behind a smile mask meme](images/crying-behind-mask.png)
+![Crying behind a smile mask meme](/images/crying-behind-mask.png)
 
 We **lost 18 hours of PPO training**. At five figures per month in spot instance costs, that loss HURT like hell. lmao imagine explaining this to your boss.
 
@@ -417,7 +417,7 @@ This sentence describes **6 weeks** of security reviews, architecture board appr
 
 A job description of enterprise REALLY should be ability to sit patiently through red tape.
 
-![This is fine meme](images/this-is-fine.png)
+![This is fine meme](/images/this-is-fine.png)
 
 In the meantime, we limited tensor parallelism to within a single node (4 GPUs max). This constrained our maximum model size but kept latency acceptable. The practical impact: our 70B model had to use 4-bit quantization to fit in 4×24GB A10G GPUs. 
 
@@ -1046,7 +1046,7 @@ The fix took about 30 seconds to implement and cut task submission time by 100x.
 
 (embarrassing in retrospect but extremely satisfying to discover)
 
-![Stonks meme](images/stonks.png)
+![Stonks meme](/images/stonks.png)
 
 ### #3: Global State in Tasks
 

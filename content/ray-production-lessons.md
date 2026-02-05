@@ -514,16 +514,49 @@ We ran vLLM, TensorRT-LLM, AND SGLang simultaneously behind a Ray Serve router.
 
 (yes this was probably insane in retrospect but it WORKED lol)
 
-<div style="overflow-x: auto;">
-
-| Dimension | vLLM | TensorRT-LLM | SGLang |
-|-----------|------|---------------|--------|
-| Latency (TTFT) | Medium (~15ms) | Best (~8ms) | Good (~12ms) |
-| Throughput | Good | Best (CUDA graphs) | Good |
-| Flexibility | Best (any model) | Poor (requires compilation) | Good |
-| Prefix caching | Basic | No | Best (RadixAttention) |
-| Model swap time | Seconds | Minutes | Seconds |
-
+<div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+<table style="min-width: 100%; border-collapse: collapse;">
+<thead>
+<tr>
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">Dimension</th>
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">vLLM</th>
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">TensorRT-LLM</th>
+<th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">SGLang</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Latency (TTFT)</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Medium (~15ms)</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Best (~8ms)</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Good (~12ms)</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Throughput</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Good</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Best (CUDA graphs)</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Good</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Flexibility</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Best (any model)</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Poor (requires compilation)</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Good</td>
+</tr>
+<tr>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Prefix caching</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Basic</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">No</td>
+<td style="padding: 8px; border-bottom: 1px solid #ddd;">Best (RadixAttention)</td>
+</tr>
+<tr>
+<td style="padding: 8px;">Model swap time</td>
+<td style="padding: 8px;">Seconds</td>
+<td style="padding: 8px;">Minutes</td>
+<td style="padding: 8px;">Seconds</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 The routing logic:

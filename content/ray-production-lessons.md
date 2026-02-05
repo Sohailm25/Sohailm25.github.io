@@ -51,7 +51,7 @@ Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk th
 
 ---
 
-## Part 1: The Mental Model
+## Part 1: The Mental Model {#part-1-the-mental-model}
 
 Before anything else, the single most important insight about Ray:
 
@@ -73,7 +73,7 @@ The engineers who succeed treat it like infrastructure. You don't "use" an opera
 
 ---
 
-## Part 2: The Execution Model (expect to find buried bodies here)
+## Part 2: The Execution Model (expect to find buried bodies here) {#part-2-the-execution-model-expect-to-find-buried-bodies-here}
 
 ### GCS: The _Actual_ Single Point of Failure
 
@@ -205,7 +205,7 @@ Sometimes i feel like the huberman of optimization, we love that.
 
 ---
 
-## Part 3: Jack Henry RLHF Cluster (Dozens of GPUs)
+## Part 3: Jack Henry RLHF Cluster (Dozens of GPUs) {#part-3-jack-henry-rlhf-cluster-dozens-of-gpus}
 
 ### The Problem
 
@@ -370,7 +370,7 @@ This ended up being probably the highest-leverage decision we made on the entire
 
 ---
 
-## Part 4: JPMorgan (Enterprise RAG and Network Challenges)
+## Part 4: JPMorgan (Enterprise RAG and Network Challenges) {#part-4-jpmorgan-enterprise-rag-and-network-challenges}
 
 ### The Problem
 
@@ -501,7 +501,7 @@ This is one of those cases where Ray's task model — just `@ray.remote` on the 
 
 ---
 
-## Part 5: Wendy's (Real-Time Inference at the Edge of Chaos)
+## Part 5: Wendy's (Real-Time Inference at the Edge of Chaos) {#part-5-wendys-real-time-inference-at-the-edge-of-chaos}
 
 ### The Constraint: Human Conversation Dynamics
 
@@ -758,7 +758,7 @@ A few specific issues we hit:
 
 ---
 
-## Part 6: Streaming Responses and Ray Data
+## Part 6: Streaming Responses and Ray Data {#part-6-streaming-responses-and-ray-data}
 
 ### Streaming at JPMorgan
 
@@ -860,7 +860,7 @@ The data loading actor would happily read 50GB of preference data into the objec
 
 ---
 
-## Part 7: The Evolution
+## Part 7: The Evolution {#part-7-the-evolution}
 
 Looking across all three environments, there's a clear evolution:
 
@@ -896,7 +896,7 @@ The specific APIs matter less over time. The systems thinking endures.
 
 ---
 
-## Part 8: Serialization (The Silent Performance Killer)
+## Part 8: Serialization (The Silent Performance Killer) {#part-8-serialization-the-silent-performance-killer}
 
 Serialization overhead is the single most common performance issue i've seen across all three environments, and it's the one the documentation is least helpful about.
 
@@ -951,7 +951,7 @@ This pattern — separate the large data from the metadata, put them through dif
 
 ---
 
-## Part 9: Resource Management Horrors
+## Part 9: Resource Management Horrors {#part-9-resource-management-horrors}
 
 ### Logical vs. Physical Resources
 
@@ -1005,7 +1005,7 @@ In practice, what i do:
 
 ---
 
-## Part 10: Debugging in Production
+## Part 10: Debugging in Production {#part-10-debugging-in-production}
 
 ### Log Deduplication Trap
 
@@ -1080,7 +1080,7 @@ The Ray dashboard is fine for development. It is not sufficient for production o
 
 ---
 
-## Part 11: The Antipattern Hall of Fame
+## Part 11: The Antipattern Hall of Fame {#part-11-the-antipattern-hall-of-fame}
 
 ### #1: Million Tiny Tasks
 
@@ -1189,7 +1189,7 @@ Always use explicit namespaces too. The default namespace is `""` (empty string)
 
 ---
 
-## Part 12: Performance Checklist
+## Part 12: Performance Checklist {#part-12-performance-checklist}
 
 This is the checklist I run through before every Ray deployment now, born from the accumulated scar tissue of three production environments. **I asked Claude to help me organize this for ease of you, the reader, in working with Ray**.
 
@@ -1232,7 +1232,7 @@ This is the checklist I run through before every Ray deployment now, born from t
 
 ---
 
-## Part 13: What i'd Tell Myself Three Years Ago
+## Part 13: What i'd Tell Myself Three Years Ago {#part-13-what-id-tell-myself-three-years-ago}
 
 If i could go back to November 2021, starting the Jack Henry platform:
 

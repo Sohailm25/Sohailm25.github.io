@@ -673,9 +673,19 @@ Health checks get their own pool, completely independent of inference. They alwa
 
 At Jack Henry (EKS) and Wendy's (GKE), we ran Ray on Kubernetes via KubeRay. Hard-won operational learnings:
 
-**The autoscaler conflict:** KubeRay's operator and Ray's built-in autoscaler are separate systems that can fight each other. KubeRay watches Kubernetes resource requests; Ray's autoscaler watches Ray's internal demand signal. If both are active, they scale independently and create oscillation. Pick one. At Jack Henry, we used KubeRay for node lifecycle and disabled Ray's autoscaler. At Wendy's, the opposite — Ray's autoscaler with KubeRay in a minimal "cluster provisioner" role.
+**The autoscaler conflict:**  
+KubeRay's operator and Ray's built-in autoscaler are separate systems that can fight each other. KubeRay watches Kubernetes resource requests; Ray's autoscaler watches Ray's internal demand signal. 
 
-**Ghost nodes:** When Kubernetes restarts a pod (OOM kill, health check failure, node drain), the pod gets a new IP. Ray doesn't automatically deregister the old node. You get "ghost nodes" — entries in the GCS that point to dead processes, consuming logical resources in the scheduler. We wrote a sidecar container that periodically reconciled Ray's node list with Kubernetes' pod list. Newer KubeRay versions handle this better, but in 2022-2023 it was a real problem.
+If both are active, they scale independently and create oscillation. Pick one. 
+
+At Jack Henry, we used KubeRay for node lifecycle and disabled Ray's autoscaler. At Wendy's, the opposite — Ray's autoscaler with KubeRay in a minimal "cluster provisioner" role.
+
+**Ghost nodes:**  
+When Kubernetes restarts a pod (OOM kill, health check failure, node drain), the pod gets a new IP. Ray doesn't automatically deregister the old node. 
+
+You get "ghost nodes" — entries in the GCS that point to dead processes, consuming logical resources in the scheduler. We wrote a sidecar container that periodically reconciled Ray's node list with Kubernetes' pod list. 
+
+Newer KubeRay versions handle this better, but in 2022-2023 it was a real problem.
 
 **Head node CPU = 0:** Always set `num-cpus: '0'` on the head node. The head node should NEVER run user tasks — its job is GCS, dashboard, autoscaler. If tasks land there and cause load, your entire cluster's scheduling degrades.
 

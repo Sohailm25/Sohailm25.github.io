@@ -32,37 +32,39 @@ Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk th
 <style>
 #back-to-toc {
   position: fixed;
-  top: 5px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 999;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 8px 24px;
-  border-radius: 20px;
+  z-index: 1001;
+  background: rgba(40, 44, 52, 0.95);
+  border: 1px solid rgba(152, 195, 121, 0.3);
+  color: #98c379;
+  padding: 10px 20px;
+  border-radius: 24px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
-  max-width: 33%;
-  text-align: center;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 #back-to-toc.visible {
   opacity: 1;
   pointer-events: auto;
 }
 #back-to-toc:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  background: rgba(50, 54, 62, 0.98);
+  border-color: #98c379;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   transform: translateX(-50%) translateY(-1px);
 }
 @media (max-width: 768px) {
   #back-to-toc {
     font-size: 12px;
-    padding: 6px 16px;
-    max-width: 50%;
+    padding: 9px 18px;
   }
 }
 </style>

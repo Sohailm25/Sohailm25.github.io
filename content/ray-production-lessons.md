@@ -27,6 +27,26 @@ There's almost nothing in between for the engineer who's actually trying to ship
 
 Instead of organizing by Ray component (Train, Serve, Data), I wanted to walk through the real problems I faced and how Ray fit (or didn't fit) into solving them. The ugly parts are included because they're the parts that actually matter. Nobody's perfect
 
+---
+
+**Table of Contents:**
+
+1. [The Mental Model](#part-1-the-mental-model)
+2. [The Execution Model](#part-2-the-execution-model-expect-to-find-buried-bodies-here)
+3. [Jack Henry RLHF Cluster](#part-3-jack-henry-rlhf-cluster-dozens-of-gpus)
+4. [JPMorgan Enterprise RAG](#part-4-jpmorgan-enterprise-rag-and-network-challenges)
+5. [Wendy's Real-Time Inference](#part-5-wendys-real-time-inference-at-the-edge-of-chaos)
+6. [Streaming & Ray Data](#part-6-streaming-responses-and-ray-data)
+7. [The Evolution](#part-7-the-evolution)
+8. [Serialization](#part-8-serialization-the-silent-performance-killer)
+9. [Resource Management](#part-9-resource-management-horrors)
+10. [Debugging in Production](#part-10-debugging-in-production)
+11. [Antipattern Hall of Fame](#part-11-the-antipattern-hall-of-fame)
+12. [Performance Checklist](#part-12-performance-checklist)
+13. [What I'd Tell Myself](#part-13-what-id-tell-myself-three-years-ago)
+
+---
+
 ![Everybody makes mistakes, everybody has those days](/images/hannah-montana-mistakes.png)
 
 ---

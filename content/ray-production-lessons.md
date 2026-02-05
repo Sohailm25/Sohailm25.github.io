@@ -514,6 +514,8 @@ We ran vLLM, TensorRT-LLM, AND SGLang simultaneously behind a Ray Serve router.
 
 (yes this was probably insane in retrospect but it WORKED lol)
 
+<div style="overflow-x: auto;">
+
 | Dimension | vLLM | TensorRT-LLM | SGLang |
 |-----------|------|---------------|--------|
 | Latency (TTFT) | Medium (~15ms) | Best (~8ms) | Good (~12ms) |
@@ -521,6 +523,8 @@ We ran vLLM, TensorRT-LLM, AND SGLang simultaneously behind a Ray Serve router.
 | Flexibility | Best (any model) | Poor (requires compilation) | Good |
 | Prefix caching | Basic | No | Best (RadixAttention) |
 | Model swap time | Seconds | Minutes | Seconds |
+
+</div>
 
 The routing logic:
 

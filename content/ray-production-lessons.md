@@ -1174,36 +1174,36 @@ Always use explicit namespaces too. The default namespace is `""` (empty string)
 This is the checklist I run through before every Ray deployment now, born from the accumulated scar tissue of three production environments. **I asked Claude to help me organize this for ease of you, the reader, in working with Ray**.
 
 **Pre-deployment:**
-- [ ] `/dev/shm` sized appropriately (Docker: `--shm-size`, K8s: `emptyDir`)
-- [ ] Object spilling configured to fast local storage (NVMe, not EBS)
-- [ ] `OMP_NUM_THREADS=1` and `MKL_NUM_THREADS=1` set (prevents CPU oversubscription)
-- [ ] Log dedup disabled
-- [ ] Prometheus metrics export configured
+- `/dev/shm` sized appropriately (Docker: `--shm-size`, K8s: `emptyDir`)
+- Object spilling configured to fast local storage (NVMe, not EBS)
+- `OMP_NUM_THREADS=1` and `MKL_NUM_THREADS=1` set (prevents CPU oversubscription)
+- Log dedup disabled
+- Prometheus metrics export configured
 
 **Scheduling:**
-- [ ] Small tasks (<100ms) batched into larger chunks
-- [ ] Large objects passed via `ray.put()`, not as arguments
-- [ ] Placement groups used for GPU topology requirements
-- [ ] Fractional CPUs for lightweight actors (never `num_cpus=0`)
+- Small tasks (<100ms) batched into larger chunks
+- Large objects passed via `ray.put()`, not as arguments
+- Placement groups used for GPU topology requirements
+- Fractional CPUs for lightweight actors (never `num_cpus=0`)
 
 **Memory:**
-- [ ] Object store usage monitored with alerts
-- [ ] Driver doesn't hold too many ObjectRefs (tree reduction for fan-out)
-- [ ] `object_store_memory` set per node
-- [ ] Regular `ray memory --stats-only` checks
+- Object store usage monitored with alerts
+- Driver doesn't hold too many ObjectRefs (tree reduction for fan-out)
+- `object_store_memory` set per node
+- Regular `ray memory --stats-only` checks
 
 **Training:**
-- [ ] Checkpoints go to shared storage (S3/NFS), NEVER local disk
-- [ ] All workers call `report()` (it's a barrier — miss one and everyone hangs)
-- [ ] `torch.backends.cudnn.benchmark = True` for fixed input sizes
-- [ ] NCCL env vars set (`NCCL_DEBUG=WARN` minimum, `NCCL_SOCKET_IFNAME` for network pinning)
-- [ ] NCCL timeout reduced from default 30min to 5-10min
+- Checkpoints go to shared storage (S3/NFS), NEVER local disk
+- All workers call `report()` (it's a barrier — miss one and everyone hangs)
+- `torch.backends.cudnn.benchmark = True` for fixed input sizes
+- NCCL env vars set (`NCCL_DEBUG=WARN` minimum, `NCCL_SOCKET_IFNAME` for network pinning)
+- NCCL timeout reduced from default 30min to 5-10min
 
 **Serving:**
-- [ ] `target_ongoing_requests` = 50-70% of `max_ongoing_requests`
-- [ ] `downscale_delay_s` set conservatively (5+ minutes for GPU workloads)
-- [ ] Health checks in separate concurrency groups
-- [ ] Async actors for I/O-bound serving
+- `target_ongoing_requests` = 50-70% of `max_ongoing_requests`
+- `downscale_delay_s` set conservatively (5+ minutes for GPU workloads)
+- Health checks in separate concurrency groups
+- Async actors for I/O-bound serving
 
 ---
 

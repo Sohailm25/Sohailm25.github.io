@@ -10,9 +10,9 @@ Summary: Real production failures from running Ray at scale: lost training runs,
 
 I've run Ray in production at three companies over the past three years:
 
-- **Jack Henry** (2021–2024): Built an ML platform on AWS for fintech serving community institutions. Dozens of GPUs running RLHF with PPO. Distributed training, hyperparameter optimization, all of the fun stuff
-- **JPMorgan Chase** (2024–2025): Enterprise agent platform serving thousands of analysts. Worked with vLLM on Ray Serve, distributed fine-tuning, vector search across massive document collections.
-- **Wendy's** (2024, contract): Conversational AI for drive-thru ordering. Hundreds of thousands of LLM calls daily, sub-1.5-second end-to-end latency, three simultaneous inference engines orchestrated through Ray.
+- **A fintech platform**: Built an ML platform on AWS serving community financial institutions. Dozens of GPUs running RLHF with PPO. Distributed training, hyperparameter optimization, all of the fun stuff
+- **A large financial institution**: Enterprise agent platform serving thousands of analysts. Worked with vLLM on Ray Serve, distributed fine-tuning, vector search across massive document collections.
+- **A QSR chain**: Conversational AI for drive-thru ordering. Hundreds of thousands of LLM calls daily, sub-1.5-second end-to-end latency, three simultaneous inference engines orchestrated through Ray.
 
 Each environment had completely different constraints — financial compliance vs. real-time voice latency vs. enterprise scale — but the patterns that emerged were surprisingly consistent. 
 
@@ -88,9 +88,9 @@ window.addEventListener('scroll', function() {
 
 1. [The Mental Model](#part-1-the-mental-model)
 2. [The Execution Model](#part-2-the-execution-model-expect-to-find-buried-bodies-here)
-3. [Jack Henry RLHF Cluster](#part-3-jack-henry-rlhf-cluster-dozens-of-gpus)
-4. [JPMorgan Enterprise RAG](#part-4-jpmorgan-enterprise-rag-and-network-challenges)
-5. [Wendy's Real-Time Inference](#part-5-wendys-real-time-inference-at-the-edge-of-chaos)
+3. [Fintech RLHF Cluster](#part-3-fintech-rlhf-cluster-dozens-of-gpus)
+4. [Enterprise RAG](#part-4-enterprise-rag-and-network-challenges)
+5. [Real-Time Inference](#part-5-real-time-inference-at-the-edge-of-chaos)
 6. [Streaming & Ray Data](#part-6-streaming-responses-and-ray-data)
 7. [The Evolution](#part-7-the-evolution)
 8. [Serialization](#part-8-serialization-the-silent-performance-killer)
@@ -143,7 +143,7 @@ The operational reality hasn't changed as much as you'd hope.
 
 GCS tracks _everything_: actor registry, placement groups, resource availability, job metadata. If GCS goes down, your cluster enters a degraded state. Existing running tasks continue, but no **new scheduling decisions can be made**.
 
-At JPMorgan, we were running Ray 2.7 when a head node had a memory spike from an unrelated monitoring process.
+At one financial institution, we were running Ray 2.7 when a head node had a memory spike from an unrelated monitoring process.
 
 GCS went unresponsive for ~45 seconds (treat every estimate with an assumed _-ish_ at the end to account for my ellis grey level memory). Every in-flight actor creation call failed with gRPC UNAVAILABLE errors that, at the application layer, _looked nothing like a GCS issue_. The error message pointed at the downstream service, not the scheduler. 
 
@@ -178,7 +178,7 @@ Ray uses _ownership-based distributed reference counting_. THIS is what that mea
 
 When you call `ray.put(x)`, the _calling process_ becomes the _owner_ of that ObjectRef. If the owner process dies, the object becomes _unreachable_ even if the data is still physically present in the object store on another node. OOF what a caveat. 
 
-At Jack Henry, during our early RLHF experiments, we had a _driver script_ that orchestrated all four models (policy, reference, reward, value) in the PPO loop. 
+At the fintech platform, during our early RLHF experiments, we had a _driver script_ that orchestrated all four models (policy, reference, reward, value) in the PPO loop. 
 
 The driver launched thousands of tasks across the training run. Each return ObjectRef was owned by the driver. When the driver process OOM'd — which happened because it was holding references to intermediate results from thousands of generation steps — _every single ObjectRef it owned became garbage-collectible_. 
 
@@ -221,7 +221,7 @@ Your Ray workers _will crash_ with **SIGBUS errors** when the object store fills
 
 I hit this exact failure **more than three mutherfreaking times** — basically once at each company.
 
-At Wendy's, it happened during our initial GKE deployment because the Kubernetes pod spec didn't include the `emptyDir` volume mount for `/dev/shm`. The error looked like a segfault in the inference engine. We spent a full afternoon on it WOOP WOOP LOVE THE JOB BABYYYYY
+At the QSR chain, it happened during our initial GKE deployment because the Kubernetes pod spec didn't include the `emptyDir` volume mount for `/dev/shm`. The error looked like a segfault in the inference engine. We spent a full afternoon on it WOOP WOOP LOVE THE JOB BABYYYYY
 
 ```yaml
 # In Kubernetes: ALWAYS DO THIS
@@ -252,7 +252,7 @@ On cloud instances with NVMe drives, spilling is pretty fast.
 
 On EBS or network storage, it's catastrophic for latency.
 
-At JPMorgan we were on EBS volumes initially and spilling added 200-500ms per object restoration. 
+At one enterprise environment we were on EBS volumes initially and spilling added 200-500ms per object restoration. 
 
 Switching to local NVMe brought that down to 5-10ms.
 
@@ -260,15 +260,15 @@ Sometimes i feel like the huberman of optimization, we love that.
 
 ---
 
-## Part 3: Jack Henry RLHF Cluster (Dozens of GPUs) {#part-3-jack-henry-rlhf-cluster-dozens-of-gpus}
+## Part 3: Fintech RLHF Cluster (Dozens of GPUs) {#part-3-fintech-rlhf-cluster-dozens-of-gpus}
 
 ### The Problem
 
-Jack Henry serves community financial institutions. These banks were losing customers to neobanks (Chime, SoFi) that offered "smart" features.
+The fintech platform served community financial institutions. These banks were losing customers to neobanks that offered "smart" features.
 
 We needed to give them ML-powered capabilities like fraud detection, credit risk, transaction categorization, all without each bank building its own ML team.
 
-By 2022, the mandate expanded from traditional ML to LLMs and post-training. We were building an RLHF pipeline with PPO before most people had even heard of RLHF.
+The mandate expanded from traditional ML to LLMs and post-training. We were building an RLHF pipeline with PPO before most people had even heard of RLHF.
 
 The target: train domain-specific models (3B-7B parameters) that understood financial services.
 
@@ -382,7 +382,7 @@ I can't emphasize the checkpoint-to-shared-storage point enough. This is the #1 
 
 ### The Optuna Integration That Haunted Us
 
-Ray Tune's Optuna integration (`OptunaSearch`) had subtle bugs in 2022-2023 around trial pruning. When Optuna's `MedianPruner` decided to prune a trial, the corresponding Ray Tune trial didn't clean up its GPU resources immediately. The actor would linger for 30-60 seconds before garbage collection caught it.
+Ray Tune's Optuna integration (`OptunaSearch`) had subtle bugs around trial pruning. When Optuna's `MedianPruner` decided to prune a trial, the corresponding Ray Tune trial didn't clean up its GPU resources immediately. The actor would linger for 30-60 seconds before garbage collection caught it.
 
 During HPO sweeps with 20 concurrent trials, this meant 2-3 GPUs were perpetually "leaked" to zombie trials. On a cluster costing five figures monthly, that was thousands of dollars per month in wasted compute.
 
@@ -403,7 +403,7 @@ def train_fn(config):
 
 ### The DPO Pivot
 
-Midway through 2023, DPO (Direct Preference Optimization) emerged as a simpler alternative to PPO. 
+DPO (Direct Preference Optimization) emerged as a simpler alternative to PPO. 
 
 The team debated switching for months.
 
@@ -425,17 +425,17 @@ This ended up being probably the highest-leverage decision we made on the entire
 
 ---
 
-## Part 4: JPMorgan (Enterprise RAG and Network Challenges) {#part-4-jpmorgan-enterprise-rag-and-network-challenges}
+## Part 4: Enterprise RAG and Network Challenges {#part-4-enterprise-rag-and-network-challenges}
 
 ### The Problem
 
-Thousands of analysts spending hours on repetitive research: finding documents, summarizing reports, pulling data from internal systems. 
+At a large enterprise, thousands of analysts were spending hours on repetitive research: finding documents, summarizing reports, pulling data from internal systems. 
 
 The agent platform needed sub-100ms retrieval across massive document collections and an agent layer that could orchestrate multi-step workflows.
 
 ### Where Ray Fit
 
-Ray wore two hats at JPMorgan:
+Ray wore two hats:
 
 1. **Ray Train** for distributed fine-tuning of our internal models
 2. **Ray Serve** wrapping vLLM for multi-model inference
@@ -474,7 +474,7 @@ Set the target to 50-70% of max. This gives the autoscaler headroom to react bef
 
 ### The Network That Ate Our Latency
 
-JPMorgan's network security policies required all traffic between subnets to go through network firewalls with deep packet inspection. 
+Enterprise network security policies required all traffic between subnets to go through network firewalls with deep packet inspection. 
 
 Ray's inter-node communication (gRPC for control plane, custom protocol for object transfers) was being inspected by DPI appliances.
 
@@ -556,7 +556,7 @@ This is one of those cases where Ray's task model — just `@ray.remote` on the 
 
 ---
 
-## Part 5: Wendy's (Real-Time Inference at the Edge of Chaos) {#part-5-wendys-real-time-inference-at-the-edge-of-chaos}
+## Part 5: Real-Time Inference at the Edge of Chaos {#part-5-real-time-inference-at-the-edge-of-chaos}
 
 ### The Constraint: Human Conversation Dynamics
 
@@ -581,7 +581,7 @@ And we had hundreds of thousands of calls daily across hundreds of restaurants.
 
 ### Three Engines, One Router
 
-This is the architectural decision i'm most proud of from Wendy's, and also the one that caused the most operational headaches.
+This is the architectural decision i'm most proud of, and also the one that caused the most operational headaches.
 
 Most companies pick one inference engine. 
 
@@ -709,7 +709,7 @@ For a 70B+ model across multiple GPUs, you have two parallelism options:
 - **Tensor parallelism**: Split individual layers across GPUs. Requires NVLink/NVSwitch for fast communication. Works beautifully within a single node (4-8 GPUs on NVLink, microsecond latency between them).
 - **Pipeline parallelism**: Split sequential layers across nodes. Tolerates higher latency but has "bubble" inefficiency (GPUs idle while waiting for earlier stages to complete).
 
-The right answer for Wendy's ended up being obvious: tensor parallelism within a node, pipeline parallelism across nodes. 
+The right answer ended up being obvious: tensor parallelism within a node, pipeline parallelism across nodes. 
 
 But Ray's placement groups don't natively understand GPU topology. They see all GPUs as equivalent. 
 
@@ -742,13 +742,13 @@ Custom resources solved it, but debugging that was a fun afternoon.
 
 ### Async Actors and Health Check Cascades
 
-One pattern from Wendy's that i haven't seen written up anywhere: concurrency groups for health checks.
+One pattern that i haven't seen written up anywhere: concurrency groups for health checks.
 
 When you deploy an inference engine behind Ray Serve, your load balancer needs health checks. By default, all method calls share the same concurrency pool. 
 
 Health checks compete with inference for concurrency slots.
 
-During peak traffic at Wendy's, all slots were occupied by inference requests. 
+During peak traffic, all slots were occupied by inference requests. 
 
 Health checks couldn't get through. 
 
@@ -783,21 +783,21 @@ Health checks get their own pool, completely independent of inference. They alwa
 
 ### KubeRay Operational Reality
 
-At Jack Henry (EKS) and Wendy's (GKE), we ran Ray on Kubernetes via KubeRay. Hard-won operational learnings:
+At multiple environments, we ran Ray on Kubernetes via KubeRay. Hard-won operational learnings:
 
 **The autoscaler conflict:**  
 KubeRay's operator and Ray's built-in autoscaler are separate systems that can fight each other. KubeRay watches Kubernetes resource requests; Ray's autoscaler watches Ray's internal demand signal. 
 
 If both are active, they scale independently and create oscillation. Pick one. 
 
-At Jack Henry, we used KubeRay for node lifecycle and disabled Ray's autoscaler. At Wendy's, the opposite — Ray's autoscaler with KubeRay in a minimal "cluster provisioner" role.
+At one company, we used KubeRay for node lifecycle and disabled Ray's autoscaler. At another, the opposite — Ray's autoscaler with KubeRay in a minimal "cluster provisioner" role.
 
 **Ghost nodes:**  
 When Kubernetes restarts a pod (OOM kill, health check failure, node drain), the pod gets a new IP. Ray doesn't automatically deregister the old node. 
 
 You get "ghost nodes" — entries in the GCS that point to dead processes, consuming logical resources in the scheduler. We wrote a sidecar container that periodically reconciled Ray's node list with Kubernetes' pod list. 
 
-Newer KubeRay versions handle this better, but in 2022-2023 it was a real problem.
+Newer KubeRay versions handle this better, but it was a real problem.
 
 **Head node CPU = 0:** Always set `num-cpus: '0'` on the head node. The head node should NEVER run user tasks — its job is GCS, dashboard, autoscaler. If tasks land there and cause load, your entire cluster's scheduling degrades.
 
@@ -809,19 +809,19 @@ A few specific issues we hit:
 
 - GKE node pools with GPU limits are less flexible than EKS managed node groups
 - Vertex AI has its own serving infrastructure that competes with Ray Serve — there were _political conversations_ about "which serving layer" we should standardize on (enterprise fun times)
-- GCS (Google Cloud Storage) has different retry and consistency semantics than S3. Our checkpoint code, written and tested against S3 at Jack Henry, had subtle bugs on GCS that only manifested under high write concurrency
+- GCS (Google Cloud Storage) has different retry and consistency semantics than S3. Our checkpoint code, written and tested against S3, had subtle bugs on GCS that only manifested under high write concurrency
 
 ---
 
 ## Part 6: Streaming Responses and Ray Data {#part-6-streaming-responses-and-ray-data}
 
-### Streaming at JPMorgan
+### Streaming in Enterprise
 
 Token-by-token streaming is essential for LLM serving. 
 
 No user wants to wait 3 seconds for a complete response when they could see tokens appearing after 200ms. 
 
-At JPMorgan, we implemented this through Ray Serve with SSE (Server-Sent Events):
+At the enterprise environment, we implemented this through Ray Serve with SSE (Server-Sent Events):
 
 ```python
 @serve.deployment(max_ongoing_requests=50)
@@ -838,7 +838,7 @@ Except there's a subtle back-pressure problem: if the client is slow to consume 
 
 With 50 concurrent streaming requests, each buffering tokens because the client's network is flaky, you can OOM the actor.
 
-We learned this at JPMorgan during a load test when a batch of automated API consumers were making requests but reading responses slowly (they were doing processing between token reads). 
+We learned this during a load test when a batch of automated API consumers were making requests but reading responses slowly (they were doing processing between token reads). 
 
 Memory grew linearly until the actor died. OOF.
 
@@ -872,7 +872,7 @@ This caps memory usage per request regardless of client behavior.
 
 ### Ray Data: Training Pipeline
 
-At Jack Henry, we used Ray Data for feeding data into our distributed training jobs. 
+At the fintech platform, we used Ray Data for feeding data into our distributed training jobs. 
 
 The key insight: `map_batches` is NOT `map` applied to batches. It has fundamentally different semantics.
 
@@ -907,7 +907,7 @@ ctx.execution_options.resource_limits = ray.data.ExecutionResources(
 )
 ```
 
-Without this, we had multiple OOM incidents during our RLHF data preprocessing at Jack Henry. 
+Without this, we had multiple OOM incidents during our RLHF data preprocessing. 
 
 The data loading actor would happily read 50GB of preference data into the object store while the GPU workers were still processing the first 2GB.
 
@@ -920,28 +920,28 @@ The data loading actor would happily read 50GB of preference data into the objec
 Looking across all three environments, there's a clear evolution:
 
 ```
-2021-2022 (Jack Henry):
+Early days (fintech platform):
 ├── Ray for distributed training (the hard problem)
 ├── Everything custom, tight coupling between Ray and compute
 ├── Small team (~5 engineers), everything is hand-rolled
 └── Pain: V100 memory, spot instances, Optuna bugs
 
-2024 (JPMorgan + Wendy's simultaneously):
+Mid-period (enterprise + QSR, simultaneously):
 ├── Ray for both training AND serving
 ├── More mature ecosystem (KubeRay, Ray Serve autoscaling)
 ├── Larger teams, more specialization
 ├── Pain: enterprise networking, LangChain abstractions, multi-engine routing
 
-2026 (Amazon, current):
-├── Ray abstracted away by managed services (Bedrock)
+Current role:
+├── Ray abstracted away by managed services
 ├── Complexity shifts to application layer (agent orchestration)
 ├── No GPUs to manage — it's someone else's problem now
 └── Pain: different kind — workflow state, tool integration, not GPU orchestration
 ```
 
-My deep Ray knowledge is more valuable at Amazon than it was at the companies where i was actually using Ray. 
+My deep Ray knowledge is more valuable now than it was at the companies where i was actually using Ray. 
 
-Because i understand what Bedrock abstracts away, i can make better decisions about when to use it, when to push back on its limitations, and when a problem actually needs custom infrastructure vs. a managed service.
+Because i understand what managed services abstract away, i can make better decisions about when to use them, when to push back on their limitations, and when a problem actually needs custom infrastructure vs. a managed service.
 
 Understanding Ray deeply means understanding three domains: ML theory, systems engineering, and product requirements. 
 
@@ -977,7 +977,7 @@ ref = ray.put(model)
 # You've now used 3x the memory of the array
 ```
 
-At Jack Henry, we had custom model wrappers that looked harmless — small Python classes holding configuration alongside model weights. 
+At the fintech platform, we had custom model wrappers that looked harmless — small Python classes holding configuration alongside model weights. 
 
 Putting them through `ray.put()` meant the weights took the Cloudpickle path instead of the Arrow path. 
 
@@ -1002,7 +1002,7 @@ model = LargeModel(weights_ref, config)
 model_ref = ray.put(model)           # Only serializes ref + config (tiny)
 ```
 
-This pattern — separate the large data from the metadata, put them through different serialization paths — came up in every environment. At Wendy's, it was model weights for the inference engines. At JPMorgan, it was large embedding batches flowing through the processing pipeline. The same pattern, the same fix, every time.
+This pattern — separate the large data from the metadata, put them through different serialization paths — came up in every environment. At the QSR chain, it was model weights for the inference engines. At the enterprise, it was large embedding batches flowing through the processing pipeline. The same pattern, the same fix, every time.
 
 ---
 
@@ -1012,11 +1012,11 @@ This pattern — separate the large data from the metadata, put them through dif
 
 Ray resources are **logical** — they don't map to physical resources unless you make them. `num_cpus=1` doesn't pin a process to a core; it decrements a counter. `num_gpus=1` sets `CUDA_VISIBLE_DEVICES` but doesn't enforce memory isolation.
 
-At Wendy's, we had two actors on the same node, each declared with `num_gpus=1`. CUDA_VISIBLE_DEVICES was set correctly — each saw one GPU. But there's no memory isolation. When one actor's model had a memory-hungry batch, it OOM'd the other actor's GPU. The error appeared in the wrong process's logs.
+At the QSR chain, we had two actors on the same node, each declared with `num_gpus=1`. CUDA_VISIBLE_DEVICES was set correctly — each saw one GPU. But there's no memory isolation. When one actor's model had a memory-hungry batch, it OOM'd the other actor's GPU. The error appeared in the wrong process's logs.
 
 ### The num_cpus=0 Disaster
 
-At JPMorgan, we had coordinator actors — lightweight processes that didn't do compute, just tracked state and dispatched work. 
+At the enterprise environment, we had coordinator actors — lightweight processes that didn't do compute, just tracked state and dispatched work. 
 
 We set `num_cpus=0` because they shouldn't consume scheduling resources.
 
@@ -1099,7 +1099,7 @@ def inner():
 # CLASSIC DEADLOCK
 ```
 
-This happened at Jack Henry during our PPO pipeline. 
+This happened at the fintech platform during our PPO pipeline. 
 
 The policy model actor called `ray.get()` on a reward model result inside a training step. Under load, all worker slots were occupied by policy training, leaving no room for the reward computation. 
 
@@ -1162,7 +1162,7 @@ big_data_ref = ray.put(big_data)
 refs = [process.remote(big_data_ref) for _ in range(100)]
 ```
 
-i hit this one at JPMorgan with our embedding batches. 
+i hit this one at the enterprise environment with our embedding batches. 
 
 The fix took about 30 seconds to implement and cut task submission time by 100x.
 
@@ -1203,13 +1203,13 @@ worker = InferenceActor.options(
 
 ### #6: Detached Actor Leaks
 
-At JPMorgan, we used detached actors (`lifetime="detached"`) for singleton services — a global rate limiter, a model registry cache, a metrics aggregator. 
+At the enterprise environment, we used detached actors (`lifetime="detached"`) for singleton services — a global rate limiter, a model registry cache, a metrics aggregator. 
 
 Detached actors survive driver exit, which is the whole point. 
 
 But if your job crashes before cleanup, those actors become orphans consuming resources indefinitely.
 
-We found **47 orphaned detached actors** during a cluster audit at JPMorgan. 
+We found **47 orphaned detached actors** during a cluster audit. 
 
 Each was a Python process holding memory and (in some cases) GPU handles. Combined, they were consuming 12GB of RAM and 2 GPU slots on a node that thought it was "fully utilized" but wasn't doing any useful work.
 
@@ -1289,7 +1289,7 @@ This is the checklist I run through before every Ray deployment now, born from t
 
 ## Part 13: What i'd Tell Myself Three Years Ago {#part-13-what-id-tell-myself-three-years-ago}
 
-If i could go back to November 2021, starting the Jack Henry platform:
+If i could go back to the beginning, starting the fintech platform:
 
 **1. Ray is infrastructure, not a library.** Treat it with the same respect you'd give Kubernetes or PostgreSQL. It has operational characteristics, failure modes, and performance cliffs that you NEED to understand before you go to production.
 
@@ -1299,7 +1299,7 @@ If i could go back to November 2021, starting the Jack Henry platform:
 
 **4. Budget time for the environment.** Network configuration, shared memory sizing, Docker/K8s setup — this is 30-50% of the actual work in a regulated enterprise. The Ray code itself is maybe 20%. (enterprise environments are a special kind of learning experience)
 
-**5. The simpler solution might be better.** At Amazon (my current role), Ray is nowhere in the stack. Bedrock handles model serving. The complexity lives in the application layer now — agent orchestration, workflow state management, tool integration. The fact that i deeply understand Ray helps me recognize when i don't need it. That's maybe the most valuable thing it taught me.
+**5. The simpler solution might be better.** In my current role, Ray is nowhere in the stack. Managed services handle model serving. The complexity lives in the application layer now — agent orchestration, workflow state management, tool integration. The fact that i deeply understand Ray helps me recognize when i don't need it. That's maybe the most valuable thing it taught me.
 
 ---
 
@@ -1308,11 +1308,11 @@ If i could go back to November 2021, starting the Jack Henry platform:
 Here's the scale of what these Ray-powered systems touched:
 
 ```
-             Jack Henry     JPMorgan       Wendy's        Amazon
-GPU spend    5 figs/mo      5 figs/mo      5 figs/mo      ~$0 (Bedrock)
-Ray usage    Heavy (core)   Heavy (core)   Heavy (core)   None
-Scale        Internal       Thousands      Hundreds       > Million users
-Model size   3-7B           13-70B         13-70B         Managed
+             Fintech       Enterprise      QSR           Current
+GPU spend    5 figs/mo     5 figs/mo       5 figs/mo     ~$0 (managed)
+Ray usage    Heavy (core)  Heavy (core)    Heavy (core)  None
+Scale        Internal      Thousands       Hundreds      > Million users
+Model size   3-7B          13-70B          13-70B        Managed
 ```
 
 Ray is the most powerful distributed computing framework i've worked with for ML workloads. 

@@ -641,6 +641,7 @@ nav a:hover {
 
   .section-header {
     padding: var(--spacing-sm);
+    margin-top: var(--spacing-md);
   }
 
   .blog-list {

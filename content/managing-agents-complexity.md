@@ -4,14 +4,6 @@ Category: Technical
 Slug: managing-agents-complexity
 Summary: Three weeks into a new role, agent orchestration finally clicked. Not just using AI tools—actually managing complexity with them.
 
-**Disclaimer:** This post reflects personal experiences and workflow patterns from building agent-based systems for managing technical complexity. No proprietary information from any specific organization is disclosed.
-
----
-
-*Early days at a new company. February 6, 2026.*
-
----
-
 Today was the first day i actually felt like i was *managing* agents, not just using them.
 
 There's still this friction. It feels wrong to output AI slop. You feel the need to rewrite things, to inject your voice. The structure, the tone, the way you'd phrase it for your generation. The details beyond necessity. Knowing the other person's threshold for information and matching their communication style.

@@ -1,7 +1,6 @@
 Title: Lessons from Scaling Enterprise RAG: Data Residency, Multi-Tenancy, and Production Reliability
 Date: 2026-01-31 12:00
 Category: Case Studies
-Featured: true
 Slug: rag-infrastructure-pgvector
 Summary: Patterns and tradeoffs from building RAG infrastructure in regulated environments.
 

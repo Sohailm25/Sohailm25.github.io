@@ -956,3 +956,89 @@ hr {
     width: 100%;
   }
 }
+
+/* Article Inline Newsletter Signup (compact version) */
+.article-newsletter {
+  background: rgba(131, 192, 146, 0.08);
+  border: 1px solid rgba(131, 192, 146, 0.2);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: var(--spacing-md) 0 var(--spacing-lg) 0;
+}
+
+.article-newsletter-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.newsletter-emoji {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.newsletter-text {
+  color: #b4d4b5;
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.article-newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 280px;
+}
+
+.article-newsletter-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #333;
+  background: #222;
+  color: #e5e5e5;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.article-newsletter-input:focus {
+  outline: none;
+  border-color: #83C092;
+}
+
+.article-newsletter-button {
+  padding: 0.5rem 1rem;
+  background: #83C092;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.article-newsletter-button:hover {
+  background: #9EC99F;
+}
+
+/* Mobile: stack on small screens */
+@media (max-width: 640px) {
+  .article-newsletter-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .article-newsletter-form {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .newsletter-text {
+    white-space: normal;
+  }
+}

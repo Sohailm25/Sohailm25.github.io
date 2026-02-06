@@ -1,6 +1,6 @@
 Title: Managing Agents: The First Time It Actually Worked
 Date: 2026-02-06 15:45
-Category: Technical
+Category: Thoughts
 Slug: managing-agents-complexity
 Summary: Three weeks into a new role, agent orchestration finally clicked. Not just using AI tools—actually managing complexity with them.
 

@@ -9,17 +9,78 @@
   <span class="section-link">{{ dates|length }} post{{ 's' if dates|length != 1 }}</span>
 </div>
 
+<!-- Category filter tabs -->
+<div class="category-tabs" style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); flex-wrap: wrap;">
+  <button class="category-tab active" data-category="all" onclick="filterCategory('all')">All</button>
+  <button class="category-tab" data-category="Case Studies" onclick="filterCategory('Case Studies')">Case Studies</button>
+  <button class="category-tab" data-category="Notes & Projects" onclick="filterCategory('Notes & Projects')">Notes & Projects</button>
+  <button class="category-tab" data-category="Thoughts" onclick="filterCategory('Thoughts')">Thoughts</button>
+</div>
+
 <div class="blog-list">
   {% for article in dates %}
-  <div class="blog-card">
+  <div class="blog-card" data-category="{{ article.category }}">
     <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
       <div class="card-content">
         <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
         <div class="card-title">{{ article.title }}</div>
         <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
+        <div class="card-meta" style="margin-top: var(--spacing-xs); opacity: 0.6; font-size: 0.9em;">{{ article.category }}</div>
       </div>
     </a>
   </div>
   {% endfor %}
 </div>
+
+<style>
+.category-tab {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+}
+
+.category-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-color);
+}
+
+.category-tab.active {
+  background: var(--accent-color);
+  color: var(--bg-primary);
+  border-color: var(--accent-color);
+}
+
+.blog-card {
+  transition: opacity 0.3s ease;
+}
+
+.blog-card.hidden {
+  display: none;
+}
+</style>
+
+<script>
+function filterCategory(category) {
+  // Update active tab
+  document.querySelectorAll('.category-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelector(`[data-category="${category}"]`).classList.add('active');
+  
+  // Filter cards
+  document.querySelectorAll('.blog-card').forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+</script>
 {% endblock %}

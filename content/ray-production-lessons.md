@@ -1,6 +1,7 @@
 Title: Ray in Production: What Dozens of GPUs and a Lot of 3am Pages Taught Me
 Date: 2026-02-05 10:57
-Category: Technical
+Category: Case Studies
+Featured: true
 Slug: ray-production-lessons
 Summary: Real production failures from running Ray at scale: lost training runs, enterprise network disasters, and cascade outages the documentation never warns you about.
 

@@ -1,6 +1,7 @@
 Title: Optimizing vLLM at Production Scale: Lessons from Conversational AI Infrastructure
 Date: 2026-02-03 14:00
-Category: Technical
+Category: Case Studies
+Featured: true
 Slug: vllm-production-scale-lessons
 Summary: Memory fragmentation, throughput cliffs, and quantization accuracy issues that only show up in production—lessons from running vLLM at scale for conversational AI.
 

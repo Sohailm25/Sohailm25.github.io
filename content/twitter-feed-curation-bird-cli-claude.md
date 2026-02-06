@@ -1,6 +1,6 @@
 Title: Automated X/Twitter Feed Curation with Bird CLI + Claude
 Date: 2026-02-04 09:11
-Category: Technical
+Category: Notes & Projects
 Slug: twitter-feed-curation-bird-cli-claude
 Summary: I built an automated Twitter feed scraper that triages 100 tweets daily, analyzes community sentiment with Claude, and delivers a 5-minute digest to Slack.
 

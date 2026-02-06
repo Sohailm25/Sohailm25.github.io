@@ -1,6 +1,6 @@
 Title: Multi-Mode AI Assistants with Telegram Forums
 Date: 2026-02-02 16:57
-Category: Technical
+Category: Notes & Projects
 Slug: multi-mode-ai-telegram-forums
 Summary: How I eliminated context bleeding in my AI assistant using openclaw's multi-agent features and Telegram forum topics.
 

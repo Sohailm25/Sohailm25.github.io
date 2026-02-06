@@ -1,6 +1,6 @@
 Title: Slack vs Telegram: Catching Myself in a Pattern
 Date: 2026-02-04 07:57
-Category: Technical
+Category: Thoughts
 Slug: slack-telegram-pattern
 Summary: I chose Telegram over Slack for my AI assistant setup, then realized I was making decisions based on old baggage instead of current evidence.
 

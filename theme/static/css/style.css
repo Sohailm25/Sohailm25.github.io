@@ -1245,3 +1245,27 @@ code {
     line-height: 1.75 !important;
   }
 }
+
+/* Fix: Article headings should match title font */
+.page-content h2,
+.page-content h3,
+.page-content h4,
+.page-content h5,
+.page-content h6 {
+  font-family: var(--font-geist-pixel-square) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Reduce card title size on homepage (was too big/cramped) */
+.card-title {
+  font-size: 1.1rem !important; /* Reduced from default ~1.5rem */
+  line-height: 1.4 !important;
+}
+
+/* Mobile card titles even smaller */
+@media (max-width: 600px) {
+  .card-title {
+    font-size: 1rem !important;
+  }
+}

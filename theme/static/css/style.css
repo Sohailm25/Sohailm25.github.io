@@ -1160,3 +1160,38 @@ nav a {
     font-size: 0.7rem !important;
   }
 }
+
+/* EXPERIMENTAL: Pixel fonts for titles and body text */
+/* WARNING: Likely to be reverted. Testing only. */
+
+/* Article titles */
+.page-title,
+.card-title {
+  font-family: var(--font-geist-pixel-square) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Article body text */
+.page-content p,
+.page-content li,
+.card-excerpt {
+  font-family: var(--font-geist-pixel-square) !important;
+  font-size: 0.85rem !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .page-title,
+  .card-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .page-content p,
+  .page-content li,
+  .card-excerpt {
+    font-size: 0.8rem !important;
+  }
+}

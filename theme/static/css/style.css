@@ -1043,3 +1043,40 @@ hr {
     white-space: normal;
   }
 }
+
+/* Geist Pixel Font */
+@font-face {
+  font-family: 'Geist Pixel Square';
+  src: url('/theme/fonts/GeistPixelSquare.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-geist-pixel-square: 'Geist Pixel Square', 'Courier New', monospace;
+}
+
+/* Article Category Tags */
+.article-category {
+  font-family: var(--font-geist-pixel-square);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #83C092;
+  opacity: 0.8;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  transition: opacity 0.2s ease;
+}
+
+.article-category:hover {
+  opacity: 1;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .article-category {
+    font-size: 0.65rem;
+  }
+}

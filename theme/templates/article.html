@@ -8,6 +8,9 @@
   <a href="{{ SITEURL }}/">&larr; Back</a>
 </div>
 <div class="page-header">
+  {% if article.category %}
+  <div class="article-category">{{ article.category }}</div>
+  {% endif %}
   <h1 class="page-title">{{ article.title }}</h1>
   <div class="page-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
 </div>

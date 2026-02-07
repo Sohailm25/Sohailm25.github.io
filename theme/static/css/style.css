@@ -1145,3 +1145,18 @@ hr {
     font-size: 0.65rem !important;
   }
 }
+
+/* Tier 2: Navigation Links */
+nav a {
+  font-family: var(--font-geist-pixel-square) !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+}
+
+/* Mobile nav adjustment */
+@media (max-width: 600px) {
+  nav a {
+    font-size: 0.7rem !important;
+  }
+}

@@ -1103,3 +1103,45 @@ hr {
   letter-spacing: 0.1em !important;
   font-size: 0.7rem !important;
 }
+
+/* Tier 1: Geist Pixel for UI Chrome */
+
+/* Section headers ("> featured", "> latest post") */
+.section-title {
+  font-family: var(--font-geist-pixel-square) !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.2em !important;
+}
+
+/* Post dates (on cards and article pages) */
+.card-date,
+.page-date {
+  font-family: var(--font-geist-pixel-square) !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* Contact button */
+.corner-btn {
+  font-family: var(--font-geist-pixel-square) !important;
+  font-size: 0.7rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .section-title {
+    font-size: 0.7rem !important;
+  }
+  
+  .card-date,
+  .page-date {
+    font-size: 0.6rem !important;
+  }
+  
+  .corner-btn {
+    font-size: 0.65rem !important;
+  }
+}

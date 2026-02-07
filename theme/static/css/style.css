@@ -1080,3 +1080,26 @@ hr {
     font-size: 0.65rem;
   }
 }
+
+/* Category tags on post listings */
+.card-meta {
+  font-family: var(--font-geist-pixel-square) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  font-size: 0.65rem !important;
+  color: #83C092 !important;
+  opacity: 0.7 !important;
+  margin-top: var(--spacing-xs) !important;
+}
+
+.blog-card:hover .card-meta {
+  opacity: 0.9 !important;
+}
+
+/* Category filter tabs on archives page */
+.category-tab {
+  font-family: var(--font-geist-pixel-square) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-size: 0.7rem !important;
+}

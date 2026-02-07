@@ -1204,3 +1204,44 @@ nav a {
     font-size: 0.75rem !important;
   }
 }
+
+/* Geist Mono Font for Body Text */
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/theme/fonts/GeistMono.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-geist-mono: 'Geist Mono', 'Courier New', monospace;
+}
+
+/* Apply Geist Mono to article body text */
+.page-content p,
+.page-content li,
+.page-content ul,
+.page-content ol,
+.card-excerpt {
+  font-family: var(--font-geist-mono) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Code blocks also use Geist Mono */
+pre code,
+code {
+  font-family: var(--font-geist-mono) !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .page-content p,
+  .page-content li,
+  .card-excerpt {
+    font-size: 0.9rem !important;
+    line-height: 1.75 !important;
+  }
+}

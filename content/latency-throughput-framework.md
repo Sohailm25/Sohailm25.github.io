@@ -111,12 +111,12 @@ If you apply throughput-oriented batching to the retrieval path, analysts wait l
 
 | Advice | Throughput-Bound | Latency-Bound |
 |--------|------------------|---------------|
-| "Use batching" | ✅ Maximize batch size | ⚠️ Tune carefully, hurts tail latency |
-| "Maximize GPU utilization" | ✅ North star metric | ⚠️ Leave headroom for burst |
-| "Connection pooling" | ✅ Reduce overhead | ✅ But size for p99, not average |
-| "Cache aggressively" | ✅ Long TTLs acceptable | ⚠️ Freshness often matters more |
-| "Retry on failure" | ✅ Eventually consistent | ⚠️ Timeout budget shrinks with each retry |
-| "Checkpoint frequently" | ⚠️ Overhead adds up | ✅ Losing progress is visible |
+| "Use batching" | Maximize batch size | Tune carefully, hurts tail latency |
+| "Maximize GPU utilization" | North star metric | Leave headroom for burst |
+| "Connection pooling" | Reduce overhead | Size for p99, not average |
+| "Cache aggressively" | Long TTLs acceptable | Freshness often matters more |
+| "Retry on failure" | Eventually consistent | Timeout budget shrinks with each retry |
+| "Checkpoint frequently" | Overhead adds up | Losing progress is visible |
 
 The advice isn't wrong. It's incomplete without specifying which bound it assumes.
 

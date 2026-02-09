@@ -4,7 +4,9 @@ Category: Notes & Projects
 Slug: org-theory-agents
 Summary: Org theory applies to agent swarms. I've lived three different org structures—here's how they map to multi-agent patterns.
 
-Ethan Mollick recently posted about applying org theory to agent swarms. Spans of control, boundary objects, and coupling are the highlights.
+![Ethan Mollick tweet on org theory for agentic AI](/images/mollick-org-theory-tweet.png)
+
+[Ethan Mollick's post](https://x.com/emollick/status/2020303173362012667) about applying org theory to agent swarms got me thinking. i enjoyed reading it, and it sparked this writeup. Spans of control, boundary objects, and coupling are the highlights.
 
 i've worked under three very different org structures in the past few years. And watching the multi-agent discourse unfold, i keep seeing patterns i've already lived through. Not necessarily with agents, but with humans.
 

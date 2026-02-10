@@ -15,6 +15,7 @@
   <div class="page-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
 </div>
 
+{% if article.category != 'Poems' %}
 <!-- Compact Newsletter Signup -->
 <div class="article-newsletter">
   <div class="article-newsletter-content">
@@ -36,6 +37,7 @@
     </form>
   </div>
 </div>
+{% endif %}
 
 <div class="page-content">
   {{ article.content }}

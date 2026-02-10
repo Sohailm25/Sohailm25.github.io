@@ -1269,3 +1269,14 @@ code {
     font-size: 1rem !important;
   }
 }
+
+/* Newsletter font consistency */
+.article-newsletter,
+.article-newsletter-input,
+.article-newsletter-button,
+.newsletter-text,
+.newsletter-section,
+.newsletter-input,
+.newsletter-button {
+  font-family: var(--font-geist-mono), 'Courier New', monospace !important;
+}

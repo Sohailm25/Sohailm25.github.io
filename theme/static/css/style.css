@@ -1275,8 +1275,21 @@ code {
 .article-newsletter-input,
 .article-newsletter-button,
 .newsletter-text,
+.newsletter-text h3,
+.newsletter-text p,
 .newsletter-section,
+.newsletter-content,
 .newsletter-input,
 .newsletter-button {
   font-family: var(--font-geist-mono), 'Courier New', monospace !important;
+}
+
+.newsletter-text h3 {
+  font-size: 1.2rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.newsletter-text p {
+  font-size: 0.9rem !important;
 }

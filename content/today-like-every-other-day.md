@@ -6,24 +6,20 @@ URL: poems/today-like-every-other-day/
 Save_as: poems/today-like-every-other-day/index.html
 Summary: Rumi on moving within, fear, and finding beauty in the doing.
 
-<div class="poem-block">
+*Keep walking, though there's no place to get to.*  
+*Don't try to see through the distances.*  
+*That's not for human beings.*  
+*Move within,*  
+*But don't move the way fear makes you move.*
 
-> Keep walking, though there's no place to get to.  
-> Don't try to see through the distances.  
-> That's not for human beings.  
-> Move within,  
-> But don't move the way fear makes you move.
->
-> Today, like every other day, we wake up empty and frightened.  
-> Don't open the door to the study and begin reading.  
-> Take down a musical instrument.
->
-> Let the beauty we love be what we do.  
-> There are hundreds of ways to kneel and kiss the ground.
+*Today, like every other day, we wake up empty and frightened.*  
+*Don't open the door to the study and begin reading.*  
+*Take down a musical instrument.*
+
+*Let the beauty we love be what we do.*  
+*There are hundreds of ways to kneel and kiss the ground.*
 
 — **Jalal ad-Din Rumi**, *from "The Essential Rumi", translated by Coleman Barks*
-
-</div>
 
 ---
 

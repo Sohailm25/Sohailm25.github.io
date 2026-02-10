@@ -131,6 +131,7 @@ And scooping cat litter. i'm definitely interested in that.
 ---
 
 *References:*
+
 - [Heuristics for Lab Robotics (Owl Posting)](https://www.owlposting.com/p/heuristics-for-lab-robotics-and-where)
 - [π0: Our First Generalist Policy (Physical Intelligence)](https://www.physicalintelligence.company/blog/pi0)
 - [Human to Robot Transfer (Physical Intelligence)](https://www.pi.website/research/human_to_robot)

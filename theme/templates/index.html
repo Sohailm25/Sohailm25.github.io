@@ -46,12 +46,13 @@
 {% endif %}
 
 <div class="section-header">
-  <div class="section-title">> latest post</div>
-  <a href="{{ SITEURL }}/posts/" class="section-link">see all posts</a>
+  <div class="section-title">> latest writings</div>
+  <a href="{{ SITEURL }}/writings/" class="section-link">see all writings</a>
 </div>
 
+{% set writings = articles|selectattr('category', 'ne', 'Poems')|list %}
 <div class="blog-list">
-  {% for article in articles[:5] %}
+  {% for article in writings[:5] %}
   <div class="blog-card">
     <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
       <div class="card-content">

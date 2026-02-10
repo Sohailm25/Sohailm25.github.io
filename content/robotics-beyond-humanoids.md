@@ -58,7 +58,9 @@ A humanoid robot in a lab still faces the same utilization problem. If it takes 
 
 What's actually changing:
 
-**Imitation learning at scale.** Physical Intelligence [recently showed](https://www.pi.website/research/human_to_robot) that as you scale up robot training data, the ability to transfer from human video emerges automatically. You don't need perfect robot demonstrations. Train on enough robot data, and the model learns to absorb human video during fine-tuning (~2x improvement on limited-data tasks).
+**Foundation models for robotics.** Physical Intelligence's [π0](https://www.physicalintelligence.company/blog/pi0) is a general-purpose robot foundation model (now open-sourced) that can be fine-tuned for diverse tasks. They also [showed](https://www.pi.website/research/human_to_robot) that as you scale up robot training data, the ability to transfer from human video emerges automatically (~2x improvement on limited-data tasks).
+
+**World models from human video.** NVIDIA's [DreamDojo](https://dreamdojo-world.github.io/) pretrained on 44,000 hours of human egocentric video to build a robot world model. The insight: you can learn physics and object interactions from human video, then transfer to robot embodiments. This is the "ImageNet moment" people have been waiting for in robotics.
 
 **LLM-powered translation.** [Briefly Bio](https://brieflybio.substack.com/p/how-to-make-lab-automation-flex-as) is building tools that convert natural-language protocols into robot-executable code. The automation engineer bottleneck starts to dissolve when an LLM can handle the translation.
 
@@ -130,6 +132,8 @@ And scooping cat litter. i'm definitely interested in that.
 
 *References:*
 - [Heuristics for Lab Robotics (Owl Posting)](https://www.owlposting.com/p/heuristics-for-lab-robotics-and-where)
+- [π0: Our First Generalist Policy (Physical Intelligence)](https://www.physicalintelligence.company/blog/pi0)
 - [Human to Robot Transfer (Physical Intelligence)](https://www.pi.website/research/human_to_robot)
+- [DreamDojo: World Model from Human Videos (NVIDIA)](https://dreamdojo-world.github.io/)
 - [Lab Automation Flexibility (Briefly Bio)](https://brieflybio.substack.com/p/how-to-make-lab-automation-flex-as)
 - [Synbio25 (Keoni Gandall)](https://synbio25.com/)

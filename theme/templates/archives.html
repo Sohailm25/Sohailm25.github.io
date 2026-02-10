@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Posts - {{ SITENAME }}{% endblock %}
-{% block nav_posts %} class="active" aria-current="page"{% endblock %}
+{% block title %}Writings - {{ SITENAME }}{% endblock %}
+{% block nav_writings %} class="active" aria-current="page"{% endblock %}
 
 {% block content %}
+{% set writings = dates|selectattr('category', 'ne', 'Poems')|list %}
 <div class="section-header">
-  <div class="section-title">> All Posts</div>
-  <span class="section-link">{{ dates|length }} post{{ 's' if dates|length != 1 }}</span>
+  <div class="section-title">> All Writings</div>
+  <span class="section-link">{{ writings|length }} piece{{ 's' if writings|length != 1 }}</span>
 </div>
 
 <!-- Category filter tabs -->
@@ -19,6 +20,7 @@
 
 <div class="blog-list">
   {% for article in dates %}
+  {% if article.category != 'Poems' %}
   <div class="blog-card" data-category="{{ article.category }}">
     <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
       <div class="card-content">
@@ -29,6 +31,7 @@
       </div>
     </a>
   </div>
+  {% endif %}
   {% endfor %}
 </div>
 

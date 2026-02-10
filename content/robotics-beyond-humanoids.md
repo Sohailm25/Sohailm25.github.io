@@ -2,7 +2,7 @@ Title: Robotics Beyond Humanoids: Getting My Hands Dirty
 Date: 2026-02-10 13:30
 Category: Thoughts
 Slug: robotics-beyond-humanoids
-Summary: Everyone's watching humanoid robots. But if you think something is revolutionary, variants probably exist. The robotics community is vast. Here's what I'm learning as a software engineer jumping in.
+Summary: Everyone's watching humanoid robots. But if you think something is revolutionary, variants probably exist. The robotics community is vast. Here's what i'm learning as a software engineer jumping in.
 
 ---
 
@@ -80,7 +80,7 @@ my wife and i have 3 kittens. They're going to be very curious about the robot. 
 
 ---
 
-## What I Think Will Transfer from ML
+## What i Think Will Transfer from ML
 
 My background is CNNs, OCR, distributed training, inference at scale. Some things i expect will transfer:
 
@@ -108,7 +108,7 @@ The window matters. The infrastructure is being built now. If you care about thi
 
 ---
 
-## What I'm Curious About
+## What i'm Curious About
 
 A few questions i'm holding as i start:
 

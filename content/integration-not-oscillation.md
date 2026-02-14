@@ -67,7 +67,7 @@ I think both are true. But I also think it's much easier to achieve and then ren
 
 ## The Four Things People Worship
 
-My therapist brought up a framework: four things people orient their self-worth around:
+A framework came up in a therapy session: four things people orient their self-worth around:
 
 1. **Money**
 2. **Power**
@@ -76,19 +76,17 @@ My therapist brought up a framework: four things people orient their self-worth 
 
 For me it boils down to two: pleasure (financial security, the feeling of being safe) and honor (being at a place where I'm respected, having a title that carries weight, being seen as competent).
 
-She pointed out something uncomfortable. I'm a people pleaser. I ride on external validation. And if my self-worth is anchored in honor and pleasure, things that depend on other people's perception and circumstances outside my control, I'm building on sand.
-
-It's better for me to derive self-worth from somewhere else.
+And the uncomfortable part: I'm a people pleaser. I ride on external validation. If my self-worth is anchored in honor and pleasure, things that depend on other people's perception and circumstances outside my control, I'm building on sand.
 
 ## Where Does Self-Worth Actually Live?
 
-So where does it come from instead? I wonder if this ties back to everything else I've been feeling:
+So where *should* it come from? I don't have a clean answer. But I wonder if it ties back to everything else I've been feeling:
 
 - Love, with friends, family, my wife, my creator
 - Kids, in the future
 - Helping others. Being of service. Effective altruism in a way.
 
-I wonder if this is the thing that successful people arrive at late in life, after they've already achieved and then looked around and asked "now what?" I'm curious whether I can get there *without* needing to burn through decades of chasing first.
+I don't know yet. I wonder if this is the thing that successful people arrive at late in life, after they've already achieved and then looked around and asked "now what?" I'm curious whether I can get there *without* needing to burn through decades of chasing first.
 
 That's the real question behind integration vs. oscillation: can I hold both? Can I strive with everything I have toward career and financial goals *while* building self-worth on love, service, and connection? Not oscillating between seasons of ambition and seasons of spirituality, but actually running both at the same time, where the striving doesn't own me and the detachment doesn't make me passive.
 

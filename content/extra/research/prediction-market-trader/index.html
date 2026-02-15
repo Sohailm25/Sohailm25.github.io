@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Teaching an LLM to Trade Prediction Markets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://distill.pub/template.v2.js"></script>
+    <d-front-matter>
+        <script type="text/json">{
+            "title": "Teaching an LLM to Trade Prediction Markets: Chain-of-Thought Reasoning Solves Action Collapse in Low-Cardinality RL",
+            "description": "CoT reasoning prevents policy collapse in prediction market trading agents",
+            "authors": [
+                {
+                    "author": "Sohail Mohammad",
+                    "affiliations": [{"name": "Independent Researcher"}]
+                }
+            ]
+        }</script>
+    </d-front-matter>
+    <style>
+        /* Everforest dark palette */
+        :root {
+            --ef-bg: #2d353b;
+            --ef-bg-dim: #232a2e;
+            --ef-bg-card: #343f44;
+            --ef-text: #d3c6aa;
+            --ef-text-muted: #859289;
+            --ef-green: #A7C080;
+            --ef-green-dim: #859e7a;
+            --ef-aqua: #83C092;
+            --ef-blue: #7fbbb3;
+            --ef-red: #e67e80;
+            --ef-orange: #e69875;
+            --ef-yellow: #dbbc7f;
+            --ef-purple: #d699b6;
+            --ef-border: #4a555b;
+        }
+
+        html, body {
+            background-color: var(--ef-bg) !important;
+            color: var(--ef-text) !important;
+        }
+
+        /* Override Distill template grid to allow full width */
+        d-article {
+            color: var(--ef-text);
+            overflow: visible;
+        }
+
+        /* Fix the text clipping: override Distill's grid column constraints */
+        @supports (display: grid) {
+            d-article {
+                display: block !important;
+                max-width: 780px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            d-article p, d-article ul, d-article ol, d-article blockquote,
+            d-article h2, d-article h3, d-article h4,
+            d-article table, d-article figure, d-article .hypothesis-box,
+            d-article .example-output {
+                grid-column: unset !important;
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+        }
+
+        d-title {
+            background-color: var(--ef-bg-dim);
+            padding: 2em 0;
+            border-bottom: 1px solid var(--ef-border);
+        }
+
+        d-title h1 {
+            color: var(--ef-green) !important;
+        }
+
+        d-title p {
+            color: var(--ef-text-muted) !important;
+        }
+
+        d-byline {
+            background-color: var(--ef-bg-dim);
+            border-bottom: 1px solid var(--ef-border);
+            color: var(--ef-text-muted);
+        }
+
+        d-byline a { color: var(--ef-aqua); }
+        d-byline span, d-byline p, d-byline .byline-container,
+        d-byline .authors-affiliations { color: var(--ef-text-muted) !important; }
+        d-byline h3 { color: var(--ef-text-muted) !important; }
+        /* Force all byline text light */
+        d-byline * { color: var(--ef-text-muted); }
+        d-byline a { color: var(--ef-aqua) !important; }
+
+        h2 {
+            margin-top: 2em;
+            border-bottom: 1px solid var(--ef-border);
+            padding-bottom: 0.3em;
+            color: var(--ef-green);
+        }
+        
+        h3 {
+            margin-top: 1.5em;
+            color: var(--ef-aqua);
+        }
+
+        a { color: var(--ef-aqua); }
+        a:hover { color: var(--ef-green); }
+
+        strong { color: var(--ef-text); }
+        
+        figure {
+            margin: 2em 0;
+        }
+        
+        figure img {
+            width: 100%;
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+        }
+        
+        figcaption {
+            margin-top: 0.5em;
+            font-size: 0.9em;
+            color: var(--ef-text-muted);
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.9em;
+        }
+        
+        table th {
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--ef-green);
+        }
+        
+        table td {
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            color: var(--ef-text);
+        }
+        
+        table tr:nth-child(even) {
+            background-color: var(--ef-bg-card);
+        }
+        
+        .hypothesis-box {
+            background-color: var(--ef-bg-card);
+            border-left: 3px solid var(--ef-green);
+            padding: 1em 1.5em;
+            margin: 1.5em 0;
+            border-radius: 2px;
+        }
+
+        .hypothesis-box strong { color: var(--ef-aqua); }
+        
+        blockquote {
+            border-left: 3px solid var(--ef-green-dim);
+            padding-left: 1.5em;
+            margin: 1.5em 0;
+            color: var(--ef-text-muted);
+            font-style: italic;
+        }
+        
+        .example-output {
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            padding: 1em;
+            margin: 1em 0;
+            font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
+            font-size: 0.85em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<d-title>
+    <h1>Teaching an LLM to Trade Prediction Markets</h1>
+    <p>Chain-of-Thought Reasoning Solves Action Collapse in Low-Cardinality RL</p>
+</d-title>
+
+<d-byline></d-byline>
+
+<d-article>
+
+<h2 id="abstract">Abstract</h2>
+
+<p>We trained language models to trade binary prediction markets using reinforcement learning. Initial attempts with standard PPO led to severe action collapse: agents converged to never holding positions (0% HOLD rate by batch 30), producing degenerate policies despite reasonable profit. Adding chain-of-thought (CoT) reasoning before action selection completely solved this collapse: CoT agents maintained 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for always-buy-no baseline). This suggests that in low-cardinality action spaces where multiple actions can yield similar rewards, explicit reasoning steps prevent premature convergence by maintaining exploration of the strategic landscape.</p>
+
+<h2 id="introduction">1. Introduction</h2>
+
+<p>Teaching language models to make financial decisions is challenging. The action space is discrete and low-cardinality (BUY_YES, BUY_NO, HOLD), rewards are noisy and delayed, and multiple strategies can yield similar outcomes. Standard reinforcement learning easily falls into the trap of action collapse—converging to a single action regardless of context.</p>
+
+<p>We approached this problem through prediction markets: binary yes/no questions with evolving probabilities and trading opportunities. Our agent observes market state (current probability, question text, resolution criteria) and chooses whether to buy yes, buy no, or hold. The reward is realized profit when the market resolves.</p>
+
+<p><strong>Key findings:</strong></p>
+
+<ul>
+<li><strong>Action collapse is severe.</strong> PPO without CoT reduces HOLD rate from 40% → 0% by batch 30, despite achieving positive returns (+$0.008 to +$0.012).</li>
+<li><strong>CoT prevents collapse.</strong> Adding explicit reasoning maintains 15-30% HOLD and 0.95 entropy while achieving +$0.060 mean P&L.</li>
+<li><strong>Shaped rewards don't help.</strong> PPO v3 with carefully tuned intermediate rewards showed the same collapse as PPO v2.</li>
+<li><strong>Scale matters.</strong> Our numeric-only PPO v1 agent (trained on prices, not text) achieved +2.28% with 90% win rate, suggesting text-based reasoning introduces additional challenges.</li>
+</ul>
+
+<h2 id="dataset">2. Dataset</h2>
+
+<p>We used binary prediction markets from Manifold Markets, filtering for:</p>
+
+<ul>
+<li>Binary yes/no resolution</li>
+<li>Resolved questions (ground truth available)</li>
+<li>Sufficient trading history (≥20 probability updates)</li>
+<li>No "cancelled" or "N/A" resolutions</li>
+</ul>
+
+<p>Final dataset: 400 markets for training, 40 for evaluation. Each market provides question text, description, resolution criteria, and a time series of probability updates representing trading opportunities.</p>
+
+<p><strong>Example market:</strong></p>
+
+<div class="example-output">
+<strong>Question:</strong> Will the new iPhone be released by September 2024?<br>
+<strong>Resolution:</strong> YES<br>
+<strong>Probability history:</strong> 0.45 → 0.52 → 0.67 → 0.78 → 0.89 (resolves YES)
+</div>
+
+<h2 id="method">3. Method: From GRPO to PPO to CoT</h2>
+
+<h3 id="phase-1-grpo">3.1 Phase 1: GRPO (Failed)</h3>
+
+<p>We initially tried Group Relative Policy Optimization (GRPO), sampling multiple actions per state and using relative ranking for rewards. This failed catastrophically:</p>
+
+<ul>
+<li>Agent learned to always output the same action regardless of context</li>
+<li>No meaningful learning signal despite 200+ training markets</li>
+<li>Reward variance too high (outcomes depend on future price movements not visible at decision time)</li>
+</ul>
+
+<p>GRPO works well for response ranking in chat models but breaks down when reward variance is high and actions have delayed, stochastic outcomes.</p>
+
+<h3 id="phase-2-ppo">3.2 Phase 2: PPO (Partial Success, Action Collapse)</h3>
+
+<p><strong>PPO v2:</strong> Standard PPO with terminal profit reward only. Achieved +$0.008 mean P&L but collapsed to 0% HOLD by batch 30.</p>
+
+<p><strong>PPO v3:</strong> Added shaped intermediate rewards:
+<ul>
+<li>Correct direction bonus: +0.01 for buying the eventual winner</li>
+<li>Early exit penalty: Small penalty for holding too long without trading</li>
+<li>Diversity bonus: Reward for action variety</li>
+</ul>
+</p>
+
+<p>Result: Identical collapse. PPO v3 reached +$0.012 (slightly better) but still fell to 0% HOLD and 0.60 entropy.</p>
+
+<h3 id="phase-3-cot">3.3 Phase 3: CoT PPO (Success)</h3>
+
+<p>We modified the architecture to require explicit reasoning:</p>
+
+<div class="example-output">
+<strong>Prompt template:</strong><br>
+You are trading a prediction market. Think step by step.<br><br>
+<strong>Question:</strong> {question}<br>
+<strong>Current probability:</strong> {prob}<br>
+<strong>Your position:</strong> {position}<br><br>
+<strong>Reasoning:</strong> [model generates analysis]<br>
+<strong>Action:</strong> [BUY_YES | BUY_NO | HOLD]
+</div>
+
+<p>The model must generate reasoning tokens before selecting an action. This simple change completely prevented collapse:</p>
+
+<ul>
+<li>HOLD rate: 15-30% throughout training (vs 0% for non-CoT)</li>
+<li>Entropy: ~0.95 (vs 0.60 for non-CoT)</li>
+<li>Mean P&L: +$0.060 (comparable to best baseline)</li>
+</ul>
+
+<h2 id="results">4. Results</h2>
+
+<figure>
+<img src="figures/hold_pct.png" alt="HOLD percentage over training">
+<figcaption><strong>Figure 1:</strong> HOLD action distribution during PPO training. Non-CoT methods (red/orange) collapse to 0% while CoT (green) maintains 15-30%.</figcaption>
+</figure>
+
+<figure>
+<img src="figures/entropy.png" alt="Entropy over training">
+<figcaption><strong>Figure 2:</strong> Policy entropy during training. CoT maintains ~0.95 normalized entropy while non-CoT crashes to ~0.60.</figcaption>
+</figure>
+
+<figure>
+<img src="figures/mean_reward.png" alt="Mean reward over training">
+<figcaption><strong>Figure 3:</strong> Mean reward during training across all three PPO variants.</figcaption>
+</figure>
+
+<figure>
+<img src="figures/final_results.png" alt="Final P&L comparison">
+<figcaption><strong>Figure 4:</strong> Mean P&L by agent. CoT PPO achieves competitive performance while maintaining policy diversity.</figcaption>
+</figure>
+
+<h3 id="quantitative-results">4.1 Quantitative Results</h3>
+
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Mean P&L</th>
+<th>Win Rate</th>
+<th>HOLD %</th>
+<th>Entropy</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>v1 Numeric PPO</td><td>+$0.0228 (+2.28%)</td><td>90%</td><td>N/A</td><td>N/A</td></tr>
+<tr><td>always_buy_no</td><td>+$0.063</td><td>60%</td><td>N/A</td><td>N/A</td></tr>
+<tr><td><strong>CoT PPO B50</strong></td><td><strong>+$0.060</strong></td><td>32.5%</td><td>5.0%</td><td>~0.95</td></tr>
+<tr><td>PPO v3 B30</td><td>+$0.012</td><td>72.5%</td><td>0%</td><td>~0.60</td></tr>
+<tr><td>PPO v2 B30</td><td>+$0.008</td><td>N/A</td><td>0%</td><td>~0.60</td></tr>
+<tr><td>CoT SFT</td><td>-$0.029</td><td>27.5%</td><td>5.0%</td><td>N/A</td></tr>
+<tr><td>Random</td><td>-$0.1456</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+</tbody>
+</table>
+
+<p><strong>Key observations:</strong></p>
+
+<ul>
+<li><strong>CoT prevents collapse:</strong> Maintains 5% HOLD at evaluation time (15-30% during training) vs 0% for non-CoT PPO</li>
+<li><strong>Competitive performance:</strong> +$0.060 vs +$0.063 for the simple always-buy-no baseline</li>
+<li><strong>Lower win rate, better reasoning:</strong> 32.5% win rate suggests CoT agent is more selective, not just exploiting easy wins</li>
+<li><strong>SFT alone fails:</strong> Supervised fine-tuning on successful trades without RL yields negative P&L</li>
+</ul>
+
+<h2 id="the-hold-collapse-problem">5. The HOLD Collapse Problem</h2>
+
+<p>Why does HOLD disappear in non-CoT agents?</p>
+
+<p>In prediction markets, HOLD is often the correct action:</p>
+<ul>
+<li>When probabilities accurately reflect true odds</li>
+<li>When you're uncertain about direction</li>
+<li>When transaction costs exceed expected edge</li>
+<li>When you're already positioned correctly</li>
+</ul>
+
+<p>But HOLD provides no immediate feedback—you only learn whether holding was correct when the market resolves, hundreds of timesteps later. The RL signal for HOLD is sparse and delayed.</p>
+
+<p>In contrast, BUY_YES and BUY_NO provide immediate state changes (you now have a position). Even if these actions are suboptimal, they produce clearer gradients. The agent learns "buying does <em>something</em>" faster than it learns "holding is often optimal."</p>
+
+<p>With a 3-action space and noisy rewards, standard PPO gravitates toward actions with stronger gradients, even if those actions aren't globally optimal. By batch 30, the agent has effectively reduced to a 2-action policy.</p>
+
+<h2 id="why-cot-works">6. Why CoT Works</h2>
+
+<p>Chain-of-thought reasoning introduces several mechanisms that prevent collapse:</p>
+
+<h3 id="explicit-exploration">6.1 Explicit Exploration Space</h3>
+
+<p>The reasoning tokens create an intermediate latent space where the model explores <em>why</em> to take an action before committing to it. This slows down convergence and forces consideration of multiple paths.</p>
+
+<h3 id="compositional-credit">6.2 Compositional Credit Assignment</h3>
+
+<p>With CoT, the model learns "reasoning patterns that lead to good actions" rather than just "good actions." This compositional structure provides more learning signal from sparse rewards.</p>
+
+<h3 id="regularization">6.3 Implicit Regularization</h3>
+
+<p>Generating 50-100 reasoning tokens adds stochasticity to the forward pass. Even with the same state input, different reasoning paths can lead to different actions. This acts as a form of entropy regularization.</p>
+
+<h3 id="human-alignment">6.4 Human-Like Decision Process</h3>
+
+<p>The model was pretrained on human text that includes deliberation before decisions. CoT likely activates this prior, making "think then act" a more natural behavior than "act immediately."</p>
+
+<h2 id="tinker-vs-prime">7. Tinker vs Prime: The Importance of Architecture</h2>
+
+<p>We ran these experiments on two model bases:</p>
+
+<ul>
+<li><strong>Tinker (Qwen 2.5 0.5B):</strong> Small, fast, easy to iterate. All reported CoT results.</li>
+<li><strong>Prime (Qwen 2.5 7B):</strong> Larger, more capable, but slower to train. Initial PPO v1 numeric results.</li>
+</ul>
+
+<p>The v1 Numeric PPO agent (+2.28%, 90% win rate) was trained on Prime with only numeric features (current price, historical prices, position value). No text, no reasoning, just numbers.</p>
+
+<p>This creates an interesting comparison:</p>
+
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Model</th>
+<th>Input</th>
+<th>Mean P&L</th>
+<th>Win Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>v1 Numeric PPO</td><td>Prime (7B)</td><td>Numbers only</td><td>+2.28%</td><td>90%</td></tr>
+<tr><td>CoT PPO</td><td>Tinker (0.5B)</td><td>Text + CoT</td><td>+$0.060</td><td>32.5%</td></tr>
+<tr><td>PPO v2/v3</td><td>Tinker (0.5B)</td><td>Text, no CoT</td><td>+$0.008–0.012</td><td>72.5%</td></tr>
+</tbody>
+</table>
+
+<p>Why does numeric-only Prime outperform text-based Tinker?</p>
+
+<ul>
+<li><strong>Scale advantage:</strong> 7B vs 0.5B parameters</li>
+<li><strong>Simpler input space:</strong> Numbers are lower-dimensional than text embeddings</li>
+<li><strong>Direct optimization:</strong> No linguistic reasoning overhead, pure pattern matching on price movements</li>
+</ul>
+
+<p>The fact that CoT on Tinker achieves 60% of Prime's performance with 1/14th the parameters suggests that reasoning helps bridge the capability gap, but doesn't fully close it.</p>
+
+<h2 id="limitations">8. Limitations</h2>
+
+<ul>
+<li><strong>Small model:</strong> Tinker (0.5B) is far below frontier scale. Larger models might not exhibit the same collapse behavior.</li>
+<li><strong>Limited evaluation set:</strong> 40 test markets is not enough to make strong claims about generalization.</li>
+<li><strong>Single domain:</strong> Prediction markets are unusual—binary outcomes, public probabilities, no adversarial traders. This may not transfer to stock trading, options, or other financial domains.</li>
+<li><strong>No transaction costs:</strong> Real markets have fees, slippage, and liquidity constraints we didn't model.</li>
+<li><strong>Hindsight bias:</strong> We trained on resolved markets where the outcome is known. Real-time trading would be harder.</li>
+<li><strong>No ablation on CoT length:</strong> We didn't systematically test shorter vs longer reasoning chains.</li>
+</ul>
+
+<h2 id="conclusion">9. Conclusion</h2>
+
+<p>In low-cardinality action spaces with sparse, delayed rewards, standard RL can collapse to degenerate policies even when achieving positive returns. Chain-of-thought reasoning prevents this collapse by introducing compositional structure and implicit exploration.</p>
+
+<p>The key insight: <strong>reasoning tokens act as a form of structured regularization</strong> that preserves policy diversity during training. This suggests that for complex decision-making tasks, we may want to explicitly build in deliberation steps rather than hoping end-to-end optimization will learn them.</p>
+
+<p>Future work should explore:</p>
+<ul>
+<li>Scaling to larger models (does collapse still occur at 7B+?)</li>
+<li>Ablating CoT length and structure</li>
+<li>Testing on other low-cardinality RL domains</li>
+<li>Real-time trading with live markets</li>
+<li>Multi-step reasoning with uncertainty quantification</li>
+</ul>
+
+<h2 id="links">10. Links</h2>
+
+<ul>
+<li><strong>Code:</strong> <a href="https://github.com/Sohailm25/prime-v-tinker-trader">github.com/Sohailm25/prime-v-tinker-trader</a></li>
+<li><strong>Blog post:</strong> Coming soon</li>
+</ul>
+
+</d-article>
+
+</body>
+</html>

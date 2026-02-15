@@ -2,8 +2,8 @@ Title: For Its Own Sake
 Date: 2026-02-13 10:00
 Category: Poems
 Slug: for-its-own-sake
-URL: poems/for-its-own-sake/
-Save_as: poems/for-its-own-sake/index.html
+URL: writings/for-its-own-sake/
+Save_as: writings/for-its-own-sake/index.html
 Summary: On writing, presence, and reclaiming the moment.
 
 <p class="poem">

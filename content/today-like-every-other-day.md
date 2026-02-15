@@ -2,8 +2,8 @@ Title: Today, Like Every Other Day
 Date: 2026-02-10 06:30
 Category: Poems
 Slug: today-like-every-other-day
-URL: poems/today-like-every-other-day/
-Save_as: poems/today-like-every-other-day/index.html
+URL: writings/today-like-every-other-day/
+Save_as: writings/today-like-every-other-day/index.html
 Summary: Rumi on moving within, fear, and finding beauty in the doing.
 
 <p class="poem">

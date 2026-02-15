@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}The Forge - {{ SITENAME }}{% endblock %}
+{% block nav_forge %} class="active" aria-current="page"{% endblock %}
+
+{% block content %}
+{% set forge_articles = articles|selectattr('category', 'equalto', 'The Forge')|list %}
+<div class="section-header">
+  <div class="section-title">> The Forge</div>
+  <span class="section-link">{{ forge_articles|length }} issue{{ 's' if forge_articles|length != 1 }}</span>
+</div>
+
+<div class="forge-banner">
+  <p>weekly newsletter with my thoughts + latest ai/ml news that i care about</p>
+</div>
+
+<div class="blog-list">
+  {% for article in forge_articles|sort(attribute='date', reverse=True) %}
+  <div class="blog-card">
+    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
+      <div class="card-content">
+        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+        <div class="card-title">{{ article.title }}</div>
+        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Newsletter Signup for The Forge -->
+<div class="forge-newsletter">
+  <div class="forge-newsletter-content">
+    <h3>📬 Get The Forge in your inbox</h3>
+    <p>New issues delivered weekly. Curated insights on AI/ML infrastructure and production systems.</p>
+    <form action="https://buttondown.email/api/emails/embed-subscribe/sohailmo" 
+          method="post" 
+          target="popupwindow"
+          class="newsletter-form"
+          onsubmit="window.open('https://buttondown.email/sohailmo', 'popupwindow', 'scrollbars=yes,width=800,height=600');return true;">
+      <input type="email" 
+             name="email" 
+             placeholder="you@example.com" 
+             required 
+             class="newsletter-input"
+             aria-label="Email address" />
+      <input type="hidden" name="tag" value="the-forge" />
+      <button type="submit" class="newsletter-button">Subscribe</button>
+    </form>
+  </div>
+</div>
+
+<style>
+.forge-banner {
+  padding: var(--spacing-md);
+  color: var(--text-muted);
+  font-style: italic;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.forge-banner p {
+  margin: 0;
+}
+
+.forge-newsletter {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--card-bg);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.forge-newsletter h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 1.2em;
+}
+
+.forge-newsletter p {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-muted);
+}
+
+.forge-newsletter-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+</style>
+{% endblock %}

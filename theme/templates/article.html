@@ -5,7 +5,11 @@
 
 {% block content %}
 <div class="back-link">
+  {% if article.category == 'The Forge' %}
+  <a href="{{ SITEURL }}/the-forge/">&larr; Back to The Forge</a>
+  {% else %}
   <a href="{{ SITEURL }}/">&larr; Back</a>
+  {% endif %}
 </div>
 <div class="page-header">
   {% if article.category %}

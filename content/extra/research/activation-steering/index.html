@@ -205,8 +205,20 @@
         d-footnote-list { color: var(--ef-text) !important; }
         d-bibliography * { color: var(--ef-text) !important; }
         d-bibliography a { color: var(--ef-aqua) !important; }
-        d-hover-box { background-color: var(--ef-bg-card) !important; border: 1px solid var(--ef-border) !important; color: var(--ef-text) !important; }
+        d-hover-box { background-color: var(--ef-bg-card) !important; border: 1px solid var(--ef-border) !important; color: var(--ef-text) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important; }
         d-hover-box * { color: var(--ef-text) !important; }
+        d-hover-box a { color: var(--ef-aqua) !important; }
+
+        /* Inline citation number styling */
+        d-cite a { color: var(--ef-aqua) !important; }
+        d-cite { color: var(--ef-aqua) !important; }
+        d-cite sup { color: var(--ef-aqua) !important; }
+
+        /* Citation hover popup override - target shadow DOM fallback */
+        .citation-hover, .distill-hover-box, [class*="hover"] {
+            background-color: var(--ef-bg-card) !important;
+            color: var(--ef-text) !important;
+        }
 
         /* Table of contents sidebar */
         d-contents { color: var(--ef-text-muted); }

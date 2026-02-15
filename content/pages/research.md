@@ -4,7 +4,7 @@ Template: page
 
 ## Papers
 
-### Inverse Scaling in Activation Steering
+### [Inverse Scaling in Activation Steering](/research/activation-steering/)
 **Architecture and Scale Dependence of Refusal Manipulation**
 
 Sohail Mohammad · Preprint, 2025

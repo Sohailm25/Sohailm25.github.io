@@ -27,10 +27,20 @@ CLOUDFLARE_ANALYTICS_TOKEN = "2b79882684cd4f4aa938847b472c148e"
 DEFAULT_PAGINATION = 10
 RELATIVE_URLS = True
 
-STATIC_PATHS = ["images", "extra/CNAME", "papers"]
+STATIC_PATHS = ["images", "extra", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
 }
+# Map research directory to root /research/
+import os
+for root, dirs, files in os.walk("content/extra/research"):
+    for file in files:
+        filepath = os.path.join(root, file)
+        relpath = os.path.relpath(filepath, "content/extra")
+        EXTRA_PATH_METADATA[os.path.relpath(filepath, "content")] = {"path": relpath}
+
+ARTICLE_EXCLUDES = ["extra"]
+PAGE_EXCLUDES = ["extra"]
 
 PAGE_URL = "pages/{slug}/"
 PAGE_SAVE_AS = "pages/{slug}/index.html"

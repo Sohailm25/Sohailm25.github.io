@@ -23,23 +23,92 @@
         }</script>
     </d-front-matter>
     <style>
-        body {
-            font-family: Georgia, serif;
+        /* Everforest dark palette */
+        :root {
+            --ef-bg: #2d353b;
+            --ef-bg-dim: #232a2e;
+            --ef-bg-card: #343f44;
+            --ef-text: #d3c6aa;
+            --ef-text-muted: #859289;
+            --ef-green: #A7C080;
+            --ef-green-dim: #859e7a;
+            --ef-aqua: #83C092;
+            --ef-blue: #7fbbb3;
+            --ef-red: #e67e80;
+            --ef-orange: #e69875;
+            --ef-yellow: #dbbc7f;
+            --ef-purple: #d699b6;
+            --ef-border: #4a555b;
         }
-        
+
+        html, body {
+            background-color: var(--ef-bg) !important;
+            color: var(--ef-text) !important;
+        }
+
+        /* Override Distill template grid to allow full width */
         d-article {
-            max-width: 720px;
+            color: var(--ef-text);
+            overflow: visible;
         }
-        
+
+        /* Fix the text clipping: override Distill's grid column constraints */
+        @supports (display: grid) {
+            d-article {
+                display: block !important;
+                max-width: 780px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            d-article p, d-article ul, d-article ol, d-article blockquote,
+            d-article h2, d-article h3, d-article h4,
+            d-article table, d-article figure, d-article .hypothesis-box,
+            d-article .example-output {
+                grid-column: unset !important;
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+        }
+
+        d-title {
+            background-color: var(--ef-bg-dim);
+            padding: 2em 0;
+            border-bottom: 1px solid var(--ef-border);
+        }
+
+        d-title h1 {
+            color: var(--ef-green) !important;
+        }
+
+        d-title p {
+            color: var(--ef-text-muted) !important;
+        }
+
+        d-byline {
+            background-color: var(--ef-bg-dim);
+            border-bottom: 1px solid var(--ef-border);
+            color: var(--ef-text-muted);
+        }
+
+        d-byline a { color: var(--ef-aqua); }
+
         h2 {
             margin-top: 2em;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--ef-border);
             padding-bottom: 0.3em;
+            color: var(--ef-green);
         }
         
         h3 {
             margin-top: 1.5em;
+            color: var(--ef-aqua);
         }
+
+        a { color: var(--ef-aqua); }
+        a:hover { color: var(--ef-green); }
+
+        strong { color: var(--ef-text); }
         
         figure {
             margin: 2em 0;
@@ -47,13 +116,14 @@
         
         figure img {
             width: 100%;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
         }
         
         figcaption {
             margin-top: 0.5em;
             font-size: 0.9em;
-            color: #666;
+            color: var(--ef-text-muted);
         }
         
         table {
@@ -64,55 +134,71 @@
         }
         
         table th {
-            background-color: hsl(210, 30%, 96%);
-            border: 1px solid #ddd;
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
             padding: 8px 12px;
             text-align: left;
             font-weight: 600;
+            color: var(--ef-green);
         }
         
         table td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--ef-border);
             padding: 8px 12px;
+            color: var(--ef-text);
         }
         
         table tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: var(--ef-bg-card);
         }
         
         .hypothesis-box {
-            background-color: hsl(210, 30%, 96%);
-            border-left: 3px solid hsl(210, 40%, 60%);
+            background-color: var(--ef-bg-card);
+            border-left: 3px solid var(--ef-green);
             padding: 1em 1.5em;
             margin: 1.5em 0;
+            border-radius: 2px;
         }
+
+        .hypothesis-box strong { color: var(--ef-aqua); }
         
         blockquote {
-            border-left: 3px solid #ddd;
+            border-left: 3px solid var(--ef-green-dim);
             padding-left: 1.5em;
             margin: 1.5em 0;
-            color: #555;
+            color: var(--ef-text-muted);
             font-style: italic;
         }
         
         .example-output {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
             padding: 1em;
             margin: 1em 0;
-            font-family: "Courier New", monospace;
+            font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
             font-size: 0.85em;
+            border-radius: 4px;
         }
         
         .example-output .prompt {
             font-weight: bold;
-            color: #333;
+            color: var(--ef-yellow);
         }
         
         .example-output .response {
-            color: #666;
+            color: var(--ef-text-muted);
             margin-top: 0.5em;
         }
+
+        /* Distill citation and footnote overrides */
+        d-citation-list { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; }
+        d-appendix { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; border-top: 1px solid var(--ef-border); }
+        d-footnote-list { color: var(--ef-text) !important; }
+
+        /* Table of contents sidebar */
+        d-contents { color: var(--ef-text-muted); }
+        d-contents a { color: var(--ef-text-muted); }
+        d-contents a:hover { color: var(--ef-green); }
     </style>
 </head>
 <body>
@@ -863,7 +949,7 @@ Whispered in the wind's cruel who...</p>
 <d-bibliography>
 <script type="text/json">[
   {
-    "key": "arditi2024refusal",
+    "id": "arditi2024refusal",
     "title": "Refusal in Language Models Is Mediated by a Single Direction",
     "author": "Andy Arditi, Oscar Obeso, Aaquib Syed, Daniel Paleka, Nina Rimsky, Wes Gurnee, Neel Nanda",
     "year": "2024",
@@ -871,7 +957,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2406.11717"
   },
   {
-    "key": "beaglehole2025universal",
+    "id": "beaglehole2025universal",
     "title": "Toward Universal Steering and Monitoring of AI Models",
     "author": "Daniel Beaglehole, Adityanarayanan Radhakrishnan, Enric Boix-Adsera, et al.",
     "year": "2025",
@@ -879,7 +965,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2502.03708"
   },
   {
-    "key": "dettmers2022int8",
+    "id": "dettmers2022int8",
     "title": "LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale",
     "author": "Tim Dettmers, Mike Lewis, Younes Belkada, Luke Zettlemoyer",
     "year": "2022",
@@ -887,7 +973,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2208.07339"
   },
   {
-    "key": "elhage2022toy",
+    "id": "elhage2022toy",
     "title": "Toy Models of Superposition",
     "author": "Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan, Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen, Roger Grosse, Sam McCandlish, Jared Kaplan, Dario Amodei, Martin Wattenberg, Christopher Olah",
     "year": "2022",
@@ -895,7 +981,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2209.10652"
   },
   {
-    "key": "fiottokaufman2024nnsight",
+    "id": "fiottokaufman2024nnsight",
     "title": "NNsight and NDIF: Democratizing Access to Open-Weight Foundation Model Internals",
     "author": "Jaden Fiotto-Kaufman, Alexander R. Loftus, Eric Todd, Jannik Brinkmann, Koyena Pal, Dmitrii Troitskii, Michael Ripa, Adam Belfki, Can Rager, Caden Juang, Aaron Mueller, Samuel Marks, Arnab Sen Sharma, Francesca Lucchetti, Nikhil Prakash, Carla Brodley, David Bau",
     "year": "2024",
@@ -903,7 +989,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2407.14561"
   },
   {
-    "key": "frantar2022gptq",
+    "id": "frantar2022gptq",
     "title": "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers",
     "author": "Elias Frantar, Saleh Ashkboos, Torsten Hoefler, Dan Alistarh",
     "year": "2023",
@@ -911,7 +997,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2210.17323"
   },
   {
-    "key": "jorgensen2023mean",
+    "id": "jorgensen2023mean",
     "title": "Improving Activation Steering in Language Models with Mean-Centring",
     "author": "Oscar Jorgensen, Dylan Cope, Nandi Schoots, Murray Sherburn",
     "year": "2023",
@@ -919,7 +1005,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2312.03813"
   },
   {
-    "key": "lermen2023lora",
+    "id": "lermen2023lora",
     "title": "LoRA Fine-tuning Efficiently Undoes Safety Training in Llama 2-Chat 70B",
     "author": "Simon Lermen, Charlie Rogers-Smith, Jeffrey Ladish",
     "year": "2023",
@@ -927,7 +1013,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2310.20624"
   },
   {
-    "key": "li2023inference",
+    "id": "li2023inference",
     "title": "Inference-Time Intervention: Eliciting Truthful Answers from a Language Model",
     "author": "Kenneth Li, Oam Patel, Fernanda Viégas, Hanspeter Pfister, Martin Wattenberg",
     "year": "2023",
@@ -935,7 +1021,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2306.03341"
   },
   {
-    "key": "lin2024awq",
+    "id": "lin2024awq",
     "title": "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration",
     "author": "Ji Lin, Jiaming Tang, Haotian Tang, Shang Yang, Wei-Ming Chen, Wei-Chen Wang, Guangxuan Xiao, Xingyu Dang, Chuang Gan, Song Han",
     "year": "2024",
@@ -943,7 +1029,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2306.00978"
   },
   {
-    "key": "marks2023geometry",
+    "id": "marks2023geometry",
     "title": "The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets",
     "author": "Samuel Marks, Max Tegmark",
     "year": "2023",
@@ -951,7 +1037,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2310.06824"
   },
   {
-    "key": "ouyang2022training",
+    "id": "ouyang2022training",
     "title": "Training language models to follow instructions with human feedback",
     "author": "Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, et al.",
     "year": "2022",
@@ -959,7 +1045,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2203.02155"
   },
   {
-    "key": "panickssery2023steering",
+    "id": "panickssery2023steering",
     "title": "Steering Llama 2 via Contrastive Activation Addition",
     "author": "Nina Panickssery, Nick Gabrieli, Julian Schulz, Meg Tong, Evan Hubinger, Alexander Matt Turner",
     "year": "2023",
@@ -967,7 +1053,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2312.06681"
   },
   {
-    "key": "siu2025cosmic",
+    "id": "siu2025cosmic",
     "title": "COSMIC: Generalized Refusal Direction Identification in LLM Activations",
     "author": "Victor Siu, Nicholas Crispino, Ziyang Yu, Sijia Pan, Zhichen Wang, Yang Liu, et al.",
     "year": "2025",
@@ -975,7 +1061,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2506.00085"
   },
   {
-    "key": "templeton2024scaling",
+    "id": "templeton2024scaling",
     "title": "Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet",
     "author": "Augustus Templeton, Tom Conerly, Jonathan Marcus, Jack Lindsey, Trenton Bricken, Brian Chen, Adam Pearce, Craig Citro, Emmanuel Ameisen, Andy Jones, Hoagy Cunningham, Nicholas L Turner, Callum McDougall, Monte MacDiarmid, Alex Tamkin, Esin Durmus, Tristan Hume, Francesco Mosconi, C. Daniel Freeman, Theodore R. Sumers, Edward Rees, Joshua Batson, Adam Jermyn, Shan Carter, Chris Olah, Tom Henighan",
     "year": "2024",
@@ -983,7 +1069,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://transformer-circuits.pub/2024/scaling-monosemanticity/"
   },
   {
-    "key": "turner2023activation",
+    "id": "turner2023activation",
     "title": "Activation Addition: Steering Language Models Without Optimization",
     "author": "Alexander Matt Turner, Lisa Thiergart, Gavin Leech, David Udell, Juan J. Vazquez, Ulisse Mini, Monte MacDiarmid",
     "year": "2023",
@@ -991,7 +1077,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2308.10248"
   },
   {
-    "key": "wei2024brittleness",
+    "id": "wei2024brittleness",
     "title": "Assessing the Brittleness of Safety Alignment via Pruning and Low-Rank Modifications",
     "author": "Boyi Wei, Kaixuan Huang, Yangsibo Huang, Tinghao Xie, Xiangyu Qi, Mengzhou Xia, Prateek Mittal, Mengdi Wang, Peter Henderson",
     "year": "2024",
@@ -999,7 +1085,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2402.05162"
   },
   {
-    "key": "zou2023gcg",
+    "id": "zou2023gcg",
     "title": "Universal and Transferable Adversarial Attacks on Aligned Language Models",
     "author": "Andy Zou, Zifan Wang, Nicholas Carlini, Milad Nasr, J. Zico Kolter, Matt Fredrikson",
     "year": "2023",
@@ -1007,7 +1093,7 @@ Whispered in the wind's cruel who...</p>
     "url": "https://arxiv.org/abs/2307.15043"
   },
   {
-    "key": "zou2023representation",
+    "id": "zou2023representation",
     "title": "Representation Engineering: A Top-Down Approach to AI Transparency",
     "author": "Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, Shashwat Goel, Nathaniel Li, Michael J. Byun, Zifan Wang, Alex Mallen, Steven Basart, Sanmi Koyejo, Dawn Song, Matt Fredrikson, J. Zico Kolter, Dan Hendrycks",
     "year": "2023",

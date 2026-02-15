@@ -27,7 +27,7 @@ CLOUDFLARE_ANALYTICS_TOKEN = "2b79882684cd4f4aa938847b472c148e"
 DEFAULT_PAGINATION = 10
 RELATIVE_URLS = True
 
-STATIC_PATHS = ["images", "extra/CNAME"]
+STATIC_PATHS = ["images", "extra/CNAME", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
 }

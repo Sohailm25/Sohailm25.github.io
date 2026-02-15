@@ -973,5 +973,59 @@ Whispered in the wind's cruel who...</p>
 
 <d-bibliography src="bibliography.bib"></d-bibliography>
 
+<script>
+// Override Distill shadow DOM styles for dark theme
+document.addEventListener('DOMContentLoaded', function() {
+    const ef = {
+        bg: '#2d353b', bgDim: '#232a2e', bgCard: '#343f44',
+        text: '#d3c6aa', muted: '#859289',
+        green: '#A7C080', aqua: '#83C092', blue: '#7fbbb3',
+        border: '#4a555b'
+    };
+
+    function injectShadowStyles(root) {
+        if (!root || !root.shadowRoot) return;
+        const style = document.createElement('style');
+        style.textContent = `
+            .citation-number { color: ${ef.aqua} !important; cursor: pointer; }
+            .citation-number:hover { color: ${ef.green} !important; }
+            .hover-box { background: ${ef.bgCard} !important; border: 1px solid ${ef.border} !important; box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important; color: ${ef.text} !important; }
+            .hover-box * { color: ${ef.text} !important; }
+            .hover-box a { color: ${ef.aqua} !important; }
+            a { color: ${ef.aqua} !important; }
+            span { color: ${ef.text} !important; }
+        `;
+        root.shadowRoot.appendChild(style);
+    }
+
+    // Observe DOM for Distill custom elements with shadow roots
+    const observer = new MutationObserver(function(mutations) {
+        document.querySelectorAll('d-cite, d-footnote, d-hover-box, d-citation-list, d-bibliography').forEach(injectShadowStyles);
+        // Also check for any element with shadowRoot
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot && !el.shadowRoot.querySelector('.ef-injected')) {
+                injectShadowStyles(el);
+                const marker = document.createElement('span');
+                marker.className = 'ef-injected';
+                marker.style.display = 'none';
+                el.shadowRoot.appendChild(marker);
+            }
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Initial pass
+    setTimeout(function() {
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) injectShadowStyles(el);
+        });
+    }, 500);
+    setTimeout(function() {
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) injectShadowStyles(el);
+        });
+    }, 2000);
+});
+</script>
 </body>
 </html>

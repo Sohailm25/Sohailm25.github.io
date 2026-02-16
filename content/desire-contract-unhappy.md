@@ -22,8 +22,6 @@ Lack of presence is literally delusion. You are living in a fantasy world that D
 
 You will never arrive. We will never arrive. The journey is ALL THAT EXISTS.
 
-So pray your prayer. Sit in boredom and feel it. Feel the current moment in all its glory.
-
 ---
 
 ## It's Easy to Say These Things
@@ -36,7 +34,7 @@ It's odd that you feel more fulfilled and content and satisfied with life after 
 
 Death is the ultimate aligner.
 
-Death doesn't change your circumstances — it changes your perception. Which means the perception was always available.
+Death doesn't change your circumstances. It changes your perception. Which means the perception was always available.
 
 You don't leave a graveyard wanting more stuff. You leave wanting more moments.
 
@@ -52,9 +50,9 @@ Arthur Brooks talks about seeking and presence. Seeking the meaning of life. See
 
 But here's the tension: **seeking without arriving is only fulfilling if you seek the right thing.**
 
-Brooks would say meaning, relationships, faith. Islam would say Allah. The emptiness you feel after getting the "thing" — that's seeking the wrong target, not a problem with seeking itself.
+Brooks would say meaning, relationships, faith. Islam would say Allah. The emptiness you feel after getting the "thing"? That's seeking the wrong target, not a problem with seeking itself.
 
-The titles — SDE II, Senior AI Engineer, FAANG — those are arbitrary. The Quran calls it متاع الغرور (the enjoyment of delusion). You're arriving at the same conclusion from experience that the text states directly.
+The titles (SDE II, Senior AI Engineer, FAANG) are arbitrary. The Quran calls it متاع الغرور (the enjoyment of delusion). You're arriving at the same conclusion from experience that the text states directly.
 
 ---
 

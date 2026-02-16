@@ -1,7 +1,7 @@
 Title: The Forge #1
 Date: 2026-02-16
 Slug: the-forge-issue-1
-Category: Newsletter
+Category: The Forge
 Tags: ai, research, robotics, interpretability, agents
 Summary: Weekly AI research and engineering digest. Interpretability halving hallucinations, model attractor states, synthetic data pipelines, reasoning failure taxonomies, robotics roundup, and agent infrastructure.
 

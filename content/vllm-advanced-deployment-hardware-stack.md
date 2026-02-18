@@ -86,21 +86,21 @@ One detail worth knowing: **H100 PCIe vs SXM for inference**. The PCIe variant d
 
 #### The Decision Tree
 
-1. **Does your model fit in 16GB after quantization?**
-   - Yes → Consider T4 if cost-constrained or edge deployment
-   - No → A100 or H100
+**Does your model fit in 16GB after quantization?**
+- Yes → Consider T4 if cost-constrained or edge deployment
+- No → A100 or H100
 
-2. **Are you serving multiple models or need research flexibility?**
-   - Yes → A100 (80GB gives you headroom)
-   - No → Continue
+**Are you serving multiple models or need research flexibility?**
+- Yes → A100 (80GB gives you headroom)
+- No → Continue
 
-3. **Is your workload throughput-bound (batch=32+) or latency-bound (batch=1-8)?**
-   - Throughput-bound → H100
-   - Latency-bound → A100 or T4 depending on model size
+**Is your workload throughput-bound (batch=32+) or latency-bound (batch=1-8)?**
+- Throughput-bound → H100
+- Latency-bound → A100 or T4 depending on model size
 
-4. **Are you deploying to edge locations with thermal constraints?**
-   - Yes → T4 with power capping
-   - No → A100 or H100
+**Are you deploying to edge locations with thermal constraints?**
+- Yes → T4 with power capping
+- No → A100 or H100
 
 This is as of early 2025. GPU pricing and availability shift constantly. The framework holds, but run the numbers for your specific deployment.
 

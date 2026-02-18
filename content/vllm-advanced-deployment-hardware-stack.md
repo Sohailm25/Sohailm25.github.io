@@ -8,6 +8,69 @@ Summary: GPU selection, inference framework choice, and the upstream decisions t
 
 *This post reflects patterns and lessons learned from building inference systems at production scale. Technical details have been generalized, and no proprietary information from any specific organization is disclosed.*
 
+<style>
+#back-to-toc {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  background: rgba(40, 44, 52, 0.95);
+  border: 1px solid rgba(152, 195, 121, 0.3);
+  color: #98c379;
+  padding: 10px 16px;
+  border-radius: 24px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+#back-to-toc.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+#back-to-toc:hover {
+  background: rgba(50, 54, 62, 0.98);
+  border-color: #98c379;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transform: translateX(-50%) translateY(-1px);
+}
+@media (max-width: 768px) {
+  #back-to-toc {
+    font-size: 12px;
+    padding: 9px 14px;
+  }
+}
+</style>
+
+<a href="#table-of-contents" id="back-to-toc">↑ Back to Contents</a>
+
+<script>
+window.addEventListener('scroll', function() {
+  var btn = document.getElementById('back-to-toc');
+  if (window.scrollY > 500) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+});
+</script>
+
+<div id="table-of-contents"></div>
+
+**Table of Contents:**
+
+1. [Hardware First](#hardware-first)
+2. [GPU Selection Framework](#gpu-selection-framework)
+3. [KV Cache Eviction Under Mixed Workloads](#kv-cache-eviction-under-mixed-workloads)
+4. [Stack Choices: vLLM vs TRT-LLM vs SGLang](#stack-choices)
+5. [Production Gotchas When You Ship vLLM](#production-gotchas-when-you-ship-vllm)
+
 ---
 
 In my [previous article](https://sohailmo.ai/vllm-production-scale-lessons), i covered the production nuances of running vLLM (KV cache fragmentation, chunked prefill, the throughput cliff). But i glossed over the decisions that came *before* those optimizations: which GPU to buy, which inference stack to use.
@@ -18,7 +81,7 @@ Here's what building those decisions looked like across three real deployments.
 
 ---
 
-## Hardware First
+## Hardware First {#hardware-first}
 
 We deployed conversational AI across 100+ QSR locations, each with a single T4 GPU. The model was Qwen2.5-7B quantized to INT4 (~3.6GB), well within the T4's 16GB. Latency looked good in testing. We shipped it.
 
@@ -44,7 +107,7 @@ That deployment taught me something i've carried into every infrastructure decis
 
 Edge deployment constraints aren't just about network latency. They're about physical environment. A T4 in a data center with active cooling is a different beast than a T4 in a passively cooled enclosure sitting next to a fryer. If you're deploying to retail, industrial, or edge locations, thermal management is a first-class concern.
 
-### The GPU Selection Framework
+### The GPU Selection Framework {#gpu-selection-framework}
 
 The T4 story highlights a broader point: GPU selection is about constraints, not just specs. Here's the decision tree i wish i'd had before deploying.
 
@@ -130,7 +193,7 @@ Hardware selection is an economic decision, not just a technical one. At 1B toke
 
 And here's what most people miss: the GPU you choose determines which optimizations are even possible. T4 forces you into quantization (16GB limit). A100 gives you multi-model flexibility. H100 unlocks FP8 native. The hardware decision cascades into every downstream choice.
 
-### KV Cache Eviction Under Mixed Workloads
+### KV Cache Eviction Under Mixed Workloads {#kv-cache-eviction-under-mixed-workloads}
 
 One more failure mode the GPU specs don't tell you about: KV cache eviction cascades.
 
@@ -146,7 +209,7 @@ Monitor with: `vllm:num_preemptions` correlated with `vllm:gpu_cache_usage`. A s
 
 ---
 
-## Stack Choices
+## Stack Choices {#stack-choices}
 
 Hardware chosen, the next question was which inference framework to run on it.
 
@@ -251,7 +314,7 @@ For the agent platform work i'm doing now in my current role, SGLang is the fram
 
 **Framework choice is a system design decision, not a performance optimization.** Choose based on your operational constraints (iteration speed, multi-model, agent workloads) first. Optimize for throughput second.
 
-### Production Gotchas When You Ship vLLM
+### Production Gotchas When You Ship vLLM {#production-gotchas-when-you-ship-vllm}
 
 Two vLLM issues that didn't show up during framework evaluation but bit us in production.
 

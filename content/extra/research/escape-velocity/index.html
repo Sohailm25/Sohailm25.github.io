@@ -226,32 +226,32 @@
 </table>
 
 <h2 id="what-it-looks-like">What collapse looks like in plain language</h2>
-<p>If you are not coming from ML: this project asks a simple question—when two chat models keep talking to each other for 40 turns, do they stay fresh, or do they get trapped in repetitive patterns?</p>
-<p>Below are short excerpts from raw turn logs (real runs) to make the behavior intuitive.</p>
+<p>The core question is simple: when two chat models keep talking for 40 turns, do they keep producing meaningfully new content, or do they fall into repetitive loops?</p>
+<p>Below are representative excerpts selected from raw turn logs after scanning all 180 cached trajectories.</p>
 
-<h3>Example A — higher-collapse pattern (HOMO_B: Qwen self-play)</h3>
+<h3>Example A — strong repetition loop (HOMO_B: Qwen self-play)</h3>
 <div class="note">
-  <strong>Turn 20:</strong> “That's perfect! Here is your final and clear summary once more ...”<br>
-  <strong>Turn 30:</strong> “That's perfect! Here is your final and clear summary once more ...”<br>
-  <strong>Turn 39:</strong> “Great! Here are the detailed explanations ...”
+  <strong>Turn 18:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
+  <strong>Turn 24:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
+  <strong>Turn 39:</strong> “Got it! Here's your comment: And there you have it! The function absolutely nails it ...”
 </div>
-<p>Interpretation: the conversation repeatedly reuses a template with low novelty over many turns.</p>
+<p>Interpretation: near-identical template reuse over long spans, which is exactly the collapse behavior this benchmark is designed to capture.</p>
 
-<h3>Example B — lower-collapse pattern (HOMO_C: Mistral self-play)</h3>
+<h3>Example B — low-collapse trajectory (HOMO_C: Mistral self-play)</h3>
 <div class="note">
-  <strong>Turn 20:</strong> “I apologize for the mistake ... To check your tablet's RAM usage ...”<br>
-  <strong>Turn 30:</strong> “Yes, that's correct ... there may be other factors ...”<br>
-  <strong>Turn 39:</strong> “I apologize for any confusion ... here's the ...”
+  <strong>Turn 18:</strong> “Bias mitigation ... fairness-aware machine learning algorithms ...”<br>
+  <strong>Turn 24:</strong> “Explainability and transparency are also important for regulatory compliance ...”<br>
+  <strong>Turn 39:</strong> “Thank you ... don't hesitate to reach out if you have other questions ...”
 </div>
-<p>Interpretation: still same broad topic, but wording/content continue to vary more.</p>
+<p>Interpretation: still topically related, but content continues to move and reframe rather than locking into one repeated response shell.</p>
 
-<h3>Example C — intermediate pattern (HETERO_ROT: model rotation)</h3>
+<h3>Example C — intermediate pattern (HETERO_ROT: heterogeneous rotation)</h3>
 <div class="note">
-  <strong>Turn 20:</strong> “Creating a culture that promotes a sense of belonging ...”<br>
-  <strong>Turn 30:</strong> “The virtuous cycle of prioritizing employee well-being ...”<br>
-  <strong>Turn 39:</strong> “This is a forward-thinking approach ...”
+  <strong>Turn 18:</strong> “Develop and implement policies and regulations to reduce greenhouse gas emissions ...”<br>
+  <strong>Turn 30:</strong> “By working together, we can make a significant difference ...”<br>
+  <strong>Turn 39:</strong> “I hope this document provided a useful framework ...”
 </div>
-<p>Interpretation: moderate repetition—more than the lowest-collapse condition, less than the most template-locked condition.</p>
+<p>Interpretation: some thematic repetition, but less rigid template-locking than high-collapse homogeneous runs.</p>
 
 <h2 id="results">Key baseline results</h2>
 <figure>

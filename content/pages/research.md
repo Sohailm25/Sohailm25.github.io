@@ -11,7 +11,7 @@ Sohail Mohammad · Preprint, 2026
 
 Preregistered baseline study across four interaction conditions with full confirmatory baseline closure (720/720 tuples). Results are reported with explicit reliability limitations after the preregistered detector agreement gate was not met (κ=0.566 vs 0.80 threshold), limiting conclusions to descriptive and condition-comparative findings.
 
-[Paper (PDF)]({static}/papers/paper-a-escape-velocity-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/clawd-experiments)
+[Paper (PDF)]({static}/papers/paper-a-escape-velocity-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
 
 ### [Inverse Scaling in Activation Steering](/research/activation-steering/)
 **Architecture and Scale Dependence of Refusal Manipulation**

@@ -72,7 +72,9 @@ window.addEventListener('scroll', function() {
 
 Everyone says AI can't replicate "taste."
 
-They're wrong.
+I said the same thing a month ago.
+
+Then I watched models match aesthetic patterns I thought were uniquely human. I watched curation algorithms outperform my own judgment. I watched trend prediction become trivial.
 
 Taste is pattern-matching at scale. And AI is VERY good at that.
 

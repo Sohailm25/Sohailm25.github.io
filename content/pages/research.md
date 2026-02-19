@@ -11,6 +11,8 @@ Sohail Mohammad · Preprint, 2026
 
 Preregistered baseline study across four interaction conditions with full confirmatory baseline closure (720/720 tuples). Results are reported with explicit reliability limitations after the preregistered detector reliability gate was not met (κ=0.566 vs 0.80 threshold), limiting conclusions to descriptive and condition-comparative findings.
 
+*Path B disclosure:* Detector reliability prereg gate was **not met**; claims are descriptive/condition-comparative only.
+
 [Paper (PDF)]({static}/papers/paper-a-escape-velocity-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
 
 ### [Inverse Scaling in Activation Steering](/research/activation-steering/)
@@ -20,7 +22,7 @@ Sohail Mohammad · Preprint, 2026
 
 Activation steering modifies language model behavior by adding learned direction vectors at inference time. We systematically evaluate two extraction methods across seven models (2B–32B parameters) and find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B. Simple mean-difference extraction matches or exceeds complex SVD-based methods at every scale tested, while architecture acts as a binary gate on steerability.
 
-[Paper (PDF)]({static}/papers/activation-steering-2025.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
+[Paper (PDF)]({static}/papers/activation-steering-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
 
 ## Experiments
 

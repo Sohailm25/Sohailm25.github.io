@@ -206,6 +206,14 @@
 <strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed.
 </div>
 
+<h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
+<p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>
+<ul>
+  <li><strong>Repetition:</strong> very high semantic similarity to recent turns (adjacent-turn cosine ≥ 0.92 or two-turn-back cosine ≥ 0.90) sustained for at least 3 turns.</li>
+  <li><strong>Low drift:</strong> semantic drift remains small (d1 ≤ 0.08 and d2 ≤ 0.10, where drift = 1 − cosine similarity).</li>
+  <li><strong>Locked rule:</strong> thresholds were fixed before final analysis and not tuned after seeing outcome patterns.</li>
+</ul>
+
 <h2 id="setup">Study setup</h2>
 <ul>
   <li>Design: 4 conditions × 36 seeds × 5 repeats = 720 target tuples.</li>

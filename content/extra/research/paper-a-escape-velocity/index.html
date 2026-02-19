@@ -214,15 +214,26 @@
   <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.</li>
 </ul>
 
+<h3 id="condition-mapping">Condition mapping (model identity)</h3>
+<table>
+  <thead><tr><th>Condition</th><th>Model setup</th></tr></thead>
+  <tbody>
+    <tr><td>HOMO_A</td><td>Llama-3.1-8B-Instruct self-play (same model on both sides)</td></tr>
+    <tr><td>HOMO_B</td><td>Qwen2.5-7B-Instruct self-play (same model on both sides)</td></tr>
+    <tr><td>HOMO_C</td><td>Mistral-7B-Instruct-v0.3 self-play (same model on both sides)</td></tr>
+    <tr><td>HETERO_ROT</td><td>Round-robin heterogeneous rotation across the three model families</td></tr>
+  </tbody>
+</table>
+
 <h2 id="results">Key baseline results</h2>
 <figure>
   <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">
-  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition.</figcaption>
+  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition (HOMO_A=Llama-3.1-8B, HOMO_B=Qwen2.5-7B, HOMO_C=Mistral-7B-v0.3, HETERO_ROT=heterogeneous rotation).</figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_2_collapse_distribution.png" alt="Collapse rate distribution by condition">
-  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across condition-specific tuples.</figcaption>
+  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across condition-specific tuples (same condition-to-model mapping as Figure 1).</figcaption>
 </figure>
 
 <figure>

@@ -5,18 +5,18 @@ Template: page
 ## Papers
 
 ### [Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play](/research/paper-a-escape-velocity/)
-**Paper A (Path B): Baseline closure with transparent reliability limits**
+**Baseline collapse dynamics with transparent reliability limits**
 
 Sohail Mohammad · Preprint, 2026
 
-Preregistered baseline study across four interaction conditions with full confirmatory baseline closure (720/720 tuples). Results are reported under Path B framing after the preregistered reliability gate was not met (κ=0.566 vs 0.80 threshold), limiting conclusions to descriptive and condition-comparative findings.
+Preregistered baseline study across four interaction conditions with full confirmatory baseline closure (720/720 tuples). Results are reported with explicit reliability limitations after the preregistered detector agreement gate was not met (κ=0.566 vs 0.80 threshold), limiting conclusions to descriptive and condition-comparative findings.
 
-[Distill page](/research/paper-a-escape-velocity/)
+[Paper (PDF)]({static}/papers/paper-a-escape-velocity-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/clawd-experiments) · [Distill page](/research/paper-a-escape-velocity/)
 
 ### [Inverse Scaling in Activation Steering](/research/activation-steering/)
 **Architecture and Scale Dependence of Refusal Manipulation**
 
-Sohail Mohammad · Preprint, 2025
+Sohail Mohammad · Preprint, 2026
 
 Activation steering modifies language model behavior by adding learned direction vectors at inference time. We systematically evaluate two extraction methods across seven models (2B–32B parameters) and find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B. Simple mean-difference extraction matches or exceeds complex SVD-based methods at every scale tested, while architecture acts as a binary gate on steerability.
 

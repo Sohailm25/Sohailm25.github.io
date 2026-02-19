@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://distill.pub/template.v2.js"></script>
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play",
+      "description": "A preregistered baseline study of collapse dynamics across four interaction conditions.",
+      "authors": [{"author": "Sohail Mohammad", "affiliations": [{"name": "Independent Researcher"}]}],
+      "katex": {"delimiters": [{"left": "$", "right": "$", "display": false}]}
+    }</script>
+  </d-front-matter>
+  <style>
+    :root { --ef-bg:#2d353b; --ef-bg-dim:#232a2e; --ef-bg-card:#343f44; --ef-text:#d3c6aa; --ef-text-muted:#859289; --ef-green:#A7C080; --ef-aqua:#83C092; --ef-border:#4a555b; }
+    html,body{background:var(--ef-bg)!important;color:var(--ef-text)!important}
+    @supports (display:grid){d-article{display:block!important;max-width:780px;margin:0 auto;padding:0 24px}}
+    d-title,d-byline{background:var(--ef-bg-dim);border-bottom:1px solid var(--ef-border)}
+    d-title h1{color:var(--ef-green)!important} d-title p,d-byline,*{color:var(--ef-text-muted)}
+    h2{color:var(--ef-green);border-bottom:1px solid var(--ef-border);padding-bottom:.3em;margin-top:2em}
+    h3{color:var(--ef-aqua);margin-top:1.5em}
+    a{color:var(--ef-aqua)}
+    figure img{width:100%;border:1px solid var(--ef-border);border-radius:4px}
+    figcaption{color:var(--ef-text-muted);font-size:.9em}
+    table{border-collapse:collapse;width:100%;font-size:.92em}
+    th,td{border:1px solid var(--ef-border);padding:8px 10px}
+    th{background:var(--ef-bg-dim);color:var(--ef-green)}
+    tr:nth-child(even){background:var(--ef-bg-card)}
+    .note{background:var(--ef-bg-card);border-left:3px solid var(--ef-green);padding:1em 1.2em;border-radius:3px}
+  </style>
+</head>
+<body>
+<d-title>
+  <h1>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</h1>
+  <p>Paper A (Path B): baseline closure complete, reliability gate transparently reported as not met.</p>
+</d-title>
+<d-byline></d-byline>
+<d-article>
+
+<h2 id="abstract">Abstract</h2>
+<p>We ran a preregistered baseline study of multi-turn collapse dynamics across four interaction conditions (HOMO_A, HOMO_B, HOMO_C, HETERO_ROT). Confirmatory baseline execution closed at 720/720 unique successful tuples with clean protocol integrity. The preregistered detector reliability audit did not meet its Cohen’s κ threshold (κ=0.566, threshold 0.80), so results are presented under a transparent Path B framing: descriptive and condition-comparative conclusions only, without claiming detector reliability validation.</p>
+
+<div class="note">
+<strong>Path B disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed.
+</div>
+
+<h2 id="setup">Study setup</h2>
+<ul>
+  <li>Design: 4 conditions × 36 seeds × 5 repeats = 720 target tuples.</li>
+  <li>Execution status: 720/720 successful tuples.</li>
+  <li>Protocol integrity: all successful runs at 40 turns, no early-stop violations.</li>
+  <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.</li>
+</ul>
+
+<h2 id="results">Key baseline results</h2>
+<figure>
+  <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">
+  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition (themed parity with activation-steering visual style).</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/figure_2_collapse_distribution.png" alt="Collapse rate distribution by condition">
+  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across condition-specific tuples.</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/figure_3_first_collapse_turn.png" alt="First collapse turn distribution">
+  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index.</figcaption>
+</figure>
+
+<h3 id="scope">Interpretation scope</h3>
+<table>
+  <thead><tr><th>Claim type</th><th>Status</th><th>Scope</th></tr></thead>
+  <tbody>
+    <tr><td>Baseline execution closure</td><td>Supported</td><td>720/720 tuple completion with protocol integrity checks.</td></tr>
+    <tr><td>Condition-comparative collapse patterns</td><td>Supported (descriptive)</td><td>Reported under locked detector outputs.</td></tr>
+    <tr><td>Detector reliability validation</td><td>Not supported</td><td>Preregistered κ gate not met (0.566 &lt; 0.80).</td></tr>
+  </tbody>
+</table>
+
+<h2 id="limitations">Limitations</h2>
+<ul>
+  <li>Reliability gate was not met; no confirmatory detector-validation claim is made.</li>
+  <li>Sensitivity metrics (e.g., prevalence-adjusted agreement) are supplementary and non-gating.</li>
+  <li>Conclusions are constrained to baseline descriptive findings under Path B.</li>
+</ul>
+
+<h2 id="artifacts">Reproducibility artifacts</h2>
+<p>Core artifact bundle (freeze, manifests, κ gate record, reproducibility index) is documented in the experiment repository’s final artifacts package.</p>
+
+<d-appendix>
+  <h3>Acknowledgements</h3>
+  <p>Project by Sohail Mohammad. This page follows the same Distill styling and publication pipeline used for <em>Inverse Scaling in Activation Steering</em>.</p>
+  <d-bibliography src="bibliography.bib"></d-bibliography>
+</d-appendix>
+
+</d-article>
+</body>
+</html>

@@ -4,16 +4,16 @@ Template: page
 
 ## Papers
 
-### [Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play](/research/paper-a-escape-velocity/)
+### [Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play](/research/escape-velocity/)
 **Baseline collapse dynamics with transparent reliability limits**
 
 Sohail Mohammad · Preprint, 2026
 
-Preregistered baseline study across four interaction conditions with full confirmatory baseline closure (720/720 tuples). Results are reported with explicit reliability limitations after the preregistered detector reliability gate was not met (κ=0.566 vs 0.80 threshold), limiting conclusions to descriptive and condition-comparative findings.
+Preregistered baseline study across four interaction conditions (Llama-3.1-8B self-play, Qwen2.5-7B self-play, Mistral-7B-v0.3 self-play, and heterogeneous round-robin rotation) with full confirmatory baseline closure (720/720 tuples). Under fixed protocol settings, collapse rates were strongly condition-dependent, with Qwen-homogeneous highest and Mistral-homogeneous lowest. Because the preregistered detector reliability gate was not met (κ=0.566 vs 0.80 threshold), conclusions are intentionally limited to descriptive and condition-comparative findings.
 
-*Path B disclosure:* Detector reliability prereg gate was **not met**; claims are descriptive/condition-comparative only.
+*Path B disclosure:* Detector reliability prereg gate was **not met**; no detector-validation claim is made.
 
-[Paper (PDF)]({static}/papers/paper-a-escape-velocity-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
+[Paper (PDF)]({static}/papers/escape-velocity-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
 
 ### [Inverse Scaling in Activation Steering](/research/activation-steering/)
 **Architecture and Scale Dependence of Refusal Manipulation**

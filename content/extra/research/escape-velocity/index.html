@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://distill.pub/template.v2.js"></script>
+    <d-front-matter>
+        <script type="text/json">{
+            "title": "Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play",
+            "description": "A preregistered baseline study of collapse dynamics across four interaction conditions.",
+            "authors": [
+                {
+                    "author": "Sohail Mohammad",
+                    "affiliations": [{"name": "Independent Researcher"}]
+                }
+            ],
+            "katex": {
+                "delimiters": [
+                    {"left": "$", "right": "$", "display": false}
+                ]
+            }
+        }</script>
+    </d-front-matter>
+    <style>
+        /* Everforest dark palette (matched to activation-steering page) */
+        :root {
+            --ef-bg: #2d353b;
+            --ef-bg-dim: #232a2e;
+            --ef-bg-card: #343f44;
+            --ef-text: #d3c6aa;
+            --ef-text-muted: #859289;
+            --ef-green: #A7C080;
+            --ef-green-dim: #859e7a;
+            --ef-aqua: #83C092;
+            --ef-blue: #7fbbb3;
+            --ef-red: #e67e80;
+            --ef-orange: #e69875;
+            --ef-yellow: #dbbc7f;
+            --ef-purple: #d699b6;
+            --ef-border: #4a555b;
+        }
+
+        html, body {
+            background-color: var(--ef-bg) !important;
+            color: var(--ef-text) !important;
+        }
+
+        /* Distill layout override for readability */
+        d-article {
+            color: var(--ef-text);
+            overflow: visible;
+        }
+
+        @supports (display: grid) {
+            d-article {
+                display: block !important;
+                max-width: 780px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            d-article p, d-article ul, d-article ol, d-article blockquote,
+            d-article h2, d-article h3, d-article h4,
+            d-article table, d-article figure, d-article .note {
+                grid-column: unset !important;
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+        }
+
+        d-title {
+            background-color: var(--ef-bg-dim);
+            padding: 2em 0;
+            border-bottom: 1px solid var(--ef-border);
+        }
+
+        d-title h1 {
+            color: var(--ef-green) !important;
+        }
+
+        d-title p {
+            color: var(--ef-text-muted) !important;
+        }
+
+        d-byline {
+            background-color: var(--ef-bg-dim);
+            border-bottom: 1px solid var(--ef-border);
+            color: var(--ef-text-muted);
+        }
+
+        d-byline a { color: var(--ef-aqua); }
+        d-byline span, d-byline p, d-byline .byline-container,
+        d-byline .authors-affiliations { color: var(--ef-text-muted) !important; }
+        d-byline h3 { color: var(--ef-text-muted) !important; }
+        d-byline * { color: var(--ef-text-muted); }
+        d-byline a { color: var(--ef-aqua) !important; }
+
+        h2 {
+            margin-top: 2em;
+            border-bottom: 1px solid var(--ef-border);
+            padding-bottom: 0.3em;
+            color: var(--ef-green);
+        }
+
+        h3 {
+            margin-top: 1.5em;
+            color: var(--ef-aqua);
+        }
+
+        a { color: var(--ef-aqua); }
+        a:hover { color: var(--ef-green); }
+
+        strong { color: var(--ef-text); }
+
+        figure {
+            margin: 2em 0;
+        }
+
+        figure img {
+            width: 100%;
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+        }
+
+        figcaption {
+            margin-top: 0.5em;
+            font-size: 0.9em;
+            color: var(--ef-text-muted);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.9em;
+        }
+
+        table th {
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--ef-green);
+        }
+
+        table td {
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            color: var(--ef-text);
+        }
+
+        table tr:nth-child(even) {
+            background-color: var(--ef-bg-card);
+        }
+
+        .note {
+            background-color: var(--ef-bg-card);
+            border-left: 3px solid var(--ef-green);
+            padding: 1em 1.5em;
+            margin: 1.5em 0;
+            border-radius: 2px;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--ef-green-dim);
+            padding-left: 1.5em;
+            margin: 1.5em 0;
+            color: var(--ef-text-muted);
+            font-style: italic;
+        }
+
+        d-citation-list { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; }
+        d-citation-list * { color: var(--ef-text) !important; }
+        d-citation-list a { color: var(--ef-aqua) !important; }
+        d-appendix { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; border-top: 1px solid var(--ef-border); }
+        d-appendix * { color: var(--ef-text); }
+        d-footnote-list { color: var(--ef-text) !important; }
+        d-bibliography * { color: var(--ef-text) !important; }
+        d-bibliography a { color: var(--ef-aqua) !important; }
+        d-hover-box { background-color: var(--ef-bg-card) !important; border: 1px solid var(--ef-border) !important; color: var(--ef-text) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important; }
+        d-hover-box * { color: var(--ef-text) !important; }
+        d-hover-box a { color: var(--ef-aqua) !important; }
+        d-cite a, d-cite, d-cite sup { color: var(--ef-aqua) !important; }
+        d-contents { color: var(--ef-text-muted); }
+        d-contents a { color: var(--ef-text-muted); }
+        d-contents a:hover { color: var(--ef-green); }
+    </style>
+</head>
+<body>
+
+<d-title>
+    <h1>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</h1>
+    <p>Baseline closure complete with transparent reliability limitations.</p>
+</d-title>
+
+<d-byline></d-byline>
+
+<d-article>
+
+<h2 id="abstract">Abstract</h2>
+<p>We ran a preregistered baseline study of multi-turn collapse dynamics across four interaction conditions (HOMO_A, HOMO_B, HOMO_C, HETERO_ROT). Confirmatory baseline execution closed at 720/720 unique successful tuples with clean protocol integrity. The preregistered detector reliability audit did not meet its Cohen’s κ threshold (κ=0.566, threshold 0.80), so results are presented with transparent limitations: descriptive and condition-comparative conclusions only, without claiming detector reliability validation.</p>
+
+<div class="note">
+<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed.
+</div>
+
+<h2 id="setup">Study setup</h2>
+<ul>
+  <li>Design: 4 conditions × 36 seeds × 5 repeats = 720 target tuples.</li>
+  <li>Execution status: 720/720 successful tuples.</li>
+  <li>Protocol integrity: all successful runs at 40 turns, no early-stop violations.</li>
+  <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.</li>
+</ul>
+
+<h3 id="condition-mapping">Condition mapping (model identity)</h3>
+<table>
+  <thead><tr><th>Condition</th><th>Model setup</th></tr></thead>
+  <tbody>
+    <tr><td>HOMO_A</td><td>Llama-3.1-8B-Instruct self-play (same model on both sides)</td></tr>
+    <tr><td>HOMO_B</td><td>Qwen2.5-7B-Instruct self-play (same model on both sides)</td></tr>
+    <tr><td>HOMO_C</td><td>Mistral-7B-Instruct-v0.3 self-play (same model on both sides)</td></tr>
+    <tr><td>HETERO_ROT</td><td>Round-robin heterogeneous rotation across the three model families</td></tr>
+  </tbody>
+</table>
+
+<h2 id="results">Key baseline results</h2>
+<figure>
+  <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">
+  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition (HOMO_A=Llama-3.1-8B, HOMO_B=Qwen2.5-7B, HOMO_C=Mistral-7B-v0.3, HETERO_ROT=heterogeneous rotation).</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/figure_2_collapse_distribution.png" alt="Collapse rate distribution by condition">
+  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across condition-specific tuples (same condition-to-model mapping as Figure 1).</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/figure_3_first_collapse_turn.png" alt="First collapse turn distribution">
+  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index.</figcaption>
+</figure>
+
+<h3 id="scope">Interpretation scope</h3>
+<table>
+  <thead><tr><th>Claim type</th><th>Status</th><th>Scope</th></tr></thead>
+  <tbody>
+    <tr><td>Baseline execution closure</td><td>Supported</td><td>720/720 tuple completion with protocol integrity checks.</td></tr>
+    <tr><td>Condition-comparative collapse patterns</td><td>Supported (descriptive)</td><td>Reported under locked detector outputs.</td></tr>
+    <tr><td>Detector reliability validation</td><td>Not supported</td><td>Preregistered κ gate not met (0.566 &lt; 0.80).</td></tr>
+  </tbody>
+</table>
+
+<h2 id="limitations">Limitations</h2>
+<ul>
+  <li>Reliability gate was not met; no confirmatory detector-validation claim is made.</li>
+  <li>Sensitivity metrics are supplementary and non-gating.</li>
+  <li>Conclusions are constrained to baseline descriptive findings.</li>
+</ul>
+
+<d-appendix>
+  <d-bibliography src="bibliography.bib"></d-bibliography>
+</d-appendix>
+
+</d-article>
+</body>
+</html>

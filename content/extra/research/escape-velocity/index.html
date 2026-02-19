@@ -225,6 +225,34 @@
   </tbody>
 </table>
 
+<h2 id="what-it-looks-like">What collapse looks like in plain language</h2>
+<p>If you are not coming from ML: this project asks a simple question—when two chat models keep talking to each other for 40 turns, do they stay fresh, or do they get trapped in repetitive patterns?</p>
+<p>Below are short excerpts from raw turn logs (real runs) to make the behavior intuitive.</p>
+
+<h3>Example A — higher-collapse pattern (HOMO_B: Qwen self-play)</h3>
+<div class="note">
+  <strong>Turn 20:</strong> “That's perfect! Here is your final and clear summary once more ...”<br>
+  <strong>Turn 30:</strong> “That's perfect! Here is your final and clear summary once more ...”<br>
+  <strong>Turn 39:</strong> “Great! Here are the detailed explanations ...”
+</div>
+<p>Interpretation: the conversation repeatedly reuses a template with low novelty over many turns.</p>
+
+<h3>Example B — lower-collapse pattern (HOMO_C: Mistral self-play)</h3>
+<div class="note">
+  <strong>Turn 20:</strong> “I apologize for the mistake ... To check your tablet's RAM usage ...”<br>
+  <strong>Turn 30:</strong> “Yes, that's correct ... there may be other factors ...”<br>
+  <strong>Turn 39:</strong> “I apologize for any confusion ... here's the ...”
+</div>
+<p>Interpretation: still same broad topic, but wording/content continue to vary more.</p>
+
+<h3>Example C — intermediate pattern (HETERO_ROT: model rotation)</h3>
+<div class="note">
+  <strong>Turn 20:</strong> “Creating a culture that promotes a sense of belonging ...”<br>
+  <strong>Turn 30:</strong> “The virtuous cycle of prioritizing employee well-being ...”<br>
+  <strong>Turn 39:</strong> “This is a forward-thinking approach ...”
+</div>
+<p>Interpretation: moderate repetition—more than the lowest-collapse condition, less than the most template-locked condition.</p>
+
 <h2 id="results">Key baseline results</h2>
 <figure>
   <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">

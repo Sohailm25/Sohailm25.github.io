@@ -233,7 +233,7 @@
 </div>
 
 <h2 id="approach">Approach</h2>
-<p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
+<p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <a href="#ref-1">[1]</a>, <a href="#ref-2">[2]</a>.</p>
 
 <p>Rather than computing full Jacobians (prohibitive for <em>d</em><sub>model</sub>&nbsp;=&nbsp;4096), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
 
@@ -323,11 +323,11 @@
 <d-appendix>
   <h3>References</h3>
   <ol class="references">
-    <li>
+    <li id="ref-1">
       Eckmann, J.-P. &amp; Ruelle, D. (1985). <em>Ergodic theory of chaos and strange attractors</em>. <em>Reviews of Modern Physics</em>, 57(3), 617.
       <a href="https://doi.org/10.1103/RevModPhys.57.617" target="_blank" rel="noopener">doi:10.1103/RevModPhys.57.617</a>
     </li>
-    <li>
+    <li id="ref-2">
       Wolf, A., Swift, J. B., Swinney, H. L., &amp; Vastano, J. A. (1985). <em>Determining Lyapunov exponents from a time series</em>. <em>Physica D: Nonlinear Phenomena</em>, 16(3), 285–317.
       <a href="https://doi.org/10.1016/0167-2789(85)90011-9" target="_blank" rel="noopener">doi:10.1016/0167-2789(85)90011-9</a>
     </li>

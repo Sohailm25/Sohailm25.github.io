@@ -853,6 +853,71 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <h3>Caveats</h3>
 
+<h3>Transfer Coverage Matrix</h3>
+
+<p>The table below shows which model pairs were tested for direct behavioral transfer and which were excluded. Direct vector transfer requires matching hidden dimensionality; dimension-mismatched pairs would require explicit projection, introducing a confound we chose to avoid.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Source ↓ / Target →</th>
+            <th>Q-3B<br><small>(2048)</small></th>
+            <th>Q-7B<br><small>(3584)</small></th>
+            <th>Q-14B<br><small>(5120)</small></th>
+            <th>Q-32B<br><small>(5120)</small></th>
+            <th>G-9B<br><small>(3584)</small></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Qwen 3B <small>(2048)</small></td>
+            <td style="color: var(--ef-text-muted);">self</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+        </tr>
+        <tr>
+            <td>Qwen 7B <small>(3584)</small></td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">self</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-red);"><strong>tested</strong></td>
+        </tr>
+        <tr>
+            <td>Qwen 14B <small>(5120)</small></td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">self</td>
+            <td style="color: var(--ef-green);"><strong>tested</strong></td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+        </tr>
+        <tr>
+            <td>Qwen 32B <small>(5120)</small></td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-green);"><strong>tested</strong></td>
+            <td style="color: var(--ef-text-muted);">self</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+        </tr>
+        <tr>
+            <td>Gemma 9B <small>(3584)</small></td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-red);"><strong>tested</strong></td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">mismatch</td>
+            <td style="color: var(--ef-text-muted);">self</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="hypothesis-box">
+<p><strong>Key constraint.</strong> Within the Qwen family, only 14B and 32B share hidden dimensionality (5120), making them the only same-family pair eligible for direct transfer without projection. Similarly, Qwen 7B and Gemma 9B are the only cross-family pair sharing hidden dimensionality (3584). All behavioral transfer conclusions are anchored on these two dim-matched pairs. Dimension-mismatched pairs were not used for behavioral transfer and no claims are made about them.</p>
+</div>
+
+<h3>Caveats</h3>
+
 <p>These results come from <strong>one same-family pair</strong> (Qwen 14B &harr; 32B) and <strong>one cross-family pair</strong> (Qwen 7B &harr; Gemma 9B). We do not claim these findings are universal. Same-family transfer may not hold for other families (e.g., Gemma 9B &harr; 27B) or at larger scale gaps. Cross-family failure may not generalize to all cross-family pairs. The cross-cosine metric is suggestive of geometric structure but is not a causal explanation for transfer success or failure. A broader transfer matrix across multiple families and scales is needed before drawing general conclusions.</p>
 
 <h2 id="limitations">12. Limitations</h2>

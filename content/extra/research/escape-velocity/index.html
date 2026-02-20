@@ -246,8 +246,10 @@
 <p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition — but our automated collapse detector did not pass its preregistered reliability check (Cohen’s κ = 0.566 vs. threshold 0.80). Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
 
 <div class="note">
-<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset/protocol outcome, not a validated detector claim.
+<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset and protocol outcome, not a validated detector claim.
 </div>
+
+<p><strong>Primary contributions:</strong> (1) a locked, reproducible measurement protocol for multi-turn collapse with frozen artifacts; (2) a complete 720-trajectory descriptive benchmark; and (3) a transparent account of a preregistered reliability gate failure and its consequences for claim scope — which we believe is independently informative for researchers designing LLM evaluation pipelines.</p>
 
 <h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
 <p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>
@@ -264,6 +266,12 @@
   <li>Protocol integrity: all successful runs at 40 turns, no early-stop violations.</li>
   <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.</li>
 </ul>
+
+<h3 id="seed-prompts">Seed prompts</h3>
+<p>The 36 seed prompts (SEEDS_V2) were drawn from six topical buckets — factual Q&amp;A, instruction following, creative rewrite, argumentative, conversational, and practical task — with six prompts per bucket. Examples: "Explain why eclipses do not happen every month" (factual), "Give me exactly 3 bullet points on how to prepare for a technical interview" (instruction), "Argue both for and against using open-weight models in production safety-critical systems" (argumentative). The full seed set is available in the <a href="https://github.com/Sohailm25/escape-velocity">companion repository</a>.</p>
+
+<h3 id="context-window">Context window handling</h3>
+<p>The full conversation history is passed to the model at each turn without truncation. At 40 turns with up to 256 tokens each, conversations can reach ~10,000 tokens. The models have context windows of 8,192 (Llama, Mistral) to 32,768 (Qwen) tokens. In practice, collapsed turns produce short outputs, keeping most conversations within limits. We did not implement explicit truncation; if context exceeded the model's window, internal left-truncation would apply. This is a limitation: later-turn behavior in longer conversations may be partially confounded by context overflow.</p>
 
 <h3 id="condition-mapping">Condition mapping (model identity)</h3>
 <table>
@@ -347,9 +355,12 @@
 
 <h2 id="limitations">Limitations</h2>
 <ul>
-  <li>Reliability gate was not met; no confirmatory detector-validation claim is made.</li>
-  <li>Sensitivity metrics are supplementary and non-gating.</li>
-  <li>Conclusions are constrained to baseline descriptive findings.</li>
+  <li><strong>Detector reliability:</strong> κ=0.566 (threshold 0.80 not met). No confirmatory detector-validation claim is made.</li>
+  <li><strong>LLM-rater circularity:</strong> The reliability audit used two LLM raters (GPT-4o, Claude Sonnet 4) rather than human annotators. LLMs evaluating LLM-generated text may share systematic biases that inflate apparent agreement, and the "independence" of these raters is limited by potential training-data and architectural overlap. A human-rater reliability audit is the highest-priority follow-up.</li>
+  <li><strong>Detector thresholds:</strong> Threshold values (cosine ≥ 0.92/0.90, drift ≤ 0.08/0.10, 3 consecutive turns) were preregistered to prevent researcher degrees of freedom, but lack independent validation. A non-confirmatory sweep across 36 threshold configurations showed collapse rates ranging from 0.33 to 0.60 with no condition-rank inversions — suggesting the ordering is robust to small perturbations, but broader validation with alternative detection approaches (lexical overlap, n-gram repetition, perplexity) remains needed.</li>
+  <li><strong>Single embedding model:</strong> The detector relies solely on MiniLM-L6-v2 embeddings. Different embedding models might yield different collapse patterns.</li>
+  <li><strong>Model coverage:</strong> Only three 7–8B instruction-tuned models were tested. Whether similar patterns hold for larger models (70B+), base models, models with different alignment approaches (RLHF vs. DPO), or frontier proprietary models is untested.</li>
+  <li><strong>No causal claims:</strong> We observe condition-dependent differences but do not establish why. Training data diversity, alignment procedure differences, tokenizer effects, and architecture choices are plausible hypotheses for future investigation.</li>
 </ul>
 
 <d-appendix>

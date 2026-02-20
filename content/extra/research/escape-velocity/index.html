@@ -251,12 +251,31 @@
 
 <p><strong>Primary contributions:</strong> (1) a locked, reproducible measurement protocol for multi-turn collapse with frozen artifacts; (2) a complete 720-trajectory descriptive benchmark; and (3) a transparent account of a preregistered reliability gate failure and its consequences for claim scope — which we believe is independently informative for researchers designing LLM evaluation pipelines.</p>
 
+<h2 id="why-this-matters">Why this matters</h2>
+<p>Multi-turn conversations are where most real LLM usage happens — and where quality is hardest to measure. If models quietly degrade into repetitive loops after enough turns, that matters for anyone building chat products, agents, or evaluation pipelines. But measuring this degradation reliably turns out to be harder than measuring it at all.</p>
+<p>This study contributes a locked protocol and complete dataset for studying the problem. It also contributes a transparent account of a reliability gate failure — our automated detector didn't pass its own preregistered agreement check — which we think is independently useful for researchers designing LLM evaluation systems.</p>
+
 <h2 id="at-a-glance">At a glance</h2>
+
+<h3>What we did</h3>
+<p>Ran 720 multi-turn conversations (40 turns each) across four model-pairing conditions using three 7B-parameter model families. Measured collapse — defined as sustained high-similarity, low-drift output — using a frozen, preregistered detector.</p>
+
+<h3>What we found</h3>
 <ul>
-  <li><strong>What this page provides:</strong> a reproducible descriptive benchmark of 720 multi-turn conversations under frozen rules.</li>
-  <li><strong>What it does not provide:</strong> validated detector-level confirmation or causal explanation, because the preregistered reliability gate was not met (κ=0.566 vs 0.80).</li>
-  <li><strong>How to use it:</strong> as a baseline dataset/protocol and condition-comparison map for future measurement improvements.</li>
+  <li>Collapse rates vary substantially by condition (model family matters).</li>
+  <li>Heterogeneous model rotation shows the lowest collapse rates.</li>
+  <li>The automated detector has high raw agreement (92.8%) but low Cohen's κ (0.566), meaning its reliability is unconfirmed for the base rates observed.</li>
 </ul>
+
+<h3>What this does NOT show</h3>
+<ul>
+  <li>Validated collapse detection — the κ gate was not met, so detector-level claims are off the table.</li>
+  <li>Causal explanations for why some conditions collapse more than others.</li>
+  <li>Generalization beyond these specific models, prompts, and protocol settings.</li>
+</ul>
+
+<h3>How to use this</h3>
+<p>As a baseline dataset and protocol for future work on multi-turn quality measurement. The condition-comparison patterns are informative for hypothesis generation, but should not be treated as validated rankings for deployment decisions.</p>
 
 <h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
 <p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>

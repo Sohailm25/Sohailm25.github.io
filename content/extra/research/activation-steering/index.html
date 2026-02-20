@@ -301,12 +301,34 @@
 
 <p>Activation steering (adding learned direction vectors to a model's residual stream at inference time) has emerged as a lightweight method for modifying language model behavior without retraining. We systematically evaluate two direction extraction methods (Difference-in-Means and COSMIC) across seven instruction-tuned models spanning 2B–32B parameters, three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). Under our tested protocol (layer-l-through-N steering with greedy decoding), we observe that steering effectiveness is at ceiling for smaller models and declines at larger scales: coherent refusal rates drop from 100% at 3B to 77% at 32B (n=30) in the Qwen family, with Gemma 27B becoming completely unsteerable (n=1 architecture). Simple mean-difference extraction matches or exceeds SVD-based COSMIC at every scale tested. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering. We further discover that extraction tooling (nnsight versus raw PyTorch hooks) produces directions differing by 90 percentage points in effectiveness on the same model. INT8 quantization preserves steering; INT4 degrades large models by 20 percentage points while leaving small models unaffected. These findings constrain the viability of single-direction steering as models scale under this protocol, and are consistent with the possibility that the "refusal direction" becomes a less complete description at larger scales—though this interpretation remains speculative given the limited model coverage (n=3 families, n=1 failure case). For practitioners: use mean-difference extraction with graph-level tracing, target 50% depth for large models, and validate per-architecture.</p>
 
+<h2 id="why-this-matters">Why this matters</h2>
+<p>Activation steering is one of the cheapest ways to modify model behavior at inference time — no retraining, no RLHF, just add a vector. If it works reliably, it's a powerful tool for safety teams and practitioners. But "works on one model" is not "works in general."</p>
+<p>We tested steering across the conditions practitioners actually encounter: different model sizes, architecture families, quantization levels, and extraction methods. The results are cautionary: steering reliability depends heavily on configuration choices that are rarely reported in the literature.</p>
+
 <h2 id="at-a-glance">At a glance</h2>
+
+<h3>What we did</h3>
+<p>Evaluated two direction extraction methods (DIM, COSMIC) across seven instruction-tuned models (2B–32B), three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). Measured coherent refusal rate on 30 benign prompts with greedy decoding.</p>
+
+<h3>What we found</h3>
 <ul>
-<li><strong>What we tested:</strong> two extraction methods (DIM, COSMIC), seven instruction-tuned models (2B–32B), three families (Qwen/Gemma/Mistral), and three precisions (FP16/INT8/INT4).</li>
-<li><strong>What we observed:</strong> in this protocol, refusal steering is near ceiling at smaller scales and weaker at larger scales; outcomes are strongly architecture- and tooling-sensitive.</li>
-<li><strong>How to use this:</strong> treat single-direction steering as configuration-sensitive engineering, not a guaranteed primitive. Validate per model family before operational use.</li>
+  <li>Steering is at ceiling for small models (≤7B) and declines at larger scales (77% at 32B, n=30).</li>
+  <li>Architecture is a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering.</li>
+  <li>Simple mean-difference extraction (DIM) matches or beats SVD-based COSMIC everywhere tested.</li>
+  <li>Extraction tooling (nnsight vs raw hooks) produces a 90pp gap on the same model — a hidden reproducibility variable.</li>
+  <li>INT8 is safe; INT4 degrades large models by 20pp.</li>
 </ul>
+
+<h3>What this does NOT show</h3>
+<ul>
+  <li>That steering "breaks" at scale — it gets harder, but the interpretation rests on n=3 families and n=30 prompts.</li>
+  <li>Why architecture matters — the Mistral failure is documented but unexplained.</li>
+  <li>Behavior beyond refusal — sycophancy, toxicity, and other behaviors may scale differently.</li>
+  <li>Performance at temperature > 0, which real deployments use.</li>
+</ul>
+
+<h3>How to use this</h3>
+<p>Use DIM with graph-level tracing (nnsight or equivalent). Target 50% depth for large models. Validate on your specific architecture before assuming steering will work. Avoid INT4 above 14B if steering accuracy matters.</p>
 
 <h2 id="introduction">1. Introduction</h2>
 

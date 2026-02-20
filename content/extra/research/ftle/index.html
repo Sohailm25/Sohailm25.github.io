@@ -285,12 +285,31 @@
 <strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
 </div>
 
+<h2 id="why-this-matters">Why this matters</h2>
+<p>Understanding <em>why</em> some models collapse in extended conversations requires looking inside the model. The finite-time Lyapunov exponent (FTLE) measures how sensitive a transformer's internal computation is to small perturbations as information flows through its layers — a single-forward-pass measurement that's cheap to compute and doesn't require conversation-level testing.</p>
+<p>If depth-dynamics features correlate with collapse behavior, that opens a path toward screening models for collapse risk <em>before</em> running expensive multi-turn evaluations. This study tests that hypothesis. The signal is real but exploratory — the dependence structure of our data limits what we can confirm statistically.</p>
+
 <h2 id="at-a-glance">At a glance</h2>
+
+<h3>What we did</h3>
+<p>Computed λ₁ depth profiles for 720 trajectories (7,200 FTLE calls) across three 7B-parameter model families using forward-mode automatic differentiation with QR renormalization. Tested whether three summary features (mean, variance, slope) of the depth profile are associated with collapse metrics from Escape Velocity.</p>
+
+<h3>What we found</h3>
 <ul>
-  <li><strong>Primary evidence:</strong> effect-size magnitude and direction (especially λ₁ slope/variance), not tiny nominal p-values.</li>
-  <li><strong>Inference boundary:</strong> 720 rows map to 108 unique predictor vectors, so inferential statistics can be anti-conservative under this dependence structure.</li>
-  <li><strong>Decision use:</strong> this supports FTLE as a reproducible exploratory signal generator and methods contribution, not confirmatory relationship establishment.</li>
+  <li>Profile <em>shape</em> features — slope (ρ = −0.536) and variance (ρ = +0.511) — show medium-to-large associations with collapse behavior. Mean λ₁ alone does not.</li>
+  <li>3 of 6 preregistered tests pass the effect-size threshold, meeting the success criterion.</li>
+  <li>The FTLE profiling pipeline itself costs ~$20 for 7,200 calls and runs stably on A100 GPUs.</li>
 </ul>
+
+<h3>What this does NOT show</h3>
+<ul>
+  <li>Causal mechanism — depth dynamics and conversational collapse operate on different time axes.</li>
+  <li>Confirmatory statistical evidence — 108 unique predictor vectors across 720 rows means p-values are anti-conservative.</li>
+  <li>Validated collapse labels — the upstream κ = 0.566 limitation carries through to all bridge correlations.</li>
+</ul>
+
+<h3>How to use this</h3>
+<p>The pipeline is the primary reusable contribution: apply it to new models to generate depth-dynamics profiles for exploratory risk screening. The bridge correlations provide a testable direction for future work, not a confirmed relationship for deployment decisions.</p>
 
 <h2 id="approach">Approach</h2>
 <p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>

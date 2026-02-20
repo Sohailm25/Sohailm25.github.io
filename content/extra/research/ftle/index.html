@@ -15,9 +15,7 @@
                     "affiliations": [{"name": "Independent Researcher"}]
                 }
             ],
-            "katex": {
-                "delimiters": []
-            }
+            "katex": {}
         }</script>
     </d-front-matter>
     <style>
@@ -211,7 +209,7 @@
 <h2 id="approach">Approach</h2>
 <p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 
-<p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
+<p>Rather than computing full Jacobians (prohibitive for <em>d</em><sub>model</sub>&nbsp;=&nbsp;4096), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
 
 <h3>Three λ₁ summaries</h3>
 <ul>

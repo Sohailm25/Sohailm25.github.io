@@ -229,36 +229,42 @@
         d-article {
             counter-reset: sidenote-counter;
         }
+        /* Desktop 2-column layout: sticky left TOC + article */
         @media (min-width: 1200px) {
-            d-article {
-                max-width: 680px !important;
-                margin-left: 280px !important;
-                margin-right: auto !important;
-                position: relative;
+            .page-layout {
+                display: grid;
+                grid-template-columns: 240px 1fr;
+                gap: 40px;
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            .toc-rail {
+                min-width: 0;
             }
             .toc-container {
-                position: fixed;
-                top: 80px;
-                left: 20px;
-                width: 220px;
-                max-height: calc(100vh - 100px);
+                position: sticky;
+                top: 96px;
+                max-height: calc(100vh - 120px);
                 overflow-y: auto;
-                margin: 0;
-                z-index: 10;
-                columns: 1 !important;
                 background: transparent;
-                border: none;
+                border: 0;
                 border-radius: 0;
                 padding: 0;
+                margin: 0;
                 font-size: 0.85em;
             }
-            .toc-container ol, .toc-container ul {
+            .toc-container ol,
+            .toc-container ul {
                 columns: 1 !important;
-                background: transparent;
-                border: none;
-                border-radius: 0;
-                padding: 0;
-                font-size: 0.85em;
+                padding-left: 1rem;
+                margin: 0;
+            }
+            d-article {
+                max-width: 680px !important;
+                margin-left: 0 !important;
+                margin-right: auto !important;
+                position: relative;
             }
         }
         .sidenote-number {
@@ -319,10 +325,13 @@
 <d-byline></d-byline>
 
 
+<div class="page-layout">
+<aside class="toc-rail">
 <nav class="toc-container">
     <h3>Contents</h3>
     <ol id="toc-list"></ol>
 </nav>
+</aside>
 
 <d-article>
 
@@ -504,6 +513,7 @@
 </script>
 
 </d-article>
+</div><!-- .page-layout -->
 
 
 </body>

@@ -279,7 +279,7 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em>—depth-profile slope (ρ = −0.536) and layerwise variance (ρ = +0.511)—show medium-to-large predictive associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. This is conditional correlational evidence rather than mechanistic validation.</p>
+<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em>—depth-profile slope (ρ = −0.536) and layerwise variance (ρ = +0.511)—show medium-to-large predictive associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. This is conditional correlational evidence rather than mechanistic validation. Meeting the preregistered criterion indicates signal presence under this protocol, not causal or mechanistic confirmation.</p>
 
 <div class="note caveat">
 <strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
@@ -356,6 +356,14 @@
 <h3>Sensitivity analysis (n = 167 rater-agreed)</h3>
 <p>The same three tests pass in the rater-agreed subset with consistent effect sizes: Test #4 (ρ = +0.545), Test #5 (ρ = −0.557), Test #6 (ρ = +0.516). All within the confidence intervals of the primary analysis.</p>
 
+
+<h2 id="what-this-does-not-show">What this does not show</h2>
+<ul>
+    <li><strong>No causal mechanism:</strong> the bridge findings are correlational and do not establish a mechanistic pathway from depth dynamics to conversational collapse.</li>
+    <li><strong>No broad transfer guarantee:</strong> results are bounded to the tested model families, prompts, and protocol choices.</li>
+    <li><strong>No reliability resolution:</strong> the Escape Velocity κ limitation remains a binding uncertainty on all bridge effect-size interpretation.</li>
+</ul>
+
 <h2 id="limitations">Limitations</h2>
 <ul>
     <li><strong>Label reliability:</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All effect sizes may be affected by label noise.</li>
@@ -372,6 +380,7 @@
     <li><strong>All artifacts frozen</strong> with SHA256 hashes across four phases (Phase 0 sanity → Phase 1 pilot → Phase 2 full-scale → Phase 3 bridge).</li>
     <li><strong>Ops postflight:</strong> PASS.</li>
 </ul>
+<p><strong>Practical use now:</strong> treat λ₁ profile-shape features as a screening signal under matched settings. <strong>Do not use yet:</strong> as a mechanism-level or deployment-general predictor without further validation.</p>
 
 <script>
 

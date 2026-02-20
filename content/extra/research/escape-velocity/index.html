@@ -246,7 +246,7 @@
 <p>We ran a preregistered baseline study of multi-turn collapse dynamics across four interaction conditions (HOMO_A, HOMO_B, HOMO_C, HETERO_ROT). Confirmatory baseline execution closed at 720/720 unique successful tuples with clean protocol integrity. We observe condition-dependent collapse patterns in this dataset; however, the preregistered detector reliability audit did not meet its Cohen’s κ threshold (κ=0.566, threshold 0.80). Results are therefore presented with transparent limitations: descriptive and condition-comparative conclusions only, without detector-validation or causal claims.</p>
 
 <div class="note">
-<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed.
+<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset/protocol outcome, not a validated detector claim.
 </div>
 
 <h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
@@ -278,7 +278,7 @@
 
 <h2 id="what-it-looks-like">What collapse looks like in plain language</h2>
 <p>The core question is simple: when two chat models keep talking for 40 turns, do they keep producing meaningfully new content, or do they fall into repetitive loops?</p>
-<p>Below are representative excerpts selected from raw turn logs after scanning all 180 cached trajectories.</p>
+<p>Below are representative excerpts selected from raw turn logs after scanning all 180 cached trajectories. All examples are descriptive illustrations rather than causal evidence.</p>
 
 <h3>Example A — strong repetition loop (HOMO_B: Qwen self-play)</h3>
 <div class="note">
@@ -329,6 +329,14 @@
     <tr><td>Detector reliability validation</td><td>Not supported</td><td>Preregistered κ gate not met (0.566 &lt; 0.80).</td></tr>
   </tbody>
 </table>
+
+
+<h2 id="decision-relevance">Decision relevance</h2>
+<ul>
+  <li><strong>Safe to use now:</strong> baseline descriptive comparisons across the four locked conditions.</li>
+  <li><strong>Not safe to claim now:</strong> detector validation, mechanistic explanation, or causal condition effects.</li>
+  <li><strong>Highest-value next step:</strong> independent human-rater reliability rescue to test whether pattern-level conclusions persist under stronger label quality.</li>
+</ul>
 
 <h2 id="limitations">Limitations</h2>
 <ul>

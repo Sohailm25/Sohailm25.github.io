@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1008" width="1920" height="1008">
+  <rect width="1920" height="1008" fill="#FFFFFF"/>
+  
+  <!-- LEFT: Layer stack / depth axis -->
+  <g transform="translate(200, 100)">
+    <!-- Layer rectangles (32 layers, stacked vertically) -->
+    <text x="-20" y="-10" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280" text-anchor="end">depth</text>
+    
+    <!-- Layer blocks with varying sensitivity (color intensity = λ₁ magnitude) -->
+    <rect x="0" y="0" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.15" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="26" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.18" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="52" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.22" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="78" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.28" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="104" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.35" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="130" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.42" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="156" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.50" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="182" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.55" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="208" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.58" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="234" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.55" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="260" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.48" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="286" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.40" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="312" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.32" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="338" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.25" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="364" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.20" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    <rect x="0" y="390" width="180" height="22" rx="2" fill="#1E5AA8" opacity="0.16" stroke="#1E5AA8" stroke-width="1.5" stroke-opacity="0.2"/>
+    
+    <!-- Layer numbers (sparse) -->
+    <text x="-12" y="14" font-family="system-ui, sans-serif" font-size="10" fill="#6B7280">1</text>
+    <text x="-12" y="222" font-family="system-ui, sans-serif" font-size="10" fill="#6B7280">8</text>
+    <text x="-16" y="300" font-family="system-ui, sans-serif" font-size="10" fill="#6B7280">16</text>
+    <text x="-16" y="406" font-family="system-ui, sans-serif" font-size="10" fill="#6B7280">32</text>
+  </g>
+  
+  <!-- MIDDLE: Deformation / shear visualization -->
+  <g transform="translate(520, 100)">
+    <!-- Grid that deforms through depth (Lyapunov intuition) -->
+    <!-- Input grid (regular) -->
+    <g stroke="#1E5AA8" stroke-width="1.5" opacity="0.15">
+      <line x1="0" y1="0" x2="0" y2="420"/>
+      <line x1="60" y1="0" x2="60" y2="420"/>
+      <line x1="120" y1="0" x2="120" y2="420"/>
+      <line x1="180" y1="0" x2="180" y2="420"/>
+      <line x1="240" y1="0" x2="240" y2="420"/>
+      <line x1="300" y1="0" x2="300" y2="420"/>
+      <line x1="360" y1="0" x2="360" y2="420"/>
+    </g>
+    
+    <!-- Deformed grid overlay (showing stretch/compression) -->
+    <g stroke="#1FA7A0" stroke-width="2.5" fill="none" opacity="0.35">
+      <path d="M0,0 Q20,105 -10,210 Q-25,315 5,420"/>
+      <path d="M60,0 Q90,105 75,210 Q55,315 80,420"/>
+      <path d="M120,0 Q160,105 170,210 Q150,315 165,420"/>
+      <path d="M180,0 Q230,105 260,210 Q240,315 255,420"/>
+      <path d="M240,0 Q290,105 330,210 Q320,315 340,420"/>
+      <path d="M300,0 Q340,105 380,210 Q390,315 410,420"/>
+      <path d="M360,0 Q385,105 420,210 Q445,315 470,420"/>
+    </g>
+    
+    <!-- Perturbation vectors (showing sensitivity) -->
+    <g stroke="#E9B44C" stroke-width="1.5" opacity="0.5" marker-end="url(#arrow)">
+      <line x1="60" y1="105" x2="90" y2="105"/>
+      <line x1="120" y1="210" x2="170" y2="210"/>
+      <line x1="180" y1="315" x2="240" y2="315"/>
+    </g>
+    
+    <text x="180" y="460" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280" text-anchor="middle">perturbation growth through depth</text>
+  </g>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#E9B44C" opacity="0.5"/>
+    </marker>
+  </defs>
+  
+  <!-- RIGHT: Profile traces -->
+  <g transform="translate(1100, 100)">
+    <!-- Profile axes -->
+    <line x1="0" y1="0" x2="0" y2="420" stroke="#6B7280" stroke-width="1.5" opacity="0.3"/>
+    <line x1="0" y1="420" x2="600" y2="420" stroke="#6B7280" stroke-width="1.5" opacity="0.3"/>
+    
+    <text x="300" y="460" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280" text-anchor="middle">layer index</text>
+    <text x="-30" y="210" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280" text-anchor="middle" transform="rotate(-90, -30, 210)">λ₁</text>
+    
+    <!-- Profile trace: steep slope (high collapse, HOMO_C-like) -->
+    <path d="M20,80 Q80,120 140,180 Q200,250 260,310 Q320,350 380,370 Q440,380 520,385" fill="none" stroke="#1E5AA8" stroke-width="2.5" opacity="0.6"/>
+    
+    <!-- Profile trace: moderate slope (medium collapse) -->
+    <path d="M20,150 Q80,170 140,200 Q200,240 260,270 Q320,290 380,300 Q440,310 520,315" fill="none" stroke="#2F7FD1" stroke-width="2.5" opacity="0.5"/>
+    
+    <!-- Profile trace: flat (low collapse, HETERO_ROT-like) -->
+    <path d="M20,240 Q80,245 140,250 Q200,260 260,265 Q320,270 380,268 Q440,265 520,262" fill="none" stroke="#1FA7A0" stroke-width="2.5" opacity="0.5"/>
+    
+    <!-- Slope annotation -->
+    <line x1="50" y1="95" x2="480" y2="382" stroke="#1E5AA8" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.25"/>
+    <text x="530" y="390" font-family="system-ui, sans-serif" font-size="11" fill="#1E5AA8" opacity="0.6">slope</text>
+    
+    <!-- Variance annotation (bracket showing spread) -->
+    <line x1="260" y1="265" x2="260" y2="310" stroke="#6B7280" stroke-width="1.5" opacity="0.3"/>
+    <line x1="255" y1="265" x2="265" y2="265" stroke="#6B7280" stroke-width="1.5" opacity="0.3"/>
+    <line x1="255" y1="310" x2="265" y2="310" stroke="#6B7280" stroke-width="1.5" opacity="0.3"/>
+    <text x="275" y="292" font-family="system-ui, sans-serif" font-size="11" fill="#6B7280" opacity="0.6">variance</text>
+    
+    <!-- Legend -->
+    <g transform="translate(380, 30)">
+      <line x1="0" y1="0" x2="30" y2="0" stroke="#1E5AA8" stroke-width="2.5" opacity="0.6"/>
+      <text x="38" y="4" font-family="system-ui, sans-serif" font-size="11" fill="#6B7280">steep (higher collapse)</text>
+      
+      <line x1="0" y1="20" x2="30" y2="20" stroke="#1FA7A0" stroke-width="2.5" opacity="0.5"/>
+      <text x="38" y="24" font-family="system-ui, sans-serif" font-size="11" fill="#6B7280">flat (lower collapse)</text>
+    </g>
+  </g>
+  
+  <!-- Bridge arrows connecting sections -->
+  <g stroke="#6B7280" stroke-width="1.5" opacity="0.15" stroke-dasharray="4,4">
+    <line x1="400" y1="310" x2="500" y2="310"/>
+    <line x1="920" y1="310" x2="1080" y2="310"/>
+  </g>
+</svg>

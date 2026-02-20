@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1008" width="1920" height="1008">
+  <rect width="1920" height="1008" fill="#FFFFFF"/>
+  
+  <!-- Threshold contour field (faint curves suggesting a boundary surface) -->
+  <g opacity="0.12">
+    <path d="M200,800 Q500,650 800,620 Q1100,590 1400,550 Q1600,530 1800,510" fill="none" stroke="#1E5AA8" stroke-width="1.5"/>
+    <path d="M200,750 Q500,600 800,570 Q1100,540 1400,500 Q1600,480 1800,460" fill="none" stroke="#1E5AA8" stroke-width="1.5"/>
+    <path d="M200,700 Q500,550 800,520 Q1100,490 1400,450 Q1600,430 1800,410" fill="none" stroke="#1E5AA8" stroke-width="1.5"/>
+    <path d="M200,650 Q500,500 800,470 Q1100,440 1400,400 Q1600,380 1800,360" fill="none" stroke="#1E5AA8" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Primary threshold line -->
+  <path d="M150,680 Q450,530 750,500 Q1050,470 1350,430 Q1550,410 1770,390" fill="none" stroke="#1E5AA8" stroke-width="2.5" stroke-dasharray="12,6" opacity="0.4"/>
+  <text x="1780" y="395" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280" text-anchor="start">threshold</text>
+  
+  <!-- Trajectory bundle: contained (stay below threshold) -->
+  <g fill="none" stroke-width="2.5" stroke-linecap="round">
+    <!-- Contained trajectories (blue, stay below) -->
+    <path d="M250,820 Q400,780 550,760 Q750,730 950,710 Q1150,690 1350,680 Q1500,675 1650,670" stroke="#2F7FD1" opacity="0.5"/>
+    <path d="M280,850 Q430,800 580,775 Q780,745 980,730 Q1180,720 1350,715 Q1500,712 1680,710" stroke="#2F7FD1" opacity="0.4"/>
+    <path d="M300,870 Q450,830 600,810 Q800,785 1000,770 Q1200,760 1400,755 Q1550,752 1700,750" stroke="#7FB3E6" opacity="0.45"/>
+    <path d="M220,840 Q370,790 520,770 Q720,740 920,720 Q1120,705 1320,695 Q1470,690 1640,685" stroke="#7FB3E6" opacity="0.35"/>
+    
+    <!-- Escaping trajectories (teal, cross threshold and diverge upward) -->
+    <path d="M260,830 Q410,750 560,680 Q710,600 860,500 Q1010,380 1160,280 Q1310,200 1460,150 Q1610,120 1720,110" stroke="#1FA7A0" stroke-width="2.5" opacity="0.6"/>
+    <path d="M310,860 Q460,770 610,690 Q760,590 910,470 Q1060,350 1210,260 Q1360,200 1510,170 Q1660,155 1740,150" stroke="#1FA7A0" stroke-width="2.5" opacity="0.5"/>
+    <path d="M340,880 Q490,800 640,730 Q790,640 940,530 Q1090,410 1240,310 Q1390,240 1540,210 Q1690,195 1760,190" stroke="#8EDCCB" opacity="0.4"/>
+    
+    <!-- Ambiguous trajectories (approach threshold, uncertain outcome) -->
+    <path d="M270,845 Q420,770 570,710 Q720,640 870,570 Q1020,500 1170,450 Q1320,420 1470,410 Q1620,405 1710,400" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.4"/>
+    <path d="M330,875 Q480,810 630,760 Q780,700 930,640 Q1080,580 1230,530 Q1380,500 1530,490 Q1650,485 1730,482" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.35"/>
+  </g>
+  
+  <!-- Turn markers along one escaping trajectory -->
+  <g fill="#1FA7A0" opacity="0.5">
+    <circle cx="260" cy="830" r="3"/>
+    <circle cx="560" cy="680" r="3"/>
+    <circle cx="860" cy="500" r="3"/>
+    <circle cx="1160" cy="280" r="3"/>
+    <circle cx="1460" cy="150" r="3"/>
+  </g>
+  
+  <!-- Turn markers along one contained trajectory -->
+  <g fill="#2F7FD1" opacity="0.5">
+    <circle cx="250" cy="820" r="3"/>
+    <circle cx="550" cy="760" r="3"/>
+    <circle cx="950" cy="710" r="3"/>
+    <circle cx="1350" cy="680" r="3"/>
+    <circle cx="1650" cy="670" r="3"/>
+  </g>
+  
+  <!-- Legend -->
+  <g transform="translate(120, 120)">
+    <line x1="0" y1="0" x2="40" y2="0" stroke="#1FA7A0" stroke-width="2.5" opacity="0.6"/>
+    <text x="50" y="4" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280">escaping (collapse)</text>
+    
+    <line x1="0" y1="24" x2="40" y2="24" stroke="#2F7FD1" stroke-width="2.5" opacity="0.5"/>
+    <text x="50" y="28" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280">contained</text>
+    
+    <line x1="0" y1="48" x2="40" y2="48" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.4"/>
+    <text x="50" y="52" font-family="system-ui, sans-serif" font-size="13" fill="#6B7280">ambiguous (near threshold)</text>
+  </g>
+  
+  <!-- Axis labels -->
+  <text x="960" y="970" font-family="system-ui, sans-serif" font-size="14" fill="#6B7280" text-anchor="middle">conversation turn</text>
+  <text x="100" y="504" font-family="system-ui, sans-serif" font-size="14" fill="#6B7280" text-anchor="middle" transform="rotate(-90, 100, 504)">semantic novelty</text>
+  
+  <!-- Condition annotations (sparse) -->
+  <g font-family="system-ui, sans-serif" font-size="11" fill="#6B7280" opacity="0.6">
+    <text x="1720" y="105">HOMO_C</text>
+    <text x="1720" y="665">HETERO_ROT</text>
+  </g>
+</svg>

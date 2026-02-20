@@ -8,7 +8,7 @@
     <d-front-matter>
         <script type="text/json">{
             "title": "Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play",
-            "description": "A preregistered baseline study of collapse dynamics across four interaction conditions.",
+            "description": "Do chat models collapse into repetitive loops during long conversations? A preregistered study of 720 multi-turn self-play trajectories across four conditions.",
             "authors": [
                 {
                     "author": "Sohail Mohammad",
@@ -230,7 +230,7 @@
 
 <d-title>
     <h1>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</h1>
-    <p>Baseline closure complete with transparent reliability limitations.</p>
+    <p>When chat models talk to themselves for 40 turns, some collapse into repetition. This study measures how much — and where the measurement breaks down.</p>
 </d-title>
 
 <d-byline></d-byline>
@@ -243,7 +243,7 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>We ran a preregistered baseline study of multi-turn collapse dynamics across four interaction conditions (HOMO_A, HOMO_B, HOMO_C, HETERO_ROT). Confirmatory baseline execution closed at 720/720 unique successful tuples with clean protocol integrity. We observe condition-dependent collapse patterns in this dataset; however, the preregistered detector reliability audit did not meet its Cohen’s κ threshold (κ=0.566, threshold 0.80). Results are therefore presented with transparent limitations: descriptive and condition-comparative conclusions only, without detector-validation or causal claims.</p>
+<p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition — but our automated collapse detector did not pass its preregistered reliability check (Cohen’s κ = 0.566 vs. threshold 0.80). Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
 
 <div class="note">
 <strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset/protocol outcome, not a validated detector claim.
@@ -332,11 +332,18 @@
 
 
 <h2 id="decision-relevance">Decision relevance</h2>
+<h3>What this study shows</h3>
 <ul>
-  <li><strong>Safe to use now:</strong> baseline descriptive comparisons across the four locked conditions.</li>
-  <li><strong>Not safe to claim now:</strong> detector validation, mechanistic explanation, or causal condition effects.</li>
-  <li><strong>Highest-value next step:</strong> independent human-rater reliability rescue to test whether pattern-level conclusions persist under stronger label quality.</li>
+  <li>A complete, reproducible dataset of 720 multi-turn conversations across four controlled conditions.</li>
+  <li>Descriptive evidence that collapse rates vary by model pairing under fixed protocol settings.</li>
 </ul>
+<h3>What this study does NOT show</h3>
+<ul>
+  <li>That the collapse detector is reliable — the preregistered reliability gate was not met.</li>
+  <li>Why certain conditions collapse more — no causal or mechanistic claims are made.</li>
+  <li>That these patterns generalize beyond the specific models and settings tested.</li>
+</ul>
+<p><strong>Highest-value next step:</strong> independent human-rater reliability audit to test whether condition-level patterns persist under stronger label quality.</p>
 
 <h2 id="limitations">Limitations</h2>
 <ul>

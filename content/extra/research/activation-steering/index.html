@@ -770,7 +770,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <h3 id="refusal-geometry">8.1 What Inverse Scaling Tells Us About Refusal Geometry</h3>
 
-<p>Our central finding, that steering effectiveness drops monotonically with model size, is the result most in need of mechanistic explanation, and the one we can least confidently provide. We lay out three competing hypotheses, not because we can distinguish them, but because the hypothesis space itself is useful.</p>
+<p>Our central finding — that steering effectiveness drops monotonically with model size — is the result most in need of mechanistic explanation and the one we can least confidently explain. We lay out three competing hypotheses below. We cannot distinguish between them with current data; their value is in constraining future investigation.</p>
 
 <p><strong>The distributed representation hypothesis.</strong> Elhage et al. <d-cite key="elhage2022toy"></d-cite> showed that neural networks represent more features than they have dimensions by superimposing features in shared subspaces. Larger models, having greater capacity and training on more data, may represent refusal in a more polysemantic way, entangling it with related concepts (safety, ethics, uncertainty, helpfulness) that partially overlap in activation space. A single DIM vector captures the average direction of this entangled cluster, but as the cluster spreads across more dimensions, the projection onto any single direction captures a decreasing fraction of the total refusal signal. Our observation that Gemma 27B produces direction norms of 350+ (compared to 24–93 for steerable models) is consistent with this hypothesis: the extracted "direction" may be a noisy average across a high-dimensional manifold rather than a clean one-dimensional feature.</p>
 
@@ -780,7 +780,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p>These hypotheses are not mutually exclusive. All three may contribute, and our data cannot distinguish their relative contributions. What we can say is that the pattern (monotonic degradation across an architecture family that holds everything constant except scale) constrains the space of explanations. Whatever causes the degradation is a function of scale itself, not of architecture changes between model sizes.</p>
 
-<p><strong>Reconciling with Beaglehole et al.</strong> Our finding appears to contradict Beaglehole et al. <d-cite key="beaglehole2025universal"></d-cite>, who find that larger models are <em>more</em> steerable. The reconciliation is methodological: their approach uses RFM (a nonlinear kernel method) with all-block steering and 768 training examples, while ours uses DIM (linear, mean-difference) with a single direction applied from one target layer onward and ~10 contrastive pairs. The gap between these results precisely quantifies the scaling wall that separates simple linear methods from more complex nonlinear ones. This has a direct implication: the "refusal direction" that DIM extracts may be a real feature at small scales but an increasingly lossy summary of a more complex structure at large scales, and nonlinear methods succeed precisely because they can represent this complexity.</p>
+<p><strong>Reconciling with Beaglehole et al.</strong> Our finding appears to contradict Beaglehole et al. <d-cite key="beaglehole2025universal"></d-cite>, who report that larger models are <em>more</em> steerable. The apparent contradiction is methodological: their approach uses RFM (a nonlinear kernel method) with all-block steering and 768 training examples; ours uses DIM (linear mean-difference) with a single direction from one target layer and ~10 contrastive pairs. The gap between these results quantifies the scaling wall separating simple linear from complex nonlinear methods. One interpretation: the "refusal direction" that DIM extracts is a real feature at small scales but an increasingly lossy summary of a higher-dimensional structure at large scales. Nonlinear methods succeed precisely because they can represent this complexity. We note, however, that we have not run RFM ourselves; this reconciliation is inferred from published results under different experimental conditions.</p>
 
 <h3 id="simple-vs-complex">8.2 Why Simple Beats Complex (and When It Won't)</h3>
 
@@ -818,7 +818,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <h2 id="safety-implications">10. Implications for Safety</h2>
 
-<p>These results bear directly on the viability of representation engineering as a safety tool at scale, a question with practical stakes as models grow.</p>
+<p>These results bear directly on the viability of representation engineering as a safety tool, and the implications sharpen with model scale.</p>
 
 <p><strong>The scaling problem.</strong> If linear activation steering degrades monotonically with model size, and if this degradation reflects genuine changes in how larger models represent refusal, then representation engineering approaches that rely on single linear directions become less reliable precisely at the scales where safety matters most. Our data covers 2B–32B parameters. Frontier models are 10–100× larger. Extrapolating our scaling curve suggests that single-direction steering would be minimally effective at frontier scale without methodological advances, though extrapolation from four data points in one architecture family is highly speculative.</p>
 
@@ -828,9 +828,9 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p><strong>A more optimistic reading.</strong> The inverse scaling finding does not mean representation engineering is doomed at scale. It means that <em>simple</em> representation engineering (single linear direction, applied from one layer onward) hits a wall. Nonlinear methods like RFM <d-cite key="beaglehole2025universal"></d-cite> appear to clear this wall. The question is whether the added complexity of these methods is compatible with the transparency and interpretability that make representation engineering appealing for safety in the first place. A method that works but is opaque may not be more useful for safety than a method that fails transparently.</p>
 
-<h2 id="transfer">11. Phase-2: Cross-Model Transfer</h2>
+<h2 id="transfer">11. Cross-Model Transfer of Refusal Directions</h2>
 
-<p>Phase-1 established that activation steering effectiveness depends on model scale and architecture. A natural follow-up: do the extracted refusal directions <em>transfer</em> across models? If the "refusal direction" captures a shared representational feature, directions extracted from one model should steer another model in the same family, or even across families with matched hidden dimensionality. We test both.</p>
+<p>The preceding sections established that activation steering effectiveness depends on model scale and architecture. A natural follow-up question: do the extracted refusal directions <em>transfer</em> across models? If the "refusal direction" captures a shared representational feature, directions extracted from one model should steer another model in the same family, or even across families with matched hidden dimensionality. We test both scenarios.</p>
 
 <h3>Protocol</h3>
 
@@ -893,8 +893,6 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 <p>The cross-cosine values are suggestive: same-family directions share moderate geometric alignment (0.324) while cross-family directions are near-orthogonal (0.019). This is consistent with the hypothesis that refusal directions are family-specific representations shaped by shared pretraining data and fine-tuning procedures, not universal geometric features of instruction-tuned models. However, cross-cosine is a coarse diagnostic and the alignment values should not be over-interpreted.</p>
 
 <p>The asymmetry within cross-family transfer (TE = 0.17 vs. 0.03) suggests that whatever residual signal transfers from Qwen to Gemma does not transfer in the reverse direction, consistent with the directions encoding family-specific rather than shared structure.</p>
-
-<h3>Caveats</h3>
 
 <h3>Transfer Coverage Matrix</h3>
 
@@ -962,6 +960,12 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 <h3>Caveats</h3>
 
 <p>These results come from <strong>one same-family pair</strong> (Qwen 14B &harr; 32B) and <strong>one cross-family pair</strong> (Qwen 7B &harr; Gemma 9B). We do not claim these findings are universal. Same-family transfer may not hold for other families (e.g., Gemma 9B &harr; 27B) or at larger scale gaps. Cross-family failure may not generalize to all cross-family pairs. The cross-cosine metric is suggestive of geometric structure but is not a causal explanation for transfer success or failure. A broader transfer matrix across multiple families and scales is needed before drawing general conclusions.</p>
+
+<h3>What Transfer Tells Us About Refusal Geometry</h3>
+
+<p>The transfer results add a dimension to the geometric picture established in earlier sections. Same-family transfer succeeds (TE &ge; 1.0) despite moderate cross-cosine (0.324), suggesting that models within an architecture family encode refusal in overlapping geometric subspaces — different enough in orientation to produce low cosine similarity, but functionally aligned enough for transferred directions to induce refusal. Cross-family transfer fails (TE &le; 0.17) with near-orthogonal directions (cross-cosine 0.019), even when hidden dimensionality matches exactly.</p>
+
+<p>This pattern is consistent with the hypothesis that refusal geometry is shaped by architecture-specific training dynamics rather than by a universal geometric feature. If refusal were encoded in a geometry determined primarily by training data (which overlaps substantially across families), we would expect at least moderate cross-family transfer. The near-orthogonality instead suggests that <em>how</em> an architecture processes and stores refusal information during training determines the resulting direction, not just <em>what</em> information is stored. We caution that this interpretation rests on one same-family pair and one cross-family pair.</p>
 
 <h2 id="limitations">12. Limitations</h2>
 

@@ -286,7 +286,7 @@
 </div>
 
 <h2 id="approach">Approach</h2>
-<p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
+<p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 
 <p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
 
@@ -361,6 +361,7 @@
 <ul>
     <li><strong>No causal mechanism:</strong> the bridge findings are correlational and do not establish a mechanistic pathway from depth dynamics to conversational collapse.</li>
     <li><strong>No broad transfer guarantee:</strong> results are bounded to the tested model families, prompts, and protocol choices.</li>
+    <li><strong>Inflated effective sample size:</strong> the 720 trajectories contain only 108 unique λ₁ predictor values due to model/seed duplication. Standard errors, p-values, and CIs from the planned n = 720 analysis are anti-conservative.</li>
     <li><strong>No reliability resolution:</strong> the Escape Velocity κ limitation remains a binding uncertainty on all bridge effect-size interpretation.</li>
 </ul>
 
@@ -369,6 +370,7 @@
     <li><strong>Label reliability:</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All effect sizes may be affected by label noise.</li>
     <li><strong>Predictive association only:</strong> Depth dynamics (within-pass) and collapse (across-turn) operate on different time axes. No causal mechanism is established.</li>
     <li><strong>Model family confound:</strong> HOMO_A and HETERO_ROT produce identical λ₁ (both use Llama). Between-model variation may partially reflect architecture.</li>
+    <li><strong>Predictor dependence:</strong> The 720 trajectories contain only 108 unique λ₁ vectors (36 seeds × 3 distinct models). HOMO_A/HETERO_ROT share identical λ₁ values, and within each condition, repeat trajectories share identical λ₁. The within-cluster collapse-outcome variance drives the correlations, but effective degrees of freedom are lower than n = 720. Reported p-values and CIs should be interpreted as anti-conservative.</li>
     <li><strong>Protocol corrections:</strong> Test #4's variable mapping was corrected post-hoc (tangent-seed std → layerwise variance per prereg). See deviation table for full audit trail.</li>
     <li><strong>Single-turn measurement:</strong> λ₁ computed on first assistant turn only. Longitudinal FTLE could provide stronger evidence.</li>
 </ul>

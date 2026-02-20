@@ -49,7 +49,13 @@
         /* Override Distill template grid to allow full width */
         d-article {
             color: var(--ef-text);
-            overflow: visible;
+            overflow: visible !important;
+        }
+        
+        /* Prevent Distill grid from clipping chart left edges */
+        d-article > *, d-article figure, d-article figure img {
+            clip-path: none !important;
+            -webkit-clip-path: none !important;
         }
 
         /* Fix the text clipping: override Distill's grid column constraints */
@@ -59,6 +65,7 @@
                 max-width: 780px;
                 margin: 0 auto;
                 padding: 0 24px;
+                overflow: visible;
             }
             d-article p, d-article ul, d-article ol, d-article blockquote,
             d-article h2, d-article h3, d-article h4,
@@ -68,6 +75,7 @@
                 max-width: 100%;
                 overflow-wrap: break-word;
                 word-wrap: break-word;
+                overflow: visible;
             }
         }
 
@@ -118,12 +126,21 @@
         
         figure {
             margin: 2em 0;
+            overflow: visible;
+            padding: 0;
+            position: relative;
         }
         
         figure img {
             width: 100%;
+            max-width: 100%;
             border: 1px solid var(--ef-border);
             border-radius: 4px;
+            display: block;
+            overflow: visible;
+            margin-left: 0;
+            padding: 4px;
+            box-sizing: border-box;
         }
         
         figcaption {

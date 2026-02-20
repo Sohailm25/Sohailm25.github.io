@@ -840,6 +840,11 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 <p><strong>Key finding.</strong> In this protocol and tested pairs, same-family transfer remains strong while cross-family transfer collapses despite matched hidden dimensionality. Same-family transfer within the Qwen family (14B &harr; 32B) achieves TE &ge; 1.0 in both directions, with the smaller-to-larger direction (14B &rarr; 32B) reaching 100% coherent refusal (TE = 1.25). Cross-family transfer between Qwen 7B and Gemma 9B collapses to near-zero effectiveness (TE = 0.17 and 0.03) despite both models sharing hidden_dim = 3584.</p>
 </div>
 
+<figure>
+    <img src="figures/fig_transfer_efficiency.png" alt="Transfer Efficiency bar chart with confidence intervals">
+    <figcaption><strong>Figure 9:</strong> Transfer efficiency (TE) of DIM refusal directions with 95% bootstrap confidence intervals. Same-family transfer within the Qwen family (green) achieves TE &ge; 1.0, while cross-family transfer between Qwen and Gemma (red) collapses to near-zero. Dashed line indicates TE = 1.0 (transferred direction matches native self-control). One same-family and one cross-family pair tested; generality is not established.</figcaption>
+</figure>
+
 <h3>Interpretation</h3>
 
 <p>The cross-cosine values are suggestive: same-family directions share moderate geometric alignment (0.324) while cross-family directions are near-orthogonal (0.019). This is consistent with the hypothesis that refusal directions are family-specific representations shaped by shared pretraining data and fine-tuning procedures, not universal geometric features of instruction-tuned models. However, cross-cosine is a coarse diagnostic and the alignment values should not be over-interpreted.</p>

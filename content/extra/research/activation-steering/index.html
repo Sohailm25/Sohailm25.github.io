@@ -299,10 +299,10 @@
 
 <h2 id="abstract">Abstract</h2>
 
-<p>Activation steering (adding learned direction vectors to a model's residual stream at inference time) has emerged as a lightweight method for modifying language model behavior without retraining. We systematically evaluate two direction extraction methods (Difference-in-Means and COSMIC) across seven instruction-tuned models spanning 2B–32B parameters, three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). Under our tested protocol (layer-l-through-N steering with greedy decoding), we observe that steering effectiveness is at ceiling for smaller models and declines at larger scales: coherent refusal rates drop from 100% at 3B to 77% at 32B (n=30) in the Qwen family, with Gemma 27B becoming completely unsteerable (n=1 architecture). Simple mean-difference extraction matches or exceeds SVD-based COSMIC at every scale tested. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering. We further discover that extraction tooling (nnsight versus raw PyTorch hooks) produces directions differing by 90 percentage points in effectiveness on the same model. INT8 quantization preserves steering; INT4 degrades large models by 20 percentage points while leaving small models unaffected. These findings constrain the viability of single-direction steering as models scale under this protocol, and are consistent with the possibility that the "refusal direction" becomes a less complete description at larger scales—though this interpretation remains speculative given the limited model coverage (n=3 families, n=1 failure case). For practitioners: use mean-difference extraction with graph-level tracing, target 50% depth for large models, and validate per-architecture.</p>
+<p>Activation steering (adding learned direction vectors to a model's residual stream at inference time) has emerged as a lightweight method for modifying language model behavior without retraining. We systematically evaluate two direction extraction methods (Difference-in-Means and COSMIC) across seven instruction-tuned models spanning 2B–32B parameters, three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). Under our tested protocol (layer-l-through-N steering with greedy decoding), we observe that steering effectiveness is at ceiling for smaller models and declines at larger scales: coherent refusal rates drop from 100% at 3B to 77% at 32B (n=30) in the Qwen family, with Gemma 27B becoming completely unsteerable (n=1 architecture). Simple mean-difference extraction matches or exceeds SVD-based COSMIC at every scale tested. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering. We further discover that extraction tooling (nnsight versus raw PyTorch hooks) produces directions differing by 90 percentage points in effectiveness on the same model. INT8 quantization preserves steering; INT4 degrades large models by 20 percentage points while leaving small models unaffected. These findings constrain the viability of single-direction steering as models scale under this protocol, and are consistent with the possibility that the "refusal direction" becomes a less complete description at larger scales, though this interpretation remains speculative given the limited model coverage (n=3 families, n=1 failure case). For practitioners: use mean-difference extraction with graph-level tracing, target 50% depth for large models, and validate per-architecture.</p>
 
 <h2 id="why-this-matters">Why this matters</h2>
-<p>Activation steering is one of the cheapest ways to modify model behavior at inference time — no retraining, no RLHF, just add a vector. If it works reliably, it's a powerful tool for safety teams and practitioners. But "works on one model" is not "works in general."</p>
+<p>Activation steering is one of the cheapest ways to modify model behavior at inference time. No retraining, no RLHF. Just add a vector. If it works reliably, it's a powerful tool for safety teams and practitioners. But "works on one model" is not "works in general."</p>
 <p>We tested steering across the conditions practitioners actually encounter: different model sizes, architecture families, quantization levels, and extraction methods. The results are cautionary: steering reliability depends heavily on configuration choices that are rarely reported in the literature.</p>
 
 <h2 id="at-a-glance">At a glance</h2>
@@ -315,15 +315,15 @@
   <li>Steering is at ceiling for small models (≤7B) and declines at larger scales (77% at 32B, n=30).</li>
   <li>Architecture is a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering.</li>
   <li>Simple mean-difference extraction (DIM) matches or beats SVD-based COSMIC everywhere tested.</li>
-  <li>Extraction tooling (nnsight vs raw hooks) produces a 90pp gap on the same model — a hidden reproducibility variable.</li>
+  <li>Extraction tooling (nnsight vs raw hooks) produces a 90pp gap on the same model, a hidden reproducibility variable.</li>
   <li>INT8 is safe; INT4 degrades large models by 20pp.</li>
 </ul>
 
 <h3>What this does NOT show</h3>
 <ul>
-  <li>That steering "breaks" at scale — it gets harder, but the interpretation rests on n=3 families and n=30 prompts.</li>
-  <li>Why architecture matters — the Mistral failure is documented but unexplained.</li>
-  <li>Behavior beyond refusal — sycophancy, toxicity, and other behaviors may scale differently.</li>
+  <li>That steering "breaks" at scale. It gets harder, but the interpretation rests on n=3 families and n=30 prompts.</li>
+  <li>Why architecture matters. The Mistral failure is documented but unexplained.</li>
+  <li>Behavior beyond refusal. Sycophancy, toxicity, and other behaviors may scale differently.</li>
   <li>Performance at temperature > 0, which real deployments use.</li>
 </ul>
 
@@ -332,11 +332,11 @@
 
 <h2 id="introduction">1. Introduction</h2>
 
-<p>Activation steering adds learned direction vectors to a model's residual stream at inference time—a lightweight alternative to retraining <d-cite key="turner2023activation,zou2023representation"></d-cite>. Arditi et al. <d-cite key="arditi2024refusal"></d-cite> showed that refusal appears mediated by a single direction, giving the approach geometric grounding. We tested how robust this is across conditions practitioners actually encounter: two extraction methods (DIM<d-footnote>We adopt "DIM" as shorthand for the mean-difference extraction approach described across several lines of work: Zou et al. <d-cite key="zou2023representation"></d-cite>, Panickssery et al. <d-cite key="panickssery2023steering"></d-cite>, Jorgensen et al. <d-cite key="jorgensen2023mean"></d-cite>, and Arditi et al. <d-cite key="arditi2024refusal"></d-cite>. The core operation: compute the mean activation difference between contrastive prompt sets.</d-footnote> and COSMIC <d-cite key="siu2025cosmic"></d-cite>), seven models across three families (Qwen 2.5, Gemma 2, Mistral), four scales (2B–32B), and three quantization levels (FP16, INT8, INT4).</p>
+<p>Activation steering adds learned direction vectors to a model's residual stream at inference time, a lightweight alternative to retraining <d-cite key="turner2023activation,zou2023representation"></d-cite>. Arditi et al. <d-cite key="arditi2024refusal"></d-cite> showed that refusal appears mediated by a single direction, giving the approach geometric grounding. We tested how robust this is across conditions practitioners actually encounter: two extraction methods (DIM<d-footnote>We adopt "DIM" as shorthand for the mean-difference extraction approach described across several lines of work: Zou et al. <d-cite key="zou2023representation"></d-cite>, Panickssery et al. <d-cite key="panickssery2023steering"></d-cite>, Jorgensen et al. <d-cite key="jorgensen2023mean"></d-cite>, and Arditi et al. <d-cite key="arditi2024refusal"></d-cite>. The core operation: compute the mean activation difference between contrastive prompt sets.</d-footnote> and COSMIC <d-cite key="siu2025cosmic"></d-cite>), seven models across three families (Qwen 2.5, Gemma 2, Mistral), four scales (2B–32B), and three quantization levels (FP16, INT8, INT4).</p>
 
 <p>The findings are largely cautionary. Steering effectiveness is at ceiling for small models but declines at larger scales (Qwen: 100% at 3B → 77% at 32B, n=30). Simple mean-difference extraction matches or beats SVD-based COSMIC everywhere. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output where Qwen 7B achieves 100% coherent steering under identical conditions. Extraction tooling (nnsight vs raw hooks) produces a 90pp effectiveness gap on the same model. INT8 is safe; INT4 degrades large models by 20pp.</p>
 
-<p>We frame these as an investigation into the geometry of refusal—what the pattern of successes and failures reveals about how models implement refusal—rather than a method benchmark.</p>
+<p>We frame these as an investigation into the geometry of refusal: what the pattern of successes and failures reveals about how models implement refusal, rather than a method benchmark.</p>
 
 <p><strong>A note on scope.</strong> Our evaluation uses 30 benign test prompts with greedy decoding (temperature = 0), which yields precise effect sizes for large effects but wide confidence intervals for intermediate ones. We test a single behavior (refusal) across two working architecture families and one failure case. We prioritize depth of analysis over breadth of coverage, and readers should calibrate their generalization accordingly. No published study that we are aware of systematically varies model scale, architecture family, extraction method, quantization level, and steering hyperparameters in a single controlled comparison, but the field moves quickly.</p>
 
@@ -676,7 +676,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <figure>
 <img src="figures/fig4_dim_vs_cosmic.png" alt="DIM vs COSMIC comparison">
-<figcaption><strong>Figure 4:</strong> DIM matches or exceeds COSMIC at every scale tested. The gap widens at 32B where COSMIC's automated layer selection underperforms. <em>For practitioners: DIM is simpler and at least as effective—use it as default unless you have a specific reason to prefer SVD-based extraction.</em></figcaption>
+<figcaption><strong>Figure 4:</strong> DIM matches or exceeds COSMIC at every scale tested. The gap widens at 32B where COSMIC's automated layer selection underperforms. <em>For practitioners: DIM is simpler and at least as effective. Use it as default unless you have a specific reason to prefer SVD-based extraction.</em></figcaption>
 </figure>
 
 <p>DIM matches COSMIC at small scale (3B, 14B) and substantially outperforms it at large scale (32B: +50pp, Fisher's exact p &lt; 0.001) and cross-architecture (Gemma 9B: +20pp, Cohen's h = 0.50). The cosine similarity between the two methods' directions decreases with scale (0.76 → 0.54), suggesting the methods diverge in which features they capture as representations become more complex.</p>
@@ -744,7 +744,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <figure>
 <img src="figures/fig5_multiplier_sensitivity.png" alt="Multiplier sensitivity">
-<figcaption><strong>Figure 5:</strong> The effective multiplier window narrows at larger scales. Small models tolerate 15×–25×; 32B collapses at 25×. <em>Sweep multipliers in small increments for models above 14B—the margin between "insufficient" and "destructive" shrinks with scale.</em></figcaption>
+<figcaption><strong>Figure 5:</strong> The effective multiplier window narrows at larger scales. Small models tolerate 15×–25×; 32B collapses at 25×. <em>Sweep multipliers in small increments for models above 14B. The margin between "insufficient" and "destructive" shrinks with scale.</em></figcaption>
 </figure>
 
 <p>The effective window at 32B is remarkably narrow: 15× produces moderate coherent refusal; 20× largely fails to steer; 25× causes coherence collapse with 90% garbled output. By contrast, Qwen 3B tolerates multipliers from 15× to 25× without significant degradation.</p>
@@ -785,7 +785,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <h3 id="refusal-geometry">8.1 What Inverse Scaling Tells Us About Refusal Geometry</h3>
 
-<p>Our central finding — that steering effectiveness drops monotonically with model size — is the result most in need of mechanistic explanation and the one we can least confidently explain. We lay out three competing hypotheses below. We cannot distinguish between them with current data; their value is in constraining future investigation.</p>
+<p>Our central finding, that steering effectiveness drops monotonically with model size, is the result most in need of mechanistic explanation and the one we can least confidently explain. We lay out three competing hypotheses below. We cannot distinguish between them with current data; their value is in constraining future investigation.</p>
 
 <p><strong>The distributed representation hypothesis.</strong> Elhage et al. <d-cite key="elhage2022toy"></d-cite> showed that neural networks represent more features than they have dimensions by superimposing features in shared subspaces. Larger models, having greater capacity and training on more data, may represent refusal in a more polysemantic way, entangling it with related concepts (safety, ethics, uncertainty, helpfulness) that partially overlap in activation space. A single DIM vector captures the average direction of this entangled cluster, but as the cluster spreads across more dimensions, the projection onto any single direction captures a decreasing fraction of the total refusal signal. Our observation that Gemma 27B produces direction norms of 350+ (compared to 24–93 for steerable models) is consistent with this hypothesis: the extracted "direction" may be a noisy average across a high-dimensional manifold rather than a clean one-dimensional feature.</p>
 
@@ -900,7 +900,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <figure>
     <img src="figures/fig_transfer_efficiency.png" alt="Transfer Efficiency bar chart with confidence intervals">
-    <figcaption><strong>Figure 9:</strong> Transfer efficiency (TE) of DIM refusal directions. Same-family (Qwen, green) achieves TE ≥ 1.0; cross-family (Qwen↔Gemma, red) collapses to near-zero. <em>Do not assume directions transfer across architecture families. Validate on your target model—one pair tested in each category.</em></figcaption>
+    <figcaption><strong>Figure 9:</strong> Transfer efficiency (TE) of DIM refusal directions. Same-family (Qwen, green) achieves TE ≥ 1.0; cross-family (Qwen↔Gemma, red) collapses to near-zero. <em>Do not assume directions transfer across architecture families. Validate on your target model. One pair tested in each category.</em></figcaption>
 </figure>
 
 <h3>Interpretation</h3>
@@ -978,7 +978,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <h3>What Transfer Tells Us About Refusal Geometry</h3>
 
-<p>The transfer results add a dimension to the geometric picture established in earlier sections. Same-family transfer succeeds (TE &ge; 1.0) despite moderate cross-cosine (0.324), suggesting that models within an architecture family encode refusal in overlapping geometric subspaces — different enough in orientation to produce low cosine similarity, but functionally aligned enough for transferred directions to induce refusal. Cross-family transfer fails (TE &le; 0.17) with near-orthogonal directions (cross-cosine 0.019), even when hidden dimensionality matches exactly.</p>
+<p>The transfer results add a dimension to the geometric picture established in earlier sections: same-family transfer succeeds (TE &ge; 1.0) despite moderate cross-cosine (0.324), suggesting that models within an architecture family encode refusal in overlapping geometric subspaces, different enough in orientation to produce low cosine similarity but functionally aligned enough for transferred directions to induce refusal. Cross-family transfer fails (TE &le; 0.17) with near-orthogonal directions (cross-cosine 0.019), even when hidden dimensionality matches exactly.</p>
 
 <p>This pattern is consistent with the hypothesis that refusal geometry is shaped by architecture-specific training dynamics rather than by a universal geometric feature. If refusal were encoded in a geometry determined primarily by training data (which overlaps substantially across families), we would expect at least moderate cross-family transfer. The near-orthogonality instead suggests that <em>how</em> an architecture processes and stores refusal information during training determines the resulting direction, not just <em>what</em> information is stored. We caution that this interpretation rests on one same-family pair and one cross-family pair.</p>
 
@@ -1172,7 +1172,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p>All results are from <code>results/FINAL_RESULTS.json</code>. Coherent refusal rate = percentage of outputs classified as coherent refusal (contains refusal keywords, not garbled). All experiments use greedy decoding, 100 max generation tokens.</p>
 
-<p><em>(Complete tables available in full paper PDF — omitted here for brevity. See paper.md Appendix B for complete numerical results.)</em></p>
+<p><em>(Complete tables available in full paper PDF, omitted here for brevity. See paper.md Appendix B for complete numerical results.)</em></p>
 
 <h2 id="appendix-c">Appendix C: Example Steered Outputs</h2>
 

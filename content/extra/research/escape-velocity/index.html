@@ -230,7 +230,7 @@
 
 <d-title>
     <h1>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</h1>
-    <p>When chat models talk to themselves for 40 turns, some collapse into repetition. This study measures how much — and where the measurement breaks down.</p>
+    <p>When chat models talk to themselves for 40 turns, some collapse into repetition. This study measures how much, and where the measurement breaks down.</p>
 </d-title>
 
 <d-byline></d-byline>
@@ -243,22 +243,22 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition — but our automated collapse detector did not pass its preregistered reliability check (Cohen’s κ = 0.566 vs. threshold 0.80). Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
+<p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition, but our automated collapse detector did not pass its preregistered reliability check (Cohen’s κ = 0.566 vs. threshold 0.80). Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
 
 <div class="note">
 <strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset and protocol outcome, not a validated detector claim.
 </div>
 
-<p><strong>Primary contributions:</strong> (1) a locked, reproducible measurement protocol for multi-turn collapse with frozen artifacts; (2) a complete 720-trajectory descriptive benchmark; and (3) a transparent account of a preregistered reliability gate failure and its consequences for claim scope — which we believe is independently informative for researchers designing LLM evaluation pipelines.</p>
+<p><strong>Primary contributions:</strong> (1) a locked, reproducible measurement protocol for multi-turn collapse with frozen artifacts; (2) a complete 720-trajectory descriptive benchmark; and (3) a transparent account of a preregistered reliability gate failure and its consequences for claim scope. We believe this is independently informative for researchers designing LLM evaluation pipelines.</p>
 
 <h2 id="why-this-matters">Why this matters</h2>
-<p>Multi-turn conversations are where most real LLM usage happens — and where quality is hardest to measure. If models quietly degrade into repetitive loops after enough turns, that matters for anyone building chat products, agents, or evaluation pipelines. But measuring this degradation reliably turns out to be harder than measuring it at all.</p>
-<p>This study contributes a locked protocol and complete dataset for studying the problem. It also contributes a transparent account of a reliability gate failure — our automated detector didn't pass its own preregistered agreement check — which we think is independently useful for researchers designing LLM evaluation systems.</p>
+<p>Multi-turn conversations are where most real LLM usage happens, and where quality is hardest to measure. If models quietly degrade into repetitive loops after enough turns, that matters for anyone building chat products, agents, or evaluation pipelines. But measuring this degradation reliably turns out to be harder than measuring it at all.</p>
+<p>This study contributes a locked protocol and complete dataset for studying the problem. It also contributes a transparent account of a reliability gate failure: our automated detector didn't pass its own preregistered agreement check, which we think is independently useful for researchers designing LLM evaluation systems.</p>
 
 <h2 id="at-a-glance">At a glance</h2>
 
 <h3>What we did</h3>
-<p>Ran 720 multi-turn conversations (40 turns each) across four model-pairing conditions using three 7B-parameter model families. Measured collapse — defined as sustained high-similarity, low-drift output — using a frozen, preregistered detector.</p>
+<p>Ran 720 multi-turn conversations (40 turns each) across four model-pairing conditions using three 7B-parameter model families. Measured collapse (sustained high-similarity, low-drift output) using a frozen, preregistered detector.</p>
 
 <h3>What we found</h3>
 <ul>
@@ -269,7 +269,7 @@
 
 <h3>What this does NOT show</h3>
 <ul>
-  <li>Validated collapse detection — the κ gate was not met, so detector-level claims are off the table.</li>
+  <li>Validated collapse detection: the κ gate was not met, so detector-level claims are off the table.</li>
   <li>Causal explanations for why some conditions collapse more than others.</li>
   <li>Generalization beyond these specific models, prompts, and protocol settings.</li>
 </ul>
@@ -294,7 +294,7 @@
 </ul>
 
 <h3 id="seed-prompts">Seed prompts</h3>
-<p>The 36 seed prompts (SEEDS_V2) were drawn from six topical buckets — factual Q&amp;A, instruction following, creative rewrite, argumentative, conversational, and practical task — with six prompts per bucket. Examples: "Explain why eclipses do not happen every month" (factual), "Give me exactly 3 bullet points on how to prepare for a technical interview" (instruction), "Argue both for and against using open-weight models in production safety-critical systems" (argumentative). The full seed set is available in the <a href="https://github.com/Sohailm25/escape-velocity">companion repository</a>.</p>
+<p>The 36 seed prompts (SEEDS_V2) were drawn from six topical buckets: factual Q&amp;A, instruction following, creative rewrite, argumentative, conversational, and practical task, with six prompts per bucket. Examples: "Explain why eclipses do not happen every month" (factual), "Give me exactly 3 bullet points on how to prepare for a technical interview" (instruction), "Argue both for and against using open-weight models in production safety-critical systems" (argumentative). The full seed set is available in the <a href="https://github.com/Sohailm25/escape-velocity">companion repository</a>.</p>
 
 <h3 id="context-window">Context window handling</h3>
 <p>The full conversation history is passed to the model at each turn without truncation. At 40 turns with up to 256 tokens each, conversations can reach ~10,000 tokens. The models have context windows of 8,192 (Llama, Mistral) to 32,768 (Qwen) tokens. In practice, collapsed turns produce short outputs, keeping most conversations within limits. We did not implement explicit truncation; if context exceeded the model's window, internal left-truncation would apply. This is a limitation: later-turn behavior in longer conversations may be partially confounded by context overflow.</p>
@@ -314,7 +314,7 @@
 <p>The core question is simple: when two chat models keep talking for 40 turns, do they keep producing meaningfully new content, or do they fall into repetitive loops?</p>
 <p>Below are representative excerpts selected from raw turn logs after scanning all 180 cached trajectories. All examples are descriptive illustrations rather than causal evidence.</p>
 
-<h3>Example A — strong repetition loop (HOMO_B: Qwen self-play)</h3>
+<h3>Example A: strong repetition loop (HOMO_B: Qwen self-play)</h3>
 <div class="note">
   <strong>Turn 18:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
   <strong>Turn 24:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
@@ -322,7 +322,7 @@
 </div>
 <p>Interpretation: near-identical template reuse over long spans, which is exactly the collapse behavior this benchmark is designed to capture.</p>
 
-<h3>Example B — low-collapse trajectory (HOMO_C: Mistral self-play)</h3>
+<h3>Example B: low-collapse trajectory (HOMO_C: Mistral self-play)</h3>
 <div class="note">
   <strong>Turn 18:</strong> “Bias mitigation ... fairness-aware machine learning algorithms ...”<br>
   <strong>Turn 24:</strong> “Explainability and transparency are also important for regulatory compliance ...”<br>
@@ -330,7 +330,7 @@
 </div>
 <p>Interpretation: still topically related, but content continues to move and reframe rather than locking into one repeated response shell.</p>
 
-<h3>Example C — intermediate pattern (HETERO_ROT: heterogeneous rotation)</h3>
+<h3>Example C: intermediate pattern (HETERO_ROT: heterogeneous rotation)</h3>
 <div class="note">
   <strong>Turn 18:</strong> “Develop and implement policies and regulations to reduce greenhouse gas emissions ...”<br>
   <strong>Turn 30:</strong> “By working together, we can make a significant difference ...”<br>
@@ -341,17 +341,17 @@
 <h2 id="results">Key baseline results</h2>
 <figure>
   <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">
-  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition. HOMO_C (Mistral) collapses most frequently; HETERO_ROT (heterogeneous rotation) is lowest. <em>Use this to compare baseline susceptibility across model families, not to rank models for deployment—κ = 0.566 means these rates carry label uncertainty.</em></figcaption>
+  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition. HOMO_C (Mistral) collapses most frequently; HETERO_ROT (heterogeneous rotation) is lowest. <em>Use this to compare baseline susceptibility across model families, not to rank models for deployment. κ = 0.566 means these rates carry label uncertainty.</em></figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_2_collapse_distribution.png" alt="Collapse rate distribution by condition">
-  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across tuples. The spread within each condition shows seed-level variance—wide distributions mean individual conversations vary substantially even under identical setup. <em>Do not use narrow means from Figure 1 without considering this spread.</em></figcaption>
+  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across tuples. The spread within each condition shows seed-level variance. Wide distributions mean individual conversations vary substantially even under identical setup. <em>Do not use narrow means from Figure 1 without considering this spread.</em></figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_3_first_collapse_turn.png" alt="First collapse turn distribution">
-  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index. Earlier peaks indicate faster deterioration. <em>If building multi-turn systems, this suggests where to place quality checkpoints—but note this reflects our 40-turn protocol with specific seed prompts, not arbitrary deployment conditions.</em></figcaption>
+  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index. Earlier peaks indicate faster deterioration. <em>If building multi-turn systems, this suggests where to place quality checkpoints, but note this reflects our 40-turn protocol with specific seed prompts, not arbitrary deployment conditions.</em></figcaption>
 </figure>
 
 <h3 id="scope">Interpretation scope</h3>
@@ -373,8 +373,8 @@
 </ul>
 <h3>What this study does NOT show</h3>
 <ul>
-  <li>That the collapse detector is reliable — the preregistered reliability gate was not met.</li>
-  <li>Why certain conditions collapse more — no causal or mechanistic claims are made.</li>
+  <li>That the collapse detector is reliable: the preregistered reliability gate was not met.</li>
+  <li>Why certain conditions collapse more. No causal or mechanistic claims are made.</li>
   <li>That these patterns generalize beyond the specific models and settings tested.</li>
 </ul>
 <p><strong>Highest-value next step:</strong> independent human-rater reliability audit to test whether condition-level patterns persist under stronger label quality.</p>
@@ -383,7 +383,7 @@
 <ul>
   <li><strong>Detector reliability:</strong> κ=0.566 (threshold 0.80 not met). No confirmatory detector-validation claim is made.</li>
   <li><strong>LLM-rater circularity:</strong> The reliability audit used two LLM raters (GPT-5.2, Claude 4.6 Opus) rather than human annotators. LLMs evaluating LLM-generated text may share systematic biases that inflate apparent agreement, and the "independence" of these raters is limited by potential training-data and architectural overlap. A human-rater reliability audit is the highest-priority follow-up.</li>
-  <li><strong>Detector thresholds:</strong> Threshold values (cosine ≥ 0.92/0.90, drift ≤ 0.08/0.10, 3 consecutive turns) were preregistered to prevent researcher degrees of freedom, but lack independent validation. A non-confirmatory sweep across 36 threshold configurations showed collapse rates ranging from 0.33 to 0.60 with no condition-rank inversions — suggesting the ordering is robust to small perturbations, but broader validation with alternative detection approaches (lexical overlap, n-gram repetition, perplexity) remains needed.</li>
+  <li><strong>Detector thresholds:</strong> Threshold values (cosine ≥ 0.92/0.90, drift ≤ 0.08/0.10, 3 consecutive turns) were preregistered to prevent researcher degrees of freedom, but lack independent validation. A non-confirmatory sweep across 36 threshold configurations showed collapse rates ranging from 0.33 to 0.60 with no condition-rank inversions, suggesting the ordering is robust to small perturbations, but broader validation with alternative detection approaches (lexical overlap, n-gram repetition, perplexity) remains needed.</li>
   <li><strong>Single embedding model:</strong> The detector relies solely on MiniLM-L6-v2 embeddings. Different embedding models might yield different collapse patterns.</li>
   <li><strong>Model coverage:</strong> Only three 7–8B instruction-tuned models were tested. Whether similar patterns hold for larger models (70B+), base models, models with different alignment approaches (RLHF vs. DPO), or frontier proprietary models is untested.</li>
   <li><strong>No causal claims:</strong> We observe condition-dependent differences but do not establish why. Training data diversity, alignment procedure differences, tokenizer effects, and architecture choices are plausible hypotheses for future investigation.</li>

@@ -279,15 +279,15 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em>—depth-profile slope (ρ = −0.536) and layerwise variance (ρ = +0.511)—show medium-to-large associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. However, the 720-row analysis contains only 108 unique λ₁ predictor vectors (36 seeds × 3 distinct models), so nominal p-values are anti-conservative and effect-size magnitudes are the primary evidence. We interpret this as exploratory support for a bridge hypothesis, not confirmatory relationship establishment.</p>
+<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em> (depth-profile slope ρ = −0.536, layerwise variance ρ = +0.511) show medium-to-large associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. However, the 720-row analysis contains only 108 unique λ₁ predictor vectors (36 seeds × 3 distinct models), so nominal p-values are anti-conservative and effect-size magnitudes are the primary evidence. We interpret this as exploratory support for a bridge hypothesis, not confirmatory relationship establishment.</p>
 
 <div class="note caveat">
-<strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
+<strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only. No causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
 </div>
 
 <h2 id="why-this-matters">Why this matters</h2>
-<p>Understanding <em>why</em> some models collapse in extended conversations requires looking inside the model. The finite-time Lyapunov exponent (FTLE) measures how sensitive a transformer's internal computation is to small perturbations as information flows through its layers — a single-forward-pass measurement that's cheap to compute and doesn't require conversation-level testing.</p>
-<p>If depth-dynamics features correlate with collapse behavior, that opens a path toward screening models for collapse risk <em>before</em> running expensive multi-turn evaluations. This study tests that hypothesis. The signal is real but exploratory — the dependence structure of our data limits what we can confirm statistically.</p>
+<p>Understanding <em>why</em> some models collapse in extended conversations requires looking inside the model. The finite-time Lyapunov exponent (FTLE) measures how sensitive a transformer's internal computation is to small perturbations as information flows through its layers. A single-forward-pass measurement that's cheap to compute and doesn't require conversation-level testing.</p>
+<p>If depth-dynamics features correlate with collapse behavior, that opens a path toward screening models for collapse risk <em>before</em> running expensive multi-turn evaluations. This study tests that hypothesis. The signal is real but exploratory: the dependence structure of our data limits what we can confirm statistically.</p>
 
 <h2 id="at-a-glance">At a glance</h2>
 
@@ -296,23 +296,23 @@
 
 <h3>What we found</h3>
 <ul>
-  <li>Profile <em>shape</em> features — slope (ρ = −0.536) and variance (ρ = +0.511) — show medium-to-large associations with collapse behavior. Mean λ₁ alone does not.</li>
+  <li>Profile <em>shape</em> features (slope ρ = −0.536, variance ρ = +0.511) show medium-to-large associations with collapse behavior. Mean λ₁ alone does not.</li>
   <li>3 of 6 preregistered tests pass the effect-size threshold, meeting the success criterion.</li>
   <li>The FTLE profiling pipeline itself costs ~$20 for 7,200 calls and runs stably on A100 GPUs.</li>
 </ul>
 
 <h3>What this does NOT show</h3>
 <ul>
-  <li>Causal mechanism — depth dynamics and conversational collapse operate on different time axes.</li>
-  <li>Confirmatory statistical evidence — 108 unique predictor vectors across 720 rows means p-values are anti-conservative.</li>
-  <li>Validated collapse labels — the upstream κ = 0.566 limitation carries through to all bridge correlations.</li>
+  <li>Causal mechanism: depth dynamics and conversational collapse operate on different time axes.</li>
+  <li>Confirmatory statistical evidence: 108 unique predictor vectors across 720 rows means p-values are anti-conservative.</li>
+  <li>Validated collapse labels: the upstream κ = 0.566 limitation carries through to all bridge correlations.</li>
 </ul>
 
 <h3>How to use this</h3>
 <p>The pipeline is the primary reusable contribution: apply it to new models to generate depth-dynamics profiles for exploratory risk screening. The bridge correlations provide a testable direction for future work, not a confirmed relationship for deployment decisions.</p>
 
 <h2 id="approach">Approach</h2>
-<p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
+<p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations: how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 
 <p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
 
@@ -340,7 +340,7 @@
 
 <figure>
     <img src="figures/figure_1_bridge_heatmap.png" alt="Bridge correlation heatmap">
-    <figcaption><strong>Figure 1.</strong> Bridge correlation heatmap. Checkmarks = preregistered threshold met (|ρ| ≥ 0.40). Profile shape features (slope, variance) carry the signal; mean λ₁ does not. <em>Read effect sizes, not p-values—the 108-unique-predictor structure makes nominal p-values anti-conservative. κ = 0.566 caveat applies to all cells.</em></figcaption>
+    <figcaption><strong>Figure 1.</strong> Bridge correlation heatmap. Checkmarks = preregistered threshold met (|ρ| ≥ 0.40). Profile shape features (slope, variance) carry the signal; mean λ₁ does not. <em>Read effect sizes, not p-values. The 108-unique-predictor structure makes nominal p-values anti-conservative. κ = 0.566 caveat applies to all cells.</em></figcaption>
 </figure>
 
 <h3>Primary results (n = 720)</h3>
@@ -362,21 +362,21 @@
 
 <figure>
     <img src="figures/figure_2_passing_scatters.png" alt="Scatter plots for passing tests">
-    <figcaption><strong>Figure 2.</strong> Scatter plots for the three passing tests. Color = condition. Note the clustering by condition—much of the correlation structure reflects between-model differences, not within-model variation. <em>Treat as exploratory screening signal under matched settings, not a deployment-general predictor.</em></figcaption>
+    <figcaption><strong>Figure 2.</strong> Scatter plots for the three passing tests. Color = condition. Note the clustering by condition. Much of the correlation structure reflects between-model differences, not within-model variation. <em>Treat as exploratory screening signal under matched settings, not a deployment-general predictor.</em></figcaption>
 </figure>
 
 <h3>What the passing tests tell us</h3>
 <ul>
     <li><strong>Steeper depth-profile slopes</strong> (more negative λ₁ trend across layers) are associated with higher collapse rates and earlier first-collapse turns.</li>
     <li><strong>Higher layerwise λ₁ variance</strong> (more uneven sensitivity across depth) is associated with higher collapse rates.</li>
-    <li><strong>Mean λ₁ alone is insufficient</strong>—the <em>shape</em> of the depth profile matters more than its average level.</li>
+    <li><strong>Mean λ₁ alone is insufficient</strong>: the <em>shape</em> of the depth profile matters more than its average level.</li>
 </ul>
 
 <h3>Depth profiles</h3>
 
 <figure>
     <img src="figures/figure_3_depth_profiles.png" alt="Layerwise depth profiles by condition">
-    <figcaption><strong>Figure 3.</strong> Mean λ₁ depth profiles by condition. Slope and variance differences here correspond to the passing bridge tests above. <em>The pipeline that produces these profiles ($20 for 7,200 calls) is the primary reusable contribution—apply it to new models to generate comparable profiles for risk screening.</em></figcaption>
+    <figcaption><strong>Figure 3.</strong> Mean λ₁ depth profiles by condition. Slope and variance differences here correspond to the passing bridge tests above. <em>The pipeline that produces these profiles ($20 for 7,200 calls) is the primary reusable contribution. Apply it to new models to generate comparable profiles for risk screening.</em></figcaption>
 </figure>
 
 <h3>Sensitivity analysis (n = 167 rater-agreed)</h3>

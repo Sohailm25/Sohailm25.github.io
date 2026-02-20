@@ -299,7 +299,7 @@
 
 <h2 id="abstract">Abstract</h2>
 
-<p>Activation steering (adding learned direction vectors to a model's residual stream at inference time) has emerged as a lightweight method for modifying language model behavior without retraining. We systematically evaluate two direction extraction methods (Difference-in-Means and COSMIC) across seven instruction-tuned models spanning 2B–32B parameters, three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). We find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B in the Qwen family, with Gemma 27B becoming completely unsteerable. Simple mean-difference extraction matches or exceeds SVD-based COSMIC at every scale tested. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering. We further discover that extraction tooling (nnsight versus raw PyTorch hooks) produces directions differing by 90 percentage points in effectiveness on the same model. INT8 quantization preserves steering; INT4 degrades large models by 20 percentage points while leaving small models unaffected. These findings constrain the viability of single-direction steering as models scale, and suggest that the "refusal direction" identified by current methods may not correspond to a robust computational feature at frontier scale. For practitioners: use mean-difference extraction with graph-level tracing, target 50% depth for large models, and validate per-architecture.</p>
+<p>Activation steering (adding learned direction vectors to a model's residual stream at inference time) has emerged as a lightweight method for modifying language model behavior without retraining. We systematically evaluate two direction extraction methods (Difference-in-Means and COSMIC) across seven instruction-tuned models spanning 2B–32B parameters, three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). Under our tested protocol (layer-l-through-N steering with greedy decoding), we observe that steering effectiveness is at ceiling for smaller models and declines at larger scales: coherent refusal rates drop from 100% at 3B to 77% at 32B (n=30) in the Qwen family, with Gemma 27B becoming completely unsteerable (n=1 architecture). Simple mean-difference extraction matches or exceeds SVD-based COSMIC at every scale tested. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering. We further discover that extraction tooling (nnsight versus raw PyTorch hooks) produces directions differing by 90 percentage points in effectiveness on the same model. INT8 quantization preserves steering; INT4 degrades large models by 20 percentage points while leaving small models unaffected. These findings constrain the viability of single-direction steering as models scale under this protocol, and are consistent with the possibility that the "refusal direction" becomes a less complete description at larger scales—though this interpretation remains speculative given the limited model coverage (n=3 families, n=1 failure case). For practitioners: use mean-difference extraction with graph-level tracing, target 50% depth for large models, and validate per-architecture.</p>
 
 <h2 id="introduction">1. Introduction</h2>
 
@@ -310,7 +310,7 @@
 <p>What we find is largely cautionary:</p>
 
 <ol>
-<li><p><strong>Steering effectiveness decreases with scale.</strong> Across the Qwen family (which holds architecture constant while varying only scale), coherent refusal rates drop monotonically: 100% at 3B → 100% at 7B → 90% at 14B → 77% at 32B (DIM, optimal layer, n=30).<d-footnote>The canonical 32B rate uses our 30-prompt evaluation set. An earlier 50-prompt scaling sweep yielded 60%. We use 77% (n=30) as the canonical value throughout and note both where relevant. See §4.2 for details.</d-footnote> This inverse scaling contradicts the intuition that larger, more capable models should have more structured representations amenable to steering. We treat this not as a performance degradation to lament but as a clue about how refusal is geometrically organized at different scales.</p></li>
+<li><p><strong>Steering effectiveness is at ceiling for small models and declines at larger scales.</strong> Across the Qwen family, coherent refusal rates are: 100% at 3B → 100% at 7B → 90% at 14B → 77% at 32B (DIM, optimal layer, n=30). The actual decline begins only at 14B. This is consistent with refusal geometry becoming more complex at larger scales, but n=30 yields wide confidence intervals—77% and 90% are not statistically distinguishable.</p></li>
 
 <li><p><strong>Simple extraction matches or exceeds complex extraction everywhere we tested.</strong> DIM ties or beats COSMIC at every scale. At 32B, the gap is large: DIM achieves 60% where COSMIC's automated layer selection yields 10% (n=50, the prompt set used for the COSMIC comparison; see footnote in §5.2 for prompt-set sensitivity; Fisher's exact p &lt; 0.001).</p></li>
 
@@ -329,7 +329,7 @@
 
 <p>Before the full methods and results, we give a brief tour of the key findings. Readers who prefer systematic details first can skip to §3 (Methods).</p>
 
-<p><strong>Inverse scaling.</strong> Larger models are harder to steer. Across the Qwen family, coherent refusal rates decline monotonically: 100% at 3B and 7B, 90% at 14B, 77% at 32B (see §5.2 for full results).</p>
+<p><strong>Inverse scaling.</strong> Steering effectiveness is at ceiling for smaller models and declines at larger scales. Across the Qwen family: 100% at 3B and 7B, 90% at 14B, 77% at 32B (n=30; see §5.2). The actual decline begins at 14B; 77% and 90% are not statistically distinguishable at n=30.</p>
 
 <div class="example-output">
 <p><em>Example steered output (Qwen 32B @ L32, 15×):</em></p>
@@ -527,7 +527,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p><strong>Setup.</strong> We sweep the Qwen family (3B, 7B, 14B, 32B) with DIM at 15× and the Gemma family (2B, 9B, 27B) with DIM at 25×, testing multiple layer depths per model.</p>
 
-<p>Steering effectiveness decreases monotonically with model size in both families.</p>
+<p>Steering effectiveness is at ceiling for small models and declines at larger scales in both families under our tested protocol.</p>
 
 <figure>
 <table>

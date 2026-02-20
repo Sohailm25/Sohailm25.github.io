@@ -15,11 +15,15 @@
                     "affiliations": [{"name": "Independent Researcher"}]
                 }
             ],
-            "katex": {}
+            "katex": {
+                "delimiters": [
+                    {"left": "$", "right": "$", "display": false}
+                ]
+            }
         }</script>
     </d-front-matter>
     <style>
-        /* Everforest dark palette (matched to activation-steering + paper-a pages) */
+        /* Everforest dark palette */
         :root {
             --ef-bg: #2d353b;
             --ef-bg-dim: #232a2e;
@@ -42,17 +46,26 @@
             color: var(--ef-text) !important;
         }
 
+        /* Override Distill template grid to allow full width */
         d-article {
             color: var(--ef-text);
-            overflow: visible;
+            overflow: visible !important;
         }
 
+        /* Prevent Distill grid from clipping chart left edges */
+        d-article > *, d-article figure, d-article figure img {
+            clip-path: none !important;
+            -webkit-clip-path: none !important;
+        }
+
+        /* Fix the text clipping: override Distill's grid column constraints */
         @supports (display: grid) {
             d-article {
                 display: block !important;
                 max-width: 780px;
                 margin: 0 auto;
                 padding: 0 24px;
+                overflow: visible;
             }
             d-article p, d-article ul, d-article ol, d-article blockquote,
             d-article h2, d-article h3, d-article h4,
@@ -61,6 +74,7 @@
                 max-width: 100%;
                 overflow-wrap: break-word;
                 word-wrap: break-word;
+                overflow: visible;
             }
         }
 
@@ -88,6 +102,7 @@
         d-byline span, d-byline p, d-byline .byline-container,
         d-byline .authors-affiliations { color: var(--ef-text-muted) !important; }
         d-byline h3 { color: var(--ef-text-muted) !important; }
+        /* Force all byline text light */
         d-byline * { color: var(--ef-text-muted); }
         d-byline a { color: var(--ef-aqua) !important; }
 
@@ -110,12 +125,21 @@
 
         figure {
             margin: 2em 0;
+            overflow: visible;
+            padding: 0;
+            position: relative;
         }
 
         figure img {
             width: 100%;
+            max-width: 100%;
             border: 1px solid var(--ef-border);
             border-radius: 4px;
+            display: block;
+            overflow: visible;
+            margin-left: 0;
+            padding: 4px;
+            box-sizing: border-box;
         }
 
         figcaption {
@@ -170,6 +194,7 @@
             font-style: italic;
         }
 
+        /* Distill citation, footnote, and bibliography overrides */
         d-citation-list { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; }
         d-citation-list * { color: var(--ef-text) !important; }
         d-citation-list a { color: var(--ef-aqua) !important; }
@@ -182,36 +207,21 @@
         d-hover-box * { color: var(--ef-text) !important; }
         d-hover-box a { color: var(--ef-aqua) !important; }
 
-        /* Make inline annotations clearly visible */
-        d-cite a, d-cite, d-cite sup,
-        d-footnote, d-footnote sup {
-            color: var(--ef-yellow) !important;
-            font-weight: 700 !important;
+        /* Inline citation number styling */
+        d-cite a { color: var(--ef-aqua) !important; }
+        d-cite { color: var(--ef-aqua) !important; }
+        d-cite sup { color: var(--ef-aqua) !important; }
+
+        /* Citation hover popup override - target shadow DOM fallback */
+        .citation-hover, .distill-hover-box, [class*="hover"] {
+            background-color: var(--ef-bg-card) !important;
+            color: var(--ef-text) !important;
         }
 
-        /* Stable manual bibliography formatting */
-        .references {
-            margin: 0.6em 0 0 1.2em;
-            padding: 0;
-        }
-        .references li {
-            margin: 0.75em 0;
-            line-height: 1.45;
-            color: var(--ef-text);
-        }
-        .references a {
-            color: var(--ef-aqua) !important;
-            text-decoration: none;
-        }
-        .references a:hover {
-            color: var(--ef-green) !important;
-            text-decoration: underline;
-        }
-
+        /* Table of contents sidebar */
         d-contents { color: var(--ef-text-muted); }
         d-contents a { color: var(--ef-text-muted); }
         d-contents a:hover { color: var(--ef-green); }
-
     </style>
 </head>
 <body>
@@ -233,9 +243,9 @@
 </div>
 
 <h2 id="approach">Approach</h2>
-<p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <a href="#ref-1">[1]</a>, <a href="#ref-2">[2]</a>.</p>
+<p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 
-<p>Rather than computing full Jacobians (prohibitive for <em>d</em><sub>model</sub>&nbsp;=&nbsp;4096), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
+<p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
 
 <h3>Three λ₁ summaries</h3>
 <ul>
@@ -257,11 +267,11 @@
 
 <h2 id="results">Key Results</h2>
 
-<p>Six preregistered Spearman correlations tested three λ₁ summaries against Paper A collapse metrics. Success criterion: ≥1 test with |ρ| ≥ 0.40 and Bonferroni–Holm adjusted p < 0.05.</p>
+<p>Six preregistered Spearman correlations tested three λ₁ summaries against Paper A collapse metrics. Success criterion: ≥1 test with |ρ| ≥ 0.40 and Bonferroni–Holm adjusted p &lt; 0.05.</p>
 
 <figure>
     <img src="figures/figure_1_bridge_heatmap.png" alt="Bridge correlation heatmap">
-    <figcaption><strong>Figure 1.</strong> Bridge correlation heatmap. Checkmarks indicate tests meeting the preregistered threshold (|ρ| ≥ 0.40, Holm p < 0.05). All correlations subject to Paper A label reliability caveat (κ = 0.566).</figcaption>
+    <figcaption><strong>Figure 1.</strong> Bridge correlation heatmap. Checkmarks indicate tests meeting the preregistered threshold (|ρ| ≥ 0.40, Holm p &lt; 0.05). All correlations subject to Paper A label reliability caveat (κ = 0.566).</figcaption>
 </figure>
 
 <h3>Primary results (n = 720)</h3>
@@ -315,25 +325,76 @@
 <h2 id="reproducibility">Reproducibility</h2>
 <ul>
     <li><strong>Compute:</strong> Modal A100-80GB, float32 throughout, 7,200 FTLE calls, 0% attrition.</li>
-    <li><strong>Total cost:</strong> ~$26 of $620 budget cap.</li>
+    <li><strong>Total cost:</strong> ~&#36;26 of &#36;620 budget cap.</li>
     <li><strong>All artifacts frozen</strong> with SHA256 hashes across four phases (Phase 0 sanity → Phase 1 pilot → Phase 2 full-scale → Phase 3 bridge).</li>
     <li><strong>Ops postflight:</strong> PASS.</li>
 </ul>
 
+</d-article>
+
 <d-appendix>
-  <h3>References</h3>
-  <ol class="references">
-    <li id="ref-1">
-      Eckmann, J.-P. &amp; Ruelle, D. (1985). <em>Ergodic theory of chaos and strange attractors</em>. <em>Reviews of Modern Physics</em>, 57(3), 617.
-      <a href="https://doi.org/10.1103/RevModPhys.57.617" target="_blank" rel="noopener">doi:10.1103/RevModPhys.57.617</a>
-    </li>
-    <li id="ref-2">
-      Wolf, A., Swift, J. B., Swinney, H. L., &amp; Vastano, J. A. (1985). <em>Determining Lyapunov exponents from a time series</em>. <em>Physica D: Nonlinear Phenomena</em>, 16(3), 285–317.
-      <a href="https://doi.org/10.1016/0167-2789(85)90011-9" target="_blank" rel="noopener">doi:10.1016/0167-2789(85)90011-9</a>
-    </li>
-  </ol>
 </d-appendix>
 
-</d-article>
+<d-bibliography src="bibliography.bib"></d-bibliography>
+
+<script>
+// Override Distill shadow DOM styles for dark theme
+document.addEventListener('DOMContentLoaded', function() {
+    const ef = {
+        bg: '#2d353b', bgDim: '#232a2e', bgCard: '#343f44',
+        text: '#d3c6aa', muted: '#859289',
+        green: '#A7C080', aqua: '#83C092', blue: '#7fbbb3',
+        border: '#4a555b'
+    };
+
+    function injectShadowStyles(root) {
+        if (!root || !root.shadowRoot) return;
+        const style = document.createElement('style');
+        style.textContent = `
+            .citation-number { color: ${ef.aqua} !important; cursor: pointer; }
+            .citation-number:hover { color: ${ef.green} !important; }
+            .hover-box { background: ${ef.bgCard} !important; border: 1px solid ${ef.border} !important; box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important; color: ${ef.text} !important; }
+            .hover-box * { color: ${ef.text} !important; }
+            .hover-box a { color: ${ef.aqua} !important; }
+            a { color: ${ef.aqua} !important; }
+            span { color: ${ef.text} !important; }
+        `;
+        root.shadowRoot.appendChild(style);
+    }
+
+    // Observe DOM for Distill custom elements with shadow roots
+    const observer = new MutationObserver(function(mutations) {
+        document.querySelectorAll('d-cite, d-footnote, d-hover-box, d-citation-list, d-bibliography').forEach(injectShadowStyles);
+        // Also check for any element with shadowRoot
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot && !el.shadowRoot.querySelector('.ef-injected')) {
+                injectShadowStyles(el);
+                const marker = document.createElement('span');
+                marker.className = 'ef-injected';
+                marker.style.display = 'none';
+                el.shadowRoot.appendChild(marker);
+            }
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Initial pass
+    setTimeout(function() {
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) injectShadowStyles(el);
+        });
+    }, 500);
+    setTimeout(function() {
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) injectShadowStyles(el);
+        });
+    }, 2000);
+});
+</script>
+
+<div style="text-align: center; padding: 2em 0 3em; border-top: 1px solid var(--ef-border); margin-top: 2em;">
+    <a href="/papers/ftle-2026.pdf" style="color: var(--ef-aqua); text-decoration: none; font-size: 1.1em;">Paper (PDF)</a>
+</div>
+
 </body>
 </html>

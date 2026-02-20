@@ -1014,6 +1014,27 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 <figcaption><strong>Figure 8:</strong> Quantized directions maintain high cosine similarity to FP16 (&gt;0.97), yet functional performance diverges at scale, indicating that geometric preservation does not guarantee functional preservation.</figcaption>
 </figure>
 
+<script>
+// Auto-generate Table of Contents
+(function() {
+    var toc = document.getElementById('toc-list');
+    if (!toc) return;
+    var headings = document.querySelectorAll('d-article h2[id]');
+    headings.forEach(function(h2) {
+        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        li.appendChild(a);
+        toc.appendChild(li);
+    });
+    if (toc.children.length <= 6) {
+        toc.style.columns = '1';
+    }
+})();
+</script>
+
 </d-article>
 
 <d-appendix>
@@ -1234,29 +1255,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
-<script>
-
-// Auto-generate Table of Contents
-(function() {
-    var toc = document.getElementById('toc-list');
-    if (!toc) return;
-    var headings = document.querySelectorAll('d-article h2[id]');
-    headings.forEach(function(h2) {
-        // Skip appendix headings
-        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
-        var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.href = '#' + h2.id;
-        a.textContent = h2.textContent;
-        li.appendChild(a);
-        toc.appendChild(li);
-    });
-    // If 6 or fewer items, single column
-    if (toc.children.length <= 6) {
-        toc.style.columns = '1';
-    }
-})();
-
-</script>
 </body>
 </html>

@@ -8,7 +8,7 @@
     <d-front-matter>
         <script type="text/json">{
             "title": "Depth-Dynamics Signatures of Conversational Collapse: Finite-Time Lyapunov Analysis of Transformer Forward Passes",
-            "description": "FTLE estimation via JVP tangent propagation predicts multi-turn collapse behavior",
+            "description": "FTLE profile-shape features show predictive associations with multi-turn collapse behavior",
             "authors": [
                 {
                     "author": "Sohail Mohammad",
@@ -279,10 +279,10 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we find that λ₁ <em>profile features</em>—depth-profile slope (ρ = −0.536) and layerwise variance (ρ = +0.511)—show medium-to-large predictive associations with collapse metrics from a companion study. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion.</p>
+<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em>—depth-profile slope (ρ = −0.536) and layerwise variance (ρ = +0.511)—show medium-to-large predictive associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. This is conditional correlational evidence rather than mechanistic validation.</p>
 
 <div class="note caveat">
-<strong>Reliability caveat.</strong> Paper A collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
+<strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
 </div>
 
 <h2 id="approach">Approach</h2>
@@ -373,6 +373,31 @@
     <li><strong>Ops postflight:</strong> PASS.</li>
 </ul>
 
+<script>
+
+// Auto-generate Table of Contents
+(function() {
+    var toc = document.getElementById('toc-list');
+    if (!toc) return;
+    var headings = document.querySelectorAll('d-article h2[id]');
+    headings.forEach(function(h2) {
+        // Skip appendix headings
+        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        li.appendChild(a);
+        toc.appendChild(li);
+    });
+    // If 6 or fewer items, single column
+    if (toc.children.length <= 6) {
+        toc.style.columns = '1';
+    }
+})();
+
+</script>
+
 </d-article>
 
 <d-appendix>
@@ -440,29 +465,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
-<script>
 
-// Auto-generate Table of Contents
-(function() {
-    var toc = document.getElementById('toc-list');
-    if (!toc) return;
-    var headings = document.querySelectorAll('d-article h2[id]');
-    headings.forEach(function(h2) {
-        // Skip appendix headings
-        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
-        var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.href = '#' + h2.id;
-        a.textContent = h2.textContent;
-        li.appendChild(a);
-        toc.appendChild(li);
-    });
-    // If 6 or fewer items, single column
-    if (toc.children.length <= 6) {
-        toc.style.columns = '1';
-    }
-})();
-
-</script>
 </body>
 </html>

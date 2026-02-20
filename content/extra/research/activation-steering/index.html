@@ -257,15 +257,15 @@
             border: none;
             padding: 0;
         }
-        .toc-container ol {
+        .toc-container ul {
             margin: 0;
-            padding-left: 1.5em;
-            list-style-type: decimal;
+            padding-left: 0;
+            list-style-type: none;
             columns: 2;
             column-gap: 2em;
         }
         @media (max-width: 600px) {
-            .toc-container ol { columns: 1; }
+            .toc-container ul { columns: 1; }
         }
         .toc-container li {
             margin: 0.2em 0;
@@ -294,7 +294,7 @@
 
 <nav class="toc-container">
     <h3>Contents</h3>
-    <ol id="toc-list"></ol>
+    <ul id="toc-list"></ul>
 </nav>
 
 <h2 id="abstract">Abstract</h2>

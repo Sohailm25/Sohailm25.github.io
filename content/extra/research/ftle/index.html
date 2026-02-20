@@ -363,12 +363,13 @@
 <d-byline></d-byline>
 
 
-<d-article>
-
 <nav class="toc-container">
     <h3>Contents</h3>
     <ol id="toc-list"></ol>
 </nav>
+
+<d-article>
+
 
 <h2 id="abstract">Abstract</h2>
 <p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization.<label for="sn-ftle-001" class="sidenote-number"></label><input type="checkbox" id="sn-ftle-001" class="margin-toggle"/><span class="sidenote">QR renormalization every 4 layers prevents the tangent vectors from growing exponentially large or collapsing to zero, which would make the exponent estimate numerically meaningless.</span> Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em> (depth-profile slope ρ = −0.536, layerwise variance ρ = +0.511) show medium-to-large associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. However, the 720-row analysis contains only 108 unique λ₁ predictor vectors (36 seeds × 3 distinct models),<label for="sn-ftle-002" class="sidenote-number"></label><input type="checkbox" id="sn-ftle-002" class="margin-toggle"/><span class="sidenote">HOMO_A and HETERO_ROT both use Llama, producing identical λ₁ values. Within each condition, repeat trajectories share the same model and seed, so they share the same predictor. The 720 rows have far fewer independent predictor observations than n suggests.</span> so nominal p-values are anti-conservative and effect-size magnitudes are the primary evidence. We interpret this as exploratory support for a bridge hypothesis, not confirmatory relationship establishment.</p>

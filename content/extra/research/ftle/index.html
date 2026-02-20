@@ -181,7 +181,33 @@
         d-hover-box { background-color: var(--ef-bg-card) !important; border: 1px solid var(--ef-border) !important; color: var(--ef-text) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important; }
         d-hover-box * { color: var(--ef-text) !important; }
         d-hover-box a { color: var(--ef-aqua) !important; }
-        d-cite a, d-cite, d-cite sup { color: var(--ef-aqua) !important; }
+
+        /* Make inline annotations clearly visible */
+        d-cite a, d-cite, d-cite sup,
+        d-footnote, d-footnote sup {
+            color: var(--ef-yellow) !important;
+            font-weight: 700 !important;
+        }
+
+        /* Stable manual bibliography formatting */
+        .references {
+            margin: 0.6em 0 0 1.2em;
+            padding: 0;
+        }
+        .references li {
+            margin: 0.75em 0;
+            line-height: 1.45;
+            color: var(--ef-text);
+        }
+        .references a {
+            color: var(--ef-aqua) !important;
+            text-decoration: none;
+        }
+        .references a:hover {
+            color: var(--ef-green) !important;
+            text-decoration: underline;
+        }
+
         d-contents { color: var(--ef-text-muted); }
         d-contents a { color: var(--ef-text-muted); }
         d-contents a:hover { color: var(--ef-green); }
@@ -295,7 +321,17 @@
 </ul>
 
 <d-appendix>
-  <d-bibliography src="bibliography.bib"></d-bibliography>
+  <h3>References</h3>
+  <ol class="references">
+    <li>
+      Eckmann, J.-P. &amp; Ruelle, D. (1985). <em>Ergodic theory of chaos and strange attractors</em>. <em>Reviews of Modern Physics</em>, 57(3), 617.
+      <a href="https://doi.org/10.1103/RevModPhys.57.617" target="_blank" rel="noopener">doi:10.1103/RevModPhys.57.617</a>
+    </li>
+    <li>
+      Wolf, A., Swift, J. B., Swinney, H. L., &amp; Vastano, J. A. (1985). <em>Determining Lyapunov exponents from a time series</em>. <em>Physica D: Nonlinear Phenomena</em>, 16(3), 285–317.
+      <a href="https://doi.org/10.1016/0167-2789(85)90011-9" target="_blank" rel="noopener">doi:10.1016/0167-2789(85)90011-9</a>
+    </li>
+  </ol>
 </d-appendix>
 
 </d-article>

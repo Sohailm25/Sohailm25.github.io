@@ -29,7 +29,7 @@ Preregistered baseline study across four interaction conditions (Llama-3.1-8B se
 
 Sohail Mohammad · Preprint, 2026
 
-Activation steering modifies language model behavior by adding learned direction vectors at inference time. We systematically evaluate two extraction methods across seven models (2B–32B parameters) and find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B. Simple mean-difference extraction matches or exceeds complex SVD-based methods at every scale tested, while architecture acts as a binary gate on steerability.
+Activation steering modifies language model behavior by adding learned direction vectors at inference time. We systematically evaluate two extraction methods across seven models (2B–32B parameters) and find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B. Simple mean-difference extraction matches or exceeds complex SVD-based methods at every scale tested, while architecture acts as a binary gate on steerability. Phase-2 transfer experiments show that within the tested same-family pair (Qwen 14B↔32B), extracted directions transfer with efficiency ≥ 1.0, while cross-family transfer (Qwen 7B↔Gemma 9B) collapses to near-zero despite matched hidden dimensionality.
 
 [Paper (PDF)]({static}/papers/activation-steering-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
 

@@ -768,7 +768,72 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p><strong>A more optimistic reading.</strong> The inverse scaling finding does not mean representation engineering is doomed at scale. It means that <em>simple</em> representation engineering (single linear direction, applied from one layer onward) hits a wall. Nonlinear methods like RFM <d-cite key="beaglehole2025universal"></d-cite> appear to clear this wall. The question is whether the added complexity of these methods is compatible with the transparency and interpretability that make representation engineering appealing for safety in the first place. A method that works but is opaque may not be more useful for safety than a method that fails transparently.</p>
 
-<h2 id="limitations">11. Limitations</h2>
+<h2 id="transfer">11. Phase-2: Cross-Model Transfer</h2>
+
+<p>Phase-1 established that activation steering effectiveness depends on model scale and architecture. A natural follow-up: do the extracted refusal directions <em>transfer</em> across models? If the "refusal direction" captures a shared representational feature, directions extracted from one model should steer another model in the same family, or even across families with matched hidden dimensionality. We test both.</p>
+
+<h3>Protocol</h3>
+
+<p>We extract DIM refusal directions from a source model and apply them at the corresponding relative depth in a target model, using the same contrastive data and multiplier calibration protocol as Phase-1. We measure coherent refusal rate on the target and compute <strong>transfer efficiency</strong> (TE): the ratio of the transferred direction's coherent refusal rate to the target model's native (self-extracted) rate. TE &ge; 1.0 means the transferred direction steers at least as well as the target's own. We also report the cosine similarity between source and target directions projected into matched dimensionality (cross-cos), as a geometric diagnostic.</p>
+
+<h3>Results</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Transfer Direction</th>
+            <th>Coherent Refusal Rate</th>
+            <th>Transfer Efficiency (TE)</th>
+            <th>Cross-Cosine</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="4" style="background-color: var(--ef-bg-dim); font-weight: 600; color: var(--ef-aqua);">Same-family: Qwen 14B &harr; 32B</td>
+        </tr>
+        <tr>
+            <td>Qwen 14B &rarr; Qwen 32B</td>
+            <td>100%</td>
+            <td style="color: var(--ef-green);">1.25</td>
+            <td rowspan="2">0.324</td>
+        </tr>
+        <tr>
+            <td>Qwen 32B &rarr; Qwen 14B</td>
+            <td>96.7%</td>
+            <td style="color: var(--ef-green);">1.00</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="background-color: var(--ef-bg-dim); font-weight: 600; color: var(--ef-aqua);">Cross-family: Qwen 7B &harr; Gemma 9B (hidden_dim = 3584)</td>
+        </tr>
+        <tr>
+            <td>Qwen 7B &rarr; Gemma 9B</td>
+            <td style="color: var(--ef-red);">Fails</td>
+            <td style="color: var(--ef-red);">0.17</td>
+            <td rowspan="2">0.019</td>
+        </tr>
+        <tr>
+            <td>Gemma 9B &rarr; Qwen 7B</td>
+            <td style="color: var(--ef-red);">Fails</td>
+            <td style="color: var(--ef-red);">0.03</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="hypothesis-box">
+<p><strong>Key finding.</strong> In this protocol and tested pairs, same-family transfer remains strong while cross-family transfer collapses despite matched hidden dimensionality. Same-family transfer within the Qwen family (14B &harr; 32B) achieves TE &ge; 1.0 in both directions, with the smaller-to-larger direction (14B &rarr; 32B) reaching 100% coherent refusal (TE = 1.25). Cross-family transfer between Qwen 7B and Gemma 9B collapses to near-zero effectiveness (TE = 0.17 and 0.03) despite both models sharing hidden_dim = 3584.</p>
+</div>
+
+<h3>Interpretation</h3>
+
+<p>The cross-cosine values are suggestive: same-family directions share moderate geometric alignment (0.324) while cross-family directions are near-orthogonal (0.019). This is consistent with the hypothesis that refusal directions are family-specific representations shaped by shared pretraining data and fine-tuning procedures, not universal geometric features of instruction-tuned models. However, cross-cosine is a coarse diagnostic and the alignment values should not be over-interpreted.</p>
+
+<p>The asymmetry within cross-family transfer (TE = 0.17 vs. 0.03) suggests that whatever residual signal transfers from Qwen to Gemma does not transfer in the reverse direction, consistent with the directions encoding family-specific rather than shared structure.</p>
+
+<h3>Caveats</h3>
+
+<p>These results come from <strong>one same-family pair</strong> (Qwen 14B &harr; 32B) and <strong>one cross-family pair</strong> (Qwen 7B &harr; Gemma 9B). We do not claim these findings are universal. Same-family transfer may not hold for other families (e.g., Gemma 9B &harr; 27B) or at larger scale gaps. Cross-family failure may not generalize to all cross-family pairs. The cross-cosine metric is suggestive of geometric structure but is not a causal explanation for transfer success or failure. A broader transfer matrix across multiple families and scales is needed before drawing general conclusions.</p>
+
+<h2 id="limitations">12. Limitations</h2>
 
 <p>We have stated caveats inline throughout the paper where they are most relevant. This section collects them systematically for readers who want the complete accounting.</p>
 
@@ -794,7 +859,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p><strong>Instruction-tuned models only.</strong> We test only instruction-tuned (chat) model variants, as these are the models that exhibit refusal behavior. Base models may have different steering properties.</p>
 
-<h2 id="conclusion">12. Conclusion</h2>
+<h2 id="conclusion">13. Conclusion</h2>
 
 <p>We set out to understand when and why activation steering works for modifying refusal behavior, and found that the failures are at least as informative as the successes.</p>
 
@@ -1031,5 +1096,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 </script>
+
+<div style="text-align: center; padding: 2em 0 3em; border-top: 1px solid var(--ef-border); margin-top: 2em;">
+    <a href="/papers/activation-steering-2026.pdf" style="color: var(--ef-aqua); text-decoration: none; font-size: 1.1em;">Paper (PDF)</a>
+    <span style="color: var(--ef-text-muted); margin: 0 0.5em;">·</span>
+    <a href="https://github.com/Sohailm25/activation-steering-runs" style="color: var(--ef-aqua); text-decoration: none; font-size: 1.1em;">Code (GitHub)</a>
+</div>
+
 </body>
 </html>

@@ -189,6 +189,10 @@
         d-contents { color: var(--ef-text-muted); }
         d-contents a { color: var(--ef-text-muted); }
         d-contents a:hover { color: var(--ef-green); }
+
+        /* KaTeX math visibility on dark background */
+        .katex, .katex * { color: var(--ef-text) !important; }
+        d-math { color: var(--ef-text) !important; }
     </style>
 </head>
 <body>
@@ -212,7 +216,7 @@
 <h2 id="approach">Approach</h2>
 <p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 
-<p>Rather than computing full Jacobians (prohibitive for $d_{\text{model}} = 4096$), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
+<p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
 
 <h3>Three λ₁ summaries</h3>
 <ul>
@@ -298,9 +302,64 @@
 </ul>
 
 <d-appendix>
-    <d-bibliography src="bibliography.bib"></d-bibliography>
 </d-appendix>
 
 </d-article>
+
+<d-bibliography src="bibliography.bib"></d-bibliography>
+
+<script>
+// Override Distill shadow DOM styles for dark theme
+document.addEventListener('DOMContentLoaded', function() {
+    const ef = {
+        bg: '#2d353b', bgDim: '#232a2e', bgCard: '#343f44',
+        text: '#d3c6aa', muted: '#859289',
+        green: '#A7C080', aqua: '#83C092', blue: '#7fbbb3',
+        border: '#4a555b'
+    };
+
+    function injectShadowStyles(root) {
+        if (!root || !root.shadowRoot) return;
+        const style = document.createElement('style');
+        style.textContent = `
+            .citation-number { color: ${ef.aqua} !important; cursor: pointer; }
+            .citation-number:hover { color: ${ef.green} !important; }
+            .hover-box { background: ${ef.bgCard} !important; border: 1px solid ${ef.border} !important; box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important; color: ${ef.text} !important; }
+            .hover-box * { color: ${ef.text} !important; }
+            .hover-box a { color: ${ef.aqua} !important; }
+            a { color: ${ef.aqua} !important; }
+            span { color: ${ef.text} !important; }
+        `;
+        root.shadowRoot.appendChild(style);
+    }
+
+    // Observe DOM for Distill custom elements with shadow roots
+    const observer = new MutationObserver(function(mutations) {
+        document.querySelectorAll('d-cite, d-footnote, d-hover-box, d-citation-list, d-bibliography').forEach(injectShadowStyles);
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot && !el.shadowRoot.querySelector('.ef-injected')) {
+                injectShadowStyles(el);
+                const marker = document.createElement('span');
+                marker.className = 'ef-injected';
+                marker.style.display = 'none';
+                el.shadowRoot.appendChild(marker);
+            }
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Initial pass
+    setTimeout(function() {
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) injectShadowStyles(el);
+        });
+    }, 500);
+    setTimeout(function() {
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) injectShadowStyles(el);
+        });
+    }, 2000);
+});
+</script>
 </body>
 </html>

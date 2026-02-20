@@ -70,9 +70,8 @@
         }
 
         d-title {
-            background-color: var(--ef-bg-dim);
-            padding: 2em 0;
-            border-bottom: 1px solid var(--ef-border);
+            background-color: transparent;
+            padding: 1.5em 0 1em;
         }
 
         d-title h1 {
@@ -84,8 +83,10 @@
         }
 
         d-byline {
-            background-color: var(--ef-bg-dim);
+            background-color: transparent;
             border-bottom: 1px solid var(--ef-border);
+            padding-top: 0.8em;
+            padding-bottom: 1.2em;
             color: var(--ef-text-muted);
         }
 
@@ -95,6 +96,26 @@
         d-byline h3 { color: var(--ef-text-muted) !important; }
         d-byline * { color: var(--ef-text-muted); }
         d-byline a { color: var(--ef-aqua) !important; }
+
+        d-byline .authors-affiliations .name {
+            font-size: 1em;
+            font-weight: 500;
+        }
+        d-byline .authors-affiliations .affiliation {
+            font-size: 0.85em;
+            color: var(--ef-text-muted);
+            opacity: 0.7;
+            margin-top: 0.3em;
+        }
+        d-byline .authors-affiliations h3 {
+            margin-bottom: 0.4em;
+        }
+        d-byline .authors-affiliations p.author {
+            margin-bottom: 0.1em;
+        }
+        d-byline .authors-affiliations p.affiliation {
+            margin-top: 0.2em;
+        }
 
         h2 {
             margin-top: 2em;

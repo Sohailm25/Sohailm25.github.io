@@ -180,6 +180,44 @@
             font-size: 0.85em;
             border-radius: 4px;
         }
+    
+        /* Table of Contents */
+        .toc-container {
+            background: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+            padding: 1em 1.5em;
+            margin: 1.5em 0 2em;
+        }
+        .toc-container h3 {
+            color: var(--ef-green);
+            margin: 0 0 0.5em;
+            font-size: 1em;
+            border: none;
+            padding: 0;
+        }
+        .toc-container ol {
+            margin: 0;
+            padding-left: 1.5em;
+            list-style-type: decimal;
+            columns: 2;
+            column-gap: 2em;
+        }
+        @media (max-width: 600px) {
+            .toc-container ol { columns: 1; }
+        }
+        .toc-container li {
+            margin: 0.2em 0;
+            break-inside: avoid;
+        }
+        .toc-container a {
+            color: var(--ef-aqua);
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .toc-container a:hover {
+            color: var(--ef-green);
+        }
     </style>
 </head>
 <body>
@@ -192,6 +230,11 @@
 <d-byline></d-byline>
 
 <d-article>
+
+<nav class="toc-container">
+    <h3>Contents</h3>
+    <ol id="toc-list"></ol>
+</nav>
 
 <h2 id="abstract">Abstract</h2>
 
@@ -450,5 +493,30 @@ You are trading a prediction market. Think step by step.<br><br>
 
 </d-article>
 
+
+<script>
+
+// Auto-generate Table of Contents
+(function() {
+    var toc = document.getElementById('toc-list');
+    if (!toc) return;
+    var headings = document.querySelectorAll('d-article h2[id]');
+    headings.forEach(function(h2) {
+        // Skip appendix headings
+        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        li.appendChild(a);
+        toc.appendChild(li);
+    });
+    // If 6 or fewer items, single column
+    if (toc.children.length <= 6) {
+        toc.style.columns = '1';
+    }
+})();
+
+</script>
 </body>
 </html>

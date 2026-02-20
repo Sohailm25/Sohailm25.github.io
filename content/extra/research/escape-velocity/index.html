@@ -188,16 +188,29 @@
         d-contents a:hover { color: var(--ef-green); }
 
         /* Table of Contents */
-        /* Table of Contents - base styles (colors, typography) */
+        .toc-container {
+            background: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+            padding: 1em 1.5em;
+            margin: 1.5em 0 2em;
+        }
         .toc-container h3 {
             color: var(--ef-green);
-            margin: 0 0 8px 0;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            opacity: 0.8;
+            margin: 0 0 0.5em;
+            font-size: 1em;
             border: none;
             padding: 0;
+        }
+        .toc-container ol {
+            margin: 0;
+            padding-left: 1.5em;
+            list-style-type: decimal;
+            columns: 2;
+            column-gap: 2em;
+        }
+        @media (max-width: 600px) {
+            .toc-container ol { columns: 1; }
         }
         .toc-container li {
             margin: 0.2em 0;
@@ -212,65 +225,41 @@
             color: var(--ef-green);
         }
 
-        /* Desktop: fixed left rail */
-        @media (min-width: 1200px) {
-            :root {
-                --left-rail-w: 220px;
-                --left-gap: 28px;
-                --main-w: 680px;
-            }
-            d-title, d-byline, d-article {
-                max-width: var(--main-w);
-                margin-left: calc(var(--left-rail-w) + var(--left-gap) + 24px) !important;
-                margin-right: auto;
+        /* === Tufte-style sidenotes + sticky left TOC === */
+        d-article {
+            counter-reset: sidenote-counter;
+        }
+        @media (min-width: 960px) {
+            d-article {
+                max-width: 680px !important;
+                margin-left: 280px !important;
+                margin-right: auto !important;
+                position: relative;
             }
             .toc-container {
                 position: fixed;
-                top: 110px;
-                left: 24px;
-                width: var(--left-rail-w);
-                max-height: calc(100vh - 130px);
-                overflow: auto;
-                background: transparent;
-                border: 0;
-                border-radius: 0;
-                padding: 0;
+                top: 80px;
+                left: 20px;
+                width: 220px;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
                 margin: 0;
                 z-index: 10;
+                columns: 1 !important;
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                padding: 0;
+                font-size: 0.85em;
             }
-            .toc-container ol,
-            .toc-container ul {
-                columns: 1;
-                padding-left: 1rem;
-                margin: 0;
+            .toc-container ol, .toc-container ul {
+                columns: 1 !important;
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                padding: 0;
+                font-size: 0.85em;
             }
-        }
-
-        /* Mobile/tablet: inline card TOC */
-        @media (max-width: 1199px) {
-            .toc-container {
-                position: static;
-                background: var(--ef-bg-dim);
-                border: 1px solid var(--ef-border);
-                border-radius: 4px;
-                padding: 1em 1.25em;
-                margin: 1.25em 0 1.5em;
-            }
-            .toc-container ul {
-                margin: 0;
-                padding-left: 0;
-                list-style-type: none;
-                columns: 2;
-                column-gap: 2em;
-            }
-        }
-        @media (max-width: 600px) {
-            .toc-container ul { columns: 1; }
-        }
-
-        /* === Tufte-style sidenotes === */
-        d-article {
-            counter-reset: sidenote-counter;
         }
         .sidenote-number {
             counter-increment: sidenote-counter;
@@ -291,7 +280,7 @@
             border-left: 2px solid var(--ef-border);
             padding-left: 0.8em;
         }
-        @media (min-width: 1200px) {
+        @media (min-width: 960px) {
             .sidenote {
                 float: right;
                 clear: right;
@@ -302,7 +291,7 @@
                 position: relative;
             }
         }
-        @media (max-width: 1199px) {
+        @media (max-width: 959px) {
             .sidenote {
                 display: none;
                 margin: 0.5em 0 0.5em 1em;
@@ -313,11 +302,7 @@
             .margin-toggle:checked + .sidenote {
                 display: block;
             }
-            /* === Tufte-style sidenotes === */
-        d-article {
-            counter-reset: sidenote-counter;
-        }
-        .sidenote-number { cursor: pointer; }
+            .sidenote-number { cursor: pointer; }
         }
         /* Hide Distill auto-generated Published and DOI fields */
         d-byline .byline.grid > div:nth-child(2),

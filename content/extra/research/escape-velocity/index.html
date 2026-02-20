@@ -322,17 +322,17 @@
 <h2 id="results">Key baseline results</h2>
 <figure>
   <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">
-  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition (HOMO_A=Llama-3.1-8B, HOMO_B=Qwen2.5-7B, HOMO_C=Mistral-7B-v0.3, HETERO_ROT=heterogeneous rotation).</figcaption>
+  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition. HOMO_C (Mistral) collapses most frequently; HETERO_ROT (heterogeneous rotation) is lowest. <em>Use this to compare baseline susceptibility across model families, not to rank models for deployment—κ = 0.566 means these rates carry label uncertainty.</em></figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_2_collapse_distribution.png" alt="Collapse rate distribution by condition">
-  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across condition-specific tuples (same condition-to-model mapping as Figure 1).</figcaption>
+  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across tuples. The spread within each condition shows seed-level variance—wide distributions mean individual conversations vary substantially even under identical setup. <em>Do not use narrow means from Figure 1 without considering this spread.</em></figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_3_first_collapse_turn.png" alt="First collapse turn distribution">
-  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index.</figcaption>
+  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index. Earlier peaks indicate faster deterioration. <em>If building multi-turn systems, this suggests where to place quality checkpoints—but note this reflects our 40-turn protocol with specific seed prompts, not arbitrary deployment conditions.</em></figcaption>
 </figure>
 
 <h3 id="scope">Interpretation scope</h3>

@@ -260,6 +260,81 @@
         .toc-container a:hover {
             color: var(--ef-green);
         }
+
+        /* === Tufte-style sidenotes + sticky left TOC === */
+        d-article {
+            counter-reset: sidenote-counter;
+        }
+
+        /* Desktop 3-column layout */
+        @media (min-width: 1100px) {
+            d-article {
+                max-width: 680px !important;
+                margin-left: 280px !important;
+                margin-right: auto !important;
+                position: relative;
+            }
+            .toc-container {
+                position: fixed;
+                top: 80px;
+                left: 20px;
+                width: 220px;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                margin: 0;
+                z-index: 10;
+                columns: 1 !important;
+            }
+            .toc-container ol, .toc-container ul {
+                columns: 1 !important;
+            }
+        }
+
+        .sidenote-number {
+            counter-increment: sidenote-counter;
+        }
+        .sidenote-number::after {
+            content: counter(sidenote-counter);
+            font-size: 0.7em;
+            vertical-align: super;
+            color: var(--ef-aqua);
+            cursor: pointer;
+            margin-left: 1px;
+        }
+        .margin-toggle { display: none; }
+        .sidenote {
+            font-size: 0.82em;
+            line-height: 1.4;
+            color: var(--ef-text-muted);
+            border-left: 2px solid var(--ef-border);
+            padding-left: 0.8em;
+        }
+        @media (min-width: 1100px) {
+            .sidenote {
+                float: right;
+                clear: right;
+                margin-right: -280px;
+                width: 240px;
+                margin-top: 0.3em;
+                margin-bottom: 1em;
+                position: relative;
+            }
+        }
+        @media (max-width: 1099px) {
+            .sidenote {
+                display: none;
+                margin: 0.5em 0 0.5em 1em;
+                padding: 0.5em 0.8em;
+                background: var(--ef-bg-card);
+                border-radius: 4px;
+            }
+            .margin-toggle:checked + .sidenote {
+                display: block;
+            }
+            .sidenote-number {
+                cursor: pointer;
+            }
+        }
     </style>
 </head>
 <body>
@@ -279,7 +354,7 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em> (depth-profile slope ρ = −0.536, layerwise variance ρ = +0.511) show medium-to-large associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. However, the 720-row analysis contains only 108 unique λ₁ predictor vectors (36 seeds × 3 distinct models), so nominal p-values are anti-conservative and effect-size magnitudes are the primary evidence. We interpret this as exploratory support for a bridge hypothesis, not confirmatory relationship establishment.</p>
+<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization.<label for="sn-ftle-001" class="sidenote-number"></label><input type="checkbox" id="sn-ftle-001" class="margin-toggle"/><span class="sidenote">QR renormalization every 4 layers prevents the tangent vectors from growing exponentially large or collapsing to zero, which would make the exponent estimate numerically meaningless.</span> Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we observe that λ₁ <em>profile features</em> (depth-profile slope ρ = −0.536, layerwise variance ρ = +0.511) show medium-to-large associations with collapse metrics from Escape Velocity. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion. However, the 720-row analysis contains only 108 unique λ₁ predictor vectors (36 seeds × 3 distinct models),<label for="sn-ftle-002" class="sidenote-number"></label><input type="checkbox" id="sn-ftle-002" class="margin-toggle"/><span class="sidenote">HOMO_A and HETERO_ROT both use Llama, producing identical λ₁ values. Within each condition, repeat trajectories share the same model and seed, so they share the same predictor. The 720 rows have far fewer independent predictor observations than n suggests.</span> so nominal p-values are anti-conservative and effect-size magnitudes are the primary evidence. We interpret this as exploratory support for a bridge hypothesis, not confirmatory relationship establishment.</p>
 
 <div class="note caveat">
 <strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only. No causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
@@ -314,7 +389,7 @@
 <h2 id="approach">Approach</h2>
 <p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations: how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 
-<p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
+<p>Rather than computing full Jacobians (prohibitive for <d-math>d_{\text{model}} = 4096</d-math>), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.<label for="sn-ftle-003" class="sidenote-number"></label><input type="checkbox" id="sn-ftle-003" class="margin-toggle"/><span class="sidenote">λ₁ is computed on the first assistant turn only. Longitudinal FTLE (tracking how depth dynamics shift across conversation turns) could provide stronger evidence but requires substantially more compute.</span></p>
 
 <h3>Three λ₁ summaries</h3>
 <ul>
@@ -358,7 +433,7 @@
     </tbody>
 </table>
 
-<p><strong>3/6 tests pass. Preregistered success criterion: MET.</strong> The effect-size magnitudes (|ρ| = 0.51–0.54) are the primary evidence; reported p-values are nominal and anti-conservative due to predictor non-independence. We interpret this as exploratory support for the bridge hypothesis, not confirmatory relationship establishment.</p>
+<p><strong>3/6 tests pass. Preregistered success criterion: MET.</strong><label for="sn-ftle-004" class="sidenote-number"></label><input type="checkbox" id="sn-ftle-004" class="margin-toggle"/><span class="sidenote">All bridge correlations inherit the Escape Velocity label reliability caveat (κ = 0.566). If collapse labels contain noise, the true effect sizes may differ from those reported here.</span> The effect-size magnitudes (|ρ| = 0.51–0.54) are the primary evidence; reported p-values are nominal and anti-conservative due to predictor non-independence. We interpret this as exploratory support for the bridge hypothesis, not confirmatory relationship establishment.</p>
 
 <figure>
     <img src="figures/figure_2_passing_scatters.png" alt="Scatter plots for passing tests">

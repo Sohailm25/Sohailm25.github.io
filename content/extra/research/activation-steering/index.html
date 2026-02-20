@@ -279,6 +279,76 @@
         .toc-container a:hover {
             color: var(--ef-green);
         }
+
+        /* === Tufte-style sidenotes + sticky left TOC === */
+        d-article {
+            counter-reset: sidenote-counter;
+        }
+        @media (min-width: 1100px) {
+            d-article {
+                max-width: 680px !important;
+                margin-left: 280px !important;
+                margin-right: auto !important;
+                position: relative;
+            }
+            .toc-container {
+                position: fixed;
+                top: 80px;
+                left: 20px;
+                width: 220px;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                margin: 0;
+                z-index: 10;
+                columns: 1 !important;
+            }
+            .toc-container ol, .toc-container ul {
+                columns: 1 !important;
+            }
+        }
+        .sidenote-number {
+            counter-increment: sidenote-counter;
+        }
+        .sidenote-number::after {
+            content: counter(sidenote-counter);
+            font-size: 0.7em;
+            vertical-align: super;
+            color: var(--ef-aqua);
+            cursor: pointer;
+            margin-left: 1px;
+        }
+        .margin-toggle { display: none; }
+        .sidenote {
+            font-size: 0.82em;
+            line-height: 1.4;
+            color: var(--ef-text-muted);
+            border-left: 2px solid var(--ef-border);
+            padding-left: 0.8em;
+        }
+        @media (min-width: 1100px) {
+            .sidenote {
+                float: right;
+                clear: right;
+                margin-right: -280px;
+                width: 240px;
+                margin-top: 0.3em;
+                margin-bottom: 1em;
+                position: relative;
+            }
+        }
+        @media (max-width: 1099px) {
+            .sidenote {
+                display: none;
+                margin: 0.5em 0 0.5em 1em;
+                padding: 0.5em 0.8em;
+                background: var(--ef-bg-card);
+                border-radius: 4px;
+            }
+            .margin-toggle:checked + .sidenote {
+                display: block;
+            }
+            .sidenote-number { cursor: pointer; }
+        }
     </style>
 </head>
 <body>
@@ -332,7 +402,7 @@
 
 <h2 id="introduction">1. Introduction</h2>
 
-<p>Activation steering adds learned direction vectors to a model's residual stream at inference time, a lightweight alternative to retraining <d-cite key="turner2023activation,zou2023representation"></d-cite>. Arditi et al. <d-cite key="arditi2024refusal"></d-cite> showed that refusal appears mediated by a single direction, giving the approach geometric grounding. We tested how robust this is across conditions practitioners actually encounter: two extraction methods (DIM<d-footnote>We adopt "DIM" as shorthand for the mean-difference extraction approach described across several lines of work: Zou et al. <d-cite key="zou2023representation"></d-cite>, Panickssery et al. <d-cite key="panickssery2023steering"></d-cite>, Jorgensen et al. <d-cite key="jorgensen2023mean"></d-cite>, and Arditi et al. <d-cite key="arditi2024refusal"></d-cite>. The core operation: compute the mean activation difference between contrastive prompt sets.</d-footnote> and COSMIC <d-cite key="siu2025cosmic"></d-cite>), seven models across three families (Qwen 2.5, Gemma 2, Mistral), four scales (2B–32B), and three quantization levels (FP16, INT8, INT4).</p>
+<p>Activation steering adds learned direction vectors to a model's residual stream at inference time, a lightweight alternative to retraining <d-cite key="turner2023activation,zou2023representation"></d-cite>. Arditi et al. <d-cite key="arditi2024refusal"></d-cite> showed that refusal appears mediated by a single direction, giving the approach geometric grounding. We tested how robust this is across conditions practitioners actually encounter: two extraction methods (DIM<label for="sn-as-001" class="sidenote-number"></label><input type="checkbox" id="sn-as-001" class="margin-toggle"/><span class="sidenote">"DIM" is shorthand for mean-difference extraction, described across several lines of work (Zou et al., Panickssery et al., Jorgensen et al., Arditi et al.). The core operation: compute the mean activation difference between contrastive prompt sets.</span> and COSMIC <d-cite key="siu2025cosmic"></d-cite>), seven models across three families (Qwen 2.5, Gemma 2, Mistral), four scales (2B–32B), and three quantization levels (FP16, INT8, INT4).</p>
 
 <p>The findings are largely cautionary. Steering effectiveness is at ceiling for small models but declines at larger scales (Qwen: 100% at 3B → 77% at 32B, n=30). Simple mean-difference extraction matches or beats SVD-based COSMIC everywhere. Architecture acts as a binary gate: Mistral 7B produces 100% garbled output where Qwen 7B achieves 100% coherent steering under identical conditions. Extraction tooling (nnsight vs raw hooks) produces a 90pp effectiveness gap on the same model. INT8 is safe; INT4 degrades large models by 20pp.</p>
 
@@ -447,9 +517,9 @@
 
 <p>We refer to this as Difference-in-Means (DIM), following the terminology of Arditi et al. <d-cite key="arditi2024refusal"></d-cite>. The same approach appears under various names in the literature: contrastive activation addition <d-cite key="panickssery2023steering"></d-cite>, representation engineering <d-cite key="zou2023representation"></d-cite>, and mean-centring <d-cite key="jorgensen2023mean"></d-cite>.</p>
 
-<p><strong>COSMIC.</strong> We implement the full COSMIC algorithm <d-cite key="siu2025cosmic"></d-cite>, which differs from DIM in two respects. First, direction extraction uses SVD rather than mean-difference: activations from contrastive prompt pairs are collected across multiple token positions, and the top singular vector of the resulting matrix serves as the steering direction. Second, COSMIC includes an automated layer selection procedure that scores candidate layers by aggregating cosine similarities of their directions against all other layers, selecting the layer with the highest agreement score.<d-footnote>An earlier version of our pipeline used a simplified SVD computation that did not implement the full multi-position scoring. All COSMIC results reported here use the complete algorithm, which was validated after this discrepancy was identified.</d-footnote></p>
+<p><strong>COSMIC.</strong> We implement the full COSMIC algorithm <d-cite key="siu2025cosmic"></d-cite>, which differs from DIM in two respects. First, direction extraction uses SVD rather than mean-difference: activations from contrastive prompt pairs are collected across multiple token positions, and the top singular vector of the resulting matrix serves as the steering direction. Second, COSMIC includes an automated layer selection procedure that scores candidate layers by aggregating cosine similarities of their directions against all other layers, selecting the layer with the highest agreement score.<label for="sn-as-002" class="sidenote-number"></label><input type="checkbox" id="sn-as-002" class="margin-toggle"/><span class="sidenote">An earlier pipeline version used simplified SVD without full multi-position scoring. All COSMIC results here use the complete algorithm, validated after this discrepancy was identified.</span></p>
 
-<p><strong>Extraction tooling.</strong> Both methods use the <code>nnsight</code> library <d-cite key="fiottokaufman2024nnsight"></d-cite> for activation extraction and steering intervention. This choice is not incidental. We discovered that extracting directions with raw PyTorch <code>register_forward_hook</code> calls produces fundamentally different vectors: at least on Qwen 7B, nnsight-extracted directions achieve 100% coherent refusal while hook-extracted directions achieve only 10%, despite targeting the same layer with the same contrastive dataset.<d-footnote>We further validated this by testing raw hooks for steering (not just extraction). Results were inconsistent across scales: 100% on Qwen 7B, 100% on Qwen 32B (vs. 77% with nnsight, indicating over-steering), and 50% on Qwen 3B (vs. 100% with nnsight, indicating under-steering). nnsight produces consistent, reproducible interventions across all models tested.</d-footnote> We have not identified the specific mechanism but hypothesize it involves in-place tensor operations in transformer implementations that corrupt activation reads via standard hooks. We regard this as a notable preliminary finding: <strong>extraction tooling is a hidden variable</strong> that can dominate algorithmic choice. Validation on additional architectures is needed to confirm generality.</p>
+<p><strong>Extraction tooling.</strong> Both methods use the <code>nnsight</code> library <d-cite key="fiottokaufman2024nnsight"></d-cite> for activation extraction and steering intervention. This choice is not incidental. We discovered that extracting directions with raw PyTorch <code>register_forward_hook</code> calls produces fundamentally different vectors: at least on Qwen 7B, nnsight-extracted directions achieve 100% coherent refusal while hook-extracted directions achieve only 10%, despite targeting the same layer with the same contrastive dataset.<label for="sn-as-003" class="sidenote-number"></label><input type="checkbox" id="sn-as-003" class="margin-toggle"/><span class="sidenote">Raw hooks for steering (not just extraction) were inconsistent: 100% on Qwen 7B, 100% on 32B (vs. 77% nnsight, over-steering), 50% on 3B (vs. 100% nnsight, under-steering). nnsight produces consistent interventions across all models.</span> We have not identified the specific mechanism but hypothesize it involves in-place tensor operations in transformer implementations that corrupt activation reads via standard hooks. We regard this as a notable preliminary finding: <strong>extraction tooling is a hidden variable</strong> that can dominate algorithmic choice. Validation on additional architectures is needed to confirm generality.</p>
 
 <p>Both DIM and COSMIC use approximately 10 contrastive prompt pairs (matched harmful/harmless requests); full prompt lists are provided in Appendix A.</p>
 
@@ -463,15 +533,15 @@
 h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 </d-math>
 
-<p>where <d-math>l</d-math> is the target layer, <d-math>N</d-math> is the final layer, <d-math>\alpha</d-math> is the steering multiplier, and <d-math>\hat{d}</d-math> is the unit-normalized direction. The perturbation is applied identically at each layer from <d-math>l</d-math> onward.<d-footnote>This "all-subsequent-layers" protocol follows from our use of raw PyTorch forward hooks for generation (nnsight's tracing API does not support <code>.generate()</code>). We use nnsight for direction extraction (where graph-level tracing is critical for correct activation capture; see §4.2) and raw forward hooks for the steering intervention itself. The distinction matters less for steering than for extraction: adding a fixed vector to the residual stream is a simple write operation unaffected by the in-place operation issues that corrupt reads via hooks.</d-footnote></p>
+<p>where <d-math>l</d-math> is the target layer, <d-math>N</d-math> is the final layer, <d-math>\alpha</d-math> is the steering multiplier, and <d-math>\hat{d}</d-math> is the unit-normalized direction. The perturbation is applied identically at each layer from <d-math>l</d-math> onward.<label for="sn-as-004" class="sidenote-number"></label><input type="checkbox" id="sn-as-004" class="margin-toggle"/><span class="sidenote">The "all-subsequent-layers" protocol follows from our use of raw PyTorch hooks for generation (nnsight doesn't support .generate()). We use nnsight for extraction and raw hooks for steering. Adding a fixed vector is a simple write unaffected by the read-corruption issues.</span></p>
 
 <p>We use <strong>greedy decoding</strong> (temperature = 0) throughout, which eliminates sampling variance but limits ecological validity (see §12).</p>
 
-<p><strong>Multiplier selection protocol.</strong> We use a two-stage procedure. First, we establish a family baseline from pilot sweeps: 15× for Qwen and 25× for Gemma. Second, we run targeted local sweeps around that baseline for critical conditions. For Qwen 32B, we sweep 15×/20×/25× at fixed layer (L32, 50% depth) and observe a narrow operating window: 15× works, 20× degrades, 25× collapses coherence (§5.6). For Gemma 9B, we run a controlled comparison at L12 showing 15× = 77% versus 25× = 97% (n = 30), so 25× is retained as the family default. We then keep the chosen family multiplier fixed within each main sweep unless a dedicated multiplier experiment is being run. All reported multipliers are explicit in tables and captions.<d-footnote>The multiplier difference likely reflects architecture-dependent residual stream scale, but we do not claim global optimality. We optimize locally for the tested conditions and report those settings transparently.</d-footnote></p>
+<p><strong>Multiplier selection protocol.</strong> We use a two-stage procedure. First, we establish a family baseline from pilot sweeps: 15× for Qwen and 25× for Gemma. Second, we run targeted local sweeps around that baseline for critical conditions. For Qwen 32B, we sweep 15×/20×/25× at fixed layer (L32, 50% depth) and observe a narrow operating window: 15× works, 20× degrades, 25× collapses coherence (§5.6). For Gemma 9B, we run a controlled comparison at L12 showing 15× = 77% versus 25× = 97% (n = 30), so 25× is retained as the family default. We then keep the chosen family multiplier fixed within each main sweep unless a dedicated multiplier experiment is being run. All reported multipliers are explicit in tables and captions.<label for="sn-as-005" class="sidenote-number"></label><input type="checkbox" id="sn-as-005" class="margin-toggle"/><span class="sidenote">The multiplier difference likely reflects architecture-dependent residual stream scale. We do not claim global optimality; we optimize locally and report settings transparently.</span></p>
 
 <h3 id="evaluation">4.4 Evaluation</h3>
 
-<p>Without steering, all models answer all 30 test prompts helpfully (0% refusal rate), confirming the prompts do not independently trigger refusal. We evaluate steering effectiveness using a set of <strong>30 unique benign prompts</strong>, questions that an unsteered model answers helpfully (e.g., "Write a poem about the ocean," "How do I bake a cake?"). Successful steering causes the model to <em>refuse</em> these benign requests, demonstrating that the refusal direction has been activated.<d-footnote>The Phase 2 scaling sweeps (Qwen 3B/7B/14B size sweep at n=50, COSMIC comparison at n=50) used 50 prompts. The canonical results reported in the main text use n=30 for consistency. We report each result with its actual n throughout; where discrepancies appear (notably Qwen 32B: 60% at n=50 vs 77% at n=30), we note both values.</d-footnote></p>
+<p>Without steering, all models answer all 30 test prompts helpfully (0% refusal rate), confirming the prompts do not independently trigger refusal. We evaluate steering effectiveness using a set of <strong>30 unique benign prompts</strong>, questions that an unsteered model answers helpfully (e.g., "Write a poem about the ocean," "How do I bake a cake?"). Successful steering causes the model to <em>refuse</em> these benign requests, demonstrating that the refusal direction has been activated.<label for="sn-as-006" class="sidenote-number"></label><input type="checkbox" id="sn-as-006" class="margin-toggle"/><span class="sidenote">Phase 2 scaling sweeps used n=50; canonical results use n=30 for consistency. Where values differ (Qwen 32B: 60% at n=50 vs 77% at n=30), both are noted.</span></p>
 
 <p>We classify each steered output into one of three tiers by manual inspection (single rater; see §12 for discussion of this limitation):</p>
 
@@ -481,7 +551,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 <li><strong>Normal response:</strong> The model answers helpfully as if unsteered.</li>
 </ul>
 
-<p>Our primary metric is <strong>coherent refusal rate</strong>: the percentage of the 30 prompts producing coherent refusals. We classify a model–condition pair as "effectively steerable" when this rate reaches ≥60%.<d-footnote>The 60% threshold is somewhat arbitrary but happens to fall in a natural gap: across all model–condition pairs, observed rates cluster bimodally at ≥90% or ≤10%, with Qwen 32B (77%) as the sole intermediate case. Any threshold between 11% and 59% would produce identical model classifications.</d-footnote> We note that our evaluation set is small; at n = 30, a 100% observed rate has a 95% Wilson score confidence interval of [88.7%, 100%], and finer-grained comparisons (e.g., 77% vs. 57%) have wide, overlapping intervals. We report confidence intervals for key comparisons throughout.</p>
+<p>Our primary metric is <strong>coherent refusal rate</strong>: the percentage of the 30 prompts producing coherent refusals. We classify a model–condition pair as "effectively steerable" when this rate reaches ≥60%.<label for="sn-as-007" class="sidenote-number"></label><input type="checkbox" id="sn-as-007" class="margin-toggle"/><span class="sidenote">The 60% threshold falls in a natural gap: rates cluster bimodally at ≥90% or ≤10%, with Qwen 32B (77%) as the sole intermediate case. Any threshold between 11% and 59% produces identical classifications.</span> We note that our evaluation set is small; at n = 30, a 100% observed rate has a 95% Wilson score confidence interval of [88.7%, 100%], and finer-grained comparisons (e.g., 77% vs. 57%) have wide, overlapping intervals. We report confidence intervals for key comparisons throughout.</p>
 
 <h3 id="quantization-setup">4.5 Quantization Setup</h3>
 
@@ -534,7 +604,7 @@ h_k' = h_k + \alpha \cdot \hat{d} \quad \forall k \in \{l, l+1, \ldots, N\}
 
 <p>For Gemma 9B, both L12 (30% depth) and L16 (40% depth) achieve 97% coherent refusal, so we report both as co-optimal.</p>
 
-<p>Mistral fails completely, not by resisting steering (which would produce normal responses) but by entering degenerate repetition loops at every tested layer (50%, 60%, 70%) with both DIM and COSMIC. Both methods produce 0% coherent refusal and 100% garbled output on Mistral, despite extracting nearly orthogonal directions.<d-footnote>The DIM–COSMIC cosine similarity on Mistral is 0.008 (the two methods extract nearly orthogonal directions), suggesting that neither has found a meaningful refusal direction in Mistral's residual stream. When two independent methods both fail to find a consistent direction, the parsimonious explanation is that refusal is not linearly represented in this architecture's residual stream.</d-footnote> We initially misinterpreted this as "COSMIC maintains coherence" before verifying that COSMIC's outputs were garbled, not normal. This is a reminder that inspecting actual outputs is essential.</p>
+<p>Mistral fails completely, not by resisting steering (which would produce normal responses) but by entering degenerate repetition loops at every tested layer (50%, 60%, 70%) with both DIM and COSMIC. Both methods produce 0% coherent refusal and 100% garbled output on Mistral, despite extracting nearly orthogonal directions.<label for="sn-as-008" class="sidenote-number"></label><input type="checkbox" id="sn-as-008" class="margin-toggle"/><span class="sidenote">DIM-COSMIC cosine similarity on Mistral is 0.008 (nearly orthogonal). When two independent methods both fail to find a consistent direction, the parsimonious explanation is that refusal is not linearly represented in this architecture.</span> We initially misinterpreted this as "COSMIC maintains coherence" before verifying that COSMIC's outputs were garbled, not normal. This is a reminder that inspecting actual outputs is essential.</p>
 
 <p><strong>Controls.</strong> The failure is architecture-specific, not scale-dependent: Qwen 7B and Mistral 7B have the same parameter count but opposite outcomes. Sliding-window attention likely does not explain extraction failure directly, since direction extraction reads residual activations before the next attention computation. The more plausible role is in intervention response: sliding-window constraints may change how a fixed perturbation propagates when applied from layer <d-math>l</d-math> through <d-math>N</d-math>. Distinct alignment training remains an alternative explanation for why Mistral's refusal representation appears inaccessible to our linear intervention.</p>
 

@@ -186,7 +186,7 @@
         d-contents { color: var(--ef-text-muted); }
         d-contents a { color: var(--ef-text-muted); }
         d-contents a:hover { color: var(--ef-green); }
-    
+
         /* Table of Contents */
         .toc-container {
             background: var(--ef-bg-dim);
@@ -224,6 +224,76 @@
         .toc-container a:hover {
             color: var(--ef-green);
         }
+
+        /* === Tufte-style sidenotes + sticky left TOC === */
+        d-article {
+            counter-reset: sidenote-counter;
+        }
+        @media (min-width: 1100px) {
+            d-article {
+                max-width: 680px !important;
+                margin-left: 280px !important;
+                margin-right: auto !important;
+                position: relative;
+            }
+            .toc-container {
+                position: fixed;
+                top: 80px;
+                left: 20px;
+                width: 220px;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                margin: 0;
+                z-index: 10;
+                columns: 1 !important;
+            }
+            .toc-container ol, .toc-container ul {
+                columns: 1 !important;
+            }
+        }
+        .sidenote-number {
+            counter-increment: sidenote-counter;
+        }
+        .sidenote-number::after {
+            content: counter(sidenote-counter);
+            font-size: 0.7em;
+            vertical-align: super;
+            color: var(--ef-aqua);
+            cursor: pointer;
+            margin-left: 1px;
+        }
+        .margin-toggle { display: none; }
+        .sidenote {
+            font-size: 0.82em;
+            line-height: 1.4;
+            color: var(--ef-text-muted);
+            border-left: 2px solid var(--ef-border);
+            padding-left: 0.8em;
+        }
+        @media (min-width: 1100px) {
+            .sidenote {
+                float: right;
+                clear: right;
+                margin-right: -280px;
+                width: 240px;
+                margin-top: 0.3em;
+                margin-bottom: 1em;
+                position: relative;
+            }
+        }
+        @media (max-width: 1099px) {
+            .sidenote {
+                display: none;
+                margin: 0.5em 0 0.5em 1em;
+                padding: 0.5em 0.8em;
+                background: var(--ef-bg-card);
+                border-radius: 4px;
+            }
+            .margin-toggle:checked + .sidenote {
+                display: block;
+            }
+            .sidenote-number { cursor: pointer; }
+        }
     </style>
 </head>
 <body>
@@ -243,7 +313,7 @@
 </nav>
 
 <h2 id="abstract">Abstract</h2>
-<p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition, but our automated collapse detector did not pass its preregistered reliability check (Cohen’s κ = 0.566 vs. threshold 0.80). Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
+<p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition, but our automated collapse detector did not pass its preregistered reliability check (Cohen's κ = 0.566 vs. threshold 0.80).<label for="sn-ev-001" class="sidenote-number"></label><input type="checkbox" id="sn-ev-001" class="margin-toggle"/><span class="sidenote">Cohen's κ accounts for chance agreement, unlike raw accuracy. Our 92.8% raw agreement produces only κ = 0.566 because collapse base rates are skewed, inflating chance agreement.</span> Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
 
 <div class="note">
 <strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset and protocol outcome, not a validated detector claim.
@@ -281,7 +351,7 @@
 <p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>
 <ul>
   <li><strong>Repetition:</strong> very high semantic similarity to recent turns (adjacent-turn cosine ≥ 0.92 or two-turn-back cosine ≥ 0.90) sustained for at least 3 turns.</li>
-  <li><strong>Low drift:</strong> semantic drift remains small (d1 ≤ 0.08 and d2 ≤ 0.10, where drift = 1 − cosine similarity).</li>
+  <li><strong>Low drift:</strong> semantic drift remains small (d1 ≤ 0.08 and d2 ≤ 0.10, where drift = 1 - cosine similarity).</li>
   <li><strong>Locked rule:</strong> thresholds were fixed before final analysis and not tuned after seeing outcome patterns.</li>
 </ul>
 
@@ -290,7 +360,7 @@
   <li>Design: 4 conditions × 36 seeds × 5 repeats = 720 target tuples.</li>
   <li>Execution status: 720/720 successful tuples.</li>
   <li>Protocol integrity: all successful runs at 40 turns, no early-stop violations.</li>
-  <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.</li>
+  <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.<label for="sn-ev-002" class="sidenote-number"></label><input type="checkbox" id="sn-ev-002" class="margin-toggle"/><span class="sidenote">"Frozen" means all threshold values, embedding models, and detection logic were locked before the final analysis run. No parameters were tuned after seeing outcome patterns.</span></li>
 </ul>
 
 <h3 id="seed-prompts">Seed prompts</h3>
@@ -316,25 +386,25 @@
 
 <h3>Example A: strong repetition loop (HOMO_B: Qwen self-play)</h3>
 <div class="note">
-  <strong>Turn 18:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
-  <strong>Turn 24:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
-  <strong>Turn 39:</strong> “Got it! Here's your comment: And there you have it! The function absolutely nails it ...”
+  <strong>Turn 18:</strong> "And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ..."<br>
+  <strong>Turn 24:</strong> "And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ..."<br>
+  <strong>Turn 39:</strong> "Got it! Here's your comment: And there you have it! The function absolutely nails it ..."
 </div>
 <p>Interpretation: near-identical template reuse over long spans, which is exactly the collapse behavior this benchmark is designed to capture.</p>
 
 <h3>Example B: low-collapse trajectory (HOMO_C: Mistral self-play)</h3>
 <div class="note">
-  <strong>Turn 18:</strong> “Bias mitigation ... fairness-aware machine learning algorithms ...”<br>
-  <strong>Turn 24:</strong> “Explainability and transparency are also important for regulatory compliance ...”<br>
-  <strong>Turn 39:</strong> “Thank you ... don't hesitate to reach out if you have other questions ...”
+  <strong>Turn 18:</strong> "Bias mitigation ... fairness-aware machine learning algorithms ..."<br>
+  <strong>Turn 24:</strong> "Explainability and transparency are also important for regulatory compliance ..."<br>
+  <strong>Turn 39:</strong> "Thank you ... don't hesitate to reach out if you have other questions ..."
 </div>
 <p>Interpretation: still topically related, but content continues to move and reframe rather than locking into one repeated response shell.</p>
 
 <h3>Example C: intermediate pattern (HETERO_ROT: heterogeneous rotation)</h3>
 <div class="note">
-  <strong>Turn 18:</strong> “Develop and implement policies and regulations to reduce greenhouse gas emissions ...”<br>
-  <strong>Turn 30:</strong> “By working together, we can make a significant difference ...”<br>
-  <strong>Turn 39:</strong> “I hope this document provided a useful framework ...”
+  <strong>Turn 18:</strong> "Develop and implement policies and regulations to reduce greenhouse gas emissions ..."<br>
+  <strong>Turn 30:</strong> "By working together, we can make a significant difference ..."<br>
+  <strong>Turn 39:</strong> "I hope this document provided a useful framework ..."
 </div>
 <p>Interpretation: some thematic repetition, but less rigid template-locking than high-collapse homogeneous runs.</p>
 
@@ -382,10 +452,10 @@
 <h2 id="limitations">Limitations</h2>
 <ul>
   <li><strong>Detector reliability:</strong> κ=0.566 (threshold 0.80 not met). No confirmatory detector-validation claim is made.</li>
-  <li><strong>LLM-rater circularity:</strong> The reliability audit used two LLM raters (GPT-5.2, Claude 4.6 Opus) rather than human annotators. LLMs evaluating LLM-generated text may share systematic biases that inflate apparent agreement, and the "independence" of these raters is limited by potential training-data and architectural overlap. A human-rater reliability audit is the highest-priority follow-up.</li>
-  <li><strong>Detector thresholds:</strong> Threshold values (cosine ≥ 0.92/0.90, drift ≤ 0.08/0.10, 3 consecutive turns) were preregistered to prevent researcher degrees of freedom, but lack independent validation. A non-confirmatory sweep across 36 threshold configurations showed collapse rates ranging from 0.33 to 0.60 with no condition-rank inversions, suggesting the ordering is robust to small perturbations, but broader validation with alternative detection approaches (lexical overlap, n-gram repetition, perplexity) remains needed.</li>
+  <li><strong>LLM-rater circularity:</strong> The reliability audit used two LLM raters (GPT-5.2, Claude 4.6 Opus) rather than human annotators. LLMs evaluating LLM-generated text may share systematic biases that inflate apparent agreement, and the "independence" of these raters is limited by potential training-data and architectural overlap. A human-rater reliability audit is the highest-priority follow-up.<label for="sn-ev-004" class="sidenote-number"></label><input type="checkbox" id="sn-ev-004" class="margin-toggle"/><span class="sidenote">Human raters would establish whether the condition-level patterns survive with higher-quality labels. If κ improves above 0.80 with human labels, the descriptive findings become confirmatory. If not, the detector design needs revision.</span></li>
+  <li><strong>Detector thresholds:</strong> Threshold values (cosine ≥ 0.92/0.90, drift ≤ 0.08/0.10, 3 consecutive turns) were preregistered to prevent researcher degrees of freedom, but lack independent validation. A non-confirmatory sweep across 36 threshold configurations showed collapse rates ranging from 0.33 to 0.60 with no condition-rank inversions,<label for="sn-ev-003" class="sidenote-number"></label><input type="checkbox" id="sn-ev-003" class="margin-toggle"/><span class="sidenote">The 36-config sweep varied cosine thresholds, drift limits, and consecutive-turn requirements. No configuration changed the relative ordering of conditions, though absolute rates shifted substantially.</span> suggesting the ordering is robust to small perturbations, but broader validation with alternative detection approaches (lexical overlap, n-gram repetition, perplexity) remains needed.</li>
   <li><strong>Single embedding model:</strong> The detector relies solely on MiniLM-L6-v2 embeddings. Different embedding models might yield different collapse patterns.</li>
-  <li><strong>Model coverage:</strong> Only three 7–8B instruction-tuned models were tested. Whether similar patterns hold for larger models (70B+), base models, models with different alignment approaches (RLHF vs. DPO), or frontier proprietary models is untested.</li>
+  <li><strong>Model coverage:</strong> Only three 7-8B instruction-tuned models were tested. Whether similar patterns hold for larger models (70B+), base models, models with different alignment approaches (RLHF vs. DPO), or frontier proprietary models is untested.</li>
   <li><strong>No causal claims:</strong> We observe condition-dependent differences but do not establish why. Training data diversity, alignment procedure differences, tokenizer effects, and architecture choices are plausible hypotheses for future investigation.</li>
 </ul>
 

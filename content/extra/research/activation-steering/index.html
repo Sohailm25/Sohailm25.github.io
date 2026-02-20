@@ -251,11 +251,7 @@
             margin: 1.5em 0 2em;
         }
         .toc-container h3 {
-            color: var(--ef-green);
-            margin: 0 0 0.5em;
-            font-size: 1em;
-            border: none;
-            padding: 0;
+            display: none;
         }
         .toc-container ul {
             margin: 0;
@@ -268,16 +264,20 @@
             .toc-container ul { columns: 1; }
         }
         .toc-container li {
-            margin: 0.2em 0;
+            margin: 0.35em 0;
             break-inside: avoid;
+            line-height: 1.4;
         }
         .toc-container a {
-            color: var(--ef-aqua);
+            color: var(--ef-text-muted);
             text-decoration: none;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            opacity: 0.7;
+            transition: opacity 0.15s, color 0.15s;
         }
         .toc-container a:hover {
-            color: var(--ef-green);
+            color: var(--ef-aqua);
+            opacity: 1;
         }
 
         /* === Tufte-style sidenotes + sticky left TOC === */
@@ -301,8 +301,8 @@
             }
             .toc-container {
                 position: sticky;
-                top: 96px;
-                max-height: calc(100vh - 120px);
+                top: 120px;
+                max-height: calc(100vh - 144px);
                 overflow-y: auto;
                 background: transparent;
                 border: 0;
@@ -390,7 +390,7 @@
 <div class="page-layout">
 <aside class="toc-rail">
 <nav class="toc-container">
-    <h3>Contents</h3>
+    <h3 class="toc-heading">Contents</h3>
     <ul id="toc-list"></ul>
 </nav>
 </aside>

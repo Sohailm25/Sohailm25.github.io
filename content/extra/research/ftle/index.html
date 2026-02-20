@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Depth-Dynamics Signatures of Conversational Collapse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://distill.pub/template.v2.js"></script>
+    <d-front-matter>
+        <script type="text/json">{
+            "title": "Depth-Dynamics Signatures of Conversational Collapse: Finite-Time Lyapunov Analysis of Transformer Forward Passes",
+            "description": "FTLE estimation via JVP tangent propagation predicts multi-turn collapse behavior",
+            "authors": [
+                {
+                    "author": "Sohail Mohammad",
+                    "affiliations": [{"name": "Independent Researcher"}]
+                }
+            ],
+            "katex": {
+                "delimiters": [
+                    {"left": "$", "right": "$", "display": false}
+                ]
+            }
+        }</script>
+    </d-front-matter>
+    <style>
+        /* Everforest dark palette (matched to activation-steering + paper-a pages) */
+        :root {
+            --ef-bg: #2d353b;
+            --ef-bg-dim: #232a2e;
+            --ef-bg-card: #343f44;
+            --ef-text: #d3c6aa;
+            --ef-text-muted: #859289;
+            --ef-green: #A7C080;
+            --ef-green-dim: #859e7a;
+            --ef-aqua: #83C092;
+            --ef-blue: #7fbbb3;
+            --ef-red: #e67e80;
+            --ef-orange: #e69875;
+            --ef-yellow: #dbbc7f;
+            --ef-purple: #d699b6;
+            --ef-border: #4a555b;
+        }
+
+        html, body {
+            background-color: var(--ef-bg) !important;
+            color: var(--ef-text) !important;
+        }
+
+        d-article {
+            color: var(--ef-text);
+            overflow: visible;
+        }
+
+        @supports (display: grid) {
+            d-article {
+                display: block !important;
+                max-width: 780px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            d-article p, d-article ul, d-article ol, d-article blockquote,
+            d-article h2, d-article h3, d-article h4,
+            d-article table, d-article figure, d-article .note {
+                grid-column: unset !important;
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+        }
+
+        d-title {
+            background-color: var(--ef-bg-dim);
+            padding: 2em 0;
+            border-bottom: 1px solid var(--ef-border);
+        }
+
+        d-title h1 {
+            color: var(--ef-green) !important;
+        }
+
+        d-title p {
+            color: var(--ef-text-muted) !important;
+        }
+
+        d-byline {
+            background-color: var(--ef-bg-dim);
+            border-bottom: 1px solid var(--ef-border);
+            color: var(--ef-text-muted);
+        }
+
+        d-byline a { color: var(--ef-aqua); }
+        d-byline span, d-byline p, d-byline .byline-container,
+        d-byline .authors-affiliations { color: var(--ef-text-muted) !important; }
+        d-byline h3 { color: var(--ef-text-muted) !important; }
+        d-byline * { color: var(--ef-text-muted); }
+        d-byline a { color: var(--ef-aqua) !important; }
+
+        h2 {
+            margin-top: 2em;
+            border-bottom: 1px solid var(--ef-border);
+            padding-bottom: 0.3em;
+            color: var(--ef-green);
+        }
+
+        h3 {
+            margin-top: 1.5em;
+            color: var(--ef-aqua);
+        }
+
+        a { color: var(--ef-aqua); }
+        a:hover { color: var(--ef-green); }
+
+        strong { color: var(--ef-text); }
+
+        figure {
+            margin: 2em 0;
+        }
+
+        figure img {
+            width: 100%;
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+        }
+
+        figcaption {
+            margin-top: 0.5em;
+            font-size: 0.9em;
+            color: var(--ef-text-muted);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.9em;
+        }
+
+        table th {
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--ef-green);
+        }
+
+        table td {
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            color: var(--ef-text);
+        }
+
+        table tr:nth-child(even) {
+            background-color: var(--ef-bg-card);
+        }
+
+        .note {
+            background-color: var(--ef-bg-card);
+            border-left: 3px solid var(--ef-green);
+            padding: 1em 1.5em;
+            margin: 1.5em 0;
+            border-radius: 2px;
+        }
+
+        .note.caveat {
+            border-left-color: var(--ef-orange);
+        }
+
+        blockquote {
+            border-left: 3px solid var(--ef-green-dim);
+            padding-left: 1.5em;
+            margin: 1.5em 0;
+            color: var(--ef-text-muted);
+            font-style: italic;
+        }
+
+        d-citation-list { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; }
+        d-citation-list * { color: var(--ef-text) !important; }
+        d-citation-list a { color: var(--ef-aqua) !important; }
+        d-appendix { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; border-top: 1px solid var(--ef-border); }
+        d-appendix * { color: var(--ef-text); }
+        d-footnote-list { color: var(--ef-text) !important; }
+        d-bibliography * { color: var(--ef-text) !important; }
+        d-bibliography a { color: var(--ef-aqua) !important; }
+        d-hover-box { background-color: var(--ef-bg-card) !important; border: 1px solid var(--ef-border) !important; color: var(--ef-text) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important; }
+        d-hover-box * { color: var(--ef-text) !important; }
+        d-hover-box a { color: var(--ef-aqua) !important; }
+        d-cite a, d-cite, d-cite sup { color: var(--ef-aqua) !important; }
+        d-contents { color: var(--ef-text-muted); }
+        d-contents a { color: var(--ef-text-muted); }
+        d-contents a:hover { color: var(--ef-green); }
+    </style>
+</head>
+<body>
+
+<d-title>
+    <h1>Depth-Dynamics Signatures of Conversational Collapse</h1>
+    <p>Finite-Time Lyapunov Analysis of Transformer Forward Passes</p>
+</d-title>
+
+<d-byline></d-byline>
+
+<d-article>
+
+<h2 id="abstract">Abstract</h2>
+<p>We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics using forward-mode automatic differentiation (JVP-based tangent propagation) with QR renormalization. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, we find that λ₁ <em>profile features</em>—depth-profile slope (ρ = −0.536) and layerwise variance (ρ = +0.511)—show medium-to-large predictive associations with collapse metrics from a companion study. Mean λ₁ alone shows only weak association (|ρ| ≤ 0.25). Three of six preregistered tests pass, meeting the success criterion.</p>
+
+<div class="note caveat">
+<strong>Reliability caveat.</strong> Paper A collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
+</div>
+
+<h2 id="approach">Approach</h2>
+<p>Transformer depth computation can be viewed as a discrete dynamical system: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
+
+<p>Rather than computing full Jacobians (prohibitive for $d_{\text{model}} = 4096$), we use forward-mode AD (JVP) to propagate tangent vectors through the layer stack. QR-based renormalization every 4 layers prevents numerical overflow. For each of 720 trajectories, we compute λ₁ using 10 random tangent seeds and report the mean across seeds.</p>
+
+<h3>Three λ₁ summaries</h3>
+<ul>
+    <li><strong>λ₁ mean:</strong> Average FTLE across layers. Captures overall sensitivity level.</li>
+    <li><strong>λ₁ variance:</strong> Variance of layerwise λ₁ profile. Captures how uneven sensitivity is across depth.</li>
+    <li><strong>λ₁ slope:</strong> Linear slope of the layerwise profile. Captures whether sensitivity increases or decreases with depth.</li>
+</ul>
+
+<h3>Models</h3>
+<table>
+    <thead><tr><th>Condition</th><th>Model</th><th>FTLE calls</th></tr></thead>
+    <tbody>
+        <tr><td>HOMO_A</td><td>Llama-3.1-8B-Instruct</td><td>1,800</td></tr>
+        <tr><td>HOMO_B</td><td>Qwen2.5-7B-Instruct</td><td>1,800</td></tr>
+        <tr><td>HOMO_C</td><td>Mistral-7B-Instruct-v0.3</td><td>1,800</td></tr>
+        <tr><td>HETERO_ROT</td><td>Llama-3.1-8B-Instruct (1st assistant)</td><td>1,800</td></tr>
+    </tbody>
+</table>
+
+<h2 id="results">Key Results</h2>
+
+<p>Six preregistered Spearman correlations tested three λ₁ summaries against Paper A collapse metrics. Success criterion: ≥1 test with |ρ| ≥ 0.40 and Bonferroni–Holm adjusted p < 0.05.</p>
+
+<figure>
+    <img src="figures/figure_1_bridge_heatmap.png" alt="Bridge correlation heatmap">
+    <figcaption><strong>Figure 1.</strong> Bridge correlation heatmap. Checkmarks indicate tests meeting the preregistered threshold (|ρ| ≥ 0.40, Holm p < 0.05). All correlations subject to Paper A label reliability caveat (κ = 0.566).</figcaption>
+</figure>
+
+<h3>Primary results (n = 720)</h3>
+<table>
+    <thead>
+        <tr><th>#</th><th>λ₁ summary</th><th>Paper A metric</th><th>ρ</th><th>p_holm</th><th>95% CI</th><th>Pass</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>mean</td><td>collapse rate</td><td>+0.246</td><td>4.26e-11</td><td>[+0.17, +0.32]</td><td>✗</td></tr>
+        <tr><td>2</td><td>mean</td><td>first collapse turn</td><td>−0.251</td><td>2.29e-11</td><td>[−0.32, −0.18]</td><td>✗</td></tr>
+        <tr><td>3</td><td>mean</td><td>collapse incidence</td><td>+0.036</td><td>0.337</td><td>[−0.03, +0.10]</td><td>✗</td></tr>
+        <tr><td><strong>4</strong></td><td><strong>variance</strong></td><td><strong>collapse rate</strong></td><td><strong>+0.511</strong></td><td><strong>2.41e-48</strong></td><td><strong>[+0.45, +0.57]</strong></td><td><strong>✓</strong></td></tr>
+        <tr><td><strong>5</strong></td><td><strong>slope</strong></td><td><strong>collapse rate</strong></td><td><strong>−0.536</strong></td><td><strong>5.24e-54</strong></td><td><strong>[−0.59, −0.48]</strong></td><td><strong>✓</strong></td></tr>
+        <tr><td><strong>6</strong></td><td><strong>slope</strong></td><td><strong>first collapse turn</strong></td><td><strong>+0.507</strong></td><td><strong>1.22e-47</strong></td><td><strong>[+0.45, +0.56]</strong></td><td><strong>✓</strong></td></tr>
+    </tbody>
+</table>
+
+<p><strong>3/6 tests pass. Preregistered success criterion: MET.</strong></p>
+
+<figure>
+    <img src="figures/figure_2_passing_scatters.png" alt="Scatter plots for passing tests">
+    <figcaption><strong>Figure 2.</strong> Scatter plots for the three passing tests. Colors indicate experimental conditions. Predictive associations only—no causal claims.</figcaption>
+</figure>
+
+<h3>What the passing tests tell us</h3>
+<ul>
+    <li><strong>Steeper depth-profile slopes</strong> (more negative λ₁ trend across layers) are associated with higher collapse rates and earlier first-collapse turns.</li>
+    <li><strong>Higher layerwise λ₁ variance</strong> (more uneven sensitivity across depth) is associated with higher collapse rates.</li>
+    <li><strong>Mean λ₁ alone is insufficient</strong>—the <em>shape</em> of the depth profile matters more than its average level.</li>
+</ul>
+
+<h3>Depth profiles</h3>
+
+<figure>
+    <img src="figures/figure_3_depth_profiles.png" alt="Layerwise depth profiles by condition">
+    <figcaption><strong>Figure 3.</strong> Mean λ₁ depth profiles by condition. The shape differences (slope, variance) drive the observed associations with collapse behavior.</figcaption>
+</figure>
+
+<h3>Sensitivity analysis (n = 167 rater-agreed)</h3>
+<p>The same three tests pass in the rater-agreed subset with consistent effect sizes: Test #4 (ρ = +0.545), Test #5 (ρ = −0.557), Test #6 (ρ = +0.516). All within the confidence intervals of the primary analysis.</p>
+
+<h2 id="limitations">Limitations</h2>
+<ul>
+    <li><strong>Label reliability:</strong> Paper A collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All effect sizes may be affected by label noise.</li>
+    <li><strong>Predictive association only:</strong> Depth dynamics (within-pass) and collapse (across-turn) operate on different time axes. No causal mechanism is established.</li>
+    <li><strong>Model family confound:</strong> HOMO_A and HETERO_ROT produce identical λ₁ (both use Llama). Between-model variation may partially reflect architecture.</li>
+    <li><strong>Protocol corrections:</strong> Test #4's variable mapping was corrected post-hoc (tangent-seed std → layerwise variance per prereg). See deviation table for full audit trail.</li>
+    <li><strong>Single-turn measurement:</strong> λ₁ computed on first assistant turn only. Longitudinal FTLE could provide stronger evidence.</li>
+</ul>
+
+<h2 id="reproducibility">Reproducibility</h2>
+<ul>
+    <li><strong>Compute:</strong> Modal A100-80GB, float32 throughout, 7,200 FTLE calls, 0% attrition.</li>
+    <li><strong>Total cost:</strong> ~$26 of $620 budget cap.</li>
+    <li><strong>All artifacts frozen</strong> with SHA256 hashes across four phases (Phase 0 sanity → Phase 1 pilot → Phase 2 full-scale → Phase 3 bridge).</li>
+    <li><strong>Ops postflight:</strong> PASS.</li>
+</ul>
+
+<d-appendix>
+    <d-bibliography src="bibliography.bib"></d-bibliography>
+</d-appendix>
+
+</d-article>
+</body>
+</html>

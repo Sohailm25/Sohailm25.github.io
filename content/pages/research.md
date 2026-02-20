@@ -4,6 +4,15 @@ Template: page
 
 ## Papers
 
+### [Depth-Dynamics Signatures of Conversational Collapse](/research/ftle/)
+**Finite-Time Lyapunov Analysis of Transformer Forward Passes**
+
+Sohail Mohammad · Preprint, 2026
+
+We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics via JVP tangent propagation and test whether depth-dynamics summaries predict conversational collapse. Across 720 trajectories and 7,200 FTLE computations on three 7B-parameter model families, λ₁ profile features (depth-profile slope, ρ = −0.536; layerwise variance, ρ = +0.511) show medium-to-large predictive associations with collapse metrics. Mean λ₁ alone is insufficient. Results are predictive associations only—no causal claims. Paper A collapse labels carry a reliability caveat (κ = 0.566, threshold 0.80 not met).
+
+[Paper (PDF)]({static}/papers/ftle-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
+
 ### [Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play](/research/escape-velocity/)
 **Baseline collapse dynamics with transparent reliability limits**
 

@@ -285,6 +285,13 @@
 <strong>Reliability caveat.</strong> Escape Velocity collapse labels have unconfirmed inter-rater reliability (κ = 0.566, threshold 0.80 not met). All bridge correlations are subject to this limitation. Results are reported as <strong>predictive associations</strong> only—no causal or mechanistic identity is claimed between depth dynamics and conversational dynamics.
 </div>
 
+<h2 id="at-a-glance">At a glance</h2>
+<ul>
+  <li><strong>Primary evidence:</strong> effect-size magnitude and direction (especially λ₁ slope/variance), not tiny nominal p-values.</li>
+  <li><strong>Inference boundary:</strong> 720 rows map to 108 unique predictor vectors, so inferential statistics can be anti-conservative under this dependence structure.</li>
+  <li><strong>Decision use:</strong> this supports FTLE as a reproducible exploratory signal generator and methods contribution, not confirmatory relationship establishment.</li>
+</ul>
+
 <h2 id="approach">Approach</h2>
 <p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations—how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>
 

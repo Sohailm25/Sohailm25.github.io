@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>PAGE_TITLE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://distill.pub/template.v2.js"></script>
+    <d-front-matter>
+        <script type="text/json">{
+            "title": "PAGE_TITLE",
+            "description": "PAGE_DESCRIPTION",
+            "authors": [
+                {
+                    "author": "Sohail Mohammad",
+                    "affiliations": [{"name": "Independent Researcher"}]
+                }
+            ],
+            "katex": {
+                "delimiters": [
+                    {"left": "$", "right": "$", "display": false}
+                ]
+            }
+        }</script>
+    </d-front-matter>
+    <style>
+        /* ===== Everforest Dark Theme ===== */
+        :root {
+            --ef-bg: #2d353b;
+            --ef-bg-dim: #232a2e;
+            --ef-bg-card: #343f44;
+            --ef-text: #d3c6aa;
+            --ef-text-muted: #859289;
+            --ef-green: #A7C080;
+            --ef-green-dim: #859e7a;
+            --ef-aqua: #83C092;
+            --ef-blue: #7fbbb3;
+            --ef-red: #e67e80;
+            --ef-orange: #e69875;
+            --ef-yellow: #dbbc7f;
+            --ef-purple: #d699b6;
+            --ef-border: #4a555b;
+        }
+
+        html, body {
+            background-color: var(--ef-bg) !important;
+            color: var(--ef-text) !important;
+        }
+
+        /* ===== Distill Layout Override ===== */
+        d-article {
+            color: var(--ef-text);
+            overflow: visible;
+        }
+
+        @supports (display: grid) {
+            d-article {
+                display: block !important;
+                max-width: 780px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+            d-article p, d-article ul, d-article ol, d-article blockquote,
+            d-article h2, d-article h3, d-article h4,
+            d-article table, d-article figure, d-article .note {
+                grid-column: unset !important;
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+        }
+
+        /* ===== Header (transparent, no box) ===== */
+        d-title {
+            background-color: transparent;
+            padding: 1.5em 0 1em;
+        }
+        d-title h1 {
+            color: var(--ef-green) !important;
+        }
+        d-title p {
+            color: var(--ef-text-muted) !important;
+        }
+
+        d-byline {
+            background-color: transparent;
+            border-bottom: 1px solid var(--ef-border);
+            padding-top: 0.8em;
+            padding-bottom: 1.2em;
+            color: var(--ef-text-muted);
+        }
+        d-byline a { color: var(--ef-aqua) !important; }
+        d-byline span, d-byline p, d-byline .byline-container,
+        d-byline .authors-affiliations { color: var(--ef-text-muted) !important; }
+        d-byline h3 { color: var(--ef-text-muted) !important; }
+        d-byline * { color: var(--ef-text-muted); }
+
+        /* Author/affiliation hierarchy */
+        d-byline .authors-affiliations .name {
+            font-size: 1em;
+            font-weight: 500;
+        }
+        d-byline .authors-affiliations .affiliation {
+            font-size: 0.85em;
+            color: var(--ef-text-muted);
+            opacity: 0.7;
+            margin-top: 0.3em;
+        }
+        d-byline .authors-affiliations h3 { margin-bottom: 0.4em; }
+        d-byline .authors-affiliations p.author { margin-bottom: 0.1em; }
+        d-byline .authors-affiliations p.affiliation { margin-top: 0.2em; }
+
+        /* Hide Distill auto-generated Published/DOI fields */
+        d-byline .byline.grid > div:nth-child(2),
+        d-byline .byline.grid > div:nth-child(3) { display: none !important; }
+
+        /* ===== Typography ===== */
+        h2 {
+            margin-top: 1.2em;
+            border-bottom: 1px solid var(--ef-border);
+            padding-bottom: 0.3em;
+            color: var(--ef-green);
+        }
+        h3 {
+            margin-top: 0.8em;
+            color: var(--ef-aqua);
+        }
+        a { color: var(--ef-aqua); }
+        a:hover { color: var(--ef-green); }
+        strong { color: var(--ef-text); }
+
+        p { margin-top: 0.8em; margin-bottom: 0.8em; }
+        ul, ol { margin-top: 0.5em; margin-bottom: 0.5em; }
+
+        /* ===== Figures ===== */
+        figure {
+            margin: 1em 0;
+        }
+        figure img {
+            width: 100%;
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+        }
+        figcaption {
+            margin-top: 0.5em;
+            font-size: 0.9em;
+            color: var(--ef-text-muted);
+        }
+
+        /* ===== Tables ===== */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 0.9em;
+        }
+        table th {
+            background-color: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--ef-green);
+        }
+        table td {
+            border: 1px solid var(--ef-border);
+            padding: 8px 12px;
+            color: var(--ef-text);
+        }
+        table tr:nth-child(even) {
+            background-color: var(--ef-bg-card);
+        }
+
+        /* ===== Notes & Blockquotes ===== */
+        .note {
+            background-color: var(--ef-bg-card);
+            border-left: 3px solid var(--ef-green);
+            padding: 1em 1.5em;
+            margin: 1em 0;
+            border-radius: 2px;
+        }
+        blockquote {
+            border-left: 3px solid var(--ef-green-dim);
+            padding-left: 1em;
+            margin: 1em 0;
+            color: var(--ef-text-muted);
+            font-style: italic;
+        }
+
+        /* ===== Distill Component Overrides ===== */
+        d-citation-list { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; }
+        d-citation-list * { color: var(--ef-text) !important; }
+        d-citation-list a { color: var(--ef-aqua) !important; }
+        d-appendix { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; border-top: 1px solid var(--ef-border); }
+        d-appendix * { color: var(--ef-text); }
+        d-footnote-list { color: var(--ef-text) !important; }
+        d-hover-box { background-color: var(--ef-bg-card) !important; border: 1px solid var(--ef-border) !important; color: var(--ef-text) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important; }
+        d-hover-box * { color: var(--ef-text) !important; }
+        d-hover-box a { color: var(--ef-aqua) !important; }
+        d-cite a, d-cite, d-cite sup { color: var(--ef-aqua) !important; }
+        d-contents { color: var(--ef-text-muted); }
+        d-contents a { color: var(--ef-text-muted); }
+        d-contents a:hover { color: var(--ef-green); }
+
+        /* ===== Table of Contents (mobile card fallback) ===== */
+        .toc-container {
+            background: var(--ef-bg-dim);
+            border: 1px solid var(--ef-border);
+            border-radius: 4px;
+            padding: 1em 1.5em;
+            margin: 1.5em 0 2em;
+        }
+        .toc-container h3 { display: none; }
+        .toc-container ol {
+            margin: 0;
+            padding-left: 0;
+            list-style-type: none;
+            columns: 2;
+            column-gap: 2em;
+        }
+        @media (max-width: 600px) {
+            .toc-container ol { columns: 1; }
+        }
+        .toc-container li {
+            margin: 0.35em 0;
+            break-inside: avoid;
+            line-height: 1.4;
+        }
+        .toc-container a {
+            color: var(--ef-text-muted);
+            text-decoration: none;
+            font-size: 0.85em;
+            opacity: 0.7;
+            transition: opacity 0.15s, color 0.15s;
+        }
+        .toc-container a:hover {
+            color: var(--ef-aqua);
+            opacity: 1;
+        }
+
+        /* ===== Tufte-style sidenotes + sticky left TOC ===== */
+        d-article {
+            counter-reset: sidenote-counter;
+        }
+
+        /* Desktop: sticky left TOC + article body */
+        @media (min-width: 1200px) {
+            .page-layout {
+                display: grid;
+                grid-template-columns: 240px 1fr;
+                gap: 40px;
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 32px 24px 0;
+            }
+            .toc-rail {
+                grid-column: 1 !important;
+                grid-row: 1;
+                min-width: 0;
+                margin-top: 48px;
+            }
+            .toc-container {
+                position: sticky;
+                top: 120px;
+                max-height: calc(100vh - 144px);
+                overflow-y: auto;
+                background: transparent;
+                border: 0;
+                border-radius: 0;
+                padding: 10px 0 0 0;
+                margin: 0;
+                font-size: 0.85em;
+            }
+            .toc-container ol,
+            .toc-container ul {
+                columns: 1 !important;
+                padding-left: 1rem;
+                margin: 0;
+            }
+            d-article {
+                max-width: 680px !important;
+                margin-left: 0 !important;
+                margin-right: auto !important;
+                position: relative;
+                grid-column: 2 !important;
+                grid-row: 1;
+            }
+            /* Align title/byline with article column */
+            d-title h1, d-title p.title-authors,
+            d-title .title-authors, d-title p {
+                margin-left: 106px !important;
+            }
+            d-byline .byline, d-byline .byline-container {
+                margin-left: 106px !important;
+            }
+        }
+
+        /* Sidenote styling */
+        .sidenote-number {
+            counter-increment: sidenote-counter;
+        }
+        .sidenote-number::after {
+            content: counter(sidenote-counter);
+            font-size: 0.7em;
+            vertical-align: super;
+            color: var(--ef-aqua);
+            cursor: pointer;
+            margin-left: 1px;
+        }
+        .margin-toggle { display: none; }
+        .sidenote {
+            font-size: 0.82em;
+            line-height: 1.4;
+            color: var(--ef-text-muted);
+            border-left: 2px solid var(--ef-border);
+            padding-left: 0.8em;
+        }
+        @media (min-width: 1200px) {
+            .sidenote {
+                float: right;
+                clear: right;
+                margin-right: -280px;
+                width: 240px;
+                margin-top: 0.3em;
+                margin-bottom: 1em;
+                position: relative;
+            }
+        }
+        @media (max-width: 1199px) {
+            .sidenote {
+                display: none;
+                margin: 0.5em 0 0.5em 1em;
+                padding: 0.5em 0.8em;
+                background: var(--ef-bg-card);
+                border-radius: 4px;
+            }
+            .margin-toggle:checked + .sidenote {
+                display: block;
+            }
+            .sidenote-number { cursor: pointer; }
+        }
+    </style>
+</head>
+<body>
+
+<d-title>
+    <h1>PAGE_TITLE</h1>
+    <p>ONE_LINE_SUBTITLE_HOOK</p>
+</d-title>
+
+<d-byline></d-byline>
+
+<div class="page-layout">
+<aside class="toc-rail">
+<nav class="toc-container">
+    <h3 class="toc-heading">Contents</h3>
+    <ol id="toc-list"></ol>
+</nav>
+</aside>
+
+<d-article>
+
+<h2 id="abstract">Abstract</h2>
+<p>ABSTRACT_TEXT</p>
+
+<!-- Optional: methodology/reliability disclosure -->
+<!--
+<div class="note">
+<strong>Disclosure.</strong> DISCLOSURE_TEXT
+</div>
+-->
+
+<h2 id="why-this-matters">Why this matters</h2>
+<p>WHY_THIS_MATTERS_TEXT</p>
+
+<h2 id="at-a-glance">At a glance</h2>
+
+<h3>What we did</h3>
+<p>WHAT_WE_DID</p>
+
+<h3>What we found</h3>
+<ul>
+  <li>FINDING_1</li>
+  <li>FINDING_2</li>
+</ul>
+
+<h3>What this does NOT show</h3>
+<ul>
+  <li>LIMITATION_1</li>
+  <li>LIMITATION_2</li>
+</ul>
+
+<h3>How to use this</h3>
+<p>HOW_TO_USE</p>
+
+<!-- ===== Core sections ===== -->
+
+<h2 id="methods">Methods</h2>
+<p>METHODS_TEXT</p>
+
+<h2 id="results">Results</h2>
+<p>RESULTS_TEXT</p>
+
+<!-- Example figure with decision-relevant caption -->
+<!--
+<figure>
+  <img src="figures/FIGURE_NAME.png" alt="DESCRIPTION">
+  <figcaption><strong>Figure 1.</strong> Descriptive statement. <em>If building X, this suggests Y, but note Z constraint.</em></figcaption>
+</figure>
+-->
+
+<!-- Example sidenote -->
+<!--
+Some text that needs clarification.<label for="sn-PREFIX-001" class="sidenote-number"></label><input type="checkbox" id="sn-PREFIX-001" class="margin-toggle"/><span class="sidenote">Clarification text here. Use plain text citations (Author, Year), not d-cite tags.</span>
+-->
+
+<h2 id="decision-relevance">Decision relevance</h2>
+
+<h3>What this study shows</h3>
+<ul>
+  <li>SHOWS_1</li>
+</ul>
+
+<h3>What this study does NOT show</h3>
+<ul>
+  <li>NOT_SHOWS_1</li>
+</ul>
+
+<h2 id="limitations">Limitations</h2>
+<ul>
+  <li>LIMITATION_1</li>
+</ul>
+
+<h2 id="references">References</h2>
+<div class="references" style="font-size: 0.9em; color: var(--ef-text-muted); line-height: 1.6;">
+<p>[1] Author, A. (Year). Title. <em>Journal</em>. DOI: <a href="https://doi.org/...">10.xxxx/...</a></p>
+</div>
+
+</d-article>
+</div><!-- .page-layout -->
+
+<d-appendix>
+    <h3>Acknowledgments</h3>
+    <p>ACKNOWLEDGMENTS</p>
+    <h3>Author Contributions</h3>
+    <p>CONTRIBUTIONS</p>
+</d-appendix>
+
+<!-- TOC auto-population script -->
+<script>
+(function() {
+    var toc = document.getElementById('toc-list');
+    if (!toc) return;
+    var headings = document.querySelectorAll('d-article h2[id]');
+    headings.forEach(function(h) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        li.appendChild(a);
+        toc.appendChild(li);
+    });
+})();
+</script>
+
+</body>
+</html>

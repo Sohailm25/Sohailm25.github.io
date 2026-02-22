@@ -482,14 +482,14 @@
 
 
 <h2 id="abstract">Abstract</h2>
-<p>This pilot study asks whether post-training bias shifts in large language models are better explained by sharpening of pre-existing distributional associations or by non-sharpening pathways introduced during preference tuning. We tested two model families (OLMo 2 7B, Tulu 3 8B) across base, SFT, and DPO stages using a custom 400-prompt panel (three social domains plus a neutral control) and a BBQ corrective replication (72 true-inference cells). A pre-registered falsification design with five hard triggers found the sharpening-dominant hypothesis <strong>contradicted</strong>: the neutral-control check fired with effect = -0.182, 95% CI [-0.205, -0.161].<label for="sn-re-001" class="sidenote-number"></label><input type="checkbox" id="sn-re-001" class="margin-toggle"/><span class="sidenote">F3 is a pre-registered hard trigger: if the neutral-control domain shows |effect| > 0.10 with CI excluding zero, the pilot fails regardless of social-domain results.</span> Diagnostic investigation attributed this to a token-pair measurement artifact<label for="sn-re-002" class="sidenote-number"></label><input type="checkbox" id="sn-re-002" class="margin-toggle"/><span class="sidenote">The tokens "the" and "a" are high-frequency function words; their probability ratio is sensitive to generic distributional shifts unrelated to social bias.</span> (function-word targets "the"/"a"). A prospective re-adjudication with amended distributional controls resolved to R1 (artifact-supported), and a BBQ-scoped corrective replication<label for="sn-re-003" class="sidenote-number"></label><input type="checkbox" id="sn-re-003" class="margin-toggle"/><span class="sidenote">BBQ (Bias Benchmark for QA) by Parrish et al., 2022, tests social bias across nine categories with ambiguous and disambiguated question contexts.</span> provided supporting evidence for R1. The original contradiction is preserved as an immutable scientific record. All findings are scoped to the tested datasets and model families; no universal mechanism claims are made. (155 words)</p>
+<p>This study asks a practical question: when a model moves from <em>base</em> to <em>SFT</em> to <em>DPO</em>, are bias shifts mostly an amplification of patterns that were already there, or are new patterns introduced late in training? We tested two model families (OLMo 2 7B and Tulu 3 8B) on a custom 400-prompt panel plus a BBQ corrective replication (72 true-inference cells). In the original pilot, one pre-declared failure rule was triggered by the neutral-control metric (effect = -0.182, 95% CI [-0.205, -0.161]).<label for="sn-re-001" class="sidenote-number"></label><input type="checkbox" id="sn-re-001" class="margin-toggle"/><span class="sidenote">F3 is a pre-declared hard trigger: if the neutral-control domain shows |effect| > 0.10 with CI excluding zero, the pilot fails regardless of social-domain results.</span> Follow-up debugging showed this was likely caused by a measurement artifact from using function words ("the" vs "a") as targets,<label for="sn-re-002" class="sidenote-number"></label><input type="checkbox" id="sn-re-002" class="margin-toggle"/><span class="sidenote">The tokens "the" and "a" are high-frequency function words; their probability ratio is sensitive to generic distributional shifts unrelated to social bias.</span> not clear evidence of genuine bias introduction. After replacing that fragile control with stronger checks and running a bounded BBQ corrective replication,<label for="sn-re-003" class="sidenote-number"></label><input type="checkbox" id="sn-re-003" class="margin-toggle"/><span class="sidenote">BBQ (Bias Benchmark for QA) by Parrish et al., 2022, tests social bias across nine categories with ambiguous and disambiguated question contexts.</span> results were consistent with the artifact explanation. We keep the original pilot failure visible in the record, and we scope all conclusions to these tested datasets and models only.</p>
 
 <div class="note caveat">
 <strong>Scope caveat.</strong> All findings are restricted to the custom 400-prompt pilot panel and BBQ corrective cells, tested on two model families (OLMo 2 7B, Tulu 3 8B). No universal RLHF-bias mechanism claim and no broad external-validity claim beyond tested scope.
 </div>
 
 <h2 id="why-this-matters">Why this matters</h2>
-<p>Interpretability claims about RLHF and bias are often overgeneralized. This page keeps claims dataset-scoped and falsification-first, with explicit supersession when integrity fails.</p>
+<p>Teams often spend significant effort on alignment changes without clear evidence about <em>which training stage</em> is actually moving bias metrics. This page is meant to make that legible: what we tested, what failed, what was fixed, and what conclusions are justified versus still uncertain.</p>
 
 <h2 id="at-a-glance">At a glance</h2>
 
@@ -518,30 +518,30 @@
 
 <details class="finding" open>
   <summary>Finding 1: v1.0 sharpening hypothesis contradicted (immutable)</summary>
-  <div class="finding-body">The original pre-registered analysis yielded a Contradicted verdict due to F3 neutral-control violation (effect = -0.182, 95% CI [-0.205, -0.161]). This outcome is preserved as immutable across all subsequent analyses. All additive re-adjudications (v1.2, v2.0, V3.0) do not erase or overwrite the original verdict.</div>
+  <div class="finding-body">In the original run, one hard failure rule fired in the neutral-control slice (effect = -0.182, 95% CI [-0.205, -0.161]). We keep that failed result visible in the record, then treat later reruns as additional evidence rather than rewriting history.</div>
 </details>
 
 <details class="finding">
   <summary>Finding 2: Token-pair artifact identified; distributional controls clear</summary>
-  <div class="finding-body">The v1.0 neutral control measured bias via P("the") - P("a") on 100 synthetic prompts. Diagnostic investigation attributed the F3 firing to function-word frequency sensitivity rather than genuine bias introduction. Distribution-level diagnostics (entropy delta: |0.041| &lt; 0.10 threshold; JSD ratio: 0.848 &lt; 2.0 threshold) showed no anomalous disturbance in the neutral domain.</div>
+  <div class="finding-body">The failure appears tied to a fragile metric choice: the neutral control used function words ("the" vs "a"), which are sensitive to generic probability shifts. When we switched to distribution-level checks, neutral behavior no longer looked anomalous (entropy delta |0.041| &lt; 0.10; JSD ratio 0.848 &lt; 2.0).</div>
 </details>
 
 <details class="finding">
   <summary>Finding 3: BBQ corrective replication is consistent with R1 within dataset scope</summary>
-  <div class="finding-body">True-inference replication on BBQ (72 cells across Stage-2 and Stage-3) under frozen governance baseline is consistent with R1 (artifact-supported) within BBQ-scoped cells. Evidence for Stage-2/3 corrective conclusions is drawn exclusively from replacement closure and provenance artifacts.</div>
+  <div class="finding-body">A corrective BBQ rerun (72 true-inference cells) produced results consistent with the artifact explanation. These corrective conclusions are intentionally limited to BBQ and tied to replacement run artifacts with full provenance.</div>
 </details>
 
 <h3>What we did</h3>
-<p>Ran a pre-registered stage decomposition (base to SFT to DPO), enforced F1-F5 controls, and replaced invalidated Stage-2/3 outputs with true-inference BBQ corrective evidence.</p>
+<p>We measured stage-by-stage changes (base → SFT → DPO), used pre-declared quality/failure checks, and then reran the invalidated parts using true inference on BBQ so final claims are tied to verifiable replacement artifacts.</p>
 
 <h3>What we found</h3>
-<p>v1.0 contradiction remains immutable; v2 resolves to R1 (artifact-supported); V3 BBQ corrective replacement provides bounded support under closure/provenance artifacts.</p>
+<p>The first pilot result failed a neutral-control check. Follow-up analysis indicates that failure was likely driven by a fragile metric choice, and the corrective BBQ rerun supports that interpretation within the tested scope.</p>
 
 <h3>What this does NOT show</h3>
-<p>No universal RLHF-bias mechanism claim and no broad external-validity claim beyond tested scope.</p>
+<p>This does <strong>not</strong> prove a universal RLHF-bias mechanism, and it does not claim broad external validity beyond the datasets/models tested here.</p>
 
 <h3>How to use this</h3>
-<p>Use this as a methodological template plus dataset-scoped empirical reference; treat broader claims as future-work hypotheses.</p>
+<p>Use this page as: (1) a worked example of stage-by-stage bias decomposition, and (2) a scoped empirical result for these models/datasets. Treat broader claims as hypotheses that still need independent replication.</p>
 
 
 <h2 id="introduction">Introduction</h2>

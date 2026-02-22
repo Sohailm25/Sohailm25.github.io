@@ -41,7 +41,7 @@ Sohail Mohammad · Draft, 2026
 
 Pre-registered pilot decomposing bias-shift contributions across base, SFT, and preference tuning stages, with falsification-first controls and corrective replacement provenance. Findings are explicitly dataset-scoped: v1.0 contradiction remains immutable, while v2/v3 provide bounded artifact-supported interpretation under BBQ corrective closure. No universal mechanism claims are made.
 
-[Paper (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/clawd-experiments)
+[Paper (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/rlhf-entropy-pilot)
 
 ## Experiments
 

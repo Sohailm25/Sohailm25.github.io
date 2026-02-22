@@ -1508,15 +1508,16 @@
 
 <d-appendix>
 <h3>Acknowledgments</h3>
-<p>This research was conducted as an independent study. Compute for V3 BBQ corrective replication was provided by Modal (A10G GPUs). The author thanks the open-source communities behind OLMo, Tulu, and the BBQ benchmark.</p>
+<p>This work was conducted as an independent research study. V3 BBQ corrective inference was executed on Modal A10G GPUs. We thank the open-source teams behind OLMo, Tulu, and BBQ.</p>
 <h3>Reproducibility</h3>
-<p>All code, data artifacts, and configuration files required to reproduce the experiments in this paper are available at <a href="https://github.com/Sohailm25/clawd-experiments">https://github.com/Sohailm25/clawd-experiments</a> in the <code>experiments/rlhf-entropy</code> directory. Specific reproducibility details:</p>
+<p>Code, frozen artifacts, and configuration files are available at: <a href="https://github.com/Sohailm25/clawd-experiments">https://github.com/Sohailm25/clawd-experiments</a><br/>Experiment path: <code>experiments/rlhf-entropy/</code></p>
+<p>Reproduction details:</p>
 <ul>
-<li><strong>Commit hash:</strong> See <code>results/v3/reports/PROGRAM_CLOSURE_PACKET_2026-02-21.md</code> for the V3 closure commit</li>
-<li><strong>Seed policy:</strong> Three fixed seeds (42, 137, 2026) used across all inference runs</li>
-<li><strong>Hardware:</strong> Modal A10G GPUs for V3 BBQ corrective inference; local CPU for pilot scoring and bootstrap analysis</li>
-<li><strong>Frozen artifact hashes:</strong> Prompt panel <code>5afdbd9b53380dcf</code>; primary decode config <code>79cb2354784327c8</code>; V3 governance baseline <code>8fef67d71896249bcf0fe2c4f61ee5eb728adfcd6e57521911e3442b017324cd</code></li>
-<li><strong>Bootstrap:</strong> B = 1,000 resamples with convergence diagnostics (supplement S9)</li>
+<li><strong>Seed policy:</strong> fixed seeds <code>42</code>, <code>137</code>, <code>2026</code></li>
+<li><strong>Compute:</strong> Modal A10G (V3 true-inference corrective runs); local CPU for scoring/bootstrap</li>
+<li><strong>Frozen hashes:</strong> prompt panel <code>5afdbd9b53380dcf</code>; primary decode config <code>79cb2354784327c8</code>; V3 governance baseline <code>8fef67d71896249bcf0fe2c4f61ee5eb728adfcd6e57521911e3442b017324cd</code></li>
+<li><strong>Bootstrap:</strong> <code>B=1000</code> with convergence diagnostics in supplement §S9</li>
+<li><strong>Closure record:</strong> <code>results/v3/reports/PROGRAM_CLOSURE_PACKET_2026-02-21.md</code></li>
 </ul>
 </d-appendix>
 

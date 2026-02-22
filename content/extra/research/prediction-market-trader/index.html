@@ -47,24 +47,7 @@
             overflow: visible;
         }
 
-        /* Fix the text clipping: override Distill's grid column constraints */
-        @supports (display: grid) {
-            d-article {
-                display: block !important;
-                max-width: 780px;
-                margin: 0 auto;
-                padding: 0 24px;
-            }
-            d-article p, d-article ul, d-article ol, d-article blockquote,
-            d-article h2, d-article h3, d-article h4,
-            d-article table, d-article figure, d-article .hypothesis-box,
-            d-article .example-output {
-                grid-column: unset !important;
-                max-width: 100%;
-                overflow-wrap: break-word;
-                word-wrap: break-word;
-            }
-        }
+        /* Keep native Distill grid so side rails/TOC render correctly */
 
         d-title {
             background-color: var(--ef-bg-dim);
@@ -180,6 +163,11 @@
             font-size: 0.85em;
             border-radius: 4px;
         }
+
+        d-appendix { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; border-top: 1px solid var(--ef-border); }
+        d-appendix * { color: var(--ef-text) !important; }
+        d-appendix h3, d-appendix p, d-appendix li, d-appendix strong, d-appendix code { color: var(--ef-text) !important; }
+        d-appendix a { color: var(--ef-aqua) !important; }
     
         /* Table of Contents */
         .toc-container {

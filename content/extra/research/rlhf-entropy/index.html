@@ -492,18 +492,6 @@
 
 <h2 id="at-a-glance">At a glance</h2>
 
-<h3>What we did</h3>
-<p>Ran a pre-registered stage decomposition (base to SFT to DPO), enforced F1-F5 controls, and replaced invalidated Stage-2/3 outputs with true-inference BBQ corrective evidence.</p>
-
-<h3>What we found</h3>
-<p>v1.0 contradiction remains immutable; v2 resolves to R1 (artifact-supported); V3 BBQ corrective replacement provides bounded support under closure/provenance artifacts.</p>
-
-<h3>What this does not show</h3>
-<p>No universal RLHF-bias mechanism claim and no broad external-validity claim beyond tested scope.</p>
-
-<h3>How to use this</h3>
-<p>Use this as a methodological template plus dataset-scoped empirical reference; treat broader claims as future-work hypotheses.</p>
-
 <div class="kpi-grid">
   <div class="kpi-card">
     <div class="kpi-label">Model families tested</div>
@@ -541,6 +529,18 @@
   <summary>Finding 3: BBQ corrective replication is consistent with R1 within dataset scope</summary>
   <div class="finding-body">True-inference replication on BBQ (72 cells across Stage-2 and Stage-3) under frozen governance baseline is consistent with R1 (artifact-supported) within BBQ-scoped cells. Evidence for Stage-2/3 corrective conclusions is drawn exclusively from replacement closure and provenance artifacts.</div>
 </details>
+
+<h3>What we did</h3>
+<p>Ran a pre-registered stage decomposition (base to SFT to DPO), enforced F1-F5 controls, and replaced invalidated Stage-2/3 outputs with true-inference BBQ corrective evidence.</p>
+
+<h3>What we found</h3>
+<p>v1.0 contradiction remains immutable; v2 resolves to R1 (artifact-supported); V3 BBQ corrective replacement provides bounded support under closure/provenance artifacts.</p>
+
+<h3>What this does NOT show</h3>
+<p>No universal RLHF-bias mechanism claim and no broad external-validity claim beyond tested scope.</p>
+
+<h3>How to use this</h3>
+<p>Use this as a methodological template plus dataset-scoped empirical reference; treat broader claims as future-work hypotheses.</p>
 
 
 <h2 id="introduction">Introduction</h2>
@@ -691,7 +691,7 @@
 <h3 id="primary-endpoints">Primary endpoints</h3>
 <p><strong>Jensen-Shannon Divergence (JSD):</strong> Between-stage distributional distance (squared metric) computed per prompt.</p>
 <p><strong>Signed Directional-Bias Metric:</strong> <code>bias_score = P(stereotyped_token) - P(counter_stereotyped_token)</code>, with positive indicating movement toward stereotyped association. Deltas computed between consecutive stages.</p>
-<p><strong>Contribution Decomposition:</strong> Percentage share of total base-to-DPO shift attributed to each stage transition, with epsilon guard (epsilon = 0.01 JSD or 0.05 bias units) for non-identifiable classifications.<label for="sn-re-005" class="sidenote-number"></label><input type="checkbox" id="sn-re-005" class="margin-toggle"/><span class="sidenote">The epsilon guard prevents spurious decomposition claims when total shift is too small: below 0.01 JSD or 0.05 bias units, share attribution is marked non-identifiable.</span></p>
+<p><strong>Contribution Decomposition:</strong> Percentage share of total base-to-DPO shift attributed to each stage transition, with epsilon guard (epsilon = 0.01 JSD or 0.05 bias units) for non-identifiable classifications.<label for="sn-re-004" class="sidenote-number"></label><input type="checkbox" id="sn-re-004" class="margin-toggle"/><span class="sidenote">The epsilon guard prevents spurious decomposition claims when total shift is too small: below 0.01 JSD or 0.05 bias units, share attribution is marked non-identifiable.</span></p>
 
 <h3 id="mechanism-operationalization">Mechanism operationalization</h3>
 <p>This section defines the quantitative signatures that distinguish the two hypothesized mechanisms and specifies the decision boundaries used for adjudication.</p>
@@ -760,7 +760,7 @@
 
 <h3 id="statistical-framework">Statistical framework</h3>
 <ul>
-<li><strong>Primary test:</strong> Cluster bootstrap (B = 10,000; reduced to B = 1,000 locally due to memory constraints, convergence confirmed diagnostically; see supplement S9)<label for="sn-re-004" class="sidenote-number"></label><input type="checkbox" id="sn-re-004" class="margin-toggle"/><span class="sidenote">Cluster bootstrap keeps all seeds within a prompt together during resampling, preserving the within-prompt correlation structure.</span></li>
+<li><strong>Primary test:</strong> Cluster bootstrap (B = 10,000; reduced to B = 1,000 locally due to memory constraints, convergence confirmed diagnostically; see supplement S9)<label for="sn-re-005" class="sidenote-number"></label><input type="checkbox" id="sn-re-005" class="margin-toggle"/><span class="sidenote">Cluster bootstrap keeps all seeds within a prompt together during resampling, preserving the within-prompt correlation structure.</span></li>
 <li><strong>Resampling unit:</strong> Prompt-level clustering (all seeds within prompt kept together)</li>
 <li><strong>Model specification:</strong> <code>decomposition_share ~ domain + model_family</code> (OLS on bootstrap samples)</li>
 <li><strong>Confidence intervals:</strong> 95% percentile bootstrap CI</li>

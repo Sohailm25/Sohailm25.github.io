@@ -456,7 +456,8 @@
         d-article li { margin: 0.15em 0; }
         /* Hide Distill auto-generated Published and DOI fields */
         d-byline .byline.grid > div:nth-child(2),
-        d-byline .byline.grid > div:nth-child(3) { display: none !important; }
+        d-byline .byline.grid > div:nth-child(3),
+        d-byline .byline.grid > div:not(:first-child) { display: none !important; }
     </style>
 </head>
 <body>

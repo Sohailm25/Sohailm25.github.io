@@ -282,6 +282,64 @@
             opacity: 1;
         }
 
+        /* Reusable research components */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin: 1.25rem 0 1.75rem;
+        }
+        @media (max-width: 720px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+        .kpi-card {
+            background: var(--ef-bg-card);
+            border: 1px solid var(--ef-border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .kpi-label {
+            color: var(--ef-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .kpi-value {
+            color: var(--ef-green);
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .kpi-note {
+            color: var(--ef-text-muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        details.finding {
+            background: var(--ef-bg-card);
+            border: 1px solid var(--ef-border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin: 10px 0;
+        }
+        details.finding summary {
+            cursor: pointer;
+            color: var(--ef-text);
+            font-weight: 600;
+            list-style: none;
+        }
+        details.finding summary::-webkit-details-marker { display: none; }
+        details.finding summary::before {
+            content: "▸ ";
+            color: var(--ef-yellow);
+            font-weight: 700;
+        }
+        details.finding[open] summary::before { content: "▾ "; }
+        .finding-body {
+            color: var(--ef-text-muted);
+            margin-top: 8px;
+        }
+
         /* === Tufte-style sidenotes + sticky left TOC === */
         d-article {
             counter-reset: sidenote-counter;
@@ -426,25 +484,45 @@
 
 <h2 id="at-a-glance">At a glance</h2>
 
-<h3>What we did</h3>
-<p>Computed λ₁ depth profiles for 720 trajectories (7,200 FTLE calls) across three 7B-parameter model families using forward-mode automatic differentiation with QR renormalization. Tested whether three summary features (mean, variance, slope) of the depth profile are associated with collapse metrics from Escape Velocity.</p>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Trajectories profiled</div>
+    <div class="kpi-value">720</div>
+    <div class="kpi-note">7,200 FTLE calls total</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Strongest association</div>
+    <div class="kpi-value">ρ = −0.536</div>
+    <div class="kpi-note">slope ↔ collapse rate</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Preregistered tests passed</div>
+    <div class="kpi-value">3 / 6</div>
+    <div class="kpi-note">success criterion met</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Pipeline cost</div>
+    <div class="kpi-value">~$20</div>
+    <div class="kpi-note">A100, stable run for 7,200 calls</div>
+  </div>
+</div>
 
-<h3>What we found</h3>
-<ul>
-  <li>Profile <em>shape</em> features (slope ρ = −0.536, variance ρ = +0.511) show medium-to-large associations with collapse behavior. Mean λ₁ alone does not.</li>
-  <li>3 of 6 preregistered tests pass the effect-size threshold, meeting the success criterion.</li>
-  <li>The FTLE profiling pipeline itself costs ~$20 for 7,200 calls and runs stably on A100 GPUs.</li>
-</ul>
+<details class="finding" open>
+  <summary>Finding 1 — Depth-profile shape carries signal; mean λ₁ alone does not</summary>
+  <div class="finding-body">Slope (ρ = −0.536) and variance (ρ = +0.511) show medium-to-large associations with collapse behavior, while mean λ₁ stays weak (|ρ| ≤ 0.25).</div>
+</details>
 
-<h3>What this does NOT show</h3>
-<ul>
-  <li>Causal mechanism: depth dynamics and conversational collapse operate on different time axes.</li>
-  <li>Confirmatory statistical evidence: 108 unique predictor vectors across 720 rows means p-values are anti-conservative.</li>
-  <li>Validated collapse labels: the upstream κ = 0.566 limitation carries through to all bridge correlations.</li>
-</ul>
+<details class="finding">
+  <summary>Finding 2 — The preregistered criterion is met, but claims stay bounded</summary>
+  <div class="finding-body">3 of 6 preregistered tests pass threshold, meeting the predefined success criterion, but interpretation remains exploratory rather than confirmatory.</div>
+</details>
 
-<h3>How to use this</h3>
-<p>The pipeline is the primary reusable contribution: apply it to new models to generate depth-dynamics profiles for exploratory risk screening. The bridge correlations provide a testable direction for future work, not a confirmed relationship for deployment decisions.</p>
+<details class="finding">
+  <summary>Finding 3 — Reliability and dependence constraints matter for interpretation</summary>
+  <div class="finding-body">Only 108 unique predictor vectors underlie 720 rows, making nominal p-values anti-conservative, and collapse labels inherit the upstream κ = 0.566 reliability caveat.</div>
+</details>
+
+<p>The pipeline is the primary reusable contribution: apply it to new models for exploratory depth-dynamics screening before expensive multi-turn evaluation.</p>
 
 <h2 id="approach">Approach</h2>
 <p>Transformer depth computation can be viewed as a discrete dynamical system <d-cite key="chen2018neural"></d-cite>: each layer maps the hidden state to a new state through nonlinear transformations. The finite-time Lyapunov exponent (FTLE) quantifies how sensitive this process is to perturbations: how much a small change to the input gets amplified or suppressed across layers <d-cite key="eckmann1985ergodic,wolf1985determining"></d-cite>.</p>

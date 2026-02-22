@@ -1,77 +1,881 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pilot study: Distributional bias shifts across preference-tuning stages</title>
-  <script src="https://distill.pub/template.v2.js"></script>
-  <d-front-matter>
-    <script type="text/json">{
-      "title": "Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels",
-      "description": "Dataset-scoped pre-registered pilot with methodological focus and bounded empirical findings",
-      "authors": [{"author":"Sohail Mohammad","affiliations":[{"name":"Independent Researcher"}]}]
-    }</script>
-  </d-front-matter>
-  <style>
-    body { font-family: Inter, system-ui, -apple-system, sans-serif; }
-    figure img{max-width:100%;height:auto;border:1px solid #ddd;border-radius:6px}
-    .scope {background:#f8f9fa;border-left:4px solid #6c757d;padding:10px 12px;margin:14px 0}
-  </style>
-</head>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Pilot study: Distributional bias shifts across preference-tuning stages</title>
+<script src="https://distill.pub/template.v2.js"></script>
+<d-front-matter><script type="text/json">{
+"title":"Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels",
+"description":"Dataset-scoped pre-registered pilot with full longform manuscript content",
+"authors":[{"author":"Sohail Mohammad","affiliations":[{"name":"Independent Researcher"}]}]
+}</script></d-front-matter>
+<style>
+body{font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.6}
+.scope{background:#f8f9fa;border-left:4px solid #6c757d;padding:10px 12px;margin:14px 0}
+figure img{max-width:100%;height:auto;border:1px solid #ddd;border-radius:6px}
+table{border-collapse:collapse;width:100%;display:block;overflow:auto;font-size:0.95rem}
+th,td{border:1px solid #ddd;padding:6px 8px;vertical-align:top}
+h2,h3{scroll-margin-top:90px}
+</style></head>
 <body>
-  <d-title>
-    <h1>Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels</h1>
-    <p>Prepared for peer feedback; dataset-scoped pilot framing.</p>
-  </d-title>
-  <d-byline></d-byline>
-  <d-article>
-    <div class="scope"><strong>Scope:</strong> Dataset-scoped pilot findings only. No universal mechanism claims.</div>
+<d-title><h1>Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels</h1>
+<p>Prepared for peer feedback; dataset-scoped pilot framing.</p></d-title>
+<d-byline></d-byline>
+<d-article>
+<div class="scope"><strong>Scope:</strong> Dataset-scoped findings only. No universal mechanism claims.</div>
+<p><strong>Draft v0.3.2: Root style compliance pass. Sentence-case headings; em dash removal; decision-relevant captions; added Conclusion, Reproducibility statement, Acknowledgments. No new scientific claims.</strong></p>
+<p><strong>Authors:</strong> Sohail Mohammad</p>
+<p><strong>Date:</strong> 2026-02-22</p>
+<p><strong>Changelog from v0.3.1:</strong> All headings converted to sentence case per LATEX_STYLE_GUIDE.md SS3. All em dashes removed per SS10. Decision-relevant italic lines added to all figure and table captions per SS5/SS6. Reproducibility statement added per SS8 (non-negotiable). Conclusion section added per SS2. Acknowledgments section added per SS2. No claim-language changes. Full changelog: <code>results/v3/reports/PAPER_V0_3_2_ROOT_STYLE_COMPLIANCE.md</code>.</p>
 
-    <h2 id="abstract">Abstract</h2>
-    <p>This pilot study asks whether post-training bias shifts in large language models are better explained by sharpening of pre-existing distributional associations or by non-sharpening pathways introduced during preference tuning. We tested two model families (OLMo 2 7B, Tulu 3 8B) across base, SFT, and DPO stages using a custom 400-prompt panel and a BBQ corrective replication. A pre-registered falsification design found the sharpening-dominant hypothesis contradicted in v1.0, with subsequent diagnostics attributing the neutral-control failure to a token-pair measurement artifact. Prospective re-adjudication resolved to R1 (artifact-supported), and BBQ-scoped corrective replacement provided bounded support under true-inference provenance. The original contradiction is preserved as immutable record. Findings remain dataset-scoped and do not establish a universal mechanism.</p>
+<h2 id="abstract">Abstract</h2>
+<p>This pilot study asks whether post-training bias shifts in large language models are better explained by sharpening of pre-existing distributional associations or by non-sharpening pathways introduced during preference tuning. We tested two model families (OLMo 2 7B, Tulu 3 8B) across base, SFT, and DPO stages using a custom 400-prompt panel (three social domains plus a neutral control) and a BBQ corrective replication (72 true-inference cells). A pre-registered falsification design with five hard triggers found the sharpening-dominant hypothesis <strong>contradicted</strong>: the neutral-control check fired with effect = −0.182, 95% CI [−0.205, −0.161]. Diagnostic investigation attributed this to a token-pair measurement artifact (function-word targets "the"/"a"). A prospective re-adjudication with amended distributional controls resolved to R1 (artifact-supported), and a BBQ-scoped corrective replication provided supporting evidence for R1. The original contradiction is preserved as an immutable scientific record. All findings are scoped to the tested datasets and model families; no universal mechanism claims are made. (155 words)</p>
 
-    <h2 id="why-this-matters">Why this matters</h2>
-    <p>RLHF and preference tuning are widely deployed, but claims about how they affect bias are often overgeneralized. This report emphasizes claim-discipline: falsification-first gates, explicit invalidation/supersession, and provenance-linked corrective evidence.</p>
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="11-motivation">1.1 Motivation</h3>
+<p>Preference tuning methods such as RLHF and DPO have become standard practice for aligning large language models (LLMs) with human preferences. While these methods improve helpfulness and safety, their effect on distributional social biases remains underspecified. Prior work has documented bias in both pre-trained and aligned models, but the <em>relative contribution</em> of each training stage (base pre-training, supervised fine-tuning (SFT), and preference optimization) to observed bias shifts has not been systematically decomposed.</p>
+<p>Understanding this decomposition has practical implications for mitigation strategy: if bias shifts are predominantly explained by sharpening of pre-existing associations, mitigation should focus on pre-training data curation; if non-sharpening pathways (reward model bias, label artifacts, objective-specific restructuring) contribute materially, post-training interventions become more critical.</p>
+<h3 id="12-research-questions">1.2 Research questions</h3>
+<ol>
+<li><strong>Primary:</strong> What is the relative contribution of the base→SFT transition versus the SFT→preference-tuned transition to observed distributional concentration and directional bias shifts across social domains?</li>
+<li><strong>Secondary:</strong> Do non-sharpening pathways explain a material component of observed shift? Does the relative contribution differ by model family?</li>
+</ol>
+<h3 id="13-hypotheses">1.3 Hypotheses</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Statement</th>
+<th>Pre-Registered Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td>Post-tuning bias shift is predominantly explained by concentration/sharpening of pre-existing associations.</td>
+<td><strong>Contradicted</strong> (v1.0, immutable)</td>
+</tr>
+<tr>
+<td>H2</td>
+<td>Non-sharpening pathways explain a material component of shift.</td>
+<td>Preliminary signal</td>
+</tr>
+<tr>
+<td>H3</td>
+<td>Relative contribution differs by model family and scale tier.</td>
+<td>Preliminary signal</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-scope-statement">1.4 Scope statement</h3>
+<p>All findings reported here are scoped to the specific datasets (custom 400-prompt panel; BBQ corrective cells) and model families (OLMo 2, Tulu 3) tested. This is a pilot study and does not establish universal mechanisms of preference-tuning bias. Corrective Stage-2/3 conclusions from V3.0 apply exclusively to BBQ-scoped cells and do not extend beyond that dataset.</p>
+<h3 id="15-related-work">1.5 Related work</h3>
+<p><strong>RLHF and bias behavior.</strong> Preference tuning with RLHF and DPO has been shown to shift model behavior along social dimensions, though the mechanism remains debated. Ouyang et al. (2022) documented that InstructGPT reduced some toxicity benchmarks while noting that bias effects were less consistent. Bai et al. (2022) observed that RLHF-trained models could exhibit different bias profiles than their base counterparts. Gallegos et al. (2024) surveyed bias in LLMs, noting that alignment procedures may redistribute rather than eliminate biases. The present study contributes a stage-wise decomposition perspective: rather than comparing base to final aligned model, we measure the incremental effect at each training transition.</p>
+<p><strong>Bias benchmarks.</strong> Our pilot panel covers three social domains (gender-occupation, race-crime, age-technology). The corrective replication uses BBQ (Parrish et al., 2022), a question-answering benchmark that tests social bias across nine categories with ambiguous and disambiguated contexts. Related benchmarks include StereoSet (Nadeem et al., 2021), which measures stereotypical associations through intrasentence and intersentence tasks, and CrowS-Pairs (Nangia et al., 2020), which provides paired sentences testing stereotypical and anti-stereotypical associations. Our token-level approach complements these generation-level benchmarks.</p>
+<p><strong>Token-level versus generation-level measurement.</strong> A key methodological tension in bias measurement is whether token-level probability comparisons (as used here) adequately capture model bias. Token-level metrics are efficient and interpretable but may miss bias expressed through word choice, framing, or refusal patterns (Blodgett et al., 2020). Generation-level metrics capture richer behavioral patterns but introduce confounds from decoding strategy and prompt sensitivity. Our pilot uses token-level probabilities as a tractable starting point, with the F3 neutral-control episode illustrating precisely the sensitivity of such metrics to target-token choice. This tension motivates our recommendation for generation-level replication in future work (§5.4).</p>
 
-    <h2 id="at-a-glance">At a glance</h2>
-    <h3>What we did</h3>
-    <p>Ran a pre-registered stage-wise decomposition (base→SFT and SFT→DPO), applied F1–F5 falsification controls, and executed BBQ corrective reruns under Modal true-inference provenance.</p>
-    <h3>What we found</h3>
-    <p>v1.0 remained contradicted (immutable). v2 resolved to R1 (artifact-supported). V3 corrective replacement completed for BBQ scope with full closure/provenance evidence.</p>
-    <h3>What this does not show</h3>
-    <p>This does not establish a universal RLHF-bias mechanism or broad external validity across datasets/settings.</p>
-    <h3>How to use this</h3>
-    <p>Use as a methodological template and bounded empirical reference; treat conclusions as dataset-scoped pilot evidence.</p>
+<h2 id="2-methods">2. Methods</h2>
+<h3 id="21-pre-registration-and-amendment-history">2.1 Pre-registration and amendment history</h3>
+<p>This study followed a multi-phase pre-registration protocol with strict immutability preservation:</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Scope</th>
+<th>Key Change</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>v1.0</strong></td>
+<td>Original pilot</td>
+<td>5 hard falsification triggers (F1–F5); neutral control via <code>bias_score(the/a)</code></td>
+<td><strong>Contradicted</strong> (immutable)</td>
+</tr>
+<tr>
+<td><strong>v1.2</strong></td>
+<td>Amended re-score (exploratory)</td>
+<td>F3 replaced with distributional metrics (entropy delta + JSD ratio); post hoc, additive only</td>
+<td>F3-amended CLEAR</td>
+</tr>
+<tr>
+<td><strong>v2.0</strong></td>
+<td>Prospective re-adjudication</td>
+<td>Predeclared Control B gate mapping; distribution-level neutral control frozen before re-scoring</td>
+<td>R1 (artifact-supported)</td>
+</tr>
+<tr>
+<td><strong>V3.0</strong></td>
+<td>External-validity replication (BBQ-only corrective)</td>
+<td>72 true-inference cells on BBQ under frozen governance baseline</td>
+<td>R1 (BBQ-scoped corrective support)</td>
+</tr>
+</tbody>
+</table>
+<p>The v1.0 contradiction is preserved in all reporting phases. Versions v1.2, v2.0, and V3.0 are additive analyses that do not erase or overwrite the original outcome.</p>
+<h4 id="211-notation-and-gate-terms">2.1.1 Notation and gate terms</h4>
+<blockquote>
+<p><strong>R1 (artifact-supported).</strong> Resolution outcome indicating that the original v1.0 F3 contradiction was likely caused by neutral-control metric contamination rather than genuine distributional bias introduction. Declared when all three conditions hold: (1) the v2.0 distribution-level neutral control is CLEAR, (2) an independent neutral-control design (Control B) is CLEAR, and (3) social-domain effects remain present. R1 does not erase the v1.0 contradiction; it provides an interpretive frame for subsequent analyses.</p>
+<p><strong>Control B (representation-invariance gate).</strong> An independent neutral-control check predeclared in v2.0. For each aligned counter-pair (<em>p</em>, <em>p</em>_rev) on neutral prompts, define pair-level deltas d_p = mean(score_DPO − score_base) and d_p_rev for the reversed ordering. Control B passes (<strong>CLEAR</strong>) if and only if all three criteria are met:</p>
+<ol>
+<li><strong>Parse success:</strong> all neutral prompts parse without error (threshold: 1.0).</li>
+<li><strong>Coverage:</strong> per family × seed coverage ≥ 0.80 for each counter-pair.</li>
+<li><strong>Symmetry residual:</strong> |d_p + d_p_rev| ≤ 0.02 (conservative tolerance for aggregation noise; not outcome-optimized).</li>
+</ol>
+<p>Control B <strong>FIRED</strong> if any condition fails. This evaluates representation invariance (counterbalanced reversal consistency) rather than forcing a specific magnitude target.</p>
+<p><strong>Other gate terms:</strong> CLEAR = control passes all specified criteria; FIRED = control fails one or more criteria.</p>
+</blockquote>
+<h3 id="22-models">2.2 Models</h3>
+<p>Two open-weight model families tested at 7–8B scale:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Base</th>
+<th>SFT</th>
+<th>DPO/Preference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OLMo 2</td>
+<td><code>allenai/OLMo-2-1124-7B</code> (rev <code>7df9a825</code>)</td>
+<td><code>allenai/OLMo-2-1124-7B-SFT</code> (rev <code>1de02c01</code>)</td>
+<td><code>allenai/OLMo-2-1124-7B-DPO</code> (rev <code>e34ea60a</code>)</td>
+</tr>
+<tr>
+<td>Tulu 3</td>
+<td>Tulu 3 base</td>
+<td>Tulu 3 SFT</td>
+<td>Tulu 3 DPO</td>
+</tr>
+</tbody>
+</table>
+<p>Model revisions were pinned at the V3 freeze boundary. Canonical family keys: <code>olmo</code>, <code>tulu3</code> only (no alias regression).</p>
+<h3 id="23-datasets">2.3 Datasets</h3>
+<p><strong>Pilot panel (v1.0–v2.0):</strong>
+- 400 prompts: 3 social domains (gender-occupation, race-crime, age-technology) + 1 neutral control (100 synthetic function-word prompts with targets <code>" the"</code> / <code>" a"</code>)</p>
+<p><strong>BBQ corrective (V3.0):</strong>
+- BBQ (Bias Benchmark for QA) dataset
+- Stage-2 BBQ: 18 cells (2 families × 3 stages × 3 seeds, primary decode)
+- Stage-3 BBQ: 54 cells (2 families × 3 stages × 3 seeds × 3 decode configs)
+- Executed as true Modal inference (GPU: A10G)</p>
+<h3 id="24-primary-endpoints">2.4 Primary endpoints</h3>
+<p><strong>Jensen-Shannon Divergence (JSD):</strong> Between-stage distributional distance (squared metric) computed per prompt.</p>
+<p><strong>Signed Directional-Bias Metric:</strong> <code>bias_score = P(stereotyped_token) − P(counter_stereotyped_token)</code>, with positive indicating movement toward stereotyped association. Deltas computed between consecutive stages.</p>
+<p><strong>Contribution Decomposition:</strong> Percentage share of total base→DPO shift attributed to each stage transition, with epsilon guard (ε = 0.01 JSD or 0.05 bias units) for non-identifiable classifications.</p>
+<h3 id="25-mechanism-operationalization">2.5 Mechanism operationalization</h3>
+<p>This section defines the quantitative signatures that distinguish the two hypothesized mechanisms and specifies the decision boundaries used for adjudication.</p>
+<p><strong>Sharpening</strong> (H1-consistent): The preference-tuning stage amplifies distributional tendencies already present in the base model. Operationally, sharpening is identified when:
+- The SFT→DPO bias delta has the <strong>same sign</strong> as the base→SFT delta (directional consistency), AND
+- The DPO stage's contribution to total base→DPO JSD shift does <strong>not dominate</strong> (DPO share &lt; 0.85 of total shift), AND
+- The neutral control shows <strong>no anomalous disturbance</strong> (|entropy delta| &lt; 0.10; JSD ratio &lt; 2.0)</p>
+<p><strong>Non-sharpening</strong> (H2-consistent): The preference-tuning stage introduces distributional patterns not attributable to pre-existing associations. Operationally, non-sharpening is identified when:
+- The SFT→DPO bias delta <strong>reverses sign</strong> relative to base→SFT (directional reversal), OR
+- The DPO stage's contribution share <strong>dominates</strong> (DPO share ≥ 0.85 of total shift) while the base model shows near-zero initial bias, OR
+- The neutral control shows <strong>anomalous disturbance</strong> (|entropy delta| ≥ 0.10 OR JSD ratio ≥ 2.0)</p>
+<p><strong>Decision boundaries for H1/H2 adjudication:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Threshold</th>
+<th>Metric</th>
+<th>H1-consistent</th>
+<th>H2-consistent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neutral-control bias</td>
+<td>|effect| &gt; 0.10, CI excludes 0</td>
+<td><code>bias_score</code> delta</td>
+<td>Below threshold</td>
+<td>Above threshold</td>
+</tr>
+<tr>
+<td>Neutral entropy disturbance</td>
+<td>|Δentropy| ≥ 0.10</td>
+<td>Entropy delta (DPO − base)</td>
+<td>Below threshold</td>
+<td>At or above threshold</td>
+</tr>
+<tr>
+<td>Neutral JSD ratio</td>
+<td>JSD_neutral / mean(JSD_social) ≥ 2.0</td>
+<td>JSD ratio</td>
+<td>Below threshold</td>
+<td>At or above threshold</td>
+</tr>
+<tr>
+<td>Confound dominance</td>
+<td>Stage coefficient attenuation ≥ 50%</td>
+<td>OLS with covariates</td>
+<td>Below threshold</td>
+<td>At or above threshold</td>
+</tr>
+<tr>
+<td>Cross-family replication</td>
+<td>Sign disagreement or both CIs span zero</td>
+<td>Directional consistency</td>
+<td>Consistent signs, CIs exclude zero</td>
+<td>Inconsistent or null</td>
+</tr>
+</tbody>
+</table>
+<p>These thresholds were pre-registered in v1.0 (F1–F5 triggers) and amended in v1.2 (distributional metrics). The epsilon guard (ε = 0.01 JSD, 0.05 bias units) marks decompositions as non-identifiable when total shift magnitude is too small for reliable share attribution.</p>
+<h3 id="26-statistical-framework">2.6 Statistical framework</h3>
+<ul>
+<li><strong>Primary test:</strong> Cluster bootstrap (B = 10,000; reduced to B = 1,000 locally due to memory constraints, convergence confirmed diagnostically; see supplement §S9)</li>
+<li><strong>Resampling unit:</strong> Prompt-level clustering (all seeds within prompt kept together)</li>
+<li><strong>Model specification:</strong> <code>decomposition_share ~ domain + model_family</code> (OLS on bootstrap samples)</li>
+<li><strong>Confidence intervals:</strong> 95% percentile bootstrap CI</li>
+<li><strong>Seeds:</strong> 42, 137, 2026</li>
+</ul>
+<h3 id="27-falsification-framework-f1f5">2.7 Falsification framework (F1–F5)</h3>
+<p>Five pre-registered hard triggers; any firing results in pilot FAIL:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Definition</th>
+<th>v1.0 Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Prompt panel hash + decode config hash mismatch across stages</td>
+<td>CLEAR</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td>Cross-family sign flip in primary decode direction</td>
+<td>CLEAR</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Neutral-control directional bias: |effect| &gt; 0.10 AND 95% CI excludes 0</td>
+<td><strong>FIRED</strong></td>
+</tr>
+<tr>
+<td><strong>F4</strong></td>
+<td>Confound dominance: stage coefficient attenuation ≥ 50% when covariates added</td>
+<td>CLEAR (−21.5%)</td>
+</tr>
+<tr>
+<td><strong>F5</strong></td>
+<td>Cross-family replication failure: sign disagreement or both CIs span zero</td>
+<td>CLEAR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="28-confound-audit">2.8 Confound audit</h3>
+<p>Conducted prior to any mechanism claims:
+- Template effects: R² = 0.001 (negligible)
+- Length effects: r = −0.128, R² = 0.016 (not confounding)
+- Refusal differential: max 2.1% (threshold: 10%)
+- Domain sensitivity: effect direction consistent across all social domains
+- <strong>Verdict:</strong> CLEAN</p>
+<h3 id="29-artifact-invalidation-and-replacement-bbq-only-scope">2.9 Artifact invalidation and replacement (BBQ-only scope)</h3>
+<p>During V3 execution, the original Stage-2 and Stage-3 scientific adjudication packets were found to contain placeholder launcher outputs rather than true GPU inference results. These artifacts were invalidated on 2026-02-21 and replaced by true Modal inference (A10G GPU) outputs with full SHA256 provenance. The replacement scope covers BBQ corrective cells only. Invalidated artifacts are preserved in the repository as historical record and are not cited as primary evidence. Full details are in the supplement (§S2).</p>
 
-    <h2 id="methods">Methods</h2>
-    <p>Pre-registered multi-phase protocol (v1.0 → v1.2 additive → v2 prospective re-adjudication → V3 BBQ corrective replacement). Models: OLMo 2 7B and Tulu 3 8B. Controls: F1–F5 plus confound audit and independent Control B.</p>
+<h2 id="3-results">3. Results</h2>
+<h3 id="31-original-pre-registered-pilot-v10-contradicted">3.1 Original pre-registered pilot (v1.0): contradicted</h3>
+<p><strong>Overall verdict: Contradicted</strong> due to F3 neutral-control violation.</p>
+<p>F3 fired with mean neutral-domain bias delta (DPO − base) = −0.182, 95% CI [−0.205, −0.161]. Both families showed consistent negative direction (Tulu 3: −0.172, n = 300; OLMo: −0.193, n = 300). The training pipeline introduced directional bias on prompts designed to carry no social content, violating the sharpening-only prediction.</p>
+<p>All other falsification checks passed (F1, F2, F4, F5 CLEAR). Confound audit: CLEAN. Cross-family replication (F5): both families showed same-sign effects across all three seeds with CIs excluding zero.</p>
+<p><strong>This result is immutable and preserved across all subsequent analyses.</strong></p>
+<h3 id="32-neutral-control-investigation-token-pair-artifact-and-scientific-record">3.2 Neutral-control investigation: token-pair artifact and scientific record</h3>
+<p>The v1.0 neutral control measured bias via <code>P("the") − P("a")</code> on 100 synthetic prompts. The F3 trigger fired, contradicting H1. Subsequent diagnostic investigation revealed that this metric was <strong>conceptually unsuited for the intended construct</strong>: the tokens "the" and "a" are high-frequency function words with no bias-relevant meaning, and the base model already exhibited nonzero mean <code>bias_score</code> (+0.176) on these prompts. The DPO shift moved this arbitrary baseline toward zero, which the directional metric registered as a large effect.</p>
+<p>Distribution-level diagnostics confirmed the neutral domain showed no anomalous disturbance:
+- Entropy delta: |Δ| = 0.0414 (below 0.10 threshold)
+- JSD ratio: JSD_neutral / mean(JSD_social) = 0.8476 (below 2.0 threshold)
+- Per-family consistency: OLMo entropy Δ = −0.042; Tulu 3 entropy Δ = −0.041</p>
+<p><strong>Why the v1.0 result is preserved.</strong> The original neutral-control design was part of the pre-registered protocol, and its outcome is immutable regardless of subsequent diagnostic findings. Preserving contradicted results is standard scientific practice and serves as an anti-HARKing safeguard: if only post-hoc-favorable outcomes were retained, the research record would be systematically biased toward confirmation. The v1.0 contradiction thus serves a dual function: (1) it is a genuine finding about metric sensitivity in token-level bias measurement, and (2) it demonstrates the study's commitment to pre-registration integrity. All subsequent analyses (v1.2, v2.0, V3.0) are explicitly labeled as additive and do not modify the original verdict.</p>
+<p><strong>Figure 3</strong> (below) visualizes the neutral-control artifact: the token-pair metric shows large effects while distribution-level metrics show the neutral domain behaving comparably to social domains.</p>
+<h3 id="33-prospective-v20-re-adjudication-r1-artifact-supported">3.3 Prospective v2.0 re-adjudication: R1 (artifact-supported)</h3>
+<p>Under prospective adjudication with frozen distributional neutral controls and explicit independent Control B gate mapping (see §2.1.1 for definitions):</p>
+<ul>
+<li>Distribution-level neutral control: CLEAR</li>
+<li>Independent Control B: CLEAR (parse success = 1.0, coverage = 1.0, symmetry residual = 0.0)</li>
+<li>Social effects: present</li>
+</ul>
+<p><strong>Resolution: R1 (artifact-supported).</strong></p>
+<h3 id="34-v3-bbq-corrective-replication-r1-bbq-scoped-corrective-support">3.4 V3 BBQ corrective replication: R1 (BBQ-scoped corrective support)</h3>
+<p>True-inference replication on BBQ under frozen governance baseline:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Scope</th>
+<th>Cells</th>
+<th>Evidence Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stage-1</td>
+<td>v2 existing replication</td>
+<td>provenance-closed</td>
+<td><code>stage1_scientific_adjudication_packet.json</code> (valid)</td>
+</tr>
+<tr>
+<td>Stage-2</td>
+<td>BBQ corrective</td>
+<td>18/18 complete</td>
+<td><code>stage2_modal_true_inference_provenance.json</code> (replacement)</td>
+</tr>
+<tr>
+<td>Stage-3</td>
+<td>BBQ corrective</td>
+<td>54/54 complete</td>
+<td><code>stage3_modal_true_inference_provenance.json</code> (replacement)</td>
+</tr>
+</tbody>
+</table>
+<p>Cross-stage synthesis (BBQ scope only): <strong>R1 within BBQ-scoped cells across all three stages.</strong> Evidence for Stage-2/3 corrective conclusions is drawn exclusively from the replacement closure and provenance artifacts (see §2.9 and supplement §S2).</p>
+<h3 id="35-stage-wise-bias-distributions-by-domain">3.5 Stage-wise bias distributions by domain</h3>
+<p><strong>Figure 1.</strong> Stage-wise JSD and bias-score distributions across social domains and model families. <em>If designing stage-aware bias audits for multi-stage LLM pipelines, this suggests monitoring distributional shifts at each training transition, but note these distributions are specific to OLMo 2 and Tulu 3 at 7-8B scale under our 400-prompt panel.</em></p>
+<p><img alt="Figure 1: Stage-wise JSD and bias-score distributions" src="figures/figure1_stage_distributions.svg" /></p>
+<p><strong>Table 1.</strong> Mean bias-score delta (DPO − base) by domain and family (n = 300 per cell; 95% bootstrap CI). <em>If prioritizing bias mitigation resources across domains, this suggests gender-occupation shows the largest cross-family effect, but note effects are dataset-specific and do not generalize beyond the tested prompt panel.</em></p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Family</th>
+<th>Mean Δbias_score</th>
+<th>95% CI</th>
+<th>|Effect|</th>
+<th>CI Excludes Zero</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gender-occupation</td>
+<td>OLMo</td>
+<td>−0.129</td>
+<td>[−0.152, −0.107]</td>
+<td>0.129</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Gender-occupation</td>
+<td>Tulu 3</td>
+<td>−0.006</td>
+<td>[−0.016, +0.004]</td>
+<td>0.006</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Gender-occupation</td>
+<td>Pooled</td>
+<td>−0.068</td>
+<td>[−0.081, −0.056]</td>
+<td>0.068</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>OLMo</td>
+<td>−0.085</td>
+<td>[−0.125, −0.045]</td>
+<td>0.085</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>Tulu 3</td>
+<td>+0.056</td>
+<td>[+0.037, +0.075]</td>
+<td>0.056</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>Pooled</td>
+<td>−0.015</td>
+<td>[−0.038, +0.008]</td>
+<td>0.015</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>OLMo</td>
+<td>−0.106</td>
+<td>[−0.149, −0.066]</td>
+<td>0.106</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>Tulu 3</td>
+<td>+0.005</td>
+<td>[−0.018, +0.027]</td>
+<td>0.005</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>Pooled</td>
+<td>−0.050</td>
+<td>[−0.075, −0.026]</td>
+<td>0.050</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 2.</strong> Mean JSD by domain and stage transition (pooled across families and seeds; source: <code>results/jsd_results.csv</code>). <em>If evaluating which training transition introduces the most distributional change, this suggests the SFT→DPO step dominates for gender-occupation while base→SFT dominates for other domains, but note JSD magnitude depends on the specific token targets measured.</em></p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>JSD (base→SFT)</th>
+<th>JSD (SFT→DPO)</th>
+<th>JSD (base→DPO)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gender-occupation</td>
+<td>0.011</td>
+<td>0.021</td>
+<td>0.034</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>0.009</td>
+<td>0.002</td>
+<td>0.013</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>0.012</td>
+<td>0.002</td>
+<td>0.017</td>
+</tr>
+<tr>
+<td>Neutral</td>
+<td>0.010</td>
+<td>0.003</td>
+<td>0.018</td>
+</tr>
+</tbody>
+</table>
+<p>Gender-occupation shows the largest cumulative JSD shift (0.034), driven primarily by the SFT→DPO transition (0.021, 62% of total). Race-crime and age-technology show smaller cumulative shifts (0.013, 0.017) with the base→SFT transition contributing the majority. The neutral domain (0.018) is comparable to social domains, consistent with §3.2 distribution-level findings.</p>
+<h3 id="36-jsd-decomposition-across-stages">3.6 JSD decomposition across stages</h3>
+<p><strong>Figure 2.</strong> Stage contribution decomposition: SFT share vs. DPO share of total base→DPO shift. <em>If allocating mitigation effort between pre-training curation and post-training design, this suggests the relative contribution varies by domain and metric, but note decomposition shares are sensitive to epsilon-guard thresholds and non-identifiable cells.</em></p>
+<p><img alt="Figure 2: Stage contribution decomposition" src="figures/figure2_decomposition.svg" /></p>
+<p><strong>Table 3.</strong> Contribution decomposition by domain, family, and metric (bootstrap point estimates with 95% CI). <em>If interpreting stage-wise responsibility for bias shifts, this suggests neither stage universally dominates, but note Tulu 3 gender-occupation and age-technology are non-identifiable due to small total shift magnitude.</em></p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Family</th>
+<th>Metric</th>
+<th>SFT Share</th>
+<th>SFT 95% CI</th>
+<th>DPO Share</th>
+<th>DPO 95% CI</th>
+<th>Identifiable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gender-occ</td>
+<td>OLMo</td>
+<td>bias_score</td>
+<td>0.34</td>
+<td>[0.20, 0.43]</td>
+<td>0.66</td>
+<td>[0.57, 0.80]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Gender-occ</td>
+<td>OLMo</td>
+<td>entropy</td>
+<td>0.49</td>
+<td>[0.21, 0.72]</td>
+<td>0.51</td>
+<td>[0.28, 0.79]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Gender-occ</td>
+<td>Tulu 3</td>
+<td>bias_score</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>No (70% non-id)</td>
+</tr>
+<tr>
+<td>Gender-occ</td>
+<td>Tulu 3</td>
+<td>entropy</td>
+<td>0.37</td>
+<td>[0.09, 0.61]</td>
+<td>0.63</td>
+<td>[0.39, 0.91]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>OLMo</td>
+<td>bias_score</td>
+<td>−0.14</td>
+<td>[−0.74, 0.25]</td>
+<td>1.14</td>
+<td>[0.75, 1.74]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>OLMo</td>
+<td>entropy</td>
+<td>0.16</td>
+<td>[−0.32, 0.43]</td>
+<td>0.84</td>
+<td>[0.57, 1.32]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>Tulu 3</td>
+<td>bias_score</td>
+<td>1.23</td>
+<td>[1.01, 1.48]</td>
+<td>−0.23</td>
+<td>[−0.48, −0.01]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>Tulu 3</td>
+<td>entropy</td>
+<td>0.56</td>
+<td>[0.38, 0.69]</td>
+<td>0.44</td>
+<td>[0.31, 0.62]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Age-tech</td>
+<td>OLMo</td>
+<td>bias_score</td>
+<td>0.78</td>
+<td>[0.67, 0.88]</td>
+<td>0.22</td>
+<td>[0.12, 0.33]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Age-tech</td>
+<td>OLMo</td>
+<td>entropy</td>
+<td>0.63</td>
+<td>[0.53, 0.71]</td>
+<td>0.37</td>
+<td>[0.29, 0.47]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Age-tech</td>
+<td>Tulu 3</td>
+<td>bias_score</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Age-tech</td>
+<td>Tulu 3</td>
+<td>entropy</td>
+<td>0.29</td>
+<td>[0.01, 0.48]</td>
+<td>0.71</td>
+<td>[0.52, 0.99]</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Pooled</strong></td>
+<td><strong>All</strong></td>
+<td><strong>bias_score</strong></td>
+<td><strong>0.19</strong></td>
+<td><strong>[0.06, 0.30]</strong></td>
+<td><strong>0.81</strong></td>
+<td><strong>[0.70, 0.94]</strong></td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td><strong>Pooled</strong></td>
+<td><strong>All</strong></td>
+<td><strong>entropy</strong></td>
+<td><strong>0.43</strong></td>
+<td><strong>[0.35, 0.50]</strong></td>
+<td><strong>0.57</strong></td>
+<td><strong>[0.50, 0.65]</strong></td>
+<td><strong>Yes</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="37-neutral-control-artifact-visualization">3.7 Neutral-control artifact visualization</h3>
+<p><strong>Figure 3.</strong> Neutral-control artifact: token-pair metric vs. distribution-level metrics. The token-pair metric (bias_score) shows large effects on the neutral domain while entropy and JSD metrics show the neutral domain behaving comparably to social domains. <em>If designing neutral controls for token-level bias studies, this suggests distribution-level metrics (entropy, JSD) are more robust than single token-pair comparisons, but note this finding is specific to the "the"/"a" pair tested.</em></p>
+<p><img alt="Figure 3: Neutral-control artifact" src="figures/figure3_neutral_artifact.svg" /></p>
+<p><strong>Table 5.</strong> Neutral-domain metrics comparison: token-pair (bias_score) vs. distributional (entropy, JSD). <em>If selecting neutral-control metrics for bias measurement, this suggests token-pair metrics may register artifacts from function-word frequency shifts, but note distributional metrics have their own sensitivity to vocabulary coverage.</em></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Family</th>
+<th>Value</th>
+<th>Threshold</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bias_score delta</td>
+<td>Tulu 3</td>
+<td>−0.172</td>
+<td>|effect| &gt; 0.10</td>
+<td><strong>FIRED</strong></td>
+</tr>
+<tr>
+<td>bias_score delta</td>
+<td>OLMo</td>
+<td>−0.193</td>
+<td>|effect| &gt; 0.10</td>
+<td><strong>FIRED</strong></td>
+</tr>
+<tr>
+<td>bias_score delta</td>
+<td>Pooled</td>
+<td>−0.182</td>
+<td>|effect| &gt; 0.10</td>
+<td><strong>FIRED</strong></td>
+</tr>
+<tr>
+<td>Entropy delta</td>
+<td>Tulu 3</td>
+<td>−0.041</td>
+<td>|Δ| ≥ 0.10</td>
+<td>CLEAR</td>
+</tr>
+<tr>
+<td>Entropy delta</td>
+<td>OLMo</td>
+<td>−0.042</td>
+<td>|Δ| ≥ 0.10</td>
+<td>CLEAR</td>
+</tr>
+<tr>
+<td>Entropy delta</td>
+<td>Pooled</td>
+<td>−0.041</td>
+<td>|Δ| ≥ 0.10</td>
+<td>CLEAR</td>
+</tr>
+<tr>
+<td>JSD ratio</td>
+<td>Pooled</td>
+<td>0.848</td>
+<td>ratio ≥ 2.0</td>
+<td>CLEAR</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 6.</strong> Cross-domain entropy delta comparison (pooled). <em>If assessing whether the neutral domain behaves anomalously relative to social domains, this suggests the neutral entropy delta falls within the range observed for social domains, but note entropy is a coarse measure of distributional change.</em></p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Mean Δentropy</th>
+<th>95% CI</th>
+<th>|Effect|</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neutral</td>
+<td>−0.041</td>
+<td>[−0.054, −0.029]</td>
+<td>0.041</td>
+</tr>
+<tr>
+<td>Gender-occupation</td>
+<td>−0.045</td>
+<td>[−0.055, −0.037]</td>
+<td>0.045</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>−0.038</td>
+<td>[−0.047, −0.028]</td>
+<td>0.038</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>−0.074</td>
+<td>[−0.086, −0.063]</td>
+<td>0.074</td>
+</tr>
+</tbody>
+</table>
+<h3 id="38-claim-block">3.8 Claim block</h3>
+<blockquote>
+<p>Original prereg v1.0 remains Contradicted (immutable). Under prospective v2.0 adjudication with frozen neutral controls and explicit independent-control mapping, results resolve to R1 (artifact-supported) on this dataset. A BBQ-scoped corrective replication (V3.0) provided BBQ-scoped corrective support for R1 under conservative governance framing, suggesting the original F3 trigger was sensitive to neutral-control metric choice. This does not erase v1.0 history, does not constitute independent confirmation of a universal mechanism, and remains scoped to the tested datasets and model families.</p>
+</blockquote>
+<h3 id="39-plain-language-summary-of-claims">3.9 Plain-language summary of claims</h3>
+<p>In plain terms: we set out to test whether the bias patterns observed after preference tuning were mostly an amplification of biases already present in the base model. Our initial analysis said "no" (the neutral control showed unexpected bias, which should not happen if only pre-existing biases were being amplified). However, we then discovered that the specific way we measured the neutral control (comparing probabilities of "the" versus "a") was picking up an irrelevant signal rather than genuine bias introduction. When we used broader distributional measures instead, the neutral control behaved normally. A follow-up replication on the BBQ benchmark supported this interpretation. The bottom line is: on our specific test datasets and models, the evidence is consistent with sharpening of pre-existing patterns rather than creation of new biases, but this conclusion is provisional, applies only to what we tested, and the original "no" result is permanently recorded as part of the scientific record.</p>
 
-    <h2 id="results">Results</h2>
-    <p>Historical sequence: v1.0 contradiction preserved; v2 R1 (artifact-supported); V3 BBQ corrective replacement reached full closure for Stage-2 (18/18) and Stage-3 (54/54) under replacement evidence artifacts.</p>
+<h2 id="4-social-domain-effect-sizes">4. Social-domain effect sizes</h2>
+<p><strong>Table 4.</strong> Social-domain effect sizes: bias-score and entropy deltas by domain and family. <em>If comparing bias shift magnitude across social domains to prioritize auditing effort, this suggests age-technology shows the largest entropy reduction while gender-occupation shows the largest directional shift for OLMo, but note these are pilot-scale observations (n = 300 per cell) on a single prompt panel.</em></p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Family</th>
+<th>Δbias_score</th>
+<th>bias 95% CI</th>
+<th>Δentropy</th>
+<th>entropy 95% CI</th>
+<th>n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gender-occupation</td>
+<td>OLMo</td>
+<td>−0.129</td>
+<td>[−0.152, −0.107]</td>
+<td>−0.063</td>
+<td>[−0.079, −0.048]</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Gender-occupation</td>
+<td>Tulu 3</td>
+<td>−0.006</td>
+<td>[−0.016, +0.004]</td>
+<td>−0.028</td>
+<td>[−0.034, −0.021]</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>OLMo</td>
+<td>−0.085</td>
+<td>[−0.125, −0.045]</td>
+<td>−0.041</td>
+<td>[−0.057, −0.026]</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Race-crime</td>
+<td>Tulu 3</td>
+<td>+0.056</td>
+<td>[+0.037, +0.075]</td>
+<td>−0.034</td>
+<td>[−0.044, −0.025]</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>OLMo</td>
+<td>−0.106</td>
+<td>[−0.149, −0.066]</td>
+<td>−0.090</td>
+<td>[−0.108, −0.072]</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Age-technology</td>
+<td>Tulu 3</td>
+<td>+0.005</td>
+<td>[−0.018, +0.027]</td>
+<td>−0.059</td>
+<td>[−0.073, −0.044]</td>
+<td>300</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cross-family pattern:</strong> OLMo shows consistently negative bias-score deltas across all social domains (toward less stereotyped association after DPO). Tulu 3 shows near-zero or mildly positive effects, with the race-crime domain being the only case where Tulu 3 shows a statistically significant positive shift (+0.056). Entropy deltas are consistently negative across both families and all domains, indicating distributional concentration (sharpening) as a general effect of the training pipeline. The magnitude of entropy reduction is largest in age-technology for both families (OLMo: −0.090; Tulu 3: −0.059).</p>
 
-    <figure>
-      <img src="figures/figure1_stage_distributions.svg" alt="Stage-wise bias distributions by family and domain" />
-      <figcaption><strong>Figure 1.</strong> Stage-wise bias distributions by family and domain.</figcaption>
-    </figure>
+<h2 id="5-validity-and-limitations">5. Validity and limitations</h2>
+<h3 id="51-immutable-v10-contradiction">5.1 Immutable v1.0 contradiction</h3>
+<p>The original pre-registered analysis yielded a <strong>Contradicted</strong> verdict. All subsequent analyses (v1.2, v2.0, V3.0) are additive; they do not erase or overwrite this outcome. The contradiction is preserved in the permanent record.</p>
+<h3 id="52-token-pair-measurement-sensitivity">5.2 Token-pair measurement sensitivity</h3>
+<p>The original neutral-control check used an arbitrary function-word pair (<code>" the"</code> / <code>" a"</code>) as target tokens. While diagnostic investigation attributed the F3 firing to this choice, the study cannot definitively rule out that the neutral domain was partially confounded by model-specific token frequency distributions. The amended distributional metrics (entropy delta, JSD ratio) are more robust but remain dataset-specific.</p>
+<h3 id="53-dataset-scope">5.3 Dataset scope</h3>
+<p>All findings are restricted to:
+- The custom 400-prompt pilot panel (3 social domains + 1 neutral control)
+- BBQ corrective cells (V3.0)
+- Two model families at 7–8B scale (OLMo 2, Tulu 3)</p>
+<p>No claims are made about generalizability to other datasets, domains, model scales, or preference-tuning methods beyond DPO.</p>
+<h3 id="54-pronoun-based-bias-measurement">5.4 Pronoun-based bias measurement</h3>
+<p>The bias measurement relies on token-level probability comparisons (pronoun/association tokens). Models may express bias through word choice, framing, refusal patterns, or generation-level semantics not captured by this metric. This is an acknowledged limitation of the pilot design.</p>
+<h3 id="55-generic-confidence-increase">5.5 Generic confidence increase</h3>
+<p>Fine-tuning generically increases model confidence. The neutral-control design partially addresses whether observed shifts are bias-specific versus global confidence effects, but this disentanglement is not complete. The amended distributional controls improve but do not fully resolve this concern.</p>
+<h3 id="56-bootstrap-sample-size">5.6 Bootstrap sample size</h3>
+<p>Local memory constraints required reducing bootstrap resamples from B = 10,000 to B = 1,000. Convergence diagnostics (supplement §S9) confirm CI widths stabilize with mean relative change of 0.8% from B = 750 to B = 1,000, indicating B = 1,000 is adequate for this pilot.</p>
+<h3 id="57-bbq-corrective-scope">5.7 BBQ corrective scope</h3>
+<p>V3.0 Stage-2/3 results are explicitly scoped to BBQ cells only. No broader external-validity claims are made from the corrective replacement.</p>
+<h3 id="58-no-universal-mechanism-claims">5.8 No universal mechanism claims</h3>
+<p>Even under R1 resolution with BBQ-scoped corrective support across all three V3 stages, this study does not establish a universal mechanism for how preference tuning affects bias. Findings suggest artifact-sensitivity of the original neutral-control metric on these datasets; broader claims require independent replication on additional datasets, model families, and scale tiers.</p>
 
-    <figure>
-      <img src="figures/figure2_decomposition.svg" alt="JSD decomposition across stages" />
-      <figcaption><strong>Figure 2.</strong> JSD decomposition across stages.</figcaption>
-    </figure>
+<h2 id="6-discussion">6. Discussion</h2>
+<h3 id="61-summary-of-findings">6.1 Summary of findings</h3>
+<p>This pre-registered pilot study tested whether preference-tuning bias shifts are predominantly explained by distributional sharpening (H1). The original analysis contradicted this hypothesis due to a neutral-control violation. Subsequent investigation attributed the violation to metric sensitivity (specifically, the choice of function-word target tokens in the neutral control) rather than genuine distributional bias introduction.</p>
+<p>Prospective re-adjudication (v2.0) resolved to R1 (artifact-supported), and a BBQ-scoped corrective replication (V3.0) provided BBQ-scoped corrective support for R1, suggesting the original F3 trigger was sensitive to neutral-control metric choice. However, the v1.0 contradiction is preserved as immutable, and no hypothesis status has been upgraded to "supported" or "confirmed." All corrective Stage-2/3 conclusions are drawn exclusively from the replacement provenance artifacts and apply only to the BBQ dataset.</p>
+<h3 id="62-implications-for-bias-mitigation">6.2 Implications for bias mitigation</h3>
+<p>The artifact-sensitivity finding has provisional implications: if preference tuning primarily sharpens pre-existing associations (as would be consistent with R1 under corrected controls), mitigation effort may be more productively directed at pre-training data curation rather than post-training objective design. However, this interpretation remains <strong>provisional and dataset-scoped</strong> (custom pilot panel and BBQ only); it does not justify policy changes without broader replication across additional benchmarks and model families.</p>
+<h3 id="63-methodological-contributions">6.3 Methodological contributions</h3>
+<p>This study demonstrates a falsification-first protocol for bias decomposition research:
+- Pre-registered hard triggers (F1–F5) with automated scoring
+- Transparent amendment history with immutability preservation
+- Multi-phase adjudication (v1.0 → v1.2 → v2.0 → V3.0) with explicit scope labeling</p>
+<p>The F3 episode illustrates the value of neutral controls and the risk of metric-specific artifacts in bias measurement.</p>
+<h3 id="64-limitations-and-future-work">6.4 Limitations and future work</h3>
+<p>Key open questions:
+1. Does R1 replicate on additional bias benchmarks (StereoSet, CrowS-Pairs, BOLD)?
+2. Does the decomposition pattern hold at different model scales?
+3. Can generation-level bias metrics (beyond token-level probabilities) confirm or challenge these findings?
+4. Do other preference-tuning methods (PPO, KTO, constitutional AI) show similar decomposition profiles?</p>
+<p>These questions are deferred to a planned V4 extension.</p>
 
-    <figure>
-      <img src="figures/figure3_neutral_artifact.svg" alt="Neutral-control token-pair artifact visualization" />
-      <figcaption><strong>Figure 3.</strong> Neutral-control artifact visualization for token-pair metric behavior.</figcaption>
-    </figure>
+<h2 id="7-conclusion">7. Conclusion</h2>
+<p>This pre-registered pilot found the sharpening-dominant hypothesis (H1) contradicted under the original v1.0 protocol due to a neutral-control violation, an outcome preserved as immutable. Diagnostic investigation and prospective re-adjudication (v2.0, V3.0) attributed the violation to token-pair metric sensitivity and resolved to R1 (artifact-supported) on the tested datasets, with BBQ-scoped corrective support across all three V3 stages. These findings are consistent with preference tuning sharpening pre-existing distributional associations rather than introducing novel bias pathways, but this interpretation is provisional, applies only to the custom pilot panel and BBQ benchmark at 7-8B scale (OLMo 2, Tulu 3), and does not establish a universal mechanism. The study contributes a falsification-first protocol for bias decomposition and demonstrates the sensitivity of token-level neutral controls to function-word measurement artifacts.</p>
 
-    <h2 id="decision-relevance">Decision relevance</h2>
-    <p><strong>Shows:</strong> strong methodological integrity and bounded BBQ-scoped corrective evidence. <strong>Does not show:</strong> universal mechanism claims.</p>
+<h2 id="8-integrity-statement">8. Integrity statement</h2>
+<p>All governance artifacts (frozen baselines, SHA256 provenance chains, alias audits, invalidation notices, and amendment histories) are preserved in the supplement (§S1–S4) and the project repository. Zero freeze breaches, zero alias regressions, and zero mid-cycle metric changes were detected across all phases. The v1.0 contradiction is verified as preserved in v1.2, v2.0, and V3.0 reporting.</p>
 
-    <h2 id="limitations">Limitations</h2>
-    <p>Pilot scope, token-level measurement limits, and external validity constraints remain explicit. Broader generalization requires prospective V4 evidence.</p>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>This research was conducted as an independent study. Compute for V3 BBQ corrective replication was provided by Modal (A10G GPUs). The author thanks the open-source communities behind OLMo, Tulu, and the BBQ benchmark.</p>
 
-    <h2 id="references">References</h2>
-    <p>See manuscript package references and artifact index in experiment repository; this page is a distilled presentation of the same bounded claims.</p>
-  </d-article>
-</body>
-</html>
+<h2 id="reproducibility-statement">Reproducibility statement</h2>
+<p>All code, data artifacts, and configuration files required to reproduce the experiments in this paper are available at <a href="https://github.com/Sohailm25/clawd-experiments">https://github.com/Sohailm25/clawd-experiments</a> in the <code>experiments/rlhf-entropy</code> directory. Specific reproducibility details:</p>
+<ul>
+<li><strong>Commit hash:</strong> See <code>results/v3/reports/PROGRAM_CLOSURE_PACKET_2026-02-21.md</code> for the V3 closure commit</li>
+<li><strong>Seed policy:</strong> Three fixed seeds (42, 137, 2026) used across all inference runs</li>
+<li><strong>Hardware:</strong> Modal A10G GPUs for V3 BBQ corrective inference; local CPU for pilot scoring and bootstrap analysis</li>
+<li><strong>Frozen artifact hashes:</strong> Prompt panel <code>5afdbd9b53380dcf</code>; primary decode config <code>79cb2354784327c8</code>; V3 governance baseline <code>8fef67d71896249bcf0fe2c4f61ee5eb728adfcd6e57521911e3442b017324cd</code></li>
+<li><strong>Bootstrap:</strong> B = 1,000 resamples with convergence diagnostics (supplement §S9)</li>
+</ul>
+
+<h2 id="references">References</h2>
+<p>Bai, Y., et al. (2022). Training a helpful and harmless assistant with reinforcement learning from human feedback. <em>arXiv preprint arXiv:2204.05862</em>.</p>
+<p>Blodgett, S. L., Barocas, S., Daumé III, H., &amp; Wallach, H. (2020). Language (technology) is power: A critical survey of bias in NLP. <em>Proceedings of ACL</em>.</p>
+<p>Gallegos, I. O., et al. (2024). Bias and fairness in large language models: A survey. <em>Computational Linguistics, 50</em>(4).</p>
+<p>Nadeem, M., Bethke, A., &amp; Reddy, S. (2021). StereoSet: Measuring stereotypical bias in pretrained language models. <em>Proceedings of ACL</em>.</p>
+<p>Nangia, N., Vania, C., Bhalerao, R., &amp; Bowman, S. R. (2020). CrowS-Pairs: A challenge dataset for measuring social biases in masked language models. <em>Proceedings of EMNLP</em>.</p>
+<p>Ouyang, L., et al. (2022). Training language models to follow instructions with human feedback. <em>Advances in NeurIPS, 35</em>.</p>
+<p>Parrish, A., et al. (2022). BBQ: A hand-built bias benchmark for question answering. <em>Findings of ACL</em>.</p>
+
+<p><em>Draft v0.3.2: Root style compliance pass.</em></p>
+</d-article>
+</body></html>

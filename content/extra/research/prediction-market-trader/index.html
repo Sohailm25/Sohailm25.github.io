@@ -165,7 +165,7 @@
         
         blockquote {
             border-left: 3px solid var(--ef-green-dim);
-            padding-left: 0;
+            padding-left: 1.5em;
             margin: 1.5em 0;
             color: var(--ef-text-muted);
             font-style: italic;
@@ -180,114 +180,6 @@
             font-size: 0.85em;
             border-radius: 4px;
         }
-    
-        /* Table of Contents */
-        .toc-container {
-            background: var(--ef-bg-dim);
-            border: 1px solid var(--ef-border);
-            border-radius: 4px;
-            padding: 1em 1.5em;
-            margin: 1.5em 0 2em;
-        }
-        .toc-container h3 {
-            color: var(--ef-green);
-            margin: 0 0 0.5em;
-            font-size: 1em;
-            border: none;
-            padding: 0;
-        }
-        .toc-container ul {
-            margin: 0;
-            padding-left: 0;
-            list-style-type: none;
-            columns: 2;
-            column-gap: 2em;
-        }
-        @media (max-width: 600px) {
-            .toc-container ul { columns: 1; }
-        }
-        .toc-container li {
-            margin: 0.2em 0;
-            break-inside: avoid;
-        }
-        .toc-container a {
-            color: var(--ef-aqua);
-            text-decoration: none;
-            font-size: 0.9em;
-        }
-        .toc-container a:hover {
-            color: var(--ef-green);
-        }
-    
-
-        /* Reusable research components (Switzer-style variant) */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin: 1.1rem 0 1.6rem;
-        }
-        @media (max-width: 720px) {
-            .kpi-grid { grid-template-columns: 1fr; }
-        }
-        .kpi-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(211, 198, 170, 0.16);
-            border-radius: 12px;
-            padding: 14px 15px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-        }
-        .kpi-label {
-            color: var(--ef-text-muted);
-            font-size: 0.8rem;
-            letter-spacing: 0.02em;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .kpi-value {
-            color: var(--ef-text);
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.15;
-        }
-        .kpi-note {
-            color: var(--ef-text-muted);
-            font-size: 0.82rem;
-            margin-top: 7px;
-        }
-
-        details.finding {
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px solid rgba(211, 198, 170, 0.15);
-            border-radius: 12px;
-            margin: 9px 0;
-            overflow: hidden;
-        }
-        details.finding summary {
-            cursor: pointer;
-            color: var(--ef-text);
-            font-weight: 600;
-            list-style: none;
-            padding: 11px 14px;
-            line-height: 1.35;
-        }
-        details.finding summary::-webkit-details-marker { display: none; }
-        details.finding summary::before {
-            content: "▸";
-            color: var(--ef-text-muted);
-            font-weight: 700;
-            margin-right: 8px;
-        }
-        details.finding[open] summary::before { content: "▾"; }
-        .finding-body {
-            color: var(--ef-text-muted);
-            padding: 10px 14px 12px;
-            border-top: 1px solid rgba(211, 198, 170, 0.12);
-            background: rgba(255, 255, 255, 0.01);
-            margin-top: 0;
-            line-height: 1.5;
-        }
-
     </style>
 </head>
 <body>
@@ -301,57 +193,9 @@
 
 <d-article>
 
-<nav class="toc-container">
-    <h3>Contents</h3>
-    <ul id="toc-list"></ul>
-</nav>
-
 <h2 id="abstract">Abstract</h2>
 
-<p>We trained language models to trade binary prediction markets using reinforcement learning. Initial attempts with standard PPO led to severe action collapse: agents converged to never holding positions (0% HOLD rate by batch 30), producing degenerate policies despite reasonable profit. Adding chain-of-thought (CoT) reasoning before action selection eliminated the observed collapse in this training setup: CoT agents maintained 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for always-buy-no baseline). This is consistent with the idea that in low-cardinality action spaces where multiple actions can yield similar rewards, explicit reasoning steps can reduce premature convergence by maintaining exploration of the strategic landscape.</p>
-
-
-<h2 id="at-a-glance">At a glance</h2>
-
-<div class="kpi-grid">
-  <div class="kpi-card">
-    <div class="kpi-label">Training / eval markets</div>
-    <div class="kpi-value">400 / 40</div>
-    <div class="kpi-note">resolved binary Manifold markets</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">CoT PPO return</div>
-    <div class="kpi-value">+$0.060</div>
-    <div class="kpi-note">vs +$0.008 to +$0.012 for non-CoT PPO</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Policy entropy</div>
-    <div class="kpi-value">~0.95</div>
-    <div class="kpi-note">CoT maintained high entropy; non-CoT ~0.60</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">HOLD collapse</div>
-    <div class="kpi-value">0%</div>
-    <div class="kpi-note">by batch 30 without CoT; CoT kept 15–30% in training</div>
-  </div>
-</div>
-
-<details class="finding" open>
-  <summary>Finding 1 — In this setup, CoT removed the observed collapse pattern</summary>
-  <div class="finding-body">In this 3-action setup, standard PPO converges to action-collapse, while requiring reasoning tokens preserves HOLD behavior and higher policy diversity throughout training.</div>
-</details>
-
-<details class="finding">
-  <summary>Finding 2 — Better behavioral quality without sacrificing competitiveness</summary>
-  <div class="finding-body">CoT PPO remains near the strongest simple baseline on mean P&L while avoiding the degenerate low-entropy policy profile seen in non-CoT variants.</div>
-</details>
-
-<details class="finding">
-  <summary>Finding 3 — Action-space structure matters as much as reward shaping</summary>
-  <div class="finding-body">Shaped rewards alone did not prevent collapse, suggesting that explicit deliberation can provide missing credit-assignment structure where delayed rewards under-inform HOLD.</div>
-</details>
-
-<p>This supports a testable design heuristic: in low-cardinality RL with sparse delayed payoffs, evaluate explicit reasoning before action selection as one anti-collapse intervention.</p>
+<p>We trained language models to trade binary prediction markets using reinforcement learning. Initial attempts with standard PPO led to severe action collapse: agents converged to never holding positions (0% HOLD rate by batch 30), producing degenerate policies despite reasonable profit. Adding chain-of-thought (CoT) reasoning before action selection completely solved this collapse: CoT agents maintained 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for always-buy-no baseline). This suggests that in low-cardinality action spaces where multiple actions can yield similar rewards, explicit reasoning steps prevent premature convergence by maintaining exploration of the strategic landscape.</p>
 
 <h2 id="introduction">1. Introduction</h2>
 
@@ -431,7 +275,7 @@ You are trading a prediction market. Think step by step.<br><br>
 <strong>Action:</strong> [BUY_YES | BUY_NO | HOLD]
 </div>
 
-<p>The model must generate reasoning tokens before selecting an action. In our runs, this change prevented the observed collapse pattern:</p>
+<p>The model must generate reasoning tokens before selecting an action. This simple change completely prevented collapse:</p>
 
 <ul>
 <li>HOLD rate: 15-30% throughout training (vs 0% for non-CoT)</li>
@@ -604,34 +448,20 @@ You are trading a prediction market. Think step by step.<br><br>
 <li><strong>Blog post:</strong> Coming soon</li>
 </ul>
 
-<script>
 
-// Auto-generate Table of Contents
-(function() {
-    var toc = document.getElementById('toc-list');
-    if (!toc) return;
-    var headings = document.querySelectorAll('d-article h2[id]');
-    headings.forEach(function(h2) {
-        // Skip appendix headings
-        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
-        var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.href = '#' + h2.id;
-        a.textContent = h2.textContent;
-        li.appendChild(a);
-        toc.appendChild(li);
-    });
-    // If 6 or fewer items, single column
-    if (toc.children.length <= 6) {
-        toc.style.columns = '1';
-    }
-})();
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>This work was conducted as an independent research study. We thank the prediction-market and open-source RL communities whose tools and datasets made this investigation possible.</p>
 
-</script>
+<h2 id="reproducibility">Reproducibility</h2>
+<p>Code and experiment materials are available at <a href="https://github.com/Sohailm25/prime-v-tinker-trader">github.com/Sohailm25/prime-v-tinker-trader</a>.</p>
+<ul>
+  <li><strong>README:</strong> <a href="https://github.com/Sohailm25/prime-v-tinker-trader/blob/main/README.md">README.md</a></li>
+  <li><strong>Artifact index:</strong> <a href="https://github.com/Sohailm25/prime-v-tinker-trader/blob/main/ARTIFACT_INDEX.md">ARTIFACT_INDEX.md</a></li>
+  <li><strong>Repro guide:</strong> <a href="https://github.com/Sohailm25/prime-v-tinker-trader/blob/main/REPRODUCIBILITY.md">REPRODUCIBILITY.md</a></li>
+</ul>
+<p>Repository docs include environment setup, training commands, and expected outputs for reruns.</p>
 
 </d-article>
-
-
 
 </body>
 </html>

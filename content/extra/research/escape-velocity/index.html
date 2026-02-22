@@ -8,7 +8,7 @@
     <d-front-matter>
         <script type="text/json">{
             "title": "Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play",
-            "description": "Do chat models collapse into repetitive loops during long conversations? A preregistered study of 720 multi-turn self-play trajectories across four conditions.",
+            "description": "A preregistered baseline study of collapse dynamics across four interaction conditions.",
             "authors": [
                 {
                     "author": "Sohail Mohammad",
@@ -70,8 +70,9 @@
         }
 
         d-title {
-            background-color: transparent;
-            padding: 1.5em 0 1em;
+            background-color: var(--ef-bg-dim);
+            padding: 2em 0;
+            border-bottom: 1px solid var(--ef-border);
         }
 
         d-title h1 {
@@ -83,10 +84,8 @@
         }
 
         d-byline {
-            background-color: transparent;
+            background-color: var(--ef-bg-dim);
             border-bottom: 1px solid var(--ef-border);
-            padding-top: 0.8em;
-            padding-bottom: 1.2em;
             color: var(--ef-text-muted);
         }
 
@@ -96,26 +95,6 @@
         d-byline h3 { color: var(--ef-text-muted) !important; }
         d-byline * { color: var(--ef-text-muted); }
         d-byline a { color: var(--ef-aqua) !important; }
-
-        d-byline .authors-affiliations .name {
-            font-size: 1em;
-            font-weight: 500;
-        }
-        d-byline .authors-affiliations .affiliation {
-            font-size: 0.85em;
-            color: var(--ef-text-muted);
-            opacity: 0.7;
-            margin-top: 0.3em;
-        }
-        d-byline .authors-affiliations h3 {
-            margin-bottom: 0.4em;
-        }
-        d-byline .authors-affiliations p.author {
-            margin-bottom: 0.1em;
-        }
-        d-byline .authors-affiliations p.affiliation {
-            margin-top: 0.2em;
-        }
 
         h2 {
             margin-top: 2em;
@@ -186,7 +165,7 @@
 
         blockquote {
             border-left: 3px solid var(--ef-green-dim);
-            padding-left: 0;
+            padding-left: 1.5em;
             margin: 1.5em 0;
             color: var(--ef-text-muted);
             font-style: italic;
@@ -207,299 +186,31 @@
         d-contents { color: var(--ef-text-muted); }
         d-contents a { color: var(--ef-text-muted); }
         d-contents a:hover { color: var(--ef-green); }
-
-        /* Table of Contents */
-        .toc-container {
-            background: var(--ef-bg-dim);
-            border: 1px solid var(--ef-border);
-            border-radius: 4px;
-            padding: 1em 1.5em;
-            margin: 1.5em 0 2em;
-        }
-        .toc-container h3 {
-            display: none;
-        }
-        .toc-container ol {
-            margin: 0;
-            padding-left: 0;
-            list-style-type: none;
-            columns: 2;
-            column-gap: 2em;
-        }
-        @media (max-width: 600px) {
-            .toc-container ol { columns: 1; }
-        }
-        .toc-container li {
-            margin: 0.35em 0;
-            break-inside: avoid;
-            line-height: 1.4;
-        }
-        .toc-container a {
-            color: var(--ef-text-muted);
-            text-decoration: none;
-            font-size: 0.85em;
-            opacity: 0.7;
-            transition: opacity 0.15s, color 0.15s;
-        }
-        .toc-container a:hover {
-            color: var(--ef-aqua);
-            opacity: 1;
-        }
-
-
-
-        /* Reusable research components (Switzer-style variant) */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin: 1.1rem 0 1.6rem;
-        }
-        @media (max-width: 720px) {
-            .kpi-grid { grid-template-columns: 1fr; }
-        }
-        .kpi-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(211, 198, 170, 0.16);
-            border-radius: 12px;
-            padding: 14px 15px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-        }
-        .kpi-label {
-            color: var(--ef-text-muted);
-            font-size: 0.8rem;
-            letter-spacing: 0.02em;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .kpi-value {
-            color: var(--ef-text);
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.15;
-        }
-        .kpi-note {
-            color: var(--ef-text-muted);
-            font-size: 0.82rem;
-            margin-top: 7px;
-        }
-
-        details.finding {
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px solid rgba(211, 198, 170, 0.15);
-            border-radius: 12px;
-            margin: 9px 0;
-            overflow: hidden;
-        }
-        details.finding summary {
-            cursor: pointer;
-            color: var(--ef-text);
-            font-weight: 600;
-            list-style: none;
-            padding: 11px 14px;
-            line-height: 1.35;
-        }
-        details.finding summary::-webkit-details-marker { display: none; }
-        details.finding summary::before {
-            content: "▸";
-            color: var(--ef-text-muted);
-            font-weight: 700;
-            margin-right: 8px;
-        }
-        details.finding[open] summary::before { content: "▾"; }
-        .finding-body {
-            color: var(--ef-text-muted);
-            padding: 10px 14px 12px;
-            border-top: 1px solid rgba(211, 198, 170, 0.12);
-            background: rgba(255, 255, 255, 0.01);
-            margin-top: 0;
-            line-height: 1.5;
-        }
-
-        /* === Tufte-style sidenotes + sticky left TOC === */
-        d-article {
-            counter-reset: sidenote-counter;
-        }
-        /* Desktop 2-column layout: sticky left TOC + article */
-        @media (min-width: 1200px) {
-            .page-layout {
-                display: grid;
-                grid-template-columns: 240px 1fr;
-                gap: 40px;
-                max-width: 1100px;
-                margin: 0 auto;
-                padding: 32px 24px 0;
-            }
-            .toc-rail {
-                grid-column: 1 !important;
-                grid-row: 1;
-                min-width: 0;
-                margin-top: 48px;
-            }
-            .toc-container {
-                position: sticky;
-                top: 120px;
-                max-height: calc(100vh - 144px);
-                overflow-y: auto;
-                background: transparent;
-                border: 0;
-                border-radius: 0;
-                padding: 10px 0 0 0;
-                margin: 0;
-                font-size: 0.85em;
-            }
-            .toc-container ol,
-            .toc-container ul {
-                columns: 1 !important;
-                padding-left: 1rem;
-                margin: 0;
-            }
-            d-article {
-                max-width: 680px !important;
-                margin-left: 0 !important;
-                margin-right: auto !important;
-                position: relative;
-                grid-column: 2 !important;
-                grid-row: 1;
-            }
-            d-title h1, d-title p.title-authors,
-            d-title .title-authors, d-title p {
-                margin-left: 106px !important;
-            }
-            d-byline .byline, d-byline .byline-container {
-                margin-left: 106px !important;
-            }
-        }
-        .sidenote-number {
-            counter-increment: sidenote-counter;
-        }
-        .sidenote-number::after {
-            content: counter(sidenote-counter);
-            font-size: 0.7em;
-            vertical-align: super;
-            color: var(--ef-aqua);
-            cursor: pointer;
-            margin-left: 1px;
-        }
-        .margin-toggle { display: none; }
-        .sidenote {
-            font-size: 0.82em;
-            line-height: 1.4;
-            color: var(--ef-text-muted);
-            border-left: 2px solid var(--ef-border);
-            padding-left: 0.8em;
-        }
-        @media (min-width: 1200px) {
-            .sidenote {
-                float: right;
-                clear: right;
-                margin-right: -280px;
-                width: 240px;
-                margin-top: 0.3em;
-                margin-bottom: 1em;
-                position: relative;
-            }
-        }
-        @media (max-width: 1199px) {
-            .sidenote {
-                display: none;
-                margin: 0.5em 0 0.5em 1em;
-                padding: 0.5em 0.8em;
-                background: var(--ef-bg-card);
-                border-radius: 4px;
-            }
-            .margin-toggle:checked + .sidenote {
-                display: block;
-            }
-            .sidenote-number { cursor: pointer; }
-        }
-        /* Hide Distill auto-generated Published and DOI fields */
-        d-byline .byline.grid > div:nth-child(2),
-        d-byline .byline.grid > div:nth-child(3) { display: none !important; }
     </style>
 </head>
 <body>
 
 <d-title>
     <h1>Condition-Dependent Collapse Dynamics in Multi-Turn LLM Self-Play</h1>
-    <p>When chat models talk to themselves for 40 turns, some collapse into repetition. This study measures how much, and where the measurement breaks down.</p>
+    <p>Baseline closure complete with transparent reliability limitations.</p>
 </d-title>
 
 <d-byline></d-byline>
 
-
-<div class="page-layout">
-<aside class="toc-rail">
-<nav class="toc-container">
-    <h3 class="toc-heading">Contents</h3>
-    <ol id="toc-list"></ol>
-</nav>
-</aside>
-
 <d-article>
 
-
 <h2 id="abstract">Abstract</h2>
-<p>When two chat models converse for 40 turns, do they keep producing novel responses, or collapse into repetitive loops? We measured this across 720 conversations spanning four model-pairing conditions (three homogeneous self-play setups and one heterogeneous rotation). All 720 conversations ran to completion under a fixed protocol. Collapse rates varied substantially by condition, but our automated collapse detector did not pass its preregistered reliability check (Cohen's κ = 0.566 vs. threshold 0.80).<label for="sn-ev-001" class="sidenote-number"></label><input type="checkbox" id="sn-ev-001" class="margin-toggle"/><span class="sidenote">Cohen's κ accounts for chance agreement, unlike raw accuracy. Our 92.8% raw agreement produces only κ = 0.566 because collapse base rates are skewed, inflating chance agreement.</span> Because of this, all findings are descriptive: we report observed patterns, not validated detector claims or causal explanations.</p>
+<p>We ran a preregistered baseline study of multi-turn collapse dynamics across four interaction conditions (HOMO_A, HOMO_B, HOMO_C, HETERO_ROT). Confirmatory baseline execution closed at 720/720 unique successful tuples with clean protocol integrity. The preregistered detector reliability audit did not meet its Cohen’s κ threshold (κ=0.566, threshold 0.80), so results are presented with transparent limitations: descriptive and condition-comparative conclusions only, without claiming detector reliability validation.</p>
 
 <div class="note">
-<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed. This is a reproducible baseline dataset and protocol outcome, not a validated detector claim.
+<strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed.
 </div>
-
-<p><strong>Primary contributions:</strong> (1) a locked, reproducible measurement protocol for multi-turn collapse with frozen artifacts; (2) a complete 720-trajectory descriptive benchmark; and (3) a transparent account of a preregistered reliability gate failure and its consequences for claim scope. We believe this is independently informative for researchers designing LLM evaluation pipelines.</p>
-
-<h2 id="why-this-matters">Why this matters</h2>
-<p>Multi-turn conversations are where most real LLM usage happens, and where quality is hardest to measure. If models quietly degrade into repetitive loops after enough turns, that matters for anyone building chat products, agents, or evaluation pipelines. But measuring this degradation reliably turns out to be harder than measuring it at all.</p>
-<p>This study contributes a locked protocol and complete dataset for studying the problem. It also contributes a transparent account of a reliability gate failure: our automated detector didn't pass its own preregistered agreement check, which we think is independently useful for researchers designing LLM evaluation systems.</p>
-
-<h2 id="at-a-glance">At a glance</h2>
-
-<div class="kpi-grid">
-  <div class="kpi-card">
-    <div class="kpi-label">Conversations completed</div>
-    <div class="kpi-value">720 / 720</div>
-    <div class="kpi-note">40 turns each, zero protocol attrition</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Detector reliability</div>
-    <div class="kpi-value">κ = 0.566</div>
-    <div class="kpi-note">below prereg threshold (0.80)</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Conditions tested</div>
-    <div class="kpi-value">4</div>
-    <div class="kpi-note">3 homogeneous + 1 heterogeneous rotation</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Trajectory depth</div>
-    <div class="kpi-value">40 turns</div>
-    <div class="kpi-note">per conversation under locked criteria</div>
-  </div>
-</div>
-
-<details class="finding" open>
-  <summary>Finding 1 — Condition effects are visible in the baseline data</summary>
-  <div class="finding-body">Across 720 completed trajectories, collapse behavior varies materially by condition, with heterogeneous rotation showing lower collapse than the highest-collapse homogeneous setup in this protocol.</div>
-</details>
-
-<details class="finding">
-  <summary>Finding 2 — Reliability gate failure constrains claim strength</summary>
-  <div class="finding-body">The detector reached high raw agreement but only κ = 0.566, below the preregistered 0.80 threshold, so conclusions are descriptive and comparative rather than confirmatory detector-validity claims.</div>
-</details>
-
-<details class="finding">
-  <summary>Finding 3 — Main contribution is protocol closure and transparency</summary>
-  <div class="finding-body">The study delivers a fully executed 720/720 benchmark with locked collapse rules, intact protocol integrity, and explicit disclosure of where interpretation must stop.</div>
-</details>
-
-<p>Use this as a reproducible baseline for future collapse-measurement work, especially reliability-improvement and human-rater validation studies.</p>
-
 
 <h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
 <p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>
 <ul>
   <li><strong>Repetition:</strong> very high semantic similarity to recent turns (adjacent-turn cosine ≥ 0.92 or two-turn-back cosine ≥ 0.90) sustained for at least 3 turns.</li>
-  <li><strong>Low drift:</strong> semantic drift remains small (d1 ≤ 0.08 and d2 ≤ 0.10, where drift = 1 - cosine similarity).</li>
+  <li><strong>Low drift:</strong> semantic drift remains small (d1 ≤ 0.08 and d2 ≤ 0.10, where drift = 1 − cosine similarity).</li>
   <li><strong>Locked rule:</strong> thresholds were fixed before final analysis and not tuned after seeing outcome patterns.</li>
 </ul>
 
@@ -508,14 +219,8 @@
   <li>Design: 4 conditions × 36 seeds × 5 repeats = 720 target tuples.</li>
   <li>Execution status: 720/720 successful tuples.</li>
   <li>Protocol integrity: all successful runs at 40 turns, no early-stop violations.</li>
-  <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.<label for="sn-ev-002" class="sidenote-number"></label><input type="checkbox" id="sn-ev-002" class="margin-toggle"/><span class="sidenote">"Frozen" means all threshold values, embedding models, and detection logic were locked before the final analysis run. No parameters were tuned after seeing outcome patterns.</span></li>
+  <li>Primary output: condition-level collapse-rate comparisons under a frozen detector definition.</li>
 </ul>
-
-<h3 id="seed-prompts">Seed prompts</h3>
-<p>The 36 seed prompts (SEEDS_V2) were drawn from six topical buckets: factual Q&amp;A, instruction following, creative rewrite, argumentative, conversational, and practical task, with six prompts per bucket. Examples: "Explain why eclipses do not happen every month" (factual), "Give me exactly 3 bullet points on how to prepare for a technical interview" (instruction), "Argue both for and against using open-weight models in production safety-critical systems" (argumentative). The full seed set is available in the <a href="https://github.com/Sohailm25/escape-velocity">companion repository</a>.</p>
-
-<h3 id="context-window">Context window handling</h3>
-<p>The full conversation history is passed to the model at each turn without truncation. At 40 turns with up to 256 tokens each, conversations can reach ~10,000 tokens. The models have context windows of 8,192 (Llama, Mistral) to 32,768 (Qwen) tokens. In practice, collapsed turns produce short outputs, keeping most conversations within limits. We did not implement explicit truncation; if context exceeded the model's window, internal left-truncation would apply. This is a limitation: later-turn behavior in longer conversations may be partially confounded by context overflow.</p>
 
 <h3 id="condition-mapping">Condition mapping (model identity)</h3>
 <table>
@@ -530,46 +235,46 @@
 
 <h2 id="what-it-looks-like">What collapse looks like in plain language</h2>
 <p>The core question is simple: when two chat models keep talking for 40 turns, do they keep producing meaningfully new content, or do they fall into repetitive loops?</p>
-<p>Below are representative excerpts selected from raw turn logs after scanning all 180 cached trajectories. All examples are descriptive illustrations rather than causal evidence.</p>
+<p>Below are representative excerpts selected from raw turn logs after scanning all 180 cached trajectories.</p>
 
-<h3>Example A: strong repetition loop (HOMO_B: Qwen self-play)</h3>
+<h3>Example A — strong repetition loop (HOMO_B: Qwen self-play)</h3>
 <div class="note">
-  <strong>Turn 18:</strong> "And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ..."<br>
-  <strong>Turn 24:</strong> "And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ..."<br>
-  <strong>Turn 39:</strong> "Got it! Here's your comment: And there you have it! The function absolutely nails it ..."
+  <strong>Turn 18:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
+  <strong>Turn 24:</strong> “And there you have it! The function absolutely nails it, delivering the exact value we were hoping for ...”<br>
+  <strong>Turn 39:</strong> “Got it! Here's your comment: And there you have it! The function absolutely nails it ...”
 </div>
 <p>Interpretation: near-identical template reuse over long spans, which is exactly the collapse behavior this benchmark is designed to capture.</p>
 
-<h3>Example B: low-collapse trajectory (HOMO_C: Mistral self-play)</h3>
+<h3>Example B — low-collapse trajectory (HOMO_C: Mistral self-play)</h3>
 <div class="note">
-  <strong>Turn 18:</strong> "Bias mitigation ... fairness-aware machine learning algorithms ..."<br>
-  <strong>Turn 24:</strong> "Explainability and transparency are also important for regulatory compliance ..."<br>
-  <strong>Turn 39:</strong> "Thank you ... don't hesitate to reach out if you have other questions ..."
+  <strong>Turn 18:</strong> “Bias mitigation ... fairness-aware machine learning algorithms ...”<br>
+  <strong>Turn 24:</strong> “Explainability and transparency are also important for regulatory compliance ...”<br>
+  <strong>Turn 39:</strong> “Thank you ... don't hesitate to reach out if you have other questions ...”
 </div>
 <p>Interpretation: still topically related, but content continues to move and reframe rather than locking into one repeated response shell.</p>
 
-<h3>Example C: intermediate pattern (HETERO_ROT: heterogeneous rotation)</h3>
+<h3>Example C — intermediate pattern (HETERO_ROT: heterogeneous rotation)</h3>
 <div class="note">
-  <strong>Turn 18:</strong> "Develop and implement policies and regulations to reduce greenhouse gas emissions ..."<br>
-  <strong>Turn 30:</strong> "By working together, we can make a significant difference ..."<br>
-  <strong>Turn 39:</strong> "I hope this document provided a useful framework ..."
+  <strong>Turn 18:</strong> “Develop and implement policies and regulations to reduce greenhouse gas emissions ...”<br>
+  <strong>Turn 30:</strong> “By working together, we can make a significant difference ...”<br>
+  <strong>Turn 39:</strong> “I hope this document provided a useful framework ...”
 </div>
 <p>Interpretation: some thematic repetition, but less rigid template-locking than high-collapse homogeneous runs.</p>
 
 <h2 id="results">Key baseline results</h2>
 <figure>
   <img src="figures/figure_1_mean_collapse_by_condition.png" alt="Mean collapse rate by condition">
-  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition. HOMO_C (Mistral) collapses most frequently; HETERO_ROT (heterogeneous rotation) is lowest. <em>Use this to compare baseline susceptibility across model families, not to rank models for deployment. κ = 0.566 means these rates carry label uncertainty.</em></figcaption>
+  <figcaption><strong>Figure 1.</strong> Mean collapse rate by condition (HOMO_A=Llama-3.1-8B, HOMO_B=Qwen2.5-7B, HOMO_C=Mistral-7B-v0.3, HETERO_ROT=heterogeneous rotation).</figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_2_collapse_distribution.png" alt="Collapse rate distribution by condition">
-  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across tuples. The spread within each condition shows seed-level variance. Wide distributions mean individual conversations vary substantially even under identical setup. <em>Do not use narrow means from Figure 1 without considering this spread.</em></figcaption>
+  <figcaption><strong>Figure 2.</strong> Distribution of collapse rates across condition-specific tuples (same condition-to-model mapping as Figure 1).</figcaption>
 </figure>
 
 <figure>
   <img src="figures/figure_3_first_collapse_turn.png" alt="First collapse turn distribution">
-  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index. Earlier peaks indicate faster deterioration. <em>If building multi-turn systems, this suggests where to place quality checkpoints, but note this reflects our 40-turn protocol with specific seed prompts, not arbitrary deployment conditions.</em></figcaption>
+  <figcaption><strong>Figure 3.</strong> Distribution of first-collapse turn index.</figcaption>
 </figure>
 
 <h3 id="scope">Interpretation scope</h3>
@@ -582,63 +287,30 @@
   </tbody>
 </table>
 
-
-<h2 id="decision-relevance">Decision relevance</h2>
-<h3>What this study shows</h3>
-<ul>
-  <li>A complete, reproducible dataset of 720 multi-turn conversations across four controlled conditions.</li>
-  <li>Descriptive evidence that collapse rates vary by model pairing under fixed protocol settings.</li>
-</ul>
-<h3>What this study does NOT show</h3>
-<ul>
-  <li>That the collapse detector is reliable: the preregistered reliability gate was not met.</li>
-  <li>Why certain conditions collapse more. No causal or mechanistic claims are made.</li>
-  <li>That these patterns generalize beyond the specific models and settings tested.</li>
-</ul>
-<p><strong>Highest-value next step:</strong> independent human-rater reliability audit to test whether condition-level patterns persist under stronger label quality.</p>
-
 <h2 id="limitations">Limitations</h2>
 <ul>
-  <li><strong>Detector reliability:</strong> κ=0.566 (threshold 0.80 not met). No confirmatory detector-validation claim is made.</li>
-  <li><strong>LLM-rater circularity:</strong> The reliability audit used two LLM raters (GPT-5.2, Claude 4.6 Opus) rather than human annotators. LLMs evaluating LLM-generated text may share systematic biases that inflate apparent agreement, and the "independence" of these raters is limited by potential training-data and architectural overlap. A human-rater reliability audit is the highest-priority follow-up.<label for="sn-ev-004" class="sidenote-number"></label><input type="checkbox" id="sn-ev-004" class="margin-toggle"/><span class="sidenote">Human raters would establish whether the condition-level patterns survive with higher-quality labels. If κ improves above 0.80 with human labels, the descriptive findings become confirmatory. If not, the detector design needs revision.</span></li>
-  <li><strong>Detector thresholds:</strong> Threshold values (cosine ≥ 0.92/0.90, drift ≤ 0.08/0.10, 3 consecutive turns) were preregistered to prevent researcher degrees of freedom, but lack independent validation. A non-confirmatory sweep across 36 threshold configurations showed collapse rates ranging from 0.33 to 0.60 with no condition-rank inversions,<label for="sn-ev-003" class="sidenote-number"></label><input type="checkbox" id="sn-ev-003" class="margin-toggle"/><span class="sidenote">The 36-config sweep varied cosine thresholds, drift limits, and consecutive-turn requirements. No configuration changed the relative ordering of conditions, though absolute rates shifted substantially.</span> suggesting the ordering is robust to small perturbations, but broader validation with alternative detection approaches (lexical overlap, n-gram repetition, perplexity) remains needed.</li>
-  <li><strong>Single embedding model:</strong> The detector relies solely on MiniLM-L6-v2 embeddings. Different embedding models might yield different collapse patterns.</li>
-  <li><strong>Model coverage:</strong> Only three 7-8B instruction-tuned models were tested. Whether similar patterns hold for larger models (70B+), base models, models with different alignment approaches (RLHF vs. DPO), or frontier proprietary models is untested.</li>
-  <li><strong>No causal claims:</strong> We observe condition-dependent differences but do not establish why. Training data diversity, alignment procedure differences, tokenizer effects, and architecture choices are plausible hypotheses for future investigation.</li>
+  <li>Reliability gate was not met; no confirmatory detector-validation claim is made.</li>
+  <li>Sensitivity metrics are supplementary and non-gating.</li>
+  <li>Conclusions are constrained to baseline descriptive findings.</li>
 </ul>
 
 <d-appendix>
   <d-bibliography src="bibliography.bib"></d-bibliography>
 </d-appendix>
 
-<script>
 
-// Auto-generate Table of Contents
-(function() {
-    var toc = document.getElementById('toc-list');
-    if (!toc) return;
-    var headings = document.querySelectorAll('d-article h2[id]');
-    headings.forEach(function(h2) {
-        // Skip appendix headings
-        if (h2.textContent.toLowerCase().indexOf('appendix') === 0) return;
-        var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.href = '#' + h2.id;
-        a.textContent = h2.textContent.replace(/^\d+\.\s*/, '');
-        li.appendChild(a);
-        toc.appendChild(li);
-    });
-    // If 6 or fewer items, single column
-    if (toc.children.length <= 6) {
-        toc.style.columns = '1';
-    }
-})();
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>This work was conducted as an independent research study. We thank the open-source communities behind Llama, Qwen, and Mistral, and the contributors who built the evaluation and embedding tools used in this benchmark.</p>
 
-</script>
+<h2 id="reproducibility">Reproducibility</h2>
+<p>Code, frozen artifacts, and reproducibility documentation are available at <a href="https://github.com/Sohailm25/escape-velocity">github.com/Sohailm25/escape-velocity</a>.</p>
+<ul>
+  <li><strong>README:</strong> <a href="https://github.com/Sohailm25/escape-velocity/blob/main/README.md">README.md</a></li>
+  <li><strong>Artifact index:</strong> <a href="https://github.com/Sohailm25/escape-velocity/blob/main/ARTIFACT_INDEX.md">ARTIFACT_INDEX.md</a></li>
+  <li><strong>Repro guide:</strong> <a href="https://github.com/Sohailm25/escape-velocity/blob/main/REPRODUCIBILITY.md">REPRODUCIBILITY.md</a></li>
+</ul>
+<p>Seed policy, protocol constraints, and reliability-gate context are documented in the repository and mirrored in this page’s limitations and scope sections.</p>
 
 </d-article>
-</div><!-- .page-layout -->
-
-
 </body>
 </html>

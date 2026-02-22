@@ -246,6 +246,76 @@
             opacity: 1;
         }
 
+
+
+        /* Reusable research components (Switzer-style variant) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 1.1rem 0 1.6rem;
+        }
+        @media (max-width: 720px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(211, 198, 170, 0.16);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+        .kpi-label {
+            color: var(--ef-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .kpi-value {
+            color: var(--ef-text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+        .kpi-note {
+            color: var(--ef-text-muted);
+            font-size: 0.82rem;
+            margin-top: 7px;
+        }
+
+        details.finding {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(211, 198, 170, 0.15);
+            border-radius: 12px;
+            margin: 9px 0;
+            overflow: hidden;
+        }
+        details.finding summary {
+            cursor: pointer;
+            color: var(--ef-text);
+            font-weight: 600;
+            list-style: none;
+            padding: 11px 14px;
+            line-height: 1.35;
+        }
+        details.finding summary::-webkit-details-marker { display: none; }
+        details.finding summary::before {
+            content: "▸";
+            color: var(--ef-text-muted);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        details.finding[open] summary::before { content: "▾"; }
+        .finding-body {
+            color: var(--ef-text-muted);
+            padding: 10px 14px 12px;
+            border-top: 1px solid rgba(211, 198, 170, 0.12);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+
         /* === Tufte-style sidenotes + sticky left TOC === */
         d-article {
             counter-reset: sidenote-counter;
@@ -384,25 +454,46 @@
 
 <h2 id="at-a-glance">At a glance</h2>
 
-<h3>What we did</h3>
-<p>Ran 720 multi-turn conversations (40 turns each) across four model-pairing conditions using three 7B-parameter model families. Measured collapse (sustained high-similarity, low-drift output) using a frozen, preregistered detector.</p>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Conversations completed</div>
+    <div class="kpi-value">720 / 720</div>
+    <div class="kpi-note">40 turns each, zero protocol attrition</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Detector reliability</div>
+    <div class="kpi-value">κ = 0.566</div>
+    <div class="kpi-note">below prereg threshold (0.80)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Conditions tested</div>
+    <div class="kpi-value">4</div>
+    <div class="kpi-note">3 homogeneous + 1 heterogeneous rotation</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Trajectory depth</div>
+    <div class="kpi-value">40 turns</div>
+    <div class="kpi-note">per conversation under locked criteria</div>
+  </div>
+</div>
 
-<h3>What we found</h3>
-<ul>
-  <li>Collapse rates vary substantially by condition (model family matters).</li>
-  <li>Heterogeneous model rotation shows the lowest collapse rates.</li>
-  <li>The automated detector has high raw agreement (92.8%) but low Cohen's κ (0.566), meaning its reliability is unconfirmed for the base rates observed.</li>
-</ul>
+<details class="finding" open>
+  <summary>Finding 1 — Condition effects are visible in the baseline data</summary>
+  <div class="finding-body">Across 720 completed trajectories, collapse behavior varies materially by condition, with heterogeneous rotation showing lower collapse than the highest-collapse homogeneous setup in this protocol.</div>
+</details>
 
-<h3>What this does NOT show</h3>
-<ul>
-  <li>Validated collapse detection: the κ gate was not met, so detector-level claims are off the table.</li>
-  <li>Causal explanations for why some conditions collapse more than others.</li>
-  <li>Generalization beyond these specific models, prompts, and protocol settings.</li>
-</ul>
+<details class="finding">
+  <summary>Finding 2 — Reliability gate failure constrains claim strength</summary>
+  <div class="finding-body">The detector reached high raw agreement but only κ = 0.566, below the preregistered 0.80 threshold, so conclusions are descriptive and comparative rather than confirmatory detector-validity claims.</div>
+</details>
 
-<h3>How to use this</h3>
-<p>As a baseline dataset and protocol for future work on multi-turn quality measurement. The condition-comparison patterns are informative for hypothesis generation, but should not be treated as validated rankings for deployment decisions.</p>
+<details class="finding">
+  <summary>Finding 3 — Main contribution is protocol closure and transparency</summary>
+  <div class="finding-body">The study delivers a fully executed 720/720 benchmark with locked collapse rules, intact protocol integrity, and explicit disclosure of where interpretation must stop.</div>
+</details>
+
+<p>Use this as a reproducible baseline for future collapse-measurement work, especially reliability-improvement and human-rater validation studies.</p>
+
 
 <h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
 <p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>

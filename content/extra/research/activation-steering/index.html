@@ -301,6 +301,76 @@
             opacity: 1;
         }
 
+
+
+        /* Reusable research components (Switzer-style variant) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 1.1rem 0 1.6rem;
+        }
+        @media (max-width: 720px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(211, 198, 170, 0.16);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+        .kpi-label {
+            color: var(--ef-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .kpi-value {
+            color: var(--ef-text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+        .kpi-note {
+            color: var(--ef-text-muted);
+            font-size: 0.82rem;
+            margin-top: 7px;
+        }
+
+        details.finding {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(211, 198, 170, 0.15);
+            border-radius: 12px;
+            margin: 9px 0;
+            overflow: hidden;
+        }
+        details.finding summary {
+            cursor: pointer;
+            color: var(--ef-text);
+            font-weight: 600;
+            list-style: none;
+            padding: 11px 14px;
+            line-height: 1.35;
+        }
+        details.finding summary::-webkit-details-marker { display: none; }
+        details.finding summary::before {
+            content: "▸";
+            color: var(--ef-text-muted);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        details.finding[open] summary::before { content: "▾"; }
+        .finding-body {
+            color: var(--ef-text-muted);
+            padding: 10px 14px 12px;
+            border-top: 1px solid rgba(211, 198, 170, 0.12);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+
         /* === Tufte-style sidenotes + sticky left TOC === */
         d-article {
             counter-reset: sidenote-counter;
@@ -437,28 +507,46 @@
 
 <h2 id="at-a-glance">At a glance</h2>
 
-<h3>What we did</h3>
-<p>Evaluated two direction extraction methods (DIM, COSMIC) across seven instruction-tuned models (2B–32B), three architecture families (Qwen, Gemma, Mistral), and three quantization levels (FP16, INT8, INT4). Measured coherent refusal rate on 30 benign prompts with greedy decoding.</p>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Models evaluated</div>
+    <div class="kpi-value">7</div>
+    <div class="kpi-note">2B–32B across Qwen, Gemma, Mistral</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Qwen scale effect</div>
+    <div class="kpi-value">100% → 77%</div>
+    <div class="kpi-note">coherent refusal from 3B to 32B (n=30 at 32B)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Architecture failure case</div>
+    <div class="kpi-value">0%</div>
+    <div class="kpi-note">Mistral 7B coherent steering under tested protocol</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Tooling sensitivity</div>
+    <div class="kpi-value">90pp</div>
+    <div class="kpi-note">nnsight vs raw-hook extraction gap on same model</div>
+  </div>
+</div>
 
-<h3>What we found</h3>
-<ul>
-  <li>Steering is at ceiling for small models (≤7B) and declines at larger scales (77% at 32B, n=30).</li>
-  <li>Architecture is a binary gate: Mistral 7B produces 100% garbled output under identical conditions where Qwen 7B achieves 100% coherent steering.</li>
-  <li>Simple mean-difference extraction (DIM) matches or beats SVD-based COSMIC everywhere tested.</li>
-  <li>Extraction tooling (nnsight vs raw hooks) produces a 90pp gap on the same model, a hidden reproducibility variable.</li>
-  <li>INT8 is safe; INT4 degrades large models by 20pp.</li>
-</ul>
+<details class="finding" open>
+  <summary>Finding 1 — Steering effectiveness declines with scale in tested linear setup</summary>
+  <div class="finding-body">Within Qwen, coherent refusal drops from ceiling at small sizes to 77% at 32B; Gemma shows an even sharper 9B→27B cliff to 0% under the same single-direction intervention style.</div>
+</details>
 
-<h3>What this does NOT show</h3>
-<ul>
-  <li>That steering "breaks" at scale. It gets harder, but the interpretation rests on n=3 families and n=30 prompts.</li>
-  <li>Why architecture matters. The Mistral failure is documented but unexplained.</li>
-  <li>Behavior beyond refusal. Sycophancy, toxicity, and other behaviors may scale differently.</li>
-  <li>Performance at temperature > 0, which real deployments use.</li>
-</ul>
+<details class="finding">
+  <summary>Finding 2 — Architecture can gate success more than parameter count</summary>
+  <div class="finding-body">At the 7B class, Qwen steers coherently while Mistral degenerates into garbling, indicating architecture-level implementation differences dominate simple size-matching expectations.</div>
+</details>
 
-<h3>How to use this</h3>
-<p>Use DIM with graph-level tracing (nnsight or equivalent). Target 50% depth for large models. Validate on your specific architecture before assuming steering will work. Avoid INT4 above 14B if steering accuracy matters.</p>
+<details class="finding">
+  <summary>Finding 3 — Reproducibility hinges on extraction implementation details</summary>
+  <div class="finding-body">Direction extraction method and tooling are first-order variables: simple DIM matches or beats COSMIC here, and extraction backend choice alone can shift outcomes by ~90 percentage points.</div>
+</details>
+
+<p>Practical takeaway: validate per architecture, prefer simple DIM + robust tracing, and treat high-scale single-direction steering as fragile until replicated.</p>
+
 
 <h2 id="introduction">1. Introduction</h2>
 

@@ -218,6 +218,76 @@
         .toc-container a:hover {
             color: var(--ef-green);
         }
+    
+
+        /* Reusable research components (Switzer-style variant) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 1.1rem 0 1.6rem;
+        }
+        @media (max-width: 720px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(211, 198, 170, 0.16);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+        .kpi-label {
+            color: var(--ef-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .kpi-value {
+            color: var(--ef-text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+        .kpi-note {
+            color: var(--ef-text-muted);
+            font-size: 0.82rem;
+            margin-top: 7px;
+        }
+
+        details.finding {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(211, 198, 170, 0.15);
+            border-radius: 12px;
+            margin: 9px 0;
+            overflow: hidden;
+        }
+        details.finding summary {
+            cursor: pointer;
+            color: var(--ef-text);
+            font-weight: 600;
+            list-style: none;
+            padding: 11px 14px;
+            line-height: 1.35;
+        }
+        details.finding summary::-webkit-details-marker { display: none; }
+        details.finding summary::before {
+            content: "▸";
+            color: var(--ef-text-muted);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        details.finding[open] summary::before { content: "▾"; }
+        .finding-body {
+            color: var(--ef-text-muted);
+            padding: 10px 14px 12px;
+            border-top: 1px solid rgba(211, 198, 170, 0.12);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+
     </style>
 </head>
 <body>
@@ -239,6 +309,49 @@
 <h2 id="abstract">Abstract</h2>
 
 <p>We trained language models to trade binary prediction markets using reinforcement learning. Initial attempts with standard PPO led to severe action collapse: agents converged to never holding positions (0% HOLD rate by batch 30), producing degenerate policies despite reasonable profit. Adding chain-of-thought (CoT) reasoning before action selection completely solved this collapse: CoT agents maintained 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for always-buy-no baseline). This suggests that in low-cardinality action spaces where multiple actions can yield similar rewards, explicit reasoning steps prevent premature convergence by maintaining exploration of the strategic landscape.</p>
+
+
+<h2 id="at-a-glance">At a glance</h2>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Training / eval markets</div>
+    <div class="kpi-value">400 / 40</div>
+    <div class="kpi-note">resolved binary Manifold markets</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">CoT PPO return</div>
+    <div class="kpi-value">+$0.060</div>
+    <div class="kpi-note">vs +$0.008 to +$0.012 for non-CoT PPO</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Policy entropy</div>
+    <div class="kpi-value">~0.95</div>
+    <div class="kpi-note">CoT maintained high entropy; non-CoT ~0.60</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">HOLD collapse</div>
+    <div class="kpi-value">0%</div>
+    <div class="kpi-note">by batch 30 without CoT; CoT kept 15–30% in training</div>
+  </div>
+</div>
+
+<details class="finding" open>
+  <summary>Finding 1 — CoT fixes the core optimization pathology</summary>
+  <div class="finding-body">Standard PPO converges to action-collapse in this 3-action space, while requiring reasoning tokens preserves HOLD behavior and sustained policy diversity throughout training.</div>
+</details>
+
+<details class="finding">
+  <summary>Finding 2 — Better behavioral quality without sacrificing competitiveness</summary>
+  <div class="finding-body">CoT PPO remains near the strongest simple baseline on mean P&L while avoiding the degenerate low-entropy policy profile seen in non-CoT variants.</div>
+</details>
+
+<details class="finding">
+  <summary>Finding 3 — Action-space structure matters as much as reward shaping</summary>
+  <div class="finding-body">Shaped rewards alone did not prevent collapse, suggesting that explicit deliberation can provide missing credit-assignment structure where delayed rewards under-inform HOLD.</div>
+</details>
+
+<p>This points to a reusable design heuristic: in low-cardinality RL with sparse delayed payoffs, insert explicit reasoning before action selection.</p>
 
 <h2 id="introduction">1. Introduction</h2>
 

@@ -192,6 +192,76 @@
         /* Hide Distill auto-generated Published and DOI fields */
         d-byline .byline.grid > div:nth-child(2),
         d-byline .byline.grid > div:nth-child(3) { display: none !important; }
+    
+
+        /* Reusable research components (Switzer-style variant) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 1.1rem 0 1.6rem;
+        }
+        @media (max-width: 720px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(211, 198, 170, 0.16);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+        .kpi-label {
+            color: var(--ef-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .kpi-value {
+            color: var(--ef-text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+        .kpi-note {
+            color: var(--ef-text-muted);
+            font-size: 0.82rem;
+            margin-top: 7px;
+        }
+
+        details.finding {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(211, 198, 170, 0.15);
+            border-radius: 12px;
+            margin: 9px 0;
+            overflow: hidden;
+        }
+        details.finding summary {
+            cursor: pointer;
+            color: var(--ef-text);
+            font-weight: 600;
+            list-style: none;
+            padding: 11px 14px;
+            line-height: 1.35;
+        }
+        details.finding summary::-webkit-details-marker { display: none; }
+        details.finding summary::before {
+            content: "▸";
+            color: var(--ef-text-muted);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        details.finding[open] summary::before { content: "▾"; }
+        .finding-body {
+            color: var(--ef-text-muted);
+            padding: 10px 14px 12px;
+            border-top: 1px solid rgba(211, 198, 170, 0.12);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+
     </style>
 </head>
 <body>
@@ -211,6 +281,49 @@
 <div class="note">
 <strong>Reliability disclosure.</strong> The detector reliability prereg gate was <strong>NOT MET</strong> (κ=0.566). This page mirrors that limitation explicitly and does not reinterpret the gate as passed.
 </div>
+
+
+<h2 id="at-a-glance">At a glance</h2>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Tuples completed</div>
+    <div class="kpi-value">720 / 720</div>
+    <div class="kpi-note">all planned baseline runs closed successfully</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Reliability gate</div>
+    <div class="kpi-value">κ = 0.566</div>
+    <div class="kpi-note">below prereg threshold of 0.80</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Conditions</div>
+    <div class="kpi-value">4</div>
+    <div class="kpi-note">HOMO_A/B/C + HETERO_ROT</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Conversation horizon</div>
+    <div class="kpi-value">40 turns</div>
+    <div class="kpi-note">per trajectory under locked collapse rules</div>
+  </div>
+</div>
+
+<details class="finding" open>
+  <summary>Finding 1 — Baseline execution is complete and reproducible</summary>
+  <div class="finding-body">The study delivers full 720-tuple closure with protocol integrity checks, establishing a stable benchmark for condition-level comparisons in long-turn self-play.</div>
+</details>
+
+<details class="finding">
+  <summary>Finding 2 — Condition-level collapse differences are measurable</summary>
+  <div class="finding-body">Observed collapse-rate and first-collapse-turn distributions differ across model-pairing conditions, giving descriptive comparative signal under fixed criteria.</div>
+</details>
+
+<details class="finding">
+  <summary>Finding 3 — Detector reliability remains the primary bottleneck</summary>
+  <div class="finding-body">Because κ does not meet the preregistered threshold, findings should guide protocol development and hypothesis generation, not detector-validation claims.</div>
+</details>
+
+<p>Interpretation should remain bounded: this is a transparent baseline dataset and methodology reference, not a confirmatory detector-validity result.</p>
 
 <h2 id="collapse-criteria">How collapse is defined (locked criteria)</h2>
 <p>We do not label collapse by vibe. A turn is marked as collapsed only when both repetition and low-drift conditions are met under fixed thresholds:</p>

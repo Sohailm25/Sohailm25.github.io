@@ -15,17 +15,124 @@ figure img{max-width:100%;height:auto;border:1px solid #ddd;border-radius:6px}
 table{border-collapse:collapse;width:100%;display:block;overflow:auto;font-size:0.95rem}
 th,td{border:1px solid #ddd;padding:6px 8px;vertical-align:top}
 h2,h3{scroll-margin-top:90px}
-</style></head>
+
+
+        /* Reusable research components (Switzer-style variant) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 1.1rem 0 1.6rem;
+        }
+        @media (max-width: 720px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(211, 198, 170, 0.16);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+        .kpi-label {
+            color: var(--ef-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .kpi-value {
+            color: var(--ef-text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+        .kpi-note {
+            color: var(--ef-text-muted);
+            font-size: 0.82rem;
+            margin-top: 7px;
+        }
+
+        details.finding {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(211, 198, 170, 0.15);
+            border-radius: 12px;
+            margin: 9px 0;
+            overflow: hidden;
+        }
+        details.finding summary {
+            cursor: pointer;
+            color: var(--ef-text);
+            font-weight: 600;
+            list-style: none;
+            padding: 11px 14px;
+            line-height: 1.35;
+        }
+        details.finding summary::-webkit-details-marker { display: none; }
+        details.finding summary::before {
+            content: "▸";
+            color: var(--ef-text-muted);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        details.finding[open] summary::before { content: "▾"; }
+        .finding-body {
+            color: var(--ef-text-muted);
+            padding: 10px 14px 12px;
+            border-top: 1px solid rgba(211, 198, 170, 0.12);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+
+    </style></head>
 <body>
 <d-title><h1>Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels</h1>
 <p>Prepared for peer feedback; dataset-scoped pilot framing.</p></d-title>
 <d-byline></d-byline>
 <d-article>
-<div class="scope"><strong>Scope:</strong> Dataset-scoped findings only. No universal mechanism claims.</div><h2 id="why-this-matters">Why this matters</h2><p>Interpretability claims about RLHF and bias are often overgeneralized. This page keeps claims dataset-scoped and falsification-first, with explicit supersession when integrity fails.</p><h2 id="at-a-glance">At a glance</h2><h3>What we did</h3><p>Ran a pre-registered stage decomposition (base→SFT→DPO), enforced F1–F5 controls, and replaced invalidated Stage-2/3 outputs with true-inference BBQ corrective evidence.</p><h3>What we found</h3><p>v1.0 contradiction remains immutable; v2 resolves to R1 (artifact-supported); V3 BBQ corrective replacement provides bounded support under closure/provenance artifacts.</p><h3>What this does not show</h3><p>No universal RLHF-bias mechanism claim and no broad external-validity claim beyond tested scope.</p><h3>How to use this</h3><p>Use this as a methodological template plus dataset-scoped empirical reference; treat broader claims as future-work hypotheses.</p>
-<p><strong>Draft v0.3.2: Root style compliance pass. Sentence-case headings; em dash removal; decision-relevant captions; added Conclusion, Reproducibility statement, Acknowledgments. No new scientific claims.</strong></p>
-<p><strong>Authors:</strong> Sohail Mohammad</p>
-<p><strong>Date:</strong> 2026-02-22</p>
-<p><strong>Changelog from v0.3.1:</strong> All headings converted to sentence case per LATEX_STYLE_GUIDE.md SS3. All em dashes removed per SS10. Decision-relevant italic lines added to all figure and table captions per SS5/SS6. Reproducibility statement added per SS8 (non-negotiable). Conclusion section added per SS2. Acknowledgments section added per SS2. No claim-language changes. Full changelog: <code>results/v3/reports/PAPER_V0_3_2_ROOT_STYLE_COMPLIANCE.md</code>.</p>
+<div class="scope"><strong>Scope:</strong> Dataset-scoped findings only. No universal mechanism claims.</div><h2 id="why-this-matters">Why this matters</h2><p>Interpretability claims about RLHF and bias are often overgeneralized. This page keeps claims dataset-scoped and falsification-first, with explicit supersession when integrity fails.</p><h2 id="at-a-glance">At a glance</h2>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Original prereg verdict</div>
+    <div class="kpi-value">Contradicted</div>
+    <div class="kpi-note">F3 fired at −0.182 (95% CI [−0.205, −0.161])</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Corrective BBQ cells</div>
+    <div class="kpi-value">72 / 72</div>
+    <div class="kpi-note">18 Stage-2 + 54 Stage-3 true-inference cells</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Model families</div>
+    <div class="kpi-value">2</div>
+    <div class="kpi-note">OLMo 2 and Tulu 3 across base→SFT→DPO</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Resolution status</div>
+    <div class="kpi-value">R1</div>
+    <div class="kpi-note">artifact-supported, dataset-scoped</div>
+  </div>
+</div>
+
+<details class="finding" open>
+  <summary>Finding 1 — The original contradiction is real and preserved</summary>
+  <div class="finding-body">The v1.0 neutral-control trigger violated prereg criteria (F3), and that outcome remains immutable in the record rather than being overwritten by later analyses.</div>
+</details>
+
+<details class="finding">
+  <summary>Finding 2 — Re-adjudication supports artifact sensitivity, not universal reversal</summary>
+  <div class="finding-body">Prospective controls and BBQ corrective runs support an R1 interpretation: the original function-word neutral metric appears artifact-prone, but claims remain bounded to tested datasets and families.</div>
+</details>
+
+<details class="finding">
+  <summary>Finding 3 — Governance and provenance are part of the scientific result</summary>
+  <div class="finding-body">Invalid artifacts were explicitly replaced with true-inference closure packets, giving a transparent chain from contradiction to corrective evidence without erasing prior failure.</div>
+</details>
+
+<p>Use this study primarily as a falsification-first template for bias decomposition under strict auditability constraints.</p>
+
 
 <h2 id="abstract">Abstract</h2>
 <p>This pilot study asks whether post-training bias shifts in large language models are better explained by sharpening of pre-existing distributional associations or by non-sharpening pathways introduced during preference tuning. We tested two model families (OLMo 2 7B, Tulu 3 8B) across base, SFT, and DPO stages using a custom 400-prompt panel (three social domains plus a neutral control) and a BBQ corrective replication (72 true-inference cells). A pre-registered falsification design with five hard triggers found the sharpening-dominant hypothesis <strong>contradicted</strong>: the neutral-control check fired with effect = −0.182, 95% CI [−0.205, −0.161]. Diagnostic investigation attributed this to a token-pair measurement artifact (function-word targets "the"/"a"). A prospective re-adjudication with amended distributional controls resolved to R1 (artifact-supported), and a BBQ-scoped corrective replication provided supporting evidence for R1. The original contradiction is preserved as an immutable scientific record. All findings are scoped to the tested datasets and model families; no universal mechanism claims are made. (155 words)</p>

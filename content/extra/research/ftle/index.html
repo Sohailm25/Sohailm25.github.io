@@ -220,7 +220,9 @@
         d-citation-list * { color: var(--ef-text) !important; }
         d-citation-list a { color: var(--ef-aqua) !important; }
         d-appendix { background-color: var(--ef-bg-dim) !important; color: var(--ef-text) !important; border-top: 1px solid var(--ef-border); }
-        d-appendix * { color: var(--ef-text); }
+        d-appendix * { color: var(--ef-text) !important; }
+        d-appendix h3, d-appendix p, d-appendix li, d-appendix strong, d-appendix code { color: var(--ef-text) !important; }
+        d-appendix a { color: var(--ef-aqua) !important; }
         d-footnote-list { color: var(--ef-text) !important; }
         d-bibliography * { color: var(--ef-text) !important; }
         d-bibliography a { color: var(--ef-aqua) !important; }
@@ -624,13 +626,6 @@
     <li><strong>Single-turn measurement:</strong> λ₁ computed on first assistant turn only. Longitudinal FTLE could provide stronger evidence.</li>
 </ul>
 
-<h2 id="reproducibility">Reproducibility</h2>
-<ul>
-    <li><strong>Compute:</strong> Modal A100-80GB, float32 throughout, 7,200 FTLE calls, 0% attrition.</li>
-    <li><strong>Total cost:</strong> ~\$26 of \$620 budget cap.</li>
-    <li><strong>All artifacts frozen</strong> with SHA256 hashes across four phases (Phase 0 sanity → Phase 1 pilot → Phase 2 full-scale → Phase 3 bridge).</li>
-    <li><strong>Ops postflight:</strong> PASS.</li>
-</ul>
 <p><strong>Practical use now:</strong> treat λ₁ profile-shape features as a screening signal under matched settings. <strong>Do not use yet:</strong> as a mechanism-level or deployment-general predictor without further validation.</p>
 
 <script>
@@ -662,9 +657,19 @@
 </div><!-- .page-layout -->
 
 <d-appendix>
-</d-appendix>
+<h3>Acknowledgments</h3>
+<p>This work was conducted as an independent research study. We thank the open-source model and evaluation communities whose tooling supported this FTLE bridge program.</p>
+<h3>Reproducibility</h3>
+<p>Code, frozen artifacts, and configuration files are available at: <a href="https://github.com/Sohailm25/escape-velocity">https://github.com/Sohailm25/escape-velocity</a><br/>Direct paths: <a href="https://github.com/Sohailm25/escape-velocity/blob/main/README.md">README.md</a>, <a href="https://github.com/Sohailm25/escape-velocity/blob/main/ARTIFACT_INDEX.md">ARTIFACT_INDEX.md</a>, <a href="https://github.com/Sohailm25/escape-velocity/blob/main/REPRODUCIBILITY.md">REPRODUCIBILITY.md</a></p>
+<ul>
+    <li><strong>Compute:</strong> Modal A100-80GB, float32 throughout, 7,200 FTLE calls, 0% attrition.</li>
+    <li><strong>Total cost:</strong> ~\$26 of \$620 budget cap.</li>
+    <li><strong>All artifacts frozen</strong> with SHA256 hashes across four phases (Phase 0 sanity → Phase 1 pilot → Phase 2 full-scale → Phase 3 bridge).</li>
+    <li><strong>Ops postflight:</strong> PASS.</li>
+</ul>
 
-<d-bibliography src="bibliography.bib"></d-bibliography>
+  <d-bibliography src="bibliography.bib"></d-bibliography>
+</d-appendix>
 
 <script>
 // Override Distill shadow DOM styles for dark theme

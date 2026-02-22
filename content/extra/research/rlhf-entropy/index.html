@@ -596,7 +596,7 @@
 <h2 id="methods">Methods</h2>
 
 <h3 id="pre-registration-and-amendment-history">Pre-registration and amendment history</h3>
-<p>This study followed a multi-phase pre-registration protocol with strict immutability preservation:</p>
+<p>We ran this work in four phases. Key rule: we do not hide failed results. Later phases can add evidence, but they cannot erase what happened in earlier phases.</p>
 <table>
 <thead>
 <tr>
@@ -633,7 +633,7 @@
 </tr>
 </tbody>
 </table>
-<p>The v1.0 contradiction is preserved in all reporting phases. Versions v1.2, v2.0, and V3.0 are additive analyses that do not erase or overwrite the original outcome.</p>
+<p>Practically: v1.0 failed one rule, and that stays on the record. v1.2, v2.0, and V3.0 are follow-up analyses that add context; they are not retroactive rewrites.</p>
 
 <h4 id="notation-and-gate-terms">Notation and gate terms</h4>
 <blockquote>
@@ -649,7 +649,7 @@
 </blockquote>
 
 <h3 id="models">Models</h3>
-<p>Two open-weight model families tested at 7-8B scale:</p>
+<p>We tested two open-weight model families at roughly the same size (7-8B):</p>
 <table>
 <thead>
 <tr>
@@ -674,7 +674,7 @@
 </tr>
 </tbody>
 </table>
-<p>Model revisions were pinned at the V3 freeze boundary. Canonical family keys: <code>olmo</code>, <code>tulu3</code> only (no alias regression).</p>
+<p>To keep runs comparable, model revisions were pinned at freeze time and naming was locked to <code>olmo</code> and <code>tulu3</code>.</p>
 
 <h3 id="datasets">Datasets</h3>
 <p><strong>Pilot panel (v1.0-v2.0):</strong></p>
@@ -690,19 +690,19 @@
 </ul>
 
 <h3 id="primary-endpoints">Primary endpoints</h3>
-<p><strong>Jensen-Shannon Divergence (JSD):</strong> Between-stage distributional distance (squared metric) computed per prompt.</p>
-<p><strong>Signed Directional-Bias Metric:</strong> <code>bias_score = P(stereotyped_token) - P(counter_stereotyped_token)</code>, with positive indicating movement toward stereotyped association. Deltas computed between consecutive stages.</p>
-<p><strong>Contribution Decomposition:</strong> Percentage share of total base-to-DPO shift attributed to each stage transition, with epsilon guard (epsilon = 0.01 JSD or 0.05 bias units) for non-identifiable classifications.<label for="sn-re-004" class="sidenote-number"></label><input type="checkbox" id="sn-re-004" class="margin-toggle"/><span class="sidenote">The epsilon guard prevents spurious decomposition claims when total shift is too small: below 0.01 JSD or 0.05 bias units, share attribution is marked non-identifiable.</span></p>
+<p><strong>Jensen-Shannon Divergence (JSD):</strong> how much output distributions changed between stages for a prompt.</p>
+<p><strong>Directional bias score:</strong> <code>bias_score = P(stereotyped_token) - P(counter_stereotyped_token)</code>. Positive values mean movement toward the stereotyped association. We compare deltas stage-to-stage.</p>
+<p><strong>Contribution decomposition:</strong> we split the total base→DPO shift into stage contributions (base→SFT vs SFT→DPO). If total shift is too small, we explicitly mark the split as non-identifiable instead of over-interpreting noise.<label for="sn-re-004" class="sidenote-number"></label><input type="checkbox" id="sn-re-004" class="margin-toggle"/><span class="sidenote">The epsilon guard prevents spurious decomposition claims when total shift is too small: below 0.01 JSD or 0.05 bias units, share attribution is marked non-identifiable.</span></p>
 
 <h3 id="mechanism-operationalization">Mechanism operationalization</h3>
-<p>This section defines the quantitative signatures that distinguish the two hypothesized mechanisms and specifies the decision boundaries used for adjudication.</p>
-<p><strong>Sharpening</strong> (H1-consistent): The preference-tuning stage amplifies distributional tendencies already present in the base model. Operationally, sharpening is identified when:</p>
+<p>We used simple decision rules to separate two possibilities: (a) later training mostly amplifies existing patterns (“sharpening”), or (b) later training introduces meaningfully new bias behavior.</p>
+<p><strong>Sharpening</strong> (H1-consistent): later tuning strengthens patterns that were already present. We call it sharpening when:</p>
 <ul>
 <li>The SFT-to-DPO bias delta has the <strong>same sign</strong> as the base-to-SFT delta (directional consistency), AND</li>
 <li>The DPO stage's contribution to total base-to-DPO JSD shift does <strong>not dominate</strong> (DPO share &lt; 0.85 of total shift), AND</li>
 <li>The neutral control shows <strong>no anomalous disturbance</strong> (|entropy delta| &lt; 0.10; JSD ratio &lt; 2.0)</li>
 </ul>
-<p><strong>Non-sharpening</strong> (H2-consistent): The preference-tuning stage introduces distributional patterns not attributable to pre-existing associations. Operationally, non-sharpening is identified when:</p>
+<p><strong>Non-sharpening</strong> (H2-consistent): later tuning appears to add behavior not explained by earlier patterns. We call it non-sharpening when:</p>
 <ul>
 <li>The SFT-to-DPO bias delta <strong>reverses sign</strong> relative to base-to-SFT (directional reversal), OR</li>
 <li>The DPO stage's contribution share <strong>dominates</strong> (DPO share >= 0.85 of total shift) while the base model shows near-zero initial bias, OR</li>
@@ -757,7 +757,7 @@
 </tr>
 </tbody>
 </table>
-<p>These thresholds were pre-registered in v1.0 (F1-F5 triggers) and amended in v1.2 (distributional metrics). The epsilon guard (epsilon = 0.01 JSD, 0.05 bias units) marks decompositions as non-identifiable when total shift magnitude is too small for reliable share attribution.</p>
+<p>These thresholds were set before final adjudication and then carried forward. If total shift is too small, we label the decomposition non-identifiable rather than forcing a misleading stage split.</p>
 
 <h3 id="statistical-framework">Statistical framework</h3>
 <ul>
@@ -769,7 +769,7 @@
 </ul>
 
 <h3 id="falsification-framework">Falsification framework (F1-F5)</h3>
-<p>Five pre-registered hard triggers; any firing results in pilot FAIL:</p>
+<p>We used five hard failure checks. If any one fired, the pilot was marked as failed for that cycle:</p>
 <table>
 <thead>
 <tr>
@@ -808,7 +808,7 @@
 </table>
 
 <h3 id="confound-audit">Confound audit</h3>
-<p>Conducted prior to any mechanism claims:</p>
+<p>Before making mechanism claims, we checked common confounds:</p>
 <ul>
 <li>Template effects: R-squared = 0.001 (negligible)</li>
 <li>Length effects: r = -0.128, R-squared = 0.016 (not confounding)</li>

@@ -340,8 +340,7 @@
 <div class="page-layout">
 <aside class="toc-rail">
 <nav class="toc-container">
-    <h3 class="toc-heading">Contents</h3>
-    <ol id="toc-list"></ol>
+        <ul id="toc-list"></ul>
 </nav>
 </aside>
 
@@ -638,12 +637,6 @@ You are trading a prediction market. Think step by step.<br><br>
 <li>Multi-step reasoning with uncertainty quantification</li>
 </ul>
 
-<h2 id="links">10. Links</h2>
-
-<ul>
-<li><strong>Code:</strong> <a href="https://github.com/Sohailm25/prime-v-tinker-trader">github.com/Sohailm25/prime-v-tinker-trader</a></li>
-<li><strong>Blog post:</strong> Coming soon</li>
-</ul>
 
 <script>
 
@@ -658,7 +651,7 @@ You are trading a prediction market. Think step by step.<br><br>
         var li = document.createElement('li');
         var a = document.createElement('a');
         a.href = '#' + h2.id;
-        a.textContent = h2.textContent;
+        a.textContent = h2.textContent.replace(/^\d+\.\s*/, "");
         li.appendChild(a);
         toc.appendChild(li);
     });

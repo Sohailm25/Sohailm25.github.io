@@ -30,6 +30,7 @@ RELATIVE_URLS = True
 STATIC_PATHS = ["images", "extra", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
+    "extra/researchpagemock/index.html": {"path": "researchpagemock/index.html"},
 }
 # Map research directory to root /research/
 import os

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research Page Mock | sohailmo.ai</title>
+  <script src="https://distill.pub/template.v2.js"></script>
+
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Research Page Mock (Layout + Feature Test)",
+      "description": "Sandbox page to validate KPI cards, TL;DR box, collapsible findings, and method/impact sections before rolling to all research pages.",
+      "authors": [{"author": "Sohail Mohammad", "affiliations": [{"name": "Independent Researcher"}]}]
+    }</script>
+  </d-front-matter>
+
+  <style>
+    :root {
+      --bg: #2d353b;
+      --bg-dim: #232a2e;
+      --card: #343f44;
+      --text: #d3c6aa;
+      --muted: #9aa79f;
+      --green: #a7c080;
+      --aqua: #83c092;
+      --yellow: #dbbc7f;
+      --border: #4a555b;
+    }
+
+    html, body { background: var(--bg) !important; color: var(--text) !important; }
+    d-title, d-byline { background: var(--bg-dim); border-bottom: 1px solid var(--border); }
+    d-title h1 { color: var(--green) !important; }
+    d-title p, d-byline, d-byline * { color: var(--muted) !important; }
+    d-byline a, a { color: var(--aqua) !important; }
+
+    d-article { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    h2 { color: var(--green); border-bottom: 1px solid var(--border); padding-bottom: 0.3em; margin-top: 2em; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 1.25rem 0 1.75rem;
+    }
+
+    @media (max-width: 720px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .kpi-label { color: var(--muted); font-size: 0.9rem; margin-bottom: 4px; }
+    .kpi-value { color: var(--green); font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+    .kpi-note { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+
+    .insight-box {
+      background: rgba(131, 192, 146, 0.12);
+      border: 1px solid rgba(131, 192, 146, 0.45);
+      border-left: 4px solid var(--aqua);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .insight-box strong { color: var(--aqua); }
+
+    details.finding {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 10px 0;
+    }
+
+    details.finding summary {
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 600;
+      list-style: none;
+    }
+
+    details.finding summary::-webkit-details-marker { display: none; }
+    details.finding summary::before {
+      content: "▸ ";
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    details.finding[open] summary::before { content: "▾ "; }
+    .finding-body { color: var(--muted); margin-top: 8px; }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 720px) {
+      .split { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .panel h3 { color: var(--green); margin-top: 0; }
+  </style>
+</head>
+<body>
+  <d-article>
+    <p><em>Mock research page for testing reusable structure before rolling to all research pages.</em></p>
+
+    <h2 id="topline-metrics">Topline Metrics (4-card KPI grid)</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Samples / Runs</div>
+        <div class="kpi-value">720</div>
+        <div class="kpi-note">placeholder metric</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Primary Effect</div>
+        <div class="kpi-value">ρ = 0.62</div>
+        <div class="kpi-note">placeholder metric</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Significance</div>
+        <div class="kpi-value">p &lt; 0.01</div>
+        <div class="kpi-note">placeholder metric</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Compute Cost</div>
+        <div class="kpi-value">14.3 GPUh</div>
+        <div class="kpi-note">placeholder metric</div>
+      </div>
+    </div>
+
+    <h2 id="tldr">TL;DR Insight Box</h2>
+    <div class="insight-box">
+      <p><strong>TL;DR:</strong> This mock validates the exact interaction and content pattern we want: KPI-at-a-glance, one sharp takeaway, expandable findings, then method + impact for readers who want depth.</p>
+    </div>
+
+    <h2 id="collapsible-findings">Collapsible Findings</h2>
+    <details class="finding" open>
+      <summary>Finding 1 — Strong signal under baseline conditions</summary>
+      <div class="finding-body">Expanded detail goes here (result summary, interpretation, caveat, and link to chart/table).</div>
+    </details>
+
+    <details class="finding">
+      <summary>Finding 2 — Sensitivity to parameter sweep</summary>
+      <div class="finding-body">Expanded detail goes here (what changed, how much it changed, and why that matters).</div>
+    </details>
+
+    <details class="finding">
+      <summary>Finding 3 — Cross-model behavior diverges</summary>
+      <div class="finding-body">Expanded detail goes here (where behavior diverged and what that implies for deployment).</div>
+    </details>
+
+    <h2 id="method-impact">Method + Impact Sections</h2>
+    <div class="split">
+      <section class="panel" id="method">
+        <h3>Method</h3>
+        <p>Describe dataset, protocol, evaluation setup, and reproducibility constraints here.</p>
+      </section>
+
+      <section class="panel" id="impact">
+        <h3>Impact</h3>
+        <p>Describe practical implications, decision criteria, and how this changes what we build next.</p>
+      </section>
+    </div>
+  </d-article>
+</body>
+</html>

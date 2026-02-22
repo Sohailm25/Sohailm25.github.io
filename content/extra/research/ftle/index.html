@@ -282,62 +282,72 @@
             opacity: 1;
         }
 
-        /* Reusable research components */
+        /* Reusable research components (Switzer-style variant) */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-            margin: 1.25rem 0 1.75rem;
+            gap: 12px;
+            margin: 1.1rem 0 1.6rem;
         }
         @media (max-width: 720px) {
             .kpi-grid { grid-template-columns: 1fr; }
         }
         .kpi-card {
-            background: var(--ef-bg-card);
-            border: 1px solid var(--ef-border);
-            border-radius: 10px;
-            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(211, 198, 170, 0.16);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
         }
         .kpi-label {
             color: var(--ef-text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 4px;
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
         .kpi-value {
-            color: var(--ef-green);
-            font-size: 1.6rem;
+            color: var(--ef-text);
+            font-size: 1.5rem;
             font-weight: 700;
-            line-height: 1.2;
+            line-height: 1.15;
         }
         .kpi-note {
             color: var(--ef-text-muted);
-            font-size: 0.9rem;
-            margin-top: 6px;
+            font-size: 0.82rem;
+            margin-top: 7px;
         }
 
         details.finding {
-            background: var(--ef-bg-card);
-            border: 1px solid var(--ef-border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(211, 198, 170, 0.15);
+            border-radius: 12px;
+            margin: 9px 0;
+            overflow: hidden;
         }
         details.finding summary {
             cursor: pointer;
             color: var(--ef-text);
             font-weight: 600;
             list-style: none;
+            padding: 11px 14px;
+            line-height: 1.35;
         }
         details.finding summary::-webkit-details-marker { display: none; }
         details.finding summary::before {
-            content: "▸ ";
-            color: var(--ef-yellow);
+            content: "▸";
+            color: var(--ef-text-muted);
             font-weight: 700;
+            margin-right: 8px;
         }
-        details.finding[open] summary::before { content: "▾ "; }
+        details.finding[open] summary::before { content: "▾"; }
         .finding-body {
             color: var(--ef-text-muted);
-            margin-top: 8px;
+            padding: 10px 14px 12px;
+            border-top: 1px solid rgba(211, 198, 170, 0.12);
+            background: rgba(255, 255, 255, 0.01);
+            margin-top: 0;
+            line-height: 1.5;
         }
 
         /* === Tufte-style sidenotes + sticky left TOC === */

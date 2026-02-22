@@ -33,6 +33,16 @@ Activation steering modifies language model behavior by adding learned direction
 
 [Paper (PDF)]({static}/papers/activation-steering-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
 
+
+### [Pilot study: Distributional bias shifts across preference-tuning stages](/research/rlhf-entropy/)
+**Dataset-scoped pre-registered pilot with bounded empirical claims**
+
+Sohail Mohammad · Draft, 2026
+
+Pre-registered pilot decomposing bias-shift contributions across base, SFT, and preference tuning stages, with falsification-first controls and corrective replacement provenance. Findings are explicitly dataset-scoped: v1.0 contradiction remains immutable, while v2/v3 provide bounded artifact-supported interpretation under BBQ corrective closure. No universal mechanism claims are made.
+
+[Paper (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/clawd-experiments)
+
 ## Experiments
 
 ### [Teaching an LLM to Trade Prediction Markets](/research/prediction-market-trader/)

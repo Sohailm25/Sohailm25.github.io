@@ -1,1 +1,77 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RLHF Entropy Pilot (Draft Preview)</title><script src="https://distill.pub/template.v2.js"></script><d-front-matter><script type="text/json">{"title":"Dataset-scoped pre-registered pilot on RLHF preference tuning and bias shifts","description":"Live paper page","authors":[{"author":"Sohail Mohammad","affiliations":[{"name":"Independent Researcher"}]}]}</script></d-front-matter><style>.banner{background:#fff3cd;border:1px solid #ffe69c;padding:12px 14px;border-radius:8px;margin:16px 0}</style></head><body><d-title><h1>Dataset-scoped pre-registered pilot on RLHF preference tuning and bias shifts</h1><p>Prepared for peer feedback; not final claim expansion.</p></d-title><d-byline></d-byline><d-article><h2 id="preview">Preview</h2><p>This paper is now live. Please share requested edits for the v0.3.3 changelog.</p><p>Manuscript draft markdown gist: <a href="https://gist.github.com/Sohailm25/3c322a3a0dd07967e936bb91fabac069">link</a>.</p><h2 id="scope">Scope notice</h2><p>Dataset-scoped pilot framing only. No universal mechanism claims.</p></d-article></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pilot study: Distributional bias shifts across preference-tuning stages</title>
+  <script src="https://distill.pub/template.v2.js"></script>
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels",
+      "description": "Dataset-scoped pre-registered pilot with methodological focus and bounded empirical findings",
+      "authors": [{"author":"Sohail Mohammad","affiliations":[{"name":"Independent Researcher"}]}]
+    }</script>
+  </d-front-matter>
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, sans-serif; }
+    figure img{max-width:100%;height:auto;border:1px solid #ddd;border-radius:6px}
+    .scope {background:#f8f9fa;border-left:4px solid #6c757d;padding:10px 12px;margin:14px 0}
+  </style>
+</head>
+<body>
+  <d-title>
+    <h1>Pilot study: Distributional bias shifts across preference-tuning stages on BBQ and custom prompt panels</h1>
+    <p>Prepared for peer feedback; dataset-scoped pilot framing.</p>
+  </d-title>
+  <d-byline></d-byline>
+  <d-article>
+    <div class="scope"><strong>Scope:</strong> Dataset-scoped pilot findings only. No universal mechanism claims.</div>
+
+    <h2 id="abstract">Abstract</h2>
+    <p>This pilot study asks whether post-training bias shifts in large language models are better explained by sharpening of pre-existing distributional associations or by non-sharpening pathways introduced during preference tuning. We tested two model families (OLMo 2 7B, Tulu 3 8B) across base, SFT, and DPO stages using a custom 400-prompt panel and a BBQ corrective replication. A pre-registered falsification design found the sharpening-dominant hypothesis contradicted in v1.0, with subsequent diagnostics attributing the neutral-control failure to a token-pair measurement artifact. Prospective re-adjudication resolved to R1 (artifact-supported), and BBQ-scoped corrective replacement provided bounded support under true-inference provenance. The original contradiction is preserved as immutable record. Findings remain dataset-scoped and do not establish a universal mechanism.</p>
+
+    <h2 id="why-this-matters">Why this matters</h2>
+    <p>RLHF and preference tuning are widely deployed, but claims about how they affect bias are often overgeneralized. This report emphasizes claim-discipline: falsification-first gates, explicit invalidation/supersession, and provenance-linked corrective evidence.</p>
+
+    <h2 id="at-a-glance">At a glance</h2>
+    <h3>What we did</h3>
+    <p>Ran a pre-registered stage-wise decomposition (base→SFT and SFT→DPO), applied F1–F5 falsification controls, and executed BBQ corrective reruns under Modal true-inference provenance.</p>
+    <h3>What we found</h3>
+    <p>v1.0 remained contradicted (immutable). v2 resolved to R1 (artifact-supported). V3 corrective replacement completed for BBQ scope with full closure/provenance evidence.</p>
+    <h3>What this does not show</h3>
+    <p>This does not establish a universal RLHF-bias mechanism or broad external validity across datasets/settings.</p>
+    <h3>How to use this</h3>
+    <p>Use as a methodological template and bounded empirical reference; treat conclusions as dataset-scoped pilot evidence.</p>
+
+    <h2 id="methods">Methods</h2>
+    <p>Pre-registered multi-phase protocol (v1.0 → v1.2 additive → v2 prospective re-adjudication → V3 BBQ corrective replacement). Models: OLMo 2 7B and Tulu 3 8B. Controls: F1–F5 plus confound audit and independent Control B.</p>
+
+    <h2 id="results">Results</h2>
+    <p>Historical sequence: v1.0 contradiction preserved; v2 R1 (artifact-supported); V3 BBQ corrective replacement reached full closure for Stage-2 (18/18) and Stage-3 (54/54) under replacement evidence artifacts.</p>
+
+    <figure>
+      <img src="figures/figure1_stage_distributions.svg" alt="Stage-wise bias distributions by family and domain" />
+      <figcaption><strong>Figure 1.</strong> Stage-wise bias distributions by family and domain.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="figures/figure2_decomposition.svg" alt="JSD decomposition across stages" />
+      <figcaption><strong>Figure 2.</strong> JSD decomposition across stages.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="figures/figure3_neutral_artifact.svg" alt="Neutral-control token-pair artifact visualization" />
+      <figcaption><strong>Figure 3.</strong> Neutral-control artifact visualization for token-pair metric behavior.</figcaption>
+    </figure>
+
+    <h2 id="decision-relevance">Decision relevance</h2>
+    <p><strong>Shows:</strong> strong methodological integrity and bounded BBQ-scoped corrective evidence. <strong>Does not show:</strong> universal mechanism claims.</p>
+
+    <h2 id="limitations">Limitations</h2>
+    <p>Pilot scope, token-level measurement limits, and external validity constraints remain explicit. Broader generalization requires prospective V4 evidence.</p>
+
+    <h2 id="references">References</h2>
+    <p>See manuscript package references and artifact index in experiment repository; this page is a distilled presentation of the same bounded claims.</p>
+  </d-article>
+</body>
+</html>

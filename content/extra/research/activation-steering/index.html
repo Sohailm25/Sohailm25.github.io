@@ -536,13 +536,13 @@
 </details>
 
 <details class="finding">
-  <summary>Finding 2 — Architecture can gate success more than parameter count</summary>
-  <div class="finding-body">At the 7B class, Qwen steers coherently while Mistral degenerates into garbling, indicating architecture-level implementation differences dominate simple size-matching expectations.</div>
+  <summary>Finding 2 — In this setup, architecture effects can outweigh parameter-count matching</summary>
+  <div class="finding-body">At the 7B class under this protocol, Qwen steers coherently while the tested Mistral variant garbles, indicating that architecture-level differences can outweigh simple size-matching expectations in this dataset.</div>
 </details>
 
 <details class="finding">
   <summary>Finding 3 — Reproducibility hinges on extraction implementation details</summary>
-  <div class="finding-body">Direction extraction method and tooling are first-order variables: simple DIM matches or beats COSMIC here, and extraction backend choice alone can shift outcomes by ~90 percentage points.</div>
+  <div class="finding-body">Direction extraction method and tooling are first-order variables in these runs: simple DIM matches or beats COSMIC here, and extraction backend choice alone shifts outcomes by ~90 percentage points on the tested model.</div>
 </details>
 
 <p>Practical takeaway: validate per architecture, prefer simple DIM + robust tracing, and treat high-scale single-direction steering as fragile until replicated.</p>

@@ -308,7 +308,7 @@
 
 <h2 id="abstract">Abstract</h2>
 
-<p>We trained language models to trade binary prediction markets using reinforcement learning. Initial attempts with standard PPO led to severe action collapse: agents converged to never holding positions (0% HOLD rate by batch 30), producing degenerate policies despite reasonable profit. Adding chain-of-thought (CoT) reasoning before action selection completely solved this collapse: CoT agents maintained 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for always-buy-no baseline). This suggests that in low-cardinality action spaces where multiple actions can yield similar rewards, explicit reasoning steps prevent premature convergence by maintaining exploration of the strategic landscape.</p>
+<p>We trained language models to trade binary prediction markets using reinforcement learning. Initial attempts with standard PPO led to severe action collapse: agents converged to never holding positions (0% HOLD rate by batch 30), producing degenerate policies despite reasonable profit. Adding chain-of-thought (CoT) reasoning before action selection eliminated the observed collapse in this training setup: CoT agents maintained 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for always-buy-no baseline). This is consistent with the idea that in low-cardinality action spaces where multiple actions can yield similar rewards, explicit reasoning steps can reduce premature convergence by maintaining exploration of the strategic landscape.</p>
 
 
 <h2 id="at-a-glance">At a glance</h2>
@@ -337,8 +337,8 @@
 </div>
 
 <details class="finding" open>
-  <summary>Finding 1 — CoT fixes the core optimization pathology</summary>
-  <div class="finding-body">Standard PPO converges to action-collapse in this 3-action space, while requiring reasoning tokens preserves HOLD behavior and sustained policy diversity throughout training.</div>
+  <summary>Finding 1 — In this setup, CoT removed the observed collapse pattern</summary>
+  <div class="finding-body">In this 3-action setup, standard PPO converges to action-collapse, while requiring reasoning tokens preserves HOLD behavior and higher policy diversity throughout training.</div>
 </details>
 
 <details class="finding">
@@ -351,7 +351,7 @@
   <div class="finding-body">Shaped rewards alone did not prevent collapse, suggesting that explicit deliberation can provide missing credit-assignment structure where delayed rewards under-inform HOLD.</div>
 </details>
 
-<p>This points to a reusable design heuristic: in low-cardinality RL with sparse delayed payoffs, insert explicit reasoning before action selection.</p>
+<p>This supports a testable design heuristic: in low-cardinality RL with sparse delayed payoffs, evaluate explicit reasoning before action selection as one anti-collapse intervention.</p>
 
 <h2 id="introduction">1. Introduction</h2>
 
@@ -431,7 +431,7 @@ You are trading a prediction market. Think step by step.<br><br>
 <strong>Action:</strong> [BUY_YES | BUY_NO | HOLD]
 </div>
 
-<p>The model must generate reasoning tokens before selecting an action. This simple change completely prevented collapse:</p>
+<p>The model must generate reasoning tokens before selecting an action. In our runs, this change prevented the observed collapse pattern:</p>
 
 <ul>
 <li>HOLD rate: 15-30% throughout training (vs 0% for non-CoT)</li>

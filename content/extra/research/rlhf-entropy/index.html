@@ -1580,6 +1580,18 @@ document.addEventListener('DOMContentLoaded', function() {
 </html>
 
 <style>
+
+        /* Blockquote/readability parity */
+        blockquote {
+            background: var(--ef-bg-card) !important;
+            border-left: 4px solid var(--ef-blue) !important;
+            color: var(--ef-text) !important;
+            padding: 0.8rem 1rem !important;
+        }
+        blockquote p, blockquote li, blockquote strong, blockquote em, blockquote code {
+            color: var(--ef-text) !important;
+        }
+
         /* Appendix color parity */
         d-appendix {
             background: var(--ef-bg-dim) !important;

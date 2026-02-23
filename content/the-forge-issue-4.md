@@ -7,8 +7,6 @@ Summary: Agent workflows are moving from demos to operating discipline, infrastr
 
 # The Forge #4 | February 23, 2026
 
-this revision is based on a fresh scrape of both feed + curated channels.
-
 the clean signal this week is straightforward:
 
 1) agent workflows are now about operating discipline, not prompt novelty

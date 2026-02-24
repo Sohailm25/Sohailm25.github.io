@@ -1,4 +1,4 @@
-Title: The Responsibility Is the Reward
+Title: Why Responsibility Feels Like a Reward
 Date: 2026-02-24 07:06
 Category: Thoughts
 Slug: the-responsibility-is-the-reward

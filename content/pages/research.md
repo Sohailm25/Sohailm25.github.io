@@ -2,14 +2,6 @@ Title: Research
 Slug: research
 Template: page
 
-<div class="category-tabs" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
-  <button class="category-tab active" data-category="all" onclick="filterResearchCategory('all')">All</button>
-  <button class="category-tab" data-category="papers" onclick="filterResearchCategory('papers')">Papers</button>
-  <button class="category-tab" data-category="pilots" onclick="filterResearchCategory('pilots')">Pilots</button>
-  <button class="category-tab" data-category="experiments" onclick="filterResearchCategory('experiments')">Experiments</button>
-  <button class="category-tab" data-category="failures" onclick="filterResearchCategory('failures')">Failures</button>
-</div>
-
 ## Papers
 
 ### [Depth-Dynamics Signatures of Conversational Collapse](/research/ftle/)
@@ -17,8 +9,7 @@ Template: page
 
 Sohail Mohammad · Preprint, 2026
 
-This asks whether we can spot early warning signs of conversational breakdown by looking inside model layer dynamics.
-If these signals hold up, they could help us diagnose unstable model behavior before it shows up in user-facing conversations.
+We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics via JVP tangent propagation and test whether depth-dynamics summaries are associated with conversational collapse behavior observed in multi-turn self-play. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, λ₁ profile features (depth-profile slope, ρ = −0.536; layerwise variance, ρ = +0.511) show medium-to-large predictive associations with collapse metrics from Escape Velocity. Mean λ₁ alone is insufficient. We interpret this as conditional correlational support under preregistered thresholds—no causal or mechanistic identity is claimed. Escape Velocity collapse labels carry a reliability caveat (κ = 0.566, threshold 0.80 not met).
 
 [Paper (PDF)]({static}/papers/ftle-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
 
@@ -27,8 +18,7 @@ If these signals hold up, they could help us diagnose unstable model behavior be
 
 Sohail Mohammad · Preprint, 2026
 
-This baseline study asks a simple question: when LLMs talk over many turns, which setups stay coherent and which ones collapse into repetition?
-The goal is to map the failure landscape clearly so future research can build better conversation stability tests and safeguards.
+Preregistered baseline study across four interaction conditions (Llama-3.1-8B self-play, Qwen2.5-7B self-play, Mistral-7B-v0.3 self-play, and heterogeneous round-robin rotation) with full confirmatory baseline closure (720/720 tuples). Under fixed protocol settings, collapse rates were strongly condition-dependent, with Qwen-homogeneous highest and Mistral-homogeneous lowest. Because the preregistered detector reliability gate was not met (κ=0.566 vs 0.80 threshold), conclusions are intentionally limited to descriptive and condition-comparative findings.
 
 *Path B disclosure:* Detector reliability prereg gate was **not met**; no detector-validation claim is made.
 
@@ -39,11 +29,30 @@ The goal is to map the failure landscape clearly so future research can build be
 
 Sohail Mohammad · Preprint, 2026
 
-This tests how reliably we can nudge model refusal behavior using activation steering across different model sizes and families.
-The purpose is to understand where steering is practical versus brittle, so safety and control methods are used with realistic expectations.
+Activation steering modifies language model behavior by adding learned direction vectors at inference time. We systematically evaluate two extraction methods across seven models (2B–32B parameters) and find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B. Simple mean-difference extraction matches or exceeds complex SVD-based methods at every scale tested, while architecture acts as a binary gate on steerability. Phase-2 transfer experiments show that within the tested same-family pair (Qwen 14B↔32B), extracted directions transfer with efficiency ≥ 1.0, while cross-family transfer (Qwen 7B↔Gemma 9B) collapses to near-zero despite matched hidden dimensionality.
 
 [Paper (PDF)]({static}/papers/activation-steering-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
 
+
+### [Pilot study: Distributional bias shifts across preference-tuning stages](/research/rlhf-entropy/)
+**Dataset-scoped pre-registered pilot with bounded empirical claims**
+
+Sohail Mohammad · Draft, 2026
+
+Pre-registered pilot decomposing bias-shift contributions across base, SFT, and preference tuning stages, with falsification-first controls and corrective replacement provenance. Findings are explicitly dataset-scoped: v1.0 contradiction remains immutable, while v2/v3 provide bounded artifact-supported interpretation under BBQ corrective closure. No universal mechanism claims are made.
+
+[Paper (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/rlhf-entropy-pilot)
+
+## Failures
+
+### [B6 Negative Result: Decision-Valid Pipeline, Blocked Mechanistic Path](/research/failures/b6-negative-result/)
+**High-quality negative result with strict claim boundaries**
+
+Sohail Mohammad · February 2026
+
+We established a decision-valid behavior pipeline for SAS vs DIM under strict governance, but failed reconstruction unlock for mechanism-level interpretation. A bounded remediation path (Option 2) was preregistered and then terminated via K2 after auth-resolved definitive candidate checks found no required tuple coverage. This branch is closed for now under a limitation lock, with explicit reopen conditions.
+
+[Plain-language writeup](/research/failures/b6-negative-result/)
 
 ## Experiments
 
@@ -52,80 +61,6 @@ The purpose is to understand where steering is practical versus brittle, so safe
 
 Sohail Mohammad · February 2025
 
-This experiment explores why RL agents in trading settings often overfit to one repetitive action even when returns look fine.
-It shows that adding reasoning steps can preserve better decision diversity, which matters for robustness in real sequential decision tasks.
+Language models trained with standard PPO on prediction market trading collapse to degenerate policies (0% HOLD rate) despite achieving positive returns. Adding chain-of-thought reasoning before action selection completely prevents this collapse: CoT agents maintain 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for simple baselines).
 
 [Write-up](/research/prediction-market-trader/) · [Code (GitHub)](https://github.com/Sohailm25/prime-v-tinker-trader)
-
-
-## Pilots
-
-### [Pilot study: Distributional bias shifts across preference-tuning stages](/research/rlhf-entropy/)
-**Dataset-scoped pre-registered pilot with bounded empirical claims**
-
-Sohail Mohammad · Draft, 2026
-
-This pilot examines how model bias signals shift from base training to instruction tuning and preference tuning.
-The aim is to separate real behavior changes from measurement artifacts so conclusions about alignment effects are more trustworthy.
-
-[Pilot (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/rlhf-entropy-pilot)
-
-## Failures
-
-This section is for dead ends, null results, and failed hypotheses that still teach something important.
-Publishing failures makes the research process more honest and helps others avoid repeating the same mistakes.
-
-<style>
-.category-tab {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  transition: all 0.2s ease;
-}
-
-.category-tab:hover {
-  color: var(--text-primary);
-  border-color: var(--accent-color);
-}
-
-.category-tab.active {
-  background: var(--accent-color);
-  color: var(--bg-primary);
-  border-color: var(--accent-color);
-}
-</style>
-
-<script>
-function filterResearchCategory(category) {
-  document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-  const activeTab = document.querySelector(`[data-category="${category}"]`);
-  if (activeTab) activeTab.classList.add('active');
-
-  const h2s = Array.from(document.querySelectorAll('h2'));
-  const findSection = (name) => h2s.find(h => h.textContent.trim().toLowerCase() === name);
-
-  const sections = {
-    papers: findSection('papers'),
-    experiments: findSection('experiments'),
-    failures: findSection('failures'),
-    pilots: findSection('pilots')
-  };
-
-  Object.entries(sections).forEach(([key, heading]) => {
-    if (!heading) return;
-
-    let node = heading;
-    const visible = category === 'all' || category === key;
-    while (node) {
-      node.style.display = visible ? '' : 'none';
-      node = node.nextElementSibling;
-      if (node && node.tagName === 'H2') break;
-    }
-  });
-}
-</script>

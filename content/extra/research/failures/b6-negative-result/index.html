@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B6 Negative Result: Decision-Valid Pipeline, Blocked Mechanistic Path</title>
+  <script src="https://distill.pub/template.v2.js"></script>
+  <d-front-matter>
+    <script type="text/json">{
+      "title": "B6 Negative Result: Decision-Valid Pipeline, Blocked Mechanistic Path",
+      "description": "A high-quality negative result: behavior-level decision validity passed, mechanistic pathway blocked under strict gates.",
+      "subtitle": "Decision-valid behavior control with explicit claim boundaries and transparent K2 termination",
+      "authors": [{"author":"Sohail Mohammad","affiliations":[{"name":"Independent Researcher"}]}],
+      "date": "2026-02-25",
+      "status": "Closed for now (limitation lock)",
+      "katex": {"delimiters":[{"left":"$","right":"$","display":false}]}
+    }</script>
+  </d-front-matter>
+  <style>
+    :root { --fg:#1f2937; --muted:#4b5563; --line:#d1d5db; --ok:#2f855a; --warn:#b45309; --bad:#b91c1c; }
+    d-article { max-width: 880px; }
+    h2 { border-bottom: 1px solid var(--line); padding-bottom: .25rem; }
+    .box { border:1px solid var(--line); border-left:4px solid #2563eb; background:#f8fafc; padding:1rem; margin:1rem 0; }
+    .integrity { border-left-color: #7c3aed; }
+    .claim { border-left-color: #059669; }
+    .cant { border-left-color: #dc2626; }
+    .mode { font-weight: 600; }
+    figure img { width:100%; border:1px solid var(--line); border-radius:6px; }
+    figcaption { color: var(--muted); font-size: .95rem; }
+    ul.tight li { margin: .3rem 0; }
+    code { background:#f3f4f6; padding:2px 5px; border-radius:4px; }
+  </style>
+</head>
+<body>
+<d-article>
+  <d-title>
+    <h1>B6 Negative Result: Decision-Valid Pipeline, Blocked Mechanistic Path</h1>
+    <p>Plain-language, audit-ready closeout for the Failures tab.</p>
+  </d-title>
+
+  <h2 id="reader-modes">Reader modes</h2>
+  <p><span class="mode">2-minute summary:</span> Read Executive Summary + Claims Envelope + Final State.</p>
+  <p><span class="mode">Full technical timeline:</span> Read Method + Results + Termination Logic + Artifact Appendix.</p>
+  <p><span class="mode">What others should copy:</span> Read Validity Ladder + Practical Checklist + Integrity Box.</p>
+
+  <h2 id="if-you-read-one-page">If you only read one page, read this</h2>
+  <div class="box">
+    We built a reliable behavior-level decision pipeline. We could trust output-level decisions after scoring and gate fixes. But we could not prove internal explanation quality was strong enough for mechanistic claims. A bounded remediation attempt then stopped under K2 because required candidate paths did not exist (A=0/4, B=0/4). Final state: limitation lock, no phase movement, conditional hold.
+  </div>
+
+  <h2 id="research-question">Research question and why it matters</h2>
+  <h3 id="goal-split">Goal split</h3>
+  <p>We intentionally split two goals: (1) behavior-level decision validity and (2) mechanism-level specificity. This avoids overclaiming when output control works but internal evidence is still weak.<d-footnote>See canonical claim envelope and end-state artifacts for enforced claim boundaries.</d-footnote></p>
+
+  <h3 id="community-value">Community value</h3>
+  <p>This case shows a stricter standard beyond necessary/sufficient tests: include leakage risk, alternative-cause checks, and hard stop rules before mechanism claims.</p>
+
+  <h2 id="practical-validity-ladder">Beyond necessary and sufficient: practical validity ladder</h2>
+  <ol class="tight">
+    <li><strong>Behavioral effect:</strong> Did the intervention move behavior?</li>
+    <li><strong>Decision validity:</strong> Are measurements trustworthy and reproducible?</li>
+    <li><strong>Selectivity/leakage checks:</strong> Did unrelated behavior move too?</li>
+    <li><strong>Alternative-cause checks (X′):</strong> Could another factor explain the result?</li>
+    <li><strong>Mechanistic specificity:</strong> Can internal explanation quality clear gates?</li>
+  </ol>
+  <p><strong>Current phase position:</strong> Level 2 achieved robustly; Level 3 partially addressed; blocked before Level 5 due to reconstruction failure and K2 termination.</p>
+
+  <figure id="fig-validity-ladder">
+    <img src="/images/research/failures/validity_ladder_position_v1.png" alt="Validity ladder chart">
+    <figcaption><strong>Figure:</strong> Validity ladder with current position highlighted. <em>Takeaway:</em> We are decision-valid, not mechanism-valid, in this phase.<d-footnote>Source: <code>B6_claim_ledger_observed_inferred_opinion.json</code> and writeup v2 ladder section.</d-footnote></figcaption>
+  </figure>
+
+  <h2 id="what-passed">What passed</h2>
+  <ul class="tight">
+    <li>Decision-valid behavior pipeline under v2 scoring.</li>
+    <li>Comparator semantics corrected (branch agreement, not score equality).</li>
+    <li>Full required stability coverage completed under governance lock.</li>
+  </ul>
+
+  <figure id="fig-decision-pass">
+    <img src="/images/research/failures/decision_validity_pass_summary_v2.png" alt="Decision validity pass chart">
+    <figcaption><strong>Figure:</strong> Decision-validity gate outcomes. <em>Takeaway:</em> Behavior-level decision gates passed under fixed thresholds.<d-footnote>Metrics from <code>B6_metric_comparator_v1_vs_v2.json</code> and associated gate artifacts.</d-footnote></figcaption>
+  </figure>
+
+  <h2 id="what-failed">What failed</h2>
+  <p>Reconstruction unlock failed across required tuples due to systematic nMSE deficits under fixed preregistered thresholds.</p>
+
+  <figure id="fig-recon-fail">
+    <img src="/images/research/failures/reconstruction_unlock_nmse_failure_v1.png" alt="Reconstruction failure chart">
+    <figcaption><strong>Figure:</strong> Per-tuple nMSE vs threshold. <em>Takeaway:</em> Internal explanation quality did not clear unlock gates.<d-footnote>Source: <code>B6_reconstruction_unlock_result.json</code>.</d-footnote></figcaption>
+  </figure>
+
+  <h3 id="option2-termination">Option 2 termination</h3>
+  <p>Option 2 was preregistered and bounded. It ended under K2 after definitive Stage 0 checks showed no candidate coverage.</p>
+  <figure id="fig-k2">
+    <img src="/images/research/failures/option2_k2_termination_diagram_v1.png" alt="K2 termination chart">
+    <figcaption><strong>Figure:</strong> K2 termination path. <em>Takeaway:</em> This is a candidate-availability failure, not a budget/scheduling failure.<d-footnote>Source: <code>B6_remediation_stage0_availability.json</code> and <code>B6_remediation_termination_v2.json</code>.</d-footnote></figcaption>
+  </figure>
+
+  <h2 id="claims-envelope">Claims envelope (footnote-backed)</h2>
+  <div class="box claim">
+    <strong>Allowed claims:</strong>
+    <ul class="tight">
+      <li>Decision-valid behavior pipeline under current governance.</li>
+      <li>Corrected branch-agreement stability under hold policy.</li>
+      <li>Reconstruction unlock failed for the current stack.</li>
+      <li>Option 2 terminated via K2 after auth-resolved definitive checks.</li>
+    </ul>
+  </div>
+  <div class="box cant">
+    <strong>Disallowed claims:</strong>
+    <ul class="tight">
+      <li>Mechanistic-specific or causal mechanism claims for this phase.</li>
+      <li>Unconstrained branch robustness claims.</li>
+      <li>Phase-advance claims based on reconstruction success.</li>
+    </ul>
+  </div>
+  <p>Canonical references:<d-footnote><code>B6_end_state_canonical.json</code> (branch status + governance)</d-footnote><d-footnote><code>B6_remediation_termination_v2.json</code> (formal K2 termination)</d-footnote><d-footnote><code>B6_claim_envelope_final.json</code> (allowed/disallowed claims)</d-footnote><d-footnote><code>B6_reconstruction_unlock_result.json</code> and <code>B6_branch_stability_result.json</code> (key metrics)</d-footnote></p>
+
+  <h2 id="scientific-integrity">Scientific integrity box</h2>
+  <div class="box integrity">
+    <strong>This is a negative result with preserved value.</strong>
+    <p>It contributes a reusable framework: strict prereg gates, anti-overclaim governance, explicit stop rules, and transparent closeout.</p>
+  </div>
+
+  <h2 id="final-state">Final state and reopen condition</h2>
+  <ul class="tight">
+    <li><code>active_path: limitation_lock_for_current_phase</code></li>
+    <li><code>phase_movement_authorized: false</code></li>
+    <li><code>decision_state: conditional_hold</code></li>
+  </ul>
+  <p><strong>Reopen condition:</strong> only if new SAE releases provide required tuple coverage.</p>
+
+  <d-appendix>
+    <h3>Artifacts and footer notes</h3>
+    <p>Canonical end-state: <code>B6_end_state_canonical.json</code> · Termination: <code>B6_remediation_termination_v2.json</code> · Claim envelope: <code>B6_claim_envelope_final.json</code>.</p>
+    <p>License/usage note: cite as a negative-result methodology case study; do not expand claim scope beyond the claim envelope.</p>
+  </d-appendix>
+</d-article>
+</body>
+</html>

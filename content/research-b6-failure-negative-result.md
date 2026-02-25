@@ -5,6 +5,17 @@ Category: Research
 Tags: research, failures, activation-steering, governance
 Summary: We built a reliable behavior-level decision pipeline, but we could not prove internal explanation quality was good enough for mechanism-level claims.
 
+## Purpose in one sentence
+We used SAEs to see if we could steer refusal behavior through sparse internal features and still keep claims scientifically honest.
+
+## Original hypothesis
+We believed SAE features could provide a sparse, interpretable control handle for refusal behavior.
+
+Hypothesis: SAS (using SAE features) could match or improve behavioral control vs DIM, and also support stronger mechanistic interpretation **if** reconstruction quality passed the gate.
+
+## Why SAEs were central in this experiment
+SAEs are a tool that breaks model activations into sparse features. We used them for three concrete jobs: identify candidate refusal-related features, intervene on those features with SAS to steer outputs, and then test whether reconstruction quality was strong enough to justify mechanism-level claims. The key outcome is that the reconstruction gate failed, so we cannot claim SAEs provided mechanistic specificity in this phase.
+
 ## What we were trying to do
 We were trying to do two things at the same time:
 
@@ -14,13 +25,13 @@ We were trying to do two things at the same time:
 In simple terms: we wanted control that works, and evidence strong enough to explain *why* it works.
 
 ## What the actual experiment was
-We ran a fixed pipeline in this order:
+We ran a fixed SAE-centered pipeline in this order:
 
-1. Run model outputs on the locked evaluation setup.
-2. Score outputs with a locked generation metric (after fixing scorer issues).
-3. Test stability across seeds and paraphrases.
-4. Test reconstruction unlock to see if internal explanation quality clears the gate.
-5. If unlock fails, run a bounded remediation attempt with hard stop rules.
+1. Run model outputs on the locked evaluation setup to collect behavior and activation traces.
+2. Use SAE features to define SAS interventions, then score outputs with a locked generation metric (after scorer fixes).
+3. Test stability of the SAE-based intervention pipeline across seeds and paraphrases.
+4. Test SAE reconstruction unlock to see if internal explanation quality clears the gate.
+5. If unlock fails, run a bounded remediation attempt for alternative SAE candidates with hard stop rules.
 
 That means this was not one single test. It was a gated process where each step had to pass before stronger claims were allowed.
 

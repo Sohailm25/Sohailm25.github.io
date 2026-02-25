@@ -5,9 +5,9 @@ Template: page
 <div class="category-tabs" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
   <button class="category-tab active" data-category="all" onclick="filterResearchCategory('all')">All</button>
   <button class="category-tab" data-category="papers" onclick="filterResearchCategory('papers')">Papers</button>
+  <button class="category-tab" data-category="pilots" onclick="filterResearchCategory('pilots')">Pilots</button>
   <button class="category-tab" data-category="experiments" onclick="filterResearchCategory('experiments')">Experiments</button>
   <button class="category-tab" data-category="failures" onclick="filterResearchCategory('failures')">Failures</button>
-  <button class="category-tab" data-category="pilots" onclick="filterResearchCategory('pilots')">Pilots</button>
 </div>
 
 ## Papers

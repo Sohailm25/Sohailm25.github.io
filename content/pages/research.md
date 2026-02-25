@@ -7,6 +7,7 @@ Template: page
   <button class="category-tab" data-category="papers" onclick="filterResearchCategory('papers')">Papers</button>
   <button class="category-tab" data-category="experiments" onclick="filterResearchCategory('experiments')">Experiments</button>
   <button class="category-tab" data-category="failures" onclick="filterResearchCategory('failures')">Failures</button>
+  <button class="category-tab" data-category="pilots" onclick="filterResearchCategory('pilots')">Pilots</button>
 </div>
 
 ## Papers
@@ -41,15 +42,6 @@ Activation steering modifies language model behavior by adding learned direction
 [Paper (PDF)]({static}/papers/activation-steering-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
 
 
-### [Pilot study: Distributional bias shifts across preference-tuning stages](/research/rlhf-entropy/)
-**Dataset-scoped pre-registered pilot with bounded empirical claims**
-
-Sohail Mohammad · Draft, 2026
-
-Pre-registered pilot decomposing bias-shift contributions across base, SFT, and preference tuning stages, with falsification-first controls and corrective replacement provenance. Findings are explicitly dataset-scoped: v1.0 contradiction remains immutable, while v2/v3 provide bounded artifact-supported interpretation under BBQ corrective closure. No universal mechanism claims are made.
-
-[Paper (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/rlhf-entropy-pilot)
-
 ## Experiments
 
 ### [Teaching an LLM to Trade Prediction Markets](/research/prediction-market-trader/)
@@ -60,6 +52,18 @@ Sohail Mohammad · February 2025
 Language models trained with standard PPO on prediction market trading collapse to degenerate policies (0% HOLD rate) despite achieving positive returns. Adding chain-of-thought reasoning before action selection completely prevents this collapse: CoT agents maintain 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for simple baselines).
 
 [Write-up](/research/prediction-market-trader/) · [Code (GitHub)](https://github.com/Sohailm25/prime-v-tinker-trader)
+
+
+## Pilots
+
+### [Pilot study: Distributional bias shifts across preference-tuning stages](/research/rlhf-entropy/)
+**Dataset-scoped pre-registered pilot with bounded empirical claims**
+
+Sohail Mohammad · Draft, 2026
+
+Pre-registered pilot decomposing bias-shift contributions across base, SFT, and preference tuning stages, with falsification-first controls and corrective replacement provenance. Findings are explicitly dataset-scoped: v1.0 contradiction remains immutable, while v2/v3 provide bounded artifact-supported interpretation under BBQ corrective closure. No universal mechanism claims are made.
+
+[Pilot (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/rlhf-entropy-pilot)
 
 ## Failures
 
@@ -102,7 +106,8 @@ function filterResearchCategory(category) {
   const sections = {
     papers: findSection('papers'),
     experiments: findSection('experiments'),
-    failures: findSection('failures')
+    failures: findSection('failures'),
+    pilots: findSection('pilots')
   };
 
   Object.entries(sections).forEach(([key, heading]) => {

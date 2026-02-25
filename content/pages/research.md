@@ -75,6 +75,15 @@ The aim is to separate real behavior changes from measurement artifacts so concl
 This section is for dead ends, null results, and failed hypotheses that still teach something important.
 Publishing failures makes the research process more honest and helps others avoid repeating the same mistakes.
 
+### [B6 Failure Case: Reliable Decisions, Blocked Internal Explanation](/research/failures/b6-negative-result/)
+**Decision-valid behavioral pipeline achieved; mechanism-level path blocked**
+
+Sohail Mohammad · February 2026
+
+In plain terms: we succeeded in making behavior-level decisions reliable, but failed the internal reconstruction gate needed for mechanism-level claims. A bounded remediation path (Option 2) then terminated via K2 when required candidate coverage did not exist (A=0/4, B=0/4).
+
+[Failure write-up](/research/failures/b6-negative-result/)
+
 <style>
 .category-tab {
   padding: var(--spacing-xs) var(--spacing-sm);

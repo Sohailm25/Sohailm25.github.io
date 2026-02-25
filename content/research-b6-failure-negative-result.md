@@ -5,7 +5,7 @@ Category: Research
 Tags: research, failures, activation-steering, governance
 Summary: We built a reliable behavior-level decision pipeline, but we could not prove internal explanation quality was good enough for mechanism-level claims.
 
-## Purpose in one sentence
+## Purpose
 We used SAEs to see if we could steer refusal behavior through sparse internal features and still keep claims scientifically honest.
 
 ## Original hypothesis

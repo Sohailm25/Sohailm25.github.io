@@ -5,61 +5,60 @@ Category: Research
 Tags: research, failures, activation-steering, governance
 Summary: We built a reliable behavior-level decision pipeline, but we could not prove internal explanation quality was good enough for mechanism-level claims.
 
-## What we were trying to do (plain terms)
-We were trying to answer one question:
+## What we were trying to do (plain English)
+We were trying to do two things at the same time:
+1. Make refusal behavior steering reliable at the output level.
+2. Verify internal explanation quality before making mechanism-level claims.
 
-**Can we change refusal behavior in a model in a way that is both reliable and honestly explainable?**
+In simple terms: we wanted control that works, and evidence strong enough to explain *why* it works.
 
-That has two parts:
-1. Behavior part: can we steer outputs predictably?
-2. Explanation part: can we show internal evidence strong enough for mechanism-level claims?
+## What the actual experiment was
+We ran a fixed pipeline in this order:
+1. Run model outputs on the locked evaluation setup.
+2. Score outputs with a locked generation metric (after fixing scorer issues).
+3. Test stability across seeds and paraphrases.
+4. Test reconstruction unlock to see if internal explanation quality clears the gate.
+5. If unlock fails, run a bounded remediation attempt with hard stop rules.
 
-## What worked
-We made the behavior measurement pipeline trustworthy.
-- We fixed scoring bugs.
-- We used real persisted outputs.
-- We locked decision rules and reran checks.
+That means this was not one single test. It was a gated process where each step had to pass before stronger claims were allowed.
 
-Result: we reached **decision-validity** for output-level decisions under current constraints.
+## How we executed (timeline)
+- We fixed scorer logic and moved from v1 to v2.
+- We achieved decision-valid status for behavior-level decisions.
+- We failed reconstruction unlock.
+- We launched Option 2 remediation with fixed rules and stop criteria.
+- We terminated Option 2 via K2 when candidate coverage was not available.
 
-## What failed
-We failed the reconstruction quality gate needed for mechanism-level claims.
-- nMSE missed threshold on all required setups.
-- So we cannot honestly claim we understand the mechanism in this phase.
+## What failed and why
+Two concrete failures blocked mechanism-level progress:
+- Reconstruction quality failed on nMSE across all required tuples (`0.163–0.195` vs threshold `<= 0.12`).
+- Remediation candidates were unavailable for required coverage (A=`0/4`, B=`0/4`).
 
-We then tried a bounded fix path (Option 2), but it terminated under K2.
-- Why: the candidate SAE paths needed for required tuples did not exist.
-- Candidate A coverage: 0/4
-- Candidate B coverage: 0/4
+Important: this was **not** a budget or time stall. The path ended because required candidate assets did not exist for the needed tuple coverage.
 
-So no further remediation run could start in that path.
+## What we learned (for other researchers)
+- Keep behavioral validity separate from mechanism validity.
+- Do not let output success automatically become mechanism claims.
+- Add leakage/overclaim guardrails early.
+- Define hard stop criteria before remediation starts.
+- Publish negative results with full provenance and clear claim limits.
 
-## Why this still matters
-This is a useful negative result, not just a failed attempt.
-It shows exactly where the failure happened:
-- not budget,
-- not vague instability,
-- but reconstruction gate failure plus candidate non-availability.
-
-It also shows an important research lesson:
-You can have valid behavior control without valid mechanism claims.
-Those are separate gates and should be treated separately.
-
-## What we can claim vs cannot claim
+## What we can and cannot claim
 ### We can claim
-- We built a decision-valid behavioral pipeline.
-- Mechanism-level interpretation is not supported in this phase.
-- This branch is closed under limitation lock until new SAE coverage exists.
+- The behavior-level decision pipeline is reliable under current constraints.
+- Mechanism-level support did not pass in this phase.
+- This branch is closed for now under limitation lock.
 
 ### We cannot claim
-- Strong mechanistic-specificity claims.
-- Unconstrained branch-robustness claims.
-- Any phase-advance claim based on reconstruction success.
+- Mechanistic-specific or causal mechanism conclusions for this phase.
+- Unconstrained robustness claims.
+- Phase advancement based on reconstruction success.
+
+## What would reopen this work
+Only one condition reopens this path:
+- New SAE releases must provide required tuple coverage.
 
 ## Final state
 - `active_path: limitation_lock_for_current_phase`
 - `phase_movement_authorized: false`
 - `decision_state: conditional_hold`
-
-## Reopen condition
-Reopen only if new SAE releases provide required tuple coverage.

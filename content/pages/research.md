@@ -17,7 +17,8 @@ Template: page
 
 Sohail Mohammad · Preprint, 2026
 
-We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer depth dynamics via JVP tangent propagation and test whether depth-dynamics summaries are associated with conversational collapse behavior observed in multi-turn self-play. Across 720 preregistered trajectories and 7,200 FTLE computations on three 7B-parameter model families, λ₁ profile features (depth-profile slope, ρ = −0.536; layerwise variance, ρ = +0.511) show medium-to-large predictive associations with collapse metrics from Escape Velocity. Mean λ₁ alone is insufficient. We interpret this as conditional correlational support under preregistered thresholds—no causal or mechanistic identity is claimed. Escape Velocity collapse labels carry a reliability caveat (κ = 0.566, threshold 0.80 not met).
+This asks whether we can spot early warning signs of conversational breakdown by looking inside model layer dynamics.
+If these signals hold up, they could help us diagnose unstable model behavior before it shows up in user-facing conversations.
 
 [Paper (PDF)]({static}/papers/ftle-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/escape-velocity)
 
@@ -26,7 +27,8 @@ We estimate the top-1 finite-time Lyapunov exponent (λ₁) for transformer dept
 
 Sohail Mohammad · Preprint, 2026
 
-Preregistered baseline study across four interaction conditions (Llama-3.1-8B self-play, Qwen2.5-7B self-play, Mistral-7B-v0.3 self-play, and heterogeneous round-robin rotation) with full confirmatory baseline closure (720/720 tuples). Under fixed protocol settings, collapse rates were strongly condition-dependent, with Qwen-homogeneous highest and Mistral-homogeneous lowest. Because the preregistered detector reliability gate was not met (κ=0.566 vs 0.80 threshold), conclusions are intentionally limited to descriptive and condition-comparative findings.
+This baseline study asks a simple question: when LLMs talk over many turns, which setups stay coherent and which ones collapse into repetition?
+The goal is to map the failure landscape clearly so future research can build better conversation stability tests and safeguards.
 
 *Path B disclosure:* Detector reliability prereg gate was **not met**; no detector-validation claim is made.
 
@@ -37,7 +39,8 @@ Preregistered baseline study across four interaction conditions (Llama-3.1-8B se
 
 Sohail Mohammad · Preprint, 2026
 
-Activation steering modifies language model behavior by adding learned direction vectors at inference time. We systematically evaluate two extraction methods across seven models (2B–32B parameters) and find that steering effectiveness decreases monotonically with model scale: coherent refusal rates drop from 100% at 3B to 77% at 32B. Simple mean-difference extraction matches or exceeds complex SVD-based methods at every scale tested, while architecture acts as a binary gate on steerability. Phase-2 transfer experiments show that within the tested same-family pair (Qwen 14B↔32B), extracted directions transfer with efficiency ≥ 1.0, while cross-family transfer (Qwen 7B↔Gemma 9B) collapses to near-zero despite matched hidden dimensionality.
+This tests how reliably we can nudge model refusal behavior using activation steering across different model sizes and families.
+The purpose is to understand where steering is practical versus brittle, so safety and control methods are used with realistic expectations.
 
 [Paper (PDF)]({static}/papers/activation-steering-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/activation-steering-runs)
 
@@ -49,7 +52,8 @@ Activation steering modifies language model behavior by adding learned direction
 
 Sohail Mohammad · February 2025
 
-Language models trained with standard PPO on prediction market trading collapse to degenerate policies (0% HOLD rate) despite achieving positive returns. Adding chain-of-thought reasoning before action selection completely prevents this collapse: CoT agents maintain 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for simple baselines).
+This experiment explores why RL agents in trading settings often overfit to one repetitive action even when returns look fine.
+It shows that adding reasoning steps can preserve better decision diversity, which matters for robustness in real sequential decision tasks.
 
 [Write-up](/research/prediction-market-trader/) · [Code (GitHub)](https://github.com/Sohailm25/prime-v-tinker-trader)
 
@@ -61,13 +65,15 @@ Language models trained with standard PPO on prediction market trading collapse 
 
 Sohail Mohammad · Draft, 2026
 
-Pre-registered pilot decomposing bias-shift contributions across base, SFT, and preference tuning stages, with falsification-first controls and corrective replacement provenance. Findings are explicitly dataset-scoped: v1.0 contradiction remains immutable, while v2/v3 provide bounded artifact-supported interpretation under BBQ corrective closure. No universal mechanism claims are made.
+This pilot examines how model bias signals shift from base training to instruction tuning and preference tuning.
+The aim is to separate real behavior changes from measurement artifacts so conclusions about alignment effects are more trustworthy.
 
 [Pilot (Draft)](/research/rlhf-entropy/) · [Code (GitHub)](https://github.com/Sohailm25/rlhf-entropy-pilot)
 
 ## Failures
 
-No public failure reports yet. This section will track failed hypotheses, null results, and dead ends as they’re published.
+This section is for dead ends, null results, and failed hypotheses that still teach something important.
+Publishing failures makes the research process more honest and helps others avoid repeating the same mistakes.
 
 <style>
 .category-tab {

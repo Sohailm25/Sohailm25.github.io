@@ -5,8 +5,9 @@ Category: Research
 Tags: research, failures, activation-steering, governance
 Summary: We built a reliable behavior-level decision pipeline, but we could not prove internal explanation quality was good enough for mechanism-level claims.
 
-## What we were trying to do (plain English)
+## What we were trying to do
 We were trying to do two things at the same time:
+
 1. Make refusal behavior steering reliable at the output level.
 2. Verify internal explanation quality before making mechanism-level claims.
 
@@ -14,6 +15,7 @@ In simple terms: we wanted control that works, and evidence strong enough to exp
 
 ## What the actual experiment was
 We ran a fixed pipeline in this order:
+
 1. Run model outputs on the locked evaluation setup.
 2. Score outputs with a locked generation metric (after fixing scorer issues).
 3. Test stability across seeds and paraphrases.
@@ -31,6 +33,7 @@ That means this was not one single test. It was a gated process where each step 
 
 ## What failed and why
 Two concrete failures blocked mechanism-level progress:
+
 - Reconstruction quality failed on nMSE across all required tuples (`0.163–0.195` vs threshold `<= 0.12`).
 - Remediation candidates were unavailable for required coverage (A=`0/4`, B=`0/4`).
 

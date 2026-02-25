@@ -2,6 +2,13 @@ Title: Research
 Slug: research
 Template: page
 
+<div class="category-tabs" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
+  <button class="category-tab active" data-category="all" onclick="filterResearchCategory('all')">All</button>
+  <button class="category-tab" data-category="papers" onclick="filterResearchCategory('papers')">Papers</button>
+  <button class="category-tab" data-category="experiments" onclick="filterResearchCategory('experiments')">Experiments</button>
+  <button class="category-tab" data-category="failures" onclick="filterResearchCategory('failures')">Failures</button>
+</div>
+
 ## Papers
 
 ### [Depth-Dynamics Signatures of Conversational Collapse](/research/ftle/)
@@ -53,3 +60,61 @@ Sohail Mohammad · February 2025
 Language models trained with standard PPO on prediction market trading collapse to degenerate policies (0% HOLD rate) despite achieving positive returns. Adding chain-of-thought reasoning before action selection completely prevents this collapse: CoT agents maintain 15-30% HOLD rates and ~0.95 policy entropy throughout training while achieving comparable performance (+$0.060 vs +$0.063 for simple baselines).
 
 [Write-up](/research/prediction-market-trader/) · [Code (GitHub)](https://github.com/Sohailm25/prime-v-tinker-trader)
+
+## Failures
+
+No public failure reports yet. This section will track failed hypotheses, null results, and dead ends as they’re published.
+
+<style>
+.category-tab {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+}
+
+.category-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-color);
+}
+
+.category-tab.active {
+  background: var(--accent-color);
+  color: var(--bg-primary);
+  border-color: var(--accent-color);
+}
+</style>
+
+<script>
+function filterResearchCategory(category) {
+  document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+  const activeTab = document.querySelector(`[data-category="${category}"]`);
+  if (activeTab) activeTab.classList.add('active');
+
+  const h2s = Array.from(document.querySelectorAll('h2'));
+  const findSection = (name) => h2s.find(h => h.textContent.trim().toLowerCase() === name);
+
+  const sections = {
+    papers: findSection('papers'),
+    experiments: findSection('experiments'),
+    failures: findSection('failures')
+  };
+
+  Object.entries(sections).forEach(([key, heading]) => {
+    if (!heading) return;
+
+    let node = heading;
+    const visible = category === 'all' || category === key;
+    while (node) {
+      node.style.display = visible ? '' : 'none';
+      node = node.nextElementSibling;
+      if (node && node.tagName === 'H2') break;
+    }
+  });
+}
+</script>

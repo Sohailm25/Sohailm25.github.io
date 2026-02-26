@@ -4,6 +4,7 @@ Slug: research/failures/b6-negative-result
 Category: Research
 Tags: research, failures, activation-steering, governance
 Summary: We built a reliable behavior-level decision pipeline, but we could not prove internal explanation quality was good enough for mechanism-level claims.
+Show_On_Home: false
 
 ## Purpose
 We used SAEs to see if we could steer refusal behavior through sparse internal features and still keep claims scientifically honest.

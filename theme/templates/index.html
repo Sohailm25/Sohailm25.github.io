@@ -50,7 +50,7 @@
   <a href="{{ SITEURL }}/writings/" class="section-link">see all writings</a>
 </div>
 
-{% set writings = articles|selectattr('category', 'ne', 'Poems')|selectattr('category', 'ne', 'The Forge')|rejectattr('show_on_home', 'equalto', false)|list %}
+{% set writings = articles|selectattr('category', 'ne', 'Poems')|selectattr('category', 'ne', 'The Forge')|selectattr('category', 'ne', 'Research')|rejectattr('show_on_home', 'equalto', false)|rejectattr('show_on_home', 'equalto', 'false')|list %}
 <div class="blog-list">
   {% for article in writings[:5] %}
   <div class="blog-card">

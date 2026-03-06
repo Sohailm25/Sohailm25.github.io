@@ -85,6 +85,34 @@ Qwen leadership turnover discourse also matters. open ecosystems rely on continu
 
 ---
 
+## SAFETY + EVALS ARE MOVING FROM TALK TO TESTS
+
+one under-discussed shift this week: more teams are publishing evaluation setups that try to measure whether reasoning traces can be monitored, controlled, or gamed.
+
+OpenAI’s chain-of-thought controllability release and the surrounding discussion around monitorability both point to the same practical question: can we trust reasoning artifacts as a governance interface, or will models learn to strategically obscure them under pressure.
+
+the other major operations signal was real-world prompt-injection fallout in automation pipelines (for example, issue-title injection leading to credential exposure in an AI triage flow). this is not hypothetical alignment discourse. this is secure software supply-chain work.
+
+if you are deploying agentic workflows in production, evals and prompt-injection hardening need to sit in the same planning doc as latency and cost.
+
+🔗 [OpenAI CoT controllability](https://x.com/OpenAI/status/2029650046002811280) | [Cline context-window eval note](https://x.com/cline/status/2029642984351010874) | [prompt-injection → npm token incident summary](https://x.com/zats/status/2029888470383051053)
+
+---
+
+## THE SPEED RACE IS SHIFTING DOWN THE STACK
+
+model quality is still improving, but the faster compounding right now is in systems and kernels.
+
+the FlashAttention 4 discussions this week are a good example: teams are now optimizing around asymmetric hardware scaling and low-level bottlenecks (exp, memory paths, scheduling), not just model architecture headlines.
+
+same with nanochat-style rapid iteration reports: once teams wire autonomous loops into training/system optimization, improvement velocity starts to come from process design as much as from a single model release.
+
+this is the same pattern showing up across inference stacks: competitive edge moves to people who can engineer the full loop (data + runtime + eval + deployment), not just call a model endpoint.
+
+🔗 [FlashAttention 4 discussion](https://x.com/remi_or_/status/2029594864375955665) | [asymmetric hardware scaling signal](https://x.com/ahmetustun89/status/2029602651004969142) | [nanochat + autonomous iteration](https://x.com/karpathy/status/2029701092347630069)
+
+---
+
 ## WHAT I WOULD ACTUALLY DO THIS WEEK
 
 if you are shipping agent products, three priorities:

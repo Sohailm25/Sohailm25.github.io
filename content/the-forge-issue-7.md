@@ -135,6 +135,8 @@ that is where a durable moat starts.
 - practical "context rot" mitigation playbooks are getting shared more than prompt templates, good signal for ops maturity. [Source](https://x.com/koylanai/status/2029694249566916984)
 - radar-chart criticism went viral again, useful reminder that visualization choices can quietly distort decision-making. [Source](https://x.com/FakePsyho/status/2029918694256586834)
 - "many software orgs still operate like 2022" discourse resonated because teams are feeling org-lag vs capability-lag in real time. [Source](https://x.com/thorstenball/status/2029846505884901873)
+- FlashOptim shipped practical optimizer-path memory savings (same updates, lower memory), another signal that infra-level efficiency work is accelerating alongside model releases. [Source](https://x.com/davisblalock/status/2028943987349045610)
+- Cloudflare spun up an explicit agent-experience team and started publishing fast-changing implementation patterns, which matches the broader trend from experimentation to operational agent playbooks. [Source](https://x.com/burcs/status/2028871239058571371)
 
 ---
 

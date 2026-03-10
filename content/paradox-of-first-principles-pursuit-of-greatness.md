@@ -5,10 +5,6 @@ Category: Essays
 Slug: paradox-of-first-principles-pursuit-of-greatness
 Summary: First-principles thinking matters, but reality and rapid experimentation are the only reliable validators for complex systems and ambitious work.
 
-# The Paradox of First Principles (And Why Nobody Wants to Hear That You're in Pursuit of Greatness)
-
-*By Sohail Mohammad*
-
 ---
 
 There's a moment in Nicholas Carlini's essay "How to Win a Best Paper Award" where he describes his process for coming up with research ideas. Read everything, he says. Absorb the entire body of scientific literature in your field. Understand what's known, what's been tried, what failed and why.

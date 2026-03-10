@@ -7,6 +7,8 @@ Summary: First-principles thinking matters, but reality and rapid experimentatio
 
 ---
 
+![The Paradox of First Principles](/images/paradox-of-first-principles-header.png)
+
 There's a moment in Nicholas Carlini's essay "How to Win a Best Paper Award" where he describes his process for coming up with research ideas. Read everything, he says. Absorb the entire body of scientific literature in your field. Understand what's known, what's been tried, what failed and why.
 
 Then forget all of it.

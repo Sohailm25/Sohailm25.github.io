@@ -4,6 +4,10 @@ Category: Essays
 Slug: stop-putting-allah-in-a-box
 Summary: On trusting deeply in the waiting period and being intentional about reaching out to people.
 
+---
+
+![Stop Putting Allah in a Box](/images/stop-putting-allah-in-a-box-header.png)
+
 I've been sitting with two thoughts lately. Both feel connected, and both feel like things I needed to hear years ago. I'm going to talk about them through the lens of my faith because that's where they live for me, but I think the core of both applies to anyone who's ever caught themselves shrinking their own hope.
 
 ---

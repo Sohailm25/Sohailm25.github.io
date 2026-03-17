@@ -10,11 +10,15 @@ Status: published
 
 ---
 
-This is a current-state synthesis, not a final paper.
+Persona-like steering results are often easy to demonstrate and hard to interpret mechanistically. This write-up is organized to answer one practical question for readers: **what is actually supported today, and what is not?**
 
-It is also not a placeholder. We have enough completed work to make concrete claims now, including mixed and negative findings that are worth publishing as first-class results.
+The goal is to make the claim boundary clear before diving into technical details.
 
 **Companion branch report:** [/research/experiments/glp-persona-circuits-current-state/](/research/experiments/glp-persona-circuits-current-state/)
+
+## Why This Matters
+
+If steering directions are robust but mechanistically diffuse, then “we can steer behavior” and “we found a causal persona circuit” are different scientific statements. This project is about separating those statements rigorously.
 
 ## Evidence Scope
 
@@ -193,6 +197,16 @@ Default next move is synthesis, not breadth expansion:
 We found real persona-like steering structure. But when we pushed toward stronger causal and mechanistic claims, the story became narrower, messier, and more assistant-shaped.
 
 That is not the cleanest possible narrative. It is the most accurate one from the current evidence.
+
+## Reference Frame
+
+This project is positioned against prior lines of work on:
+
+- representation engineering and activation addition (ActAdd / CAA-style steering)
+- persona-vector decomposition work
+- mechanistic circuit-tracing studies on behavior localization
+
+In this post, those are used as framing references rather than as direct replication targets.
 
 ---
 

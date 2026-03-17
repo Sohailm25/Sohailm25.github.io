@@ -10,11 +10,13 @@ Status: published
 
 ---
 
-This is a current-state branch report inside the broader persona-circuits project, not a final paper conclusion.
+The GLP branch was designed to answer one concrete question: when steering fails, are we seeing a **bad semantic direction** or a **geometrically invalid edited state**?
 
-I’m writing this now because the branch has already produced a useful result shape: not a clean win, not a trivial null, but a legible failure mode that changes what we should test next.
+This post is organized to answer that question directly before moving into branch details.
 
-**Mainline synthesis:** [/research/experiments/persona-circuits-current-state/](/research/experiments/persona-circuits-current-state/)
+## Why This Branch Matters
+
+If a repair prior can preserve semantic edits while restoring plausibility, then some apparent circuit failures may be geometric rather than semantic. If it cannot, we should be more cautious about using latent priors as mechanistic disambiguation tools.
 
 ## Evidence Scope
 
@@ -192,6 +194,12 @@ What is not yet supported:
 ## Current Bottom Line
 
 We tested GLP as a geometry disambiguation tool for persona steering. The public checkpoint failed to transfer cleanly in this setting. Matched checkpoints were more stable but still too nonselective, with geometry consistent with generic projection behavior. The mixed clean+edited checkpoint is now trained and creates a real next inflection test; its behavioral evaluation is the decisive next step.
+
+## Related Context and References
+
+- Mainline synthesis: [/research/experiments/persona-circuits-current-state/](/research/experiments/persona-circuits-current-state/)
+- GLP paper context: Generative Latent Priors (Luo et al.)
+- Steering context: ActAdd / CAA-style representation engineering work
 
 ---
 

@@ -46,6 +46,26 @@
 {% endif %}
 
 <div class="section-header">
+  <div class="section-title">> latest research</div>
+  <a href="{{ SITEURL }}/pages/research/" class="section-link">see all research</a>
+</div>
+
+{% set research = articles|selectattr('category', 'equalto', 'Research')|rejectattr('show_on_home', 'equalto', false)|rejectattr('show_on_home', 'equalto', 'false')|list %}
+<div class="blog-list">
+  {% for article in research[:5] %}
+  <div class="blog-card">
+    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
+      <div class="card-content">
+        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+        <div class="card-title">{{ article.title }}</div>
+        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-header">
   <div class="section-title">> latest writings</div>
   <a href="{{ SITEURL }}/writings/" class="section-link">see all writings</a>
 </div>

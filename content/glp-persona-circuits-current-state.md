@@ -18,6 +18,16 @@ This post is organized to answer that question directly before moving into branc
 
 If a repair prior can preserve semantic edits while restoring plausibility, then some apparent circuit failures may be geometric rather than semantic. If it cannot, we should be more cautious about using latent priors as mechanistic disambiguation tools.
 
+## GLP Reference and Why We Tried It
+
+- **Paper context:** Luo et al., *Generative Latent Priors* (GLP). Reference link: <https://arxiv.org/search/?query=Generative+Latent+Priors+Luo&searchtype=all>
+- **High-level idea:** train a latent denoiser/prior over activations, then use that prior to project edited activations back toward plausible manifold states.
+- **Why we applied it here:** in persona-circuits, we needed to separate two failure modes:
+  1. semantic insufficiency (the steering direction/circuit is wrong), versus
+  2. geometric invalidity (the edited activation is off-manifold).
+
+GLP was a natural candidate because, in principle, it can repair geometry while preserving intended directional edits.
+
 ## Evidence Scope
 
 This post covers one bounded branch question:

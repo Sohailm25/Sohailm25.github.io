@@ -129,8 +129,6 @@ Key lesson: stable extraction can coexist with poor construct validity.
 
 ## Hypotheses: Current Read
 
-![Claim boundary matrix for the current persona-circuits read](/images/persona-circuits-claim-boundary-matrix.svg)
-
 ### H1 (concentration / sparse-structure support)
 
 Partial support with caveats.

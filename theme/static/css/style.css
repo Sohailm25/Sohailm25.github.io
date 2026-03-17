@@ -692,6 +692,32 @@ nav a:hover {
   .post-page .main-container {
     padding: 0;
   }
+
+  /* General mobile readability pass for long page content (research + article pages) */
+  .page-content {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .page-content h2 {
+    font-size: 1.15rem;
+    line-height: 1.35;
+  }
+
+  .page-content h3 {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .page-content p,
+  .page-content li {
+    line-height: 1.6 !important;
+  }
+
+  .page-content a {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
 
 @media (max-width: 900px) {

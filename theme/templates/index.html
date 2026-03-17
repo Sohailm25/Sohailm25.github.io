@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block nav_home %} class="active" aria-current="page"{% endblock %}
+{% block body_class %} class="home-page"{% endblock %}
 
 {% block content %}
 <div class="hero">
@@ -52,7 +53,7 @@
 
 {% set research = articles|selectattr('category', 'equalto', 'Research')|rejectattr('show_on_home', 'equalto', false)|rejectattr('show_on_home', 'equalto', 'false')|list %}
 <div class="blog-list">
-  {% for article in research[:5] %}
+  {% for article in research[:3] %}
   <div class="blog-card">
     <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
       <div class="card-content">
@@ -72,7 +73,7 @@
 
 {% set writings = articles|selectattr('category', 'ne', 'Poems')|selectattr('category', 'ne', 'The Forge')|selectattr('category', 'ne', 'Research')|rejectattr('show_on_home', 'equalto', false)|rejectattr('show_on_home', 'equalto', 'false')|list %}
 <div class="blog-list">
-  {% for article in writings[:5] %}
+  {% for article in writings[:3] %}
   <div class="blog-card">
     <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
       <div class="card-content">

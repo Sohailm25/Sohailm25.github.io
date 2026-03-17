@@ -567,6 +567,23 @@ nav a:hover {
 
 /* Responsive */
 @media (max-width: 600px) {
+  .home-page .card-excerpt {
+    display: none;
+  }
+
+  .home-page .blog-card .card-content,
+  .home-page .blog-card .card-link {
+    padding: 0.8rem !important;
+  }
+
+  .home-page .section-header {
+    margin-top: 0.75rem;
+  }
+
+  .home-page .card-title {
+    line-height: 1.35 !important;
+  }
+
   .header-inner {
     border-left: none;
     border-right: none;

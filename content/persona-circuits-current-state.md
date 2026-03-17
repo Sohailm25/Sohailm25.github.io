@@ -1,11 +1,11 @@
 Title: Persona Circuits Current State: What Held Up, What Broke, and What We Learned
 Date: 2026-03-17 13:30
-Modified: 2026-03-17 13:30
+Modified: 2026-03-17 17:30
 Category: Research
 Tags: persona-circuits, mechanistic-interpretability, llm-research, steering, interpretability
 Slug: research/experiments/persona-circuits-current-state
 Authors: Sohail Mohammad
-Summary: Current-state synthesis of persona-circuits: robust steering and partial concentration support, but weaker distinctness, necessity, and sufficiency evidence under current protocols.
+Summary: Current-state synthesis of the persona-circuits project: robust steering and partial concentration support, but weaker-than-expected distinctness, necessity, and sufficiency evidence under current protocols.
 Status: published
 
 ---
@@ -34,7 +34,7 @@ The scope is intentionally narrow: claims here are only for the evaluated model/
 
 ## Project Context (for new readers)
 
-Persona-circuits is an ongoing mechanistic interpretability project testing whether persona-like behavioral steering directions in LLMs correspond to sparse, causally meaningful internal structure. The current evidence supports robust steering and partial concentration structure, but several stronger causal claims (especially sufficiency and distinctness) remain mixed or negative under current protocols.
+Persona-circuits is an ongoing mechanistic interpretability project testing whether persona-like behavioral steering directions in LLMs correspond to sparse, causally meaningful internal structure. The current evidence supports robust steering and partial concentration structure, but several stronger causal claims, especially sufficiency and distinctness, remain mixed or negative under current protocols.
 
 ## What We Set Out To Test
 
@@ -49,16 +49,6 @@ Prior work already supports key pieces of that story:
 - circuit-tracing cases where specific behaviors are mechanistically localizable
 
 The gap was the bridge between these ideas in one integrated, claim-disciplined workflow.
-
-## Explicit Hypotheses
-
-To make the claim structure unambiguous, this project tracks five hypotheses:
-
-- **H1 (Concentration):** persona-like steering directions are mediated by non-trivial, concentrated internal structure rather than a fully diffuse effect.
-- **H2 (Necessity):** ablating identified high-contribution components should materially reduce the targeted behavior.
-- **H3 (Sufficiency):** activating or preserving identified components alone should retain enough behavior to support a circuit-level sufficiency claim under bounded tests.
-- **H4 (Cross-persona structure):** persona-related structure should show predictable cross-persona relations (shared vs distinct components) beyond noise-level overlap.
-- **H5 (Routing mediation):** routing-level evidence should show more-than-exploratory support for persona mediation under current controls.
 
 ## What We Built
 
@@ -115,9 +105,9 @@ The branch did meaningful scientific work because it differentiated “we chose 
 
 Representative reads:
 
-- target effect: `46.33`
-- off-target assistant-likeness effect: `47.23`
-- bleed ratio: `1.0194`
+- prompt-last target effect: `46.33`
+- prompt-last assistant-likeness bleed: `47.23`
+- prompt-last bleed ratio: `1.0194`
 
 Follow-up checks did not resolve this:
 
@@ -139,6 +129,8 @@ Key lesson: stable extraction can coexist with poor construct validity.
 
 ## Hypotheses: Current Read
 
+![Claim boundary matrix for the current persona-circuits read](/images/persona-circuits-claim-boundary-matrix.svg)
+
 ### H1 (concentration / sparse-structure support)
 
 Partial support with caveats.
@@ -149,7 +141,7 @@ Mixed-to-weak under current thresholds; below claim-grade confidence.
 
 ### H3 (sufficiency)
 
-Negative under current operationalization. In bounded full-complement circuit-only execution, behavior degraded into repetitive/low-capability outputs.
+Negative under current operationalization. In bounded full-complement circuit-only execution, behavior degraded into repetitive, low-capability outputs.
 
 At completed doses:
 
@@ -184,6 +176,51 @@ The main contribution is not a clean positive bridge from steering vectors to ci
 
 That is scientifically useful and should be reported directly, not hidden behind optimistic framing.
 
+## Methods Snapshot
+
+- **Primary model:** `meta-llama/Llama-3.1-8B-Instruct`
+- **Primary seed in the current closeout stack:** `42`
+- **Core prompt budgets:** extraction `100` pairs/trait, behavioral validation `50` prompts/trait, circuit analysis `20` prompts/trait, ablation validation target `100` prompts/trait
+- **Judge setup:** primary `claude-sonnet-4-6`, secondary calibration `claude-opus-4-6`; audited on `90` prompt pairs / `180` scored responses per judge with mean kappa `0.7727`
+- **Main claim thresholds from config/policy:** necessity `0.80`, sufficiency `0.60`, significance `0.01`, `A12 >= 0.71`, stability Jaccard `0.30`
+- **Trait-lane deeper-validation profile:** `30` held-out prompts/lane split into `10` sweep / `10` confirm / `10` test, relative coherence max-drop gate `10.0`, cross-trait bleed enabled against `sycophancy` and `assistant_likeness`
+
+This is the minimum reproducibility payload for the claims in this post. It is not the full methods section.
+
+## Uncertainty and Variance Notes
+
+I do not want the averages in this post to imply false precision.
+
+- The strongest concentration claims are based on `50` prompts per core trait in Stage 3.
+- The distinctness failure for `politeness` is based on `10` held-out test prompts in the deeper-validation runs, so the effect is real enough to flag but still small-sample.
+- Judge reliability is not hand-waved here: the audit covers `90` prompt pairs with mean kappa `0.7727`, but the manual human concordance layer is still only a low-power sanity check (`n=15`).
+- The H3 closeout is a real negative under the executed protocol, but it is still one bounded operationalization, not a universal impossibility proof for sufficiency-style work.
+- Multi-seed replication remains limited. The current closeout stack is still centered on the seed-`42` artifact family.
+
+Representative variance for the headline `politeness` lane:
+
+| Run | Test steering mean | Test steering std | Test reversal mean | Test reversal std | `n_test_prompts` |
+|---|---:|---:|---:|---:|---:|
+| prompt-last deeper validation | `40.43` | `16.21` | `5.90` | `5.94` | `10` |
+| response-mean deeper validation | `30.93` | `16.86` | `7.10` | `4.86` | `10` |
+| orthogonalized prompt-last | `26.93` | `13.71` | `4.47` | `5.78` | `10` |
+
+That is enough variance that I am comfortable writing “strong steering, weak distinctness,” but not enough to inflate these into stronger claims than the protocol earned.
+
+## Artifact Index For Numeric Claims
+
+| Claim in this post | Numeric claim | Artifact(s) |
+|---|---|---|
+| Core concentration is non-flat | `sycophancy` Gini `0.5771`, top-20% mass `0.5298`; `machiavellian_disposition` Gini `0.6476`, top-20% mass `0.6173` | `week3_stage3_activation_delta_attribution_20260304T164549Z.json` |
+| Judge reliability is nontrivial | `90` prompt pairs, `180` responses/judge, mean kappa `0.7727` | `week2_judge_reliability_audit_packet_20260314T160930Z.json` |
+| `politeness` prompt-last fails distinctness | target effect `46.33`, assistant-likeness bleed `47.23`, bleed ratio `1.0194` | `week2_trait_lane_deeper_validation_validation_20260312T134851Z.json` |
+| `politeness` response-mean still fails distinctness | target effect `38.03`, assistant-likeness bleed `39.7`, bleed ratio `1.0438` | `week2_trait_lane_deeper_validation_validation_20260313T182007Z.json` |
+| Orthogonalization did not rescue `politeness` distinctness | target effect `31.4`, assistant-likeness bleed `32.83`, bleed ratio `1.0456` | `week2_trait_lane_orthogonalization_validation_20260313T151437Z.json` |
+| H2 strict claim-grade necessity fails | best zero-ablation mean reduction `0.5627`; best resample mean reduction `0.2585`; all below `0.80` necessity bar | `week3_stage4_policy_decision_packet_20260310T142000Z.json` |
+| H3 fails under executed full-complement protocol | preservation `0.2857` at dose `0.25`; `0.3571` at dose `0.50`; coherence drop `73.2`; capability proxy `0.0` | `week3_stage4_behavioral_sufficiency_claimgrade_trancheA_closeout_20260311T1919Z.json` |
+| H4 is weak-negative | early Jaccard `0.1696`, late Jaccard `0.1236`, delta `0.0460`, proposal pattern pass `false` | `week3_stage5_policy_decision_packet_20260310T200937Z.json` |
+| H5 is exploratory null / weak negative | `n_tested=62`, `n_rejected=0`, `min_q_value=0.0465` | `week3_stage5_policy_decision_packet_20260310T200937Z.json` |
+
 ## Next Steps
 
 Default next move is synthesis, not breadth expansion:
@@ -197,16 +234,6 @@ Default next move is synthesis, not breadth expansion:
 We found real persona-like steering structure. But when we pushed toward stronger causal and mechanistic claims, the story became narrower, messier, and more assistant-shaped.
 
 That is not the cleanest possible narrative. It is the most accurate one from the current evidence.
-
-## Reference Frame
-
-This project is positioned against prior lines of work on:
-
-- representation engineering and activation addition (ActAdd / CAA-style steering)
-- persona-vector decomposition work
-- mechanistic circuit-tracing studies on behavior localization
-
-In this post, those are used as framing references rather than as direct replication targets.
 
 ---
 

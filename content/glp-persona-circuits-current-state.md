@@ -1,6 +1,6 @@
 Title: Persona Circuits Branch Report: What We Learned Trying GLP Activation Repair
 Date: 2026-03-17 12:00
-Modified: 2026-03-17 12:00
+Modified: 2026-03-17 17:30
 Category: Research
 Tags: persona-circuits, glp, activation-steering, mechanistic-interpretability, llm-research
 Slug: research/experiments/glp-persona-circuits-current-state
@@ -133,6 +133,8 @@ Representative validated reads (compact format):
 
 Interpretation: GLP effects are not selective enough relative to nuisance controls.
 
+![Selected GLP versus baseline and random control effects in the validated Week 2 runs](/images/glp-selected-vs-controls-comparison.svg)
+
 ### 4) Geometry suggests generic projection behavior
 
 Observed ranges across matched runs:
@@ -142,9 +144,9 @@ Observed ranges across matched runs:
 
 In practice, GLP often makes moves larger than the original edit while preserving under half of its directional alignment. This looks more like a generic denoising projector than direction-preserving repair.
 
-### 5) Better optimization did not resolve selectivity
+### 5) Better optimization did not resolve selectivity in the matched `response_all` lane
 
-After addressing undertraining critiques and improving validation loss materially, behavior-level selectivity still did not improve enough. This removes “insufficient optimization” as a primary explanation.
+After addressing undertraining critiques and improving validation loss materially in the matched `response_all` lane, behavior-level selectivity still did not improve enough. That weakens “insufficient optimization” as the main explanation for that lane, even though it does **not** fully settle the training-adequacy question for `response_last`.
 
 ### 6) Conditional pilot worked technically, but likely targeted the wrong objective
 
@@ -185,6 +187,65 @@ What is not yet supported:
 - selective, direction-preserving repair at claim-grade confidence
 - broad anti-GLP claims outside this task regime
 
+## Methods Snapshot
+
+- **Primary model and hook:** `meta-llama/Llama-3.1-8B-Instruct`, layer `12`, `blocks.12.hook_resid_post`
+- **Validated Week 2 comparison setting:** `20` held-out prompts per trait, `max_new_tokens=32`, `temperature=0`, `random_direction_draws=3`
+- **Traits in the branch-local claim lane:** `sycophancy` and historical `evil` branch naming
+- **Judge setup:** `claude-sonnet-4-6` for scored branch evaluation; the mainline dual-judge audit uses `claude-opus-4-6` as the secondary calibration model
+- **Training defaults for the matched checkpoints:** `lr=5e-5`, `batch_size=512`, `validation_fraction=0.05`, cosine scheduler with warmup, `3` epochs in the validated comparison runs
+- **Training datasets used in the current post:**
+  - `response_all`: `92,422` activations from `3,000` prompts
+  - clean `response_last`: `8,600` activations from `8,600` prompts
+  - mixed `response_last`: `8,600` activations with `20%` edited samples
+- **Mixed-data composition:** `1,720` edited samples, balanced `430` each across `sycophancy_plus`, `sycophancy_minus`, `evil_plus`, `evil_minus`
+
+Branch interpretation rule of thumb:
+
+- a checkpoint is only treated as claim-aligned when model and layer match the target lane
+- behavioral repair is only interesting if `selected_glp` beats the nuisance baselines, not merely if it looks okay in isolation
+- NLL / geometry metrics are treated as diagnostics, not as validated behavioral surrogates
+
+## Uncertainty and Variance Notes
+
+The current branch read is mean-based, but the prompt-level variance is large enough that I do not want readers to infer more stability than the artifacts support.
+
+Validated `20`-prompt runs:
+
+| Checkpoint | Trait | GLP-minus-raw effect delta mean | Std | Range | GLP-minus-raw coherence delta mean | Std | Range |
+|---|---|---:|---:|---:|---:|---:|---:|
+| matched `response_all` | `sycophancy` | `-0.35` | `11.54` | `[-13, 23]` | `-6.00` | `9.55` | `[-27.0, 11.5]` |
+| matched `response_all` | `evil` | `4.95` | `13.50` | `[-12, 37]` | `-1.68` | `8.94` | `[-20.0, 16.5]` |
+| matched `response_last` | `sycophancy` | `1.15` | `9.02` | `[-18, 20]` | `-1.35` | `11.20` | `[-28.5, 21.5]` |
+| matched `response_last` | `evil` | `6.10` | `15.38` | `[-17, 52]` | `-2.48` | `9.08` | `[-17.0, 12.0]` |
+
+What this means:
+
+- GLP is not uniformly harmful or uniformly helpful across prompts.
+- The current failure mode looks unstable and generic, not cleanly trait-selective.
+- Random-direction controls are now averaged over `3` draws, which is better than the original single-draw control, but still not enough to claim seed-level stability.
+
+Proxy-metric warning:
+
+- `evil` NLL-vs-coherence delta Spearman: `0.096`
+- `evil` repair-ratio-vs-coherence delta Spearman: `-0.218`
+- `sycophancy` NLL-vs-coherence delta Spearman: `0.298`
+
+Those are too weak to justify treating the proxy metrics as behavioral stand-ins.
+
+## Artifact Index For Numeric Claims
+
+| Claim in this post | Numeric claim | Artifact(s) |
+|---|---|---|
+| Released checkpoint failed to transfer cleanly | large distortion on `evil` alpha-3 diagnostic: `delta_target_nll_vs_clean=4.725`, `kl_clean_to_hooked=5.184` | `week2_glp_sidecar_validation_20260311T012700Z_evil_frontier_alpha3_nlldiag_20260310a.json` |
+| Matched `response_all` still looked nonselective | `evil`: selected GLP `-54.65` vs baseline `-61.5` vs random `-59.5`; `sycophancy`: selected GLP `-72.25` vs baseline `-77.3` vs random `-74.75` | `week2_glp_sidecar_validation_20260312T151500Z_matched_responseall_val3e_rowdiag20_20260312a.json` |
+| Matched `response_all` geometry looked like generic projection | repair-to-edit ratio `2.0092` / `2.0222`; retention cosine `0.4182` / `0.4235` | `week2_glp_sidecar_analysis_20260312T155851Z.json` |
+| Matched `response_last` still looked nonselective | `evil`: selected GLP `-54.15` vs baseline `-62.45` vs random `-58.67`; `sycophancy`: selected GLP `-71.0` vs baseline `-73.5` vs random `-75.65` | `week2_glp_sidecar_validation_20260313T135047Z_matched_responselast_val3e_rowdiag20_20260313b.json` |
+| Matched `response_last` geometry still looked like generic projection | repair-to-edit ratio `2.1577` / `2.1620`; retention cosine `0.3932` / `0.3948` | `week2_glp_sidecar_analysis_20260313T135951Z.json` |
+| Better `response_all` optimization did not translate into selective repair | validation loss improved to `1.5969` at epoch `2` and `1.5795` at epoch `3`, but Week 2 selectivity still failed | `train_glp_matched_modal_20260312T133750Z_responseall_val3e_20260312a.json`, `week2_glp_sidecar_validation_20260312T151500Z_matched_responseall_val3e_rowdiag20_20260312a.json` |
+| Clean `response_last` remained a low-step regime | `8,170` train examples, `430` val examples, `15` gradient steps/epoch, final val loss `1.8770` | `train_glp_matched_modal_20260313T023542Z_response_last_tranches1234_val3e_20260312a.json` |
+| Mixed clean+edited checkpoint is now trained | `8,600` total samples, `1,720` edited (`20%`), balanced `430` per edit label, final val loss `1.8551` | `glp_export_mixed_edited_memmap_dataset_20260315T075043Z_response_last_mixed20_tranches1234_20260313a.json`, `train_glp_matched_modal_20260315T075513Z_response_last_mixed20_tranches1234_val3e_20260313a.json` |
+
 ## What To Do Next
 
 1. Evaluate Week 2 behavior on the mixed-trained checkpoint.
@@ -194,12 +255,6 @@ What is not yet supported:
 ## Current Bottom Line
 
 We tested GLP as a geometry disambiguation tool for persona steering. The public checkpoint failed to transfer cleanly in this setting. Matched checkpoints were more stable but still too nonselective, with geometry consistent with generic projection behavior. The mixed clean+edited checkpoint is now trained and creates a real next inflection test; its behavioral evaluation is the decisive next step.
-
-## Related Context and References
-
-- Mainline synthesis: [/research/experiments/persona-circuits-current-state/](/research/experiments/persona-circuits-current-state/)
-- GLP paper context: Generative Latent Priors (Luo et al.)
-- Steering context: ActAdd / CAA-style representation engineering work
 
 ---
 

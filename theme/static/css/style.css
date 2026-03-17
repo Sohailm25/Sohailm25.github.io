@@ -464,6 +464,9 @@ nav a:hover {
   padding: 0.2em 0.4em;
   font-family: var(--font-code);
   font-size: 0.9em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .page-content pre {

@@ -1297,3 +1297,49 @@ code {
 .newsletter-text p {
   font-size: 0.9rem !important;
 }
+
+/* === Serif body pass (requested): use Iowan-style serif everywhere except titles === */
+:root {
+  --font-iowan-serif: "Iowan Old Style BT", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+body,
+.site-container,
+.site-grid,
+.page-content,
+.page-content p,
+.page-content li,
+.page-content ul,
+.page-content ol,
+.page-content blockquote,
+.page-content table,
+.card-excerpt,
+.card-meta,
+.page-date,
+.card-date,
+nav a,
+.section-title,
+.corner-btn,
+.hero-greeting,
+.hero-bio,
+.newsletter-text,
+.newsletter-text p,
+.newsletter-section,
+.newsletter-content,
+.newsletter-input,
+.newsletter-button {
+  font-family: var(--font-iowan-serif) !important;
+}
+
+/* Keep titles as-is per request */
+.page-title,
+.card-title,
+.hero-name {
+  /* intentionally unchanged */
+}
+
+/* Keep code mono for readability */
+pre code,
+code {
+  font-family: var(--font-geist-mono), "Courier New", monospace !important;
+}

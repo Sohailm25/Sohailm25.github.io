@@ -1298,14 +1298,12 @@ code {
   font-size: 0.9rem !important;
 }
 
-/* === Serif body pass (requested): use Iowan-style serif everywhere except titles === */
+/* === Serif body pass (refined): apply to reading text only === */
 :root {
   --font-iowan-serif: "Iowan Old Style BT", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
 }
 
-body,
-.site-container,
-.site-grid,
+/* Long-form reading surfaces */
 .page-content,
 .page-content p,
 .page-content li,
@@ -1314,24 +1312,11 @@ body,
 .page-content blockquote,
 .page-content table,
 .card-excerpt,
-.card-meta,
-.page-date,
-.card-date,
-nav a,
-.section-title,
-.corner-btn,
-.hero-greeting,
-.hero-bio,
-.newsletter-text,
-.newsletter-text p,
-.newsletter-section,
-.newsletter-content,
-.newsletter-input,
-.newsletter-button {
+.newsletter-text p {
   font-family: var(--font-iowan-serif) !important;
 }
 
-/* Keep titles as-is per request */
+/* Keep titles and UI chrome unchanged */
 .page-title,
 .card-title,
 .hero-name {

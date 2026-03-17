@@ -20,7 +20,7 @@ If a repair prior can preserve semantic edits while restoring plausibility, then
 
 ## GLP Reference and Why We Tried It
 
-- **Paper context:** Luo et al., *Generative Latent Priors* (GLP). Reference link: <https://arxiv.org/search/?query=Generative+Latent+Priors+Luo&searchtype=all>
+- **Paper context:** Luo et al., *Generative Latent Priors* (GLP). Reference link: <https://arxiv.org/html/2602.06964v1>
 - **High-level idea:** train a latent denoiser/prior over activations, then use that prior to project edited activations back toward plausible manifold states.
 - **Why we applied it here:** in persona-circuits, we needed to separate two failure modes:
   1. semantic insufficiency (the steering direction/circuit is wrong), versus

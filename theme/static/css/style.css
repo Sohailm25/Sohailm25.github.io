@@ -567,6 +567,11 @@ nav a:hover {
 
 /* Responsive */
 @media (max-width: 600px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   .home-page .card-excerpt {
     display: none;
   }
@@ -717,6 +722,14 @@ nav a:hover {
   .page-content a {
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+
+  .page-content table,
+  .page-content pre,
+  .page-content iframe {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 

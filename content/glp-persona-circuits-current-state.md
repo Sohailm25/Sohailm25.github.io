@@ -235,16 +235,37 @@ Those are too weak to justify treating the proxy metrics as behavioral stand-ins
 
 ## Artifact Index For Numeric Claims
 
-| Claim in this post | Numeric claim | Artifact(s) |
-|---|---|---|
-| Released checkpoint failed to transfer cleanly | large distortion on `evil` alpha-3 diagnostic: `delta_target_nll_vs_clean=4.725`, `kl_clean_to_hooked=5.184` | `week2_glp_sidecar_validation_20260311T012700Z_evil_frontier_alpha3_nlldiag_20260310a.json` |
-| Matched `response_all` still looked nonselective | `evil`: selected GLP `-54.65` vs baseline `-61.5` vs random `-59.5`; `sycophancy`: selected GLP `-72.25` vs baseline `-77.3` vs random `-74.75` | `week2_glp_sidecar_validation_20260312T151500Z_matched_responseall_val3e_rowdiag20_20260312a.json` |
-| Matched `response_all` geometry looked like generic projection | repair-to-edit ratio `2.0092` / `2.0222`; retention cosine `0.4182` / `0.4235` | `week2_glp_sidecar_analysis_20260312T155851Z.json` |
-| Matched `response_last` still looked nonselective | `evil`: selected GLP `-54.15` vs baseline `-62.45` vs random `-58.67`; `sycophancy`: selected GLP `-71.0` vs baseline `-73.5` vs random `-75.65` | `week2_glp_sidecar_validation_20260313T135047Z_matched_responselast_val3e_rowdiag20_20260313b.json` |
-| Matched `response_last` geometry still looked like generic projection | repair-to-edit ratio `2.1577` / `2.1620`; retention cosine `0.3932` / `0.3948` | `week2_glp_sidecar_analysis_20260313T135951Z.json` |
-| Better `response_all` optimization did not translate into selective repair | validation loss improved to `1.5969` at epoch `2` and `1.5795` at epoch `3`, but Week 2 selectivity still failed | `train_glp_matched_modal_20260312T133750Z_responseall_val3e_20260312a.json`, `week2_glp_sidecar_validation_20260312T151500Z_matched_responseall_val3e_rowdiag20_20260312a.json` |
-| Clean `response_last` remained a low-step regime | `8,170` train examples, `430` val examples, `15` gradient steps/epoch, final val loss `1.8770` | `train_glp_matched_modal_20260313T023542Z_response_last_tranches1234_val3e_20260312a.json` |
-| Mixed clean+edited checkpoint is now trained | `8,600` total samples, `1,720` edited (`20%`), balanced `430` per edit label, final val loss `1.8551` | `glp_export_mixed_edited_memmap_dataset_20260315T075043Z_response_last_mixed20_tranches1234_20260313a.json`, `train_glp_matched_modal_20260315T075513Z_response_last_mixed20_tranches1234_val3e_20260313a.json` |
+- **Released checkpoint failed to transfer cleanly**
+  - Numeric claim: large distortion on `evil` alpha-3 diagnostic: `delta_target_nll_vs_clean=4.725`, `kl_clean_to_hooked=5.184`
+  - Artifact: `week2_glp_sidecar_validation_20260311T012700Z_evil_frontier_alpha3_nlldiag_20260310a.json`
+
+- **Matched `response_all` still looked nonselective**
+  - Numeric claim: `evil`: selected GLP `-54.65` vs baseline `-61.5` vs random `-59.5`; `sycophancy`: selected GLP `-72.25` vs baseline `-77.3` vs random `-74.75`
+  - Artifact: `week2_glp_sidecar_validation_20260312T151500Z_matched_responseall_val3e_rowdiag20_20260312a.json`
+
+- **Matched `response_all` geometry looked like generic projection**
+  - Numeric claim: repair-to-edit ratio `2.0092` / `2.0222`; retention cosine `0.4182` / `0.4235`
+  - Artifact: `week2_glp_sidecar_analysis_20260312T155851Z.json`
+
+- **Matched `response_last` still looked nonselective**
+  - Numeric claim: `evil`: selected GLP `-54.15` vs baseline `-62.45` vs random `-58.67`; `sycophancy`: selected GLP `-71.0` vs baseline `-73.5` vs random `-75.65`
+  - Artifact: `week2_glp_sidecar_validation_20260313T135047Z_matched_responselast_val3e_rowdiag20_20260313b.json`
+
+- **Matched `response_last` geometry still looked like generic projection**
+  - Numeric claim: repair-to-edit ratio `2.1577` / `2.1620`; retention cosine `0.3932` / `0.3948`
+  - Artifact: `week2_glp_sidecar_analysis_20260313T135951Z.json`
+
+- **Better `response_all` optimization did not translate into selective repair**
+  - Numeric claim: validation loss improved to `1.5969` at epoch `2` and `1.5795` at epoch `3`, but Week 2 selectivity still failed
+  - Artifacts: `train_glp_matched_modal_20260312T133750Z_responseall_val3e_20260312a.json`; `week2_glp_sidecar_validation_20260312T151500Z_matched_responseall_val3e_rowdiag20_20260312a.json`
+
+- **Clean `response_last` remained a low-step regime**
+  - Numeric claim: `8,170` train examples, `430` val examples, `15` gradient steps/epoch, final val loss `1.8770`
+  - Artifact: `train_glp_matched_modal_20260313T023542Z_response_last_tranches1234_val3e_20260312a.json`
+
+- **Mixed clean+edited checkpoint is now trained**
+  - Numeric claim: `8,600` total samples, `1,720` edited (`20%`), balanced `430` per edit label, final val loss `1.8551`
+  - Artifacts: `glp_export_mixed_edited_memmap_dataset_20260315T075043Z_response_last_mixed20_tranches1234_20260313a.json`; `train_glp_matched_modal_20260315T075513Z_response_last_mixed20_tranches1234_val3e_20260313a.json`
 
 ## What To Do Next
 

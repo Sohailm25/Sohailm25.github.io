@@ -209,17 +209,41 @@ That is enough variance that I am comfortable writing “strong steering, weak d
 
 ## Artifact Index For Numeric Claims
 
-| Claim in this post | Numeric claim | Artifact(s) |
-|---|---|---|
-| Core concentration is non-flat | `sycophancy` Gini `0.5771`, top-20% mass `0.5298`; `machiavellian_disposition` Gini `0.6476`, top-20% mass `0.6173` | `week3_stage3_activation_delta_attribution_20260304T164549Z.json` |
-| Judge reliability is nontrivial | `90` prompt pairs, `180` responses/judge, mean kappa `0.7727` | `week2_judge_reliability_audit_packet_20260314T160930Z.json` |
-| `politeness` prompt-last fails distinctness | target effect `46.33`, assistant-likeness bleed `47.23`, bleed ratio `1.0194` | `week2_trait_lane_deeper_validation_validation_20260312T134851Z.json` |
-| `politeness` response-mean still fails distinctness | target effect `38.03`, assistant-likeness bleed `39.7`, bleed ratio `1.0438` | `week2_trait_lane_deeper_validation_validation_20260313T182007Z.json` |
-| Orthogonalization did not rescue `politeness` distinctness | target effect `31.4`, assistant-likeness bleed `32.83`, bleed ratio `1.0456` | `week2_trait_lane_orthogonalization_validation_20260313T151437Z.json` |
-| H2 strict claim-grade necessity fails | best zero-ablation mean reduction `0.5627`; best resample mean reduction `0.2585`; all below `0.80` necessity bar | `week3_stage4_policy_decision_packet_20260310T142000Z.json` |
-| H3 fails under executed full-complement protocol | preservation `0.2857` at dose `0.25`; `0.3571` at dose `0.50`; coherence drop `73.2`; capability proxy `0.0` | `week3_stage4_behavioral_sufficiency_claimgrade_trancheA_closeout_20260311T1919Z.json` |
-| H4 is weak-negative | early Jaccard `0.1696`, late Jaccard `0.1236`, delta `0.0460`, proposal pattern pass `false` | `week3_stage5_policy_decision_packet_20260310T200937Z.json` |
-| H5 is exploratory null / weak negative | `n_tested=62`, `n_rejected=0`, `min_q_value=0.0465` | `week3_stage5_policy_decision_packet_20260310T200937Z.json` |
+- **Core concentration is non-flat**
+  - Numeric claim: `sycophancy` Gini `0.5771`, top-20% mass `0.5298`; `machiavellian_disposition` Gini `0.6476`, top-20% mass `0.6173`
+  - Artifact: `week3_stage3_activation_delta_attribution_20260304T164549Z.json`
+
+- **Judge reliability is nontrivial**
+  - Numeric claim: `90` prompt pairs, `180` responses/judge, mean kappa `0.7727`
+  - Artifact: `week2_judge_reliability_audit_packet_20260314T160930Z.json`
+
+- **`politeness` prompt-last fails distinctness**
+  - Numeric claim: target effect `46.33`, assistant-likeness bleed `47.23`, bleed ratio `1.0194`
+  - Artifact: `week2_trait_lane_deeper_validation_validation_20260312T134851Z.json`
+
+- **`politeness` response-mean still fails distinctness**
+  - Numeric claim: target effect `38.03`, assistant-likeness bleed `39.7`, bleed ratio `1.0438`
+  - Artifact: `week2_trait_lane_deeper_validation_validation_20260313T182007Z.json`
+
+- **Orthogonalization did not rescue `politeness` distinctness**
+  - Numeric claim: target effect `31.4`, assistant-likeness bleed `32.83`, bleed ratio `1.0456`
+  - Artifact: `week2_trait_lane_orthogonalization_validation_20260313T151437Z.json`
+
+- **H2 strict claim-grade necessity fails**
+  - Numeric claim: best zero-ablation mean reduction `0.5627`; best resample mean reduction `0.2585`; all below `0.80` necessity bar
+  - Artifact: `week3_stage4_policy_decision_packet_20260310T142000Z.json`
+
+- **H3 fails under executed full-complement protocol**
+  - Numeric claim: preservation `0.2857` at dose `0.25`; `0.3571` at dose `0.50`; coherence drop `73.2`; capability proxy `0.0`
+  - Artifact: `week3_stage4_behavioral_sufficiency_claimgrade_trancheA_closeout_20260311T1919Z.json`
+
+- **H4 is weak-negative**
+  - Numeric claim: early Jaccard `0.1696`, late Jaccard `0.1236`, delta `0.0460`, proposal pattern pass `false`
+  - Artifact: `week3_stage5_policy_decision_packet_20260310T200937Z.json`
+
+- **H5 is exploratory null / weak negative**
+  - Numeric claim: `n_tested=62`, `n_rejected=0`, `min_q_value=0.0465`
+  - Artifact: `week3_stage5_policy_decision_packet_20260310T200937Z.json`
 
 ## Next Steps
 

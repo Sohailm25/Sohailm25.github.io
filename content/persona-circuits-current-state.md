@@ -50,6 +50,16 @@ Prior work already supports key pieces of that story:
 
 The gap was the bridge between these ideas in one integrated, claim-disciplined workflow.
 
+## Explicit Hypotheses
+
+To make the evaluation criteria explicit, the project tracks five hypotheses:
+
+- **H1 (Concentration):** persona-like steering directions are mediated by non-trivial concentrated internal structure, not a fully diffuse effect.
+- **H2 (Necessity):** ablating identified high-contribution components should materially reduce the targeted behavior.
+- **H3 (Sufficiency):** preserving/activating identified components alone should retain enough behavior to support a bounded sufficiency claim.
+- **H4 (Cross-persona structure):** persona-related structure should show predictable shared-vs-distinct organization across personas beyond noise-level overlap.
+- **H5 (Routing mediation):** routing-level evidence should show more-than-exploratory support for persona mediation under current controls.
+
 ## What We Built
 
 We now have a full stack covering:

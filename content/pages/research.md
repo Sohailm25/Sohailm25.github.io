@@ -47,6 +47,24 @@ The purpose is to understand where steering is practical versus brittle, so safe
 
 ## Experiments
 
+### [Persona Circuits Current State: What Held Up, What Broke, and What We Learned](/research/experiments/persona-circuits-current-state/)
+**Current-state synthesis with explicit hypothesis boundaries (H1–H5)**
+
+Sohail Mohammad · March 2026
+
+Mainline synthesis of the persona-circuits experiment: robust steering and partial concentration support, but mixed-to-negative evidence for stronger distinctness, necessity, and sufficiency claims under current protocols.
+
+[Write-up](/research/experiments/persona-circuits-current-state/) · [Code (GitHub)](https://github.com/Sohailm25/persona-circuits)
+
+### [Persona Circuits Branch Report: What We Learned Trying GLP Activation Repair](/research/experiments/glp-persona-circuits-current-state/)
+**Branch analysis of GLP as activation repair under explicit G1–G3 hypotheses**
+
+Sohail Mohammad · March 2026
+
+Branch report testing whether GLP can preserve steering semantics while repairing activation geometry. In this setting, public-checkpoint transfer failed, matched checkpoints were more stable but still nonselective, and mixed clean+edited training is now the key pending test.
+
+[Write-up](/research/experiments/glp-persona-circuits-current-state/) · [Code (GitHub)](https://github.com/Sohailm25/persona-circuits)
+
 ### [Teaching an LLM to Trade Prediction Markets](/research/prediction-market-trader/)
 **Chain-of-Thought Reasoning Solves Action Collapse in Low-Cardinality RL**
 

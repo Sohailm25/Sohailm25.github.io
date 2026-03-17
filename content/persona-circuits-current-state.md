@@ -3,7 +3,7 @@ Date: 2026-03-17 13:30
 Modified: 2026-03-17 13:30
 Category: Research
 Tags: persona-circuits, mechanistic-interpretability, llm-research, steering, interpretability
-Slug: persona-circuits-current-state
+Slug: research/experiments/persona-circuits-current-state
 Authors: Sohail Mohammad
 Summary: Current-state synthesis of persona-circuits: robust steering and partial concentration support, but weaker distinctness, necessity, and sufficiency evidence under current protocols.
 Status: published
@@ -14,7 +14,7 @@ This is a current-state synthesis, not a final paper.
 
 It is also not a placeholder. We have enough completed work to make concrete claims now, including mixed and negative findings that are worth publishing as first-class results.
 
-**Companion branch report:** [/glp-persona-circuits-current-state/](/glp-persona-circuits-current-state/)
+**Companion branch report:** [/research/experiments/glp-persona-circuits-current-state/](/research/experiments/glp-persona-circuits-current-state/)
 
 ## Evidence Scope
 
@@ -45,6 +45,16 @@ Prior work already supports key pieces of that story:
 - circuit-tracing cases where specific behaviors are mechanistically localizable
 
 The gap was the bridge between these ideas in one integrated, claim-disciplined workflow.
+
+## Explicit Hypotheses
+
+To make the claim structure unambiguous, this project tracks five hypotheses:
+
+- **H1 (Concentration):** persona-like steering directions are mediated by non-trivial, concentrated internal structure rather than a fully diffuse effect.
+- **H2 (Necessity):** ablating identified high-contribution components should materially reduce the targeted behavior.
+- **H3 (Sufficiency):** activating or preserving identified components alone should retain enough behavior to support a circuit-level sufficiency claim under bounded tests.
+- **H4 (Cross-persona structure):** persona-related structure should show predictable cross-persona relations (shared vs distinct components) beyond noise-level overlap.
+- **H5 (Routing mediation):** routing-level evidence should show more-than-exploratory support for persona mediation under current controls.
 
 ## What We Built
 

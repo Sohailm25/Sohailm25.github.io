@@ -3,7 +3,7 @@ Date: 2026-03-17 12:00
 Modified: 2026-03-17 12:00
 Category: Research
 Tags: persona-circuits, glp, activation-steering, mechanistic-interpretability, llm-research
-Slug: glp-persona-circuits-current-state
+Slug: research/experiments/glp-persona-circuits-current-state
 Authors: Sohail Mohammad
 Summary: Branch report on using Generative Latent Priors (GLP) for activation repair in persona steering: public-checkpoint transfer failed in this setting, matched checkpoints were more stable but still nonselective, and mixed clean+edited training is now the key unresolved test.
 Status: published
@@ -14,7 +14,7 @@ This is a current-state branch report inside the broader persona-circuits projec
 
 I’m writing this now because the branch has already produced a useful result shape: not a clean win, not a trivial null, but a legible failure mode that changes what we should test next.
 
-**Mainline synthesis:** [/persona-circuits-current-state/](/persona-circuits-current-state/)
+**Mainline synthesis:** [/research/experiments/persona-circuits-current-state/](/research/experiments/persona-circuits-current-state/)
 
 ## Evidence Scope
 
@@ -45,6 +45,14 @@ In persona-circuits, the central challenge is not only moving a trait score. It 
 - geometric invalidity (the intervention pushes activations off-manifold)
 
 GLP was promising as a disambiguation tool: repair geometry without erasing meaningful directional edits.
+
+## Explicit Branch Hypotheses
+
+This branch tests three explicit hypotheses:
+
+- **G1 (Selective repair):** GLP should improve selected steering outcomes more than baseline or random-control GLP conditions.
+- **G2 (Direction preservation):** GLP repair should keep substantial alignment with the intended edit direction while improving plausibility.
+- **G3 (Train/eval match sensitivity):** mixed clean+edited training should improve selectivity relative to clean-only training if distribution mismatch is the main bottleneck.
 
 ## Naming Note (Consistency With Mainline)
 
@@ -87,21 +95,39 @@ So far, mostly no.
 
 ### 3) Control competitiveness remains too high
 
-Representative validated reads:
+Representative validated reads (compact format):
 
-#### matched `response_all`
+- **Matched `response_all` — `evil`**
+  - selected_raw: `-59.6`
+  - selected_glp: `-54.65`
+  - raw coherence: `34.75`
+  - glp coherence: `33.08`
+  - baseline_glp_control: `-61.5`
+  - random_glp: `-59.5`
 
-| Trait | `selected_raw` | `selected_glp` | `raw` coherence | `glp` coherence | `baseline_glp_control` | `random_glp` |
-|---|---:|---:|---:|---:|---:|---:|
-| `evil` | `-59.6` | `-54.65` | `34.75` | `33.08` | `-61.5` | `-59.5` |
-| `sycophancy` | `-71.9` | `-72.25` | `50.98` | `44.98` | `-77.3` | `-74.75` |
+- **Matched `response_all` — `sycophancy`**
+  - selected_raw: `-71.9`
+  - selected_glp: `-72.25`
+  - raw coherence: `50.98`
+  - glp coherence: `44.98`
+  - baseline_glp_control: `-77.3`
+  - random_glp: `-74.75`
 
-#### matched `response_last`
+- **Matched `response_last` — `evil`**
+  - selected_raw: `-60.25`
+  - selected_glp: `-54.15`
+  - raw coherence: `34.4`
+  - glp coherence: `31.93`
+  - baseline_glp_control: `-62.45`
+  - random_glp: `-58.67`
 
-| Trait | `selected_raw` | `selected_glp` | `raw` coherence | `glp` coherence | `baseline_glp_control` | `random_glp` |
-|---|---:|---:|---:|---:|---:|---:|
-| `evil` | `-60.25` | `-54.15` | `34.4` | `31.93` | `-62.45` | `-58.67` |
-| `sycophancy` | `-72.15` | `-71.0` | `50.8` | `49.45` | `-73.5` | `-75.65` |
+- **Matched `response_last` — `sycophancy`**
+  - selected_raw: `-72.15`
+  - selected_glp: `-71.0`
+  - raw coherence: `50.8`
+  - glp coherence: `49.45`
+  - baseline_glp_control: `-73.5`
+  - random_glp: `-75.65`
 
 Interpretation: GLP effects are not selective enough relative to nuisance controls.
 

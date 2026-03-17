@@ -1,4 +1,4 @@
-Title: Persona Circuits Current State: What Held Up, What Broke, and What We Learned
+Title: Persona Circuits: Progress & Findings (3-17-2026)
 Date: 2026-03-17 13:30
 Modified: 2026-03-17 17:30
 Category: Research

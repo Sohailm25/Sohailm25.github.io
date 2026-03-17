@@ -1,4 +1,4 @@
-Title: Persona Circuits Branch Report: What We Learned Trying GLP Activation Repair
+Title: Persona Circuits: Exploring GLP Application
 Date: 2026-03-17 12:00
 Modified: 2026-03-17 17:30
 Category: Research

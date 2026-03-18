@@ -27,10 +27,11 @@ i am most interested in applied interpretability. this includes auditing, produc
 
 i also think mechinterp is partly a meta-science right now. it is not only about studying model mechanisms. it is also about defining what valid mechanistic evidence should look like. causal mechanistic interpretability is methodological infrastructure for the field. this work helps future papers make stronger causal claims.
 
-my current mental model is a three-level hierarchy:
-- **level 1: activation steering.** can i reliably manipulate behavior through internal interventions?
-- **level 2: causal mediation.** which components causally transmit specific effects?
-- **level 3: causal abstraction.** does the model's computation structurally correspond to an interpretable algorithm at the right grain?
+my current mental model is a three-level hierarchy.
+
+1. **level 1: activation steering.** can i reliably manipulate behavior through internal interventions?
+2. **level 2: causal mediation.** which components causally transmit specific effects?
+3. **level 3: causal abstraction.** does the model's computation structurally correspond to an interpretable algorithm at the right grain?
 
 tools are increasingly accessible. i can run serious 8b forward-pass experiments locally. leverage now comes from better questions, tighter experiment design, and clearer visualizations. visuals are not decoration. they are part of the reasoning process.
 

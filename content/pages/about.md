@@ -17,14 +17,21 @@ sohailmo.ai@gmail.com
 
 ## current snapshot of my research beliefs (mechinterp)
 
-i've been in technical work long enough to know output is cheap and signal is rare. publishing work that doesn't meaningfully move understanding forward feels empty, so i optimize for depth over volume.
+i've been in technical work long enough to know output is cheap and signal is rare. publishing work that doesn't meaningfully move understanding forward feels empty. i optimize for depth over volume.
 
-i still feel like an amateur in mechanistic interpretability—and i think that's the right posture. in this field, taste is earned experimentally, not declared. i bias toward fast, structured iteration: small ablations, smoke tests, and aggressive pruning of weak directions before scaling anything expensive.
+i still feel like an amateur in mechanistic interpretability. i think that is the right posture. in this field, taste is earned experimentally. it is not declared. i bias toward fast, structured iteration. i run small ablations, smoke tests, and aggressive pruning of weak directions before scaling anything expensive.
 
-most failures sit below the abstraction layer you start with. so i default to questioning assumptions: in my own framing, in papers, and in the incentives behind what gets called "good research." local maxima often present as consensus.
+most failures sit below the abstraction layer you start with. i default to questioning assumptions in my own framing, in papers, and in the incentives behind what gets called good research. local maxima often present as consensus.
 
-i'm most interested in applied interpretability: auditing, production oversight, and practical intervention—not interpretability as pure reverse engineering. that includes open questions around reasoning models, training regimes, and architecture shifts (moe, multimodal), where older interpretability intuitions may not transfer cleanly.
+i am most interested in applied interpretability. this includes auditing, production oversight, and practical intervention. i am less interested in interpretability as pure reverse engineering. this includes open questions around reasoning models, training regimes, and architecture shifts such as moe and multimodal systems. older interpretability intuitions may not transfer cleanly.
 
-tools are increasingly accessible (i can run serious 8b forward-pass experiments locally), so leverage now comes from better questions, tighter experiment design, and clearer visualizations. visuals aren't decoration—they are part of the reasoning process.
+i also think mechinterp is partly a meta-science right now. it is not only about studying model mechanisms. it is also about defining what valid mechanistic evidence should look like. causal mechanistic interpretability is methodological infrastructure for the field. this work helps future papers make stronger causal claims.
 
-net: i'm aiming for research that is technically rigorous, operationally useful, and genuinely novel.
+my current mental model is a three-level hierarchy:
+- **level 1: activation steering.** can i reliably manipulate behavior through internal interventions?
+- **level 2: causal mediation.** which components causally transmit specific effects?
+- **level 3: causal abstraction.** does the model's computation structurally correspond to an interpretable algorithm at the right grain?
+
+tools are increasingly accessible. i can run serious 8b forward-pass experiments locally. leverage now comes from better questions, tighter experiment design, and clearer visualizations. visuals are not decoration. they are part of the reasoning process.
+
+net: i am aiming for research that is technically rigorous, operationally useful, and genuinely novel.

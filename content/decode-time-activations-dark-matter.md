@@ -146,3 +146,8 @@ We are still using microscopes calibrated for one room to study another. Sometim
 *Code and experiment logs: [github.com/Sohailm25/persona-circuits](https://github.com/Sohailm25/persona-circuits)*  
 *Related: [Persona Circuits: Progress & Findings](https://sohailmo.ai/research/experiments/persona-circuits-current-state/)*  
 *Related: [Inverse Scaling in Activation Steering](https://sohailmo.ai/research/activation-steering/)*
+
+## Related in this trilogy
+
+- [Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines](/research/experiments/backpressure-kills-silently-capture-pipelines/)
+- [What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)](/research/experiments/continuous-batching-activations-sae/)

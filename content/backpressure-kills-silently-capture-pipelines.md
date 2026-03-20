@@ -163,3 +163,8 @@ For interpretability infrastructure, that’s not a minor ops detail. It is part
 
 *Related: [Ray in Production: What Dozens of GPUs and a Lot of 3am Pages Taught Me](https://sohailmo.ai/ray-production-lessons/)*  
 *Related: [Optimizing vLLM at Production Scale](https://sohailmo.ai/vllm-production-scale-lessons/)*
+
+## Related in this trilogy
+
+- [Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure](/research/experiments/decode-time-activations-dark-matter/)
+- [What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)](/research/experiments/continuous-batching-activations-sae/)

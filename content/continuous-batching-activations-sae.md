@@ -130,3 +130,8 @@ If interpretability is becoming infrastructure, these details belong in the meth
 
 *Code and experiment logs: [github.com/Sohailm25/persona-circuits](https://github.com/Sohailm25/persona-circuits)*  
 *Related: [Persona Circuits: Progress & Findings](https://sohailmo.ai/research/experiments/persona-circuits-current-state/)*
+
+## Related in this trilogy
+
+- [Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure](/research/experiments/decode-time-activations-dark-matter/)
+- [Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines](/research/experiments/backpressure-kills-silently-capture-pipelines/)

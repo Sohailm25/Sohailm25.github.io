@@ -1,6 +1,6 @@
 Title: What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)
 Date: 2026-03-20 13:25
-Modified: 2026-03-20 13:37
+Modified: 2026-03-20 13:39
 Category: Case Studies
 Tags: interpretability-infrastructure, continuous-batching, sglang, vllm, saes, activation-capture, systems
 Slug: research/experiments/continuous-batching-activations-sae
@@ -43,7 +43,6 @@ For standard transformer usage, LayerNorm and RMSNorm normalize over hidden feat
 
 So adding/removing unrelated sequences in the same continuous batch does **not** change the normalization statistics for an existing token.
 
-**Confidence: Observed**
 
 This is architectural/implementation behavior, not a hypothesis.
 
@@ -57,7 +56,6 @@ Different effective matrix shapes can trigger different kernel/tiling paths (e.g
 
 In floating-point arithmetic, that can produce small numeric drift, and occasionally output divergence near decision boundaries. Note that often-cited batch-size sensitivity results came from an OpenReview submission (not a peer-reviewed venue) and were strongest under TF32 settings; treat them as suggestive rather than settled.
 
-**Confidence: Suggestive**
 
 The mechanism is real and well-understood in numerical computing. Magnitude in this exact activation-harvesting setup is still under-measured.
 
@@ -71,7 +69,6 @@ That means activation harvesting in a cache-heavy serving mode can systematicall
 
 This is not activation-value contamination. It is **coverage missingness / coverage bias**.
 
-**Confidence: Observed/Suggestive**
 
 Observed that caching skips compute; suggestive that resulting token-class undercoverage materially shifts SAE feature learning unless explicitly corrected.
 

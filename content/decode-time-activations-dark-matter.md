@@ -1,6 +1,6 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:37
+Modified: 2026-03-20 13:39
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
@@ -39,24 +39,20 @@ That is exposure-bias territory: training-time conditioning and generation-time 
 ## What evidence exists today
 
 ### 1) Goodfire’s R1 observations  
-**Confidence: Observed**
 
 Goodfire reports strong feature-distribution shifts across prompt, thinking trace, and assistant response in DeepSeek R1. They also report phase-sensitive steering behavior (e.g., naive early steering failure; dependence on model preamble dynamics).
 
 That is direct evidence of within-generation regime heterogeneity under a shared SAE vocabulary.
 
 ### 2) Exposure-bias quantification literature  
-**Confidence: Suggestive**
 
 He et al. estimate relatively modest aggregate performance gaps (~3%) when removing train/infer mismatch. Encouraging - but aggregate metrics can hide local spikes at high-entropy or decision-critical positions, where sparse features are most brittle.
 
 ### 3) Degeneration and anisotropy results  
-**Confidence: Suggestive**
 
 Holtzman et al. and SimCTG-style work indicate generated text and human text occupy different statistical/representational structure. If generated-token trajectories live in a different region of representation space, downstream activations inherit that mismatch relative to prefill training distributions.
 
 ### 4) Speculative decoding acceptance behavior  
-**Confidence: Suggestive**
 
 In production, acceptance rates vary materially by domain (e.g., lower on conversational vs higher on code). Even closely related draft/target models diverge substantially at decode time. This implies structured decode-time complexity not captured by standard proxy objectives.
 

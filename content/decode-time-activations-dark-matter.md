@@ -1,7 +1,7 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:28
-Category: Research
+Modified: 2026-03-20 13:30
+Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
 Authors: Sohail Mohammad

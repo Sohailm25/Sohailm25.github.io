@@ -1,7 +1,7 @@
 Title: What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)
 Date: 2026-03-20 13:25
-Modified: 2026-03-20 13:28
-Category: Research
+Modified: 2026-03-20 13:30
+Category: Case Studies
 Tags: interpretability-infrastructure, continuous-batching, sglang, vllm, saes, activation-capture, systems
 Slug: research/experiments/continuous-batching-activations-sae
 Authors: Sohail Mohammad

@@ -1,6 +1,6 @@
 Title: What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)
 Date: 2026-03-20 13:25
-Modified: 2026-03-20 13:35
+Modified: 2026-03-20 13:37
 Category: Case Studies
 Tags: interpretability-infrastructure, continuous-batching, sglang, vllm, saes, activation-capture, systems
 Slug: research/experiments/continuous-batching-activations-sae
@@ -124,7 +124,7 @@ The reassuring part: continuous batching itself is not algorithmically “pollut
 
 The important part: inference-time systems choices still shape activation datasets through numerical execution path differences and, more significantly, token-coverage effects like prefix caching.
 
-If interpretability is becoming infrastructure, these details belong in the methods section—not the appendix.
+If interpretability is becoming infrastructure, these details belong in the methods section - not the appendix.
 
 **Evidence-quality note:** This draft incorporates pre-publication fact-check corrections (2026-03-20), including attribution fixes and explicit separation of algorithmic equivalence from floating-point nondeterminism.
 

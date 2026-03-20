@@ -1,6 +1,6 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:35
+Modified: 2026-03-20 13:37
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
@@ -12,11 +12,11 @@ Status: published
 
 Interpretability infrastructure is currently built on a quiet assumption: **features learned from prefill activations transfer cleanly to decode-time generation**.
 
-Most SAE training pipelines collect activations during standard forward passes over text corpora (I use “prefill” as serving shorthand for this regime). Most high-stakes use cases—steering, monitoring, safety classification—happen during autoregressive generation (decode). We use dictionaries trained in one regime to intervene in another.
+Most SAE training pipelines collect activations during standard forward passes over text corpora (I use “prefill” as serving shorthand for this regime). Most high-stakes use cases - steering, monitoring, safety classification - happen during autoregressive generation (decode). We use dictionaries trained in one regime to intervene in another.
 
 **Core claim:** *Interpretability at frontier scale fails as safety infrastructure unless we explicitly measure how prefill-trained feature dictionaries degrade under decode-time dynamics.*
 
-I’m writing this from both sides of the boundary. On the infrastructure side, I’ve run production inference systems where prefill and decode had to be optimized separately because they behave differently at the systems level. On the research side, my persona-circuits work on Llama-3.1-8B-Instruct found negative sufficiency results despite successful steering—exactly the kind of discrepancy this regime gap could confound.
+I’m writing this from both sides of the boundary. On the infrastructure side, I’ve run production inference systems where prefill and decode had to be optimized separately because they behave differently at the systems level. On the research side, my persona-circuits work on Llama-3.1-8B-Instruct found negative sufficiency results despite successful steering - exactly the kind of discrepancy this regime gap could confound.
 
 I’m not claiming current methods are broken. I’m claiming we need a measurement standard for where they hold and where they fail.
 
@@ -48,7 +48,7 @@ That is direct evidence of within-generation regime heterogeneity under a shared
 ### 2) Exposure-bias quantification literature  
 **Confidence: Suggestive**
 
-He et al. estimate relatively modest aggregate performance gaps (~3%) when removing train/infer mismatch. Encouraging—but aggregate metrics can hide local spikes at high-entropy or decision-critical positions, where sparse features are most brittle.
+He et al. estimate relatively modest aggregate performance gaps (~3%) when removing train/infer mismatch. Encouraging - but aggregate metrics can hide local spikes at high-entropy or decision-critical positions, where sparse features are most brittle.
 
 ### 3) Degeneration and anisotropy results  
 **Confidence: Suggestive**
@@ -93,25 +93,25 @@ My current design cannot separate A from B. That ambiguity itself is the point: 
 
 For reasoning models, long thinking traces keep the model in decode conditioning for hundreds/thousands of tokens. Internal dynamics are phase-structured, and chain-of-thought text is not consistently faithful to causal factors in final decisions.
 
-So if the goal is to understand or monitor reasoning-time computation, decode activations are not optional—they are the object. Prefill-only instrumentation becomes increasingly misaligned with the behaviors we care most about.
+So if the goal is to understand or monitor reasoning-time computation, decode activations are not optional - they are the object. Prefill-only instrumentation becomes increasingly misaligned with the behaviors we care most about.
 
 ## A practical measurement program (minimum viable standard)
 
 Here’s a concrete, low-friction program:
 
-### Experiment 1 — Distribution drift by position
+### Experiment 1  -  Distribution drift by position
 Capture prefill activations and decode activations on matched prompts. Compare mean/variance/kurtosis/outlier frequency per layer and token position.
 
-### Experiment 2 — Reconstruction gap
+### Experiment 2  -  Reconstruction gap
 Evaluate prefill-trained SAE reconstruction on prefill vs decode activations (MSE, EV). Track drift over generation steps and entropy bands.
 
-### Experiment 3 — Feature-set overlap
+### Experiment 3  -  Feature-set overlap
 Compare top-k active features between regimes (e.g., Jaccard overlap, rank correlation).
 
-### Experiment 4 — Steering fidelity over depth
+### Experiment 4  -  Steering fidelity over depth
 Apply fixed steering at token 1, 10, 50, 200; measure effect size decay or instability.
 
-### Experiment 5 — Sparse online probes
+### Experiment 5  -  Sparse online probes
 Lightweight decode-time snapshots (periodic or entropy-triggered) against a prefill reference profile; flag high-divergence trajectories.
 
 **Method note:** KL on per-dimension marginals is a **diagnostic proxy**, not a full characterization of joint geometry. Use it for triage, not proof.

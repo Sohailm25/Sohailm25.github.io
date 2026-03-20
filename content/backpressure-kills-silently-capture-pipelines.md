@@ -1,6 +1,6 @@
 Title: Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines
 Date: 2026-03-20 13:24
-Modified: 2026-03-20 13:35
+Modified: 2026-03-20 13:37
 Category: Case Studies
 Tags: interpretability-infrastructure, data-pipelines, systems, saes, activation-capture, reliability
 Slug: research/experiments/backpressure-kills-silently-capture-pipelines
@@ -22,15 +22,15 @@ Across production inference, Ray data systems, and distributed training, I keep 
 
 ## The three throughput mismatches
 
-### Stage 1 — GPU forward pass → GPU staging buffer
+### Stage 1  -  GPU forward pass → GPU staging buffer
 Device-to-device copy in HBM is usually not the limiter. Preallocated pools avoid allocator jitter. Metadata records are tiny.
 
-### Stage 2 — GPU staging → pinned CPU memory
+### Stage 2  -  GPU staging → pinned CPU memory
 D2H over PCIe is slower and burst-sensitive. Practical throughput is good, but no longer “free.” Correctness depends on pinned memory + explicit event discipline.
 
 Reference numbers worth grounding here: PCIe Gen4 x16 is ~31.5 GB/s theoretical after encoding overhead; real-world 25–27 GB/s transfer rates are still excellent practical efficiency.
 
-### Stage 3 — CPU path (reshape/provenance/compress) → disk
+### Stage 3  -  CPU path (reshape/provenance/compress) → disk
 This is where most pipelines become adversarial under load:
 
 - variable batch sizes
@@ -165,7 +165,7 @@ If drop probability rises with workload intensity, you are in MNAR territory.
 
 ## What remains open
 
-I don’t yet have a universal “correct” buffer size or queue policy for trillion-parameter capture—those are deployment-specific and workload-specific.
+I don’t yet have a universal “correct” buffer size or queue policy for trillion-parameter capture - those are deployment-specific and workload-specific.
 
 I also don’t think the right stance is alarmist. Good teams likely carry hidden margins and unpublished mitigations. The point is simpler:
 

@@ -1,6 +1,6 @@
-Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
+Title: Why Prefill-Trained Interpretability Breaks in Decode
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 16:45
+Modified: 2026-03-20 18:03
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter

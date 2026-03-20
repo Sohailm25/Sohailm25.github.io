@@ -1,6 +1,6 @@
-Title: The Consistency Model Nobody Talks About: What KV Cache Mechanics Tell Us About Interpretability's Blind Spot
+Title: KV Cache Drift and the Interpretability Blind Spot
 Date: 2026-03-20 16:35
-Modified: 2026-03-20 16:42
+Modified: 2026-03-20 18:03
 Category: Case Studies
 Tags: mechanistic-interpretability, kv-cache, inference-systems, saes, activation-steering, reasoning-models
 Slug: research/experiments/consistency-model-kv-cache-interpretability-blind-spot

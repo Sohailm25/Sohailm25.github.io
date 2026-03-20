@@ -1,6 +1,6 @@
 Title: The Consistency Model Nobody Talks About: What KV Cache Mechanics Tell Us About Interpretability's Blind Spot
 Date: 2026-03-20 16:35
-Modified: 2026-03-20 16:38
+Modified: 2026-03-20 16:42
 Category: Case Studies
 Tags: mechanistic-interpretability, kv-cache, inference-systems, saes, activation-steering, reasoning-models
 Slug: research/experiments/consistency-model-kv-cache-interpretability-blind-spot
@@ -24,6 +24,26 @@ meanwhile, interpretability workflows still train SAEs mostly on prefill activat
 that should make you uncomfortable.
 
 if you want my broader writing/research context, it is all linked in [/writings/](/writings/).
+
+## in plain english
+
+here is the non-jargon version.
+
+imagine a student who studies using textbook problems, then is graded on a very different kind of exam.
+
+the student is still smart. the memory is still there. but the question style changed, so performance can drift.
+
+that is basically what is happening here:
+
+- **prefill** is the textbook phase (model reading human-written text)
+- **decode** is exam-time improvisation (model generating its own next steps)
+- **SAE features** are the study notes we built from textbook behavior
+
+we then use those study notes to judge or steer behavior during exam-time generation.
+
+sometimes this works great. sometimes it misses what changed.
+
+so this piece is arguing for one simple standard: before we call this safety infrastructure, we should measure how much the model's internal behavior drifts from study-time to exam-time.
 
 ## the framing that makes this obvious
 

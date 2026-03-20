@@ -1,6 +1,6 @@
 Title: Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines
 Date: 2026-03-20 13:24
-Modified: 2026-03-20 13:41
+Modified: 2026-03-20 16:45
 Category: Case Studies
 Tags: interpretability-infrastructure, data-pipelines, systems, saes, activation-capture, reliability
 Slug: research/experiments/backpressure-kills-silently-capture-pipelines
@@ -17,6 +17,24 @@ This piece is about what happens when reality stops being steady-state.
 Across production inference, Ray data systems, and distributed training, I keep seeing the same pattern: when pipeline stages run at different effective speeds, transient pressure turns buffers into bias generators. The pipeline keeps running. Aggregate metrics still look good. But drops become correlated with data properties.
 
 **Core claim:** for activation harvesting, backpressure-induced drops are often **MNAR** (missing not at random), which can systematically bias SAE training toward easy/common activations and away from rare/high-information ones.
+
+## in plain english
+
+here is the non-jargon version.
+
+imagine filming a football game, but your camera drops frames only during the fastest, most chaotic plays.
+
+you still get plenty of footage, and the recording looks mostly fine.
+
+but the exact moments you miss are the ones that mattered most.
+
+that is what backpressure does in activation pipelines:
+
+- the system looks healthy on average
+- under bursts, buffers overflow and something gets dropped
+- drops are usually not random, so your dataset skews quietly
+
+so this is less about "did we collect a lot of data" and more about "did we systematically miss the hard cases."
 
 ---
 

@@ -1,6 +1,6 @@
 Title: What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)
 Date: 2026-03-20 13:25
-Modified: 2026-03-20 13:41
+Modified: 2026-03-20 16:45
 Category: Case Studies
 Tags: interpretability-infrastructure, continuous-batching, sglang, vllm, saes, activation-capture, systems
 Slug: research/experiments/continuous-batching-activations-sae
@@ -21,6 +21,24 @@ Not metadata. Not provenance. The tensors themselves.
 I’ve spent the last few years building production inference stacks (vLLM/SGLang, high-volume conversational systems, distributed training) while also running mechanistic interpretability experiments (contrastive directions, SAE decomposition, behavioral ablation). This question sits exactly at that boundary.
 
 **Core claim:** continuous batching is algorithmically equivalent to independent-sequence processing for activations; the real risks are hardware-level nondeterminism, prefix-caching-induced coverage gaps, and downstream SAE sensitivity to data methodology.
+
+## in plain english
+
+here is the non-jargon version.
+
+imagine you are trying to compare students fairly, but each one took the same test in a different room with slightly different lighting and timing.
+
+the questions are the same, but tiny environment differences can still change who looks strong or weak.
+
+that is this problem:
+
+- continuous batching itself is usually mathematically safe
+- but hardware execution details and cache behavior can still shift collected activations a bit
+- SAEs are sensitive enough that those tiny shifts can matter downstream
+
+so the point is not "batching is bad."
+
+the point is "if you are training interpretation tools from these activations, measure the collection artifacts instead of assuming they are harmless."
 
 ---
 

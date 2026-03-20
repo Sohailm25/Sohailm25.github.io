@@ -1,6 +1,6 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 16:40
+Modified: 2026-03-20 16:45
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
@@ -19,6 +19,26 @@ we train SAE dictionaries on prefill activations, then deploy those dictionaries
 my claim is simple and opinionated: **interpretability at frontier scale is not safety infrastructure until we measure prefill->decode drift explicitly.**
 
 if you want the broader context of how i think about this line of work, i keep related pieces in [/writings/](/writings/), including the experiment logs that informed this post.
+
+## in plain english
+
+here is the non-jargon version.
+
+imagine a student who studies using textbook problems, then is graded on a very different kind of exam.
+
+the student is still smart. the memory is still there. but the question style changed, so performance can drift.
+
+that is basically what is happening here:
+
+- **prefill** is the textbook phase (model reading human-written text)
+- **decode** is exam-time improvisation (model generating its own next steps)
+- **SAE features** are the study notes we built from textbook behavior
+
+we then use those study notes to judge or steer behavior during exam-time generation.
+
+sometimes this works great. sometimes it misses what changed.
+
+so this piece is arguing for one simple standard: before we call this safety infrastructure, we should measure how much the model's internal behavior drifts from study-time to exam-time.
 
 ## why this matters now
 

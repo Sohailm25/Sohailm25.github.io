@@ -1,6 +1,6 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:39
+Modified: 2026-03-20 13:41
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
@@ -29,7 +29,7 @@ The systems distinction is familiar:
 
 At a QSR deployment where I ran three engines concurrently, this split dictated architecture. Prefill latency scaled with prompt length (2k–4k token system prompts: ~100–200ms). Decode sat around ~15–30ms/token, mostly insensitive to context length, limited by bandwidth. Prefix caching (SGLang RadixAttention) reduced prefill latency by 60–80%. Speculative decoding had mixed returns: 50–60% acceptance on conversational traffic, and higher p50 in some cases due to draft overhead.
 
-But this is not just a performance story. It is a **representation story**.
+This is a performance story and a **representation story**.
 
 - In **prefill**, activations are conditioned on human-written sequence tokens.
 - In **decode**, activations are conditioned on the model’s own sampled outputs from step 1 onward.
@@ -121,11 +121,11 @@ Our mainstream mech-interp stack is optimized for fixed-input analysis (“micro
 A few efforts prove feasibility, but there is no broadly adopted, general-purpose workflow for:  
 **stream decode activations → compare to reference distribution → alert on regime drift**.
 
-That is an infrastructure opportunity, not just a research footnote.
+That is an infrastructure opportunity. It should sit in the core engineering roadmap, not in a side research note.
 
 ## Where this leaves the field
 
-This is not a critique of prefill-based SAE practice. It was the right engineering choice for scale.
+This piece focuses on limits and measurement gaps in prefill-based SAE practice. Prefill-first capture was the right engineering choice for scale.
 
 But as systems become more reasoning-heavy, agentic, and long-horizon, the highest-leverage interpretability question shifts from:
 

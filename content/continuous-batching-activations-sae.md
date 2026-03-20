@@ -1,6 +1,6 @@
 Title: What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)
 Date: 2026-03-20 13:25
-Modified: 2026-03-20 13:39
+Modified: 2026-03-20 13:41
 Category: Case Studies
 Tags: interpretability-infrastructure, continuous-batching, sglang, vllm, saes, activation-capture, systems
 Slug: research/experiments/continuous-batching-activations-sae
@@ -67,7 +67,7 @@ Prefix caching can skip forward computation for repeated prefixes by reusing cac
 
 That means activation harvesting in a cache-heavy serving mode can systematically under-sample repeated prompt segments (system prefixes, boilerplate exemplars, recurring headers).
 
-This is not activation-value contamination. It is **coverage missingness / coverage bias**.
+This is a coverage issue. More precisely, it creates **coverage missingness / coverage bias**.
 
 
 Observed that caching skips compute; suggestive that resulting token-class undercoverage materially shifts SAE feature learning unless explicitly corrected.

@@ -4,7 +4,10 @@
 {% block nav_writings %} class="active" aria-current="page"{% endblock %}
 
 {% block content %}
-{% set writings = dates|selectattr('category', 'ne', 'The Forge')|list %}
+{% set writings = dates
+  |selectattr('category', 'ne', 'The Forge')
+  |rejectattr('slug', 'equalto', 'research/failures/b6-negative-result')
+  |list %}
 <div class="section-header">
   <div class="section-title">> All Writings</div>
   <span class="section-link">{{ writings|length }} piece{{ 's' if writings|length != 1 }}</span>
@@ -20,8 +23,7 @@
 </div>
 
 <div class="blog-list">
-  {% for article in dates %}
-  {% if article.category != 'The Forge' %}
+  {% for article in writings %}
   <div class="blog-card" data-category="{{ article.category }}">
     <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
       <div class="card-content">
@@ -32,7 +34,6 @@
       </div>
     </a>
   </div>
-  {% endif %}
   {% endfor %}
 </div>
 

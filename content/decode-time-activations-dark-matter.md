@@ -1,12 +1,12 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:30
+Modified: 2026-03-20 13:35
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
 Authors: Sohail Mohammad
 Summary: Prefill-trained interpretability dictionaries are routinely deployed in decode-time regimes; this piece argues for a concrete measurement standard for prefill→decode drift before treating steering/monitoring as safety infrastructure.
-Status: draft
+Status: published
 
 ---
 

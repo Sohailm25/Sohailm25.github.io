@@ -1,12 +1,12 @@
 Title: Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines
 Date: 2026-03-20 13:24
-Modified: 2026-03-20 13:30
+Modified: 2026-03-20 13:35
 Category: Case Studies
 Tags: interpretability-infrastructure, data-pipelines, systems, saes, activation-capture, reliability
 Slug: research/experiments/backpressure-kills-silently-capture-pipelines
 Authors: Sohail Mohammad
 Summary: Activation-capture pipelines can look healthy in steady state while silently dropping the most informative samples under transient pressure; this piece maps the main failure cascades and proposes practical instrumentation.
-Status: draft
+Status: published
 
 ---
 

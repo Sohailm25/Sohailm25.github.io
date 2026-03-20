@@ -1,6 +1,6 @@
 Title: Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines
 Date: 2026-03-20 13:24
-Modified: 2026-03-20 13:24
+Modified: 2026-03-20 13:28
 Category: Research
 Tags: interpretability-infrastructure, data-pipelines, systems, saes, activation-capture, reliability
 Slug: research/experiments/backpressure-kills-silently-capture-pipelines
@@ -28,6 +28,8 @@ Device-to-device copy in HBM is usually not the limiter. Preallocated pools avoi
 ### Stage 2 — GPU staging → pinned CPU memory
 D2H over PCIe is slower and burst-sensitive. Practical throughput is good, but no longer “free.” Correctness depends on pinned memory + explicit event discipline.
 
+Reference numbers worth grounding here: PCIe Gen4 x16 is ~31.5 GB/s theoretical after encoding overhead; real-world 25–27 GB/s transfer rates are still excellent practical efficiency.
+
 ### Stage 3 — CPU path (reshape/provenance/compress) → disk
 This is where most pipelines become adversarial under load:
 
@@ -42,7 +44,7 @@ Averages hide this. Bursts expose it.
 
 ## Why average disk numbers are misleading
 
-Goodfire-scale capture rates can look comfortable on paper per node. But writer load is bursty, not smooth. Consumer NVMe SLC caches can absorb short bursts and then collapse into lower sustained rates; enterprise media is better, but still exhibits periodic stalls/GC effects.
+Goodfire-scale capture rates can look comfortable on paper per node. But writer load is bursty, not smooth. Consumer NVMe SLC caches can absorb short bursts and then collapse into lower sustained rates; enterprise media is better, but still exhibits periodic stalls/GC effects. For example, consumer 990 Pro-class behavior can show a steep post-cache drop (commonly into roughly ~1.4–1.8 GB/s ranges depending on SKU/test), while enterprise PM9A3 numbers vary materially by form factor and benchmark method.
 
 So the relevant question is not “is mean write bandwidth enough?” It is:
 
@@ -119,6 +121,16 @@ If you only add five things, add these:
 
 If drop probability rises with workload intensity, you are in MNAR territory.
 
+### Minimal observability schema (recommended)
+
+- `drop_reason` (queue_full, writer_timeout, dma_backpressure, etc.)
+- `batch_tokens`
+- `max_seq_len`
+- `queue_depth_stage1/2/3`
+- `disk_write_latency_p99`
+- `compression_backlog_bytes`
+- `cache_hit_ratio` (if prefix caching is enabled)
+
 ---
 
 ## Practical design guidance
@@ -146,6 +158,8 @@ If drop probability rises with workload intensity, you are in MNAR territory.
 - **Observed:** queue policy determines which data is lost when pressure occurs.  
 - **Suggestive:** activation-capture drops are often correlated with workload intensity.  
 - **Speculative (but testable):** these correlated drops can degrade SAE quality specifically on rare/high-information regimes.
+
+**Evidence-quality note:** All hard numbers should be treated as source-bounded, with model/SKU/form-factor caveats preserved (especially for SSD sustained-write claims and compression throughput estimates).
 
 ---
 

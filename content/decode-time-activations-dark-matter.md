@@ -1,6 +1,6 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:20
+Modified: 2026-03-20 13:28
 Category: Research
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
@@ -12,7 +12,7 @@ Status: draft
 
 Interpretability infrastructure is currently built on a quiet assumption: **features learned from prefill activations transfer cleanly to decode-time generation**.
 
-Most SAE training pipelines collect activations during forward passes over text corpora (prefill). Most high-stakes use cases—steering, monitoring, safety classification—happen during autoregressive generation (decode). We use dictionaries trained in one regime to intervene in another.
+Most SAE training pipelines collect activations during standard forward passes over text corpora (I use “prefill” as serving shorthand for this regime). Most high-stakes use cases—steering, monitoring, safety classification—happen during autoregressive generation (decode). We use dictionaries trained in one regime to intervene in another.
 
 **Core claim:** *Interpretability at frontier scale fails as safety infrastructure unless we explicitly measure how prefill-trained feature dictionaries degrade under decode-time dynamics.*
 
@@ -115,6 +115,8 @@ Apply fixed steering at token 1, 10, 50, 200; measure effect size decay or insta
 Lightweight decode-time snapshots (periodic or entropy-triggered) against a prefill reference profile; flag high-divergence trajectories.
 
 **Method note:** KL on per-dimension marginals is a **diagnostic proxy**, not a full characterization of joint geometry. Use it for triage, not proof.
+
+**Evidence-quality note:** All quantitative claims are sourced where possible; estimates are labeled as estimates. This draft incorporates pre-publication fact-check corrections (2026-03-20), including attribution fixes (e.g., FAST by Jiaming Li et al.; Steering Awareness by Fonseca Rivera & Africa) and framing fixes on verbalized-reasoning rates.
 
 ## The tooling gap is the blocker
 

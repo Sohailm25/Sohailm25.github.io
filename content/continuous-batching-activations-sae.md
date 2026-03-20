@@ -1,6 +1,6 @@
 Title: What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)
 Date: 2026-03-20 13:25
-Modified: 2026-03-20 13:25
+Modified: 2026-03-20 13:28
 Category: Research
 Tags: interpretability-infrastructure, continuous-batching, sglang, vllm, saes, activation-capture, systems
 Slug: research/experiments/continuous-batching-activations-sae
@@ -55,7 +55,7 @@ Algorithmic equivalence is not bitwise equivalence.
 
 Different effective matrix shapes can trigger different kernel/tiling paths (e.g., cuBLAS heuristics), changing accumulation order under reduced precision. Chunked prefill likewise can alter reduction order relative to monolithic passes.
 
-In floating-point arithmetic, that can produce small numeric drift, and occasionally output divergence near decision boundaries.
+In floating-point arithmetic, that can produce small numeric drift, and occasionally output divergence near decision boundaries. Note that often-cited batch-size sensitivity results came from an OpenReview submission (not a peer-reviewed venue) and were strongest under TF32 settings; treat them as suggestive rather than settled.
 
 **Confidence: Suggestive**
 
@@ -69,7 +69,7 @@ Prefix caching can skip forward computation for repeated prefixes by reusing cac
 
 That means activation harvesting in a cache-heavy serving mode can systematically under-sample repeated prompt segments (system prefixes, boilerplate exemplars, recurring headers).
 
-This is not activation corruption. It is **coverage bias**.
+This is not activation-value contamination. It is **coverage missingness / coverage bias**.
 
 **Confidence: Observed/Suggestive**
 
@@ -125,6 +125,8 @@ The reassuring part: continuous batching itself is not algorithmically “pollut
 The important part: inference-time systems choices still shape activation datasets through numerical execution path differences and, more significantly, token-coverage effects like prefix caching.
 
 If interpretability is becoming infrastructure, these details belong in the methods section—not the appendix.
+
+**Evidence-quality note:** This draft incorporates pre-publication fact-check corrections (2026-03-20), including attribution fixes and explicit separation of algorithmic equivalence from floating-point nondeterminism.
 
 ---
 

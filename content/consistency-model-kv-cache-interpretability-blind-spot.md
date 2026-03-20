@@ -6,7 +6,7 @@ Tags: mechanistic-interpretability, kv-cache, inference-systems, saes, activatio
 Slug: research/experiments/consistency-model-kv-cache-interpretability-blind-spot
 Authors: Sohail Mohammad
 Summary: KV cache research and interpretability research are measuring the same prefill->decode shift from different angles. This post argues for a shared consistency-model framing and a concrete decode-aware measurement agenda.
-Status: draft
+Status: published
 
 ---
 

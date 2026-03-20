@@ -1,151 +1,173 @@
 Title: Decode-Time Activations Are the Dark Matter of Interpretability Infrastructure
 Date: 2026-03-20 13:20
-Modified: 2026-03-20 13:41
+Modified: 2026-03-20 16:40
 Category: Case Studies
 Tags: mechanistic-interpretability, interpretability-infrastructure, saes, activation-steering, inference-systems, reasoning-models
 Slug: research/experiments/decode-time-activations-dark-matter
 Authors: Sohail Mohammad
-Summary: Prefill-trained interpretability dictionaries are routinely deployed in decode-time regimes; this piece argues for a concrete measurement standard for prefill→decode drift before treating steering/monitoring as safety infrastructure.
+Summary: Prefill-trained interpretability dictionaries are routinely deployed in decode-time regimes; this piece argues for a concrete measurement standard for prefill->decode drift before treating steering and monitoring as safety infrastructure.
 Status: published
 
 ---
 
-Interpretability infrastructure is currently built on a quiet assumption: **features learned from prefill activations transfer cleanly to decode-time generation**.
+i keep seeing the same pattern.
 
-Most SAE training pipelines collect activations during standard forward passes over text corpora (I use “prefill” as serving shorthand for this regime). Most high-stakes use cases - steering, monitoring, safety classification - happen during autoregressive generation (decode). We use dictionaries trained in one regime to intervene in another.
+we train SAE dictionaries on prefill activations, then deploy those dictionaries during decode for steering, monitoring, and safety workflows. this is now normal practice. it also hides a core assumption most of us are not measuring directly:
 
-**Core claim:** *Interpretability at frontier scale fails as safety infrastructure unless we explicitly measure how prefill-trained feature dictionaries degrade under decode-time dynamics.*
+**features learned in prefill transfer cleanly to decode.**
 
-I’m writing this from both sides of the boundary. On the infrastructure side, I’ve run production inference systems where prefill and decode had to be optimized separately because they behave differently at the systems level. On the research side, my persona-circuits work on Llama-3.1-8B-Instruct found negative sufficiency results despite successful steering - exactly the kind of discrepancy this regime gap could confound.
+my claim is simple and opinionated: **interpretability at frontier scale is not safety infrastructure until we measure prefill->decode drift explicitly.**
 
-I’m not claiming current methods are broken. I’m claiming we need a measurement standard for where they hold and where they fail.
+if you want the broader context of how i think about this line of work, i keep related pieces in [/writings/](/writings/), including the experiment logs that informed this post.
 
-## Why prefill and decode are different computational regimes
+## why this matters now
 
-The systems distinction is familiar:
+for small demos, you can get away with implicit assumptions.
 
-- **Prefill is compute-bound** (parallel token processing, high Tensor Core utilization)
-- **Decode is memory-bandwidth-bound** (token-by-token, repeated weight reads from HBM)
+for reasoning models and long-horizon agents, you cannot.
 
-At a QSR deployment where I ran three engines concurrently, this split dictated architecture. Prefill latency scaled with prompt length (2k–4k token system prompts: ~100–200ms). Decode sat around ~15–30ms/token, mostly insensitive to context length, limited by bandwidth. Prefix caching (SGLang RadixAttention) reduced prefill latency by 60–80%. Speculative decoding had mixed returns: 50–60% acceptance on conversational traffic, and higher p50 in some cases due to draft overhead.
+decode is where the important behavior happens: long chain-of-thought traces, tool decisions, multi-step planning, and safety-relevant branching. if your interpretability stack is calibrated on prefill but trusted during decode, your confidence intervals should be different by default.
 
-This is a performance story and a **representation story**.
+that is not anti-SAE. i use SAE workflows myself. this is about calibration discipline.
 
-- In **prefill**, activations are conditioned on human-written sequence tokens.
-- In **decode**, activations are conditioned on the model’s own sampled outputs from step 1 onward.
+## i am writing this from both sides
 
-That is exposure-bias territory: training-time conditioning and generation-time conditioning are distributionally distinct. The operational question is no longer “does steering work sometimes?” but “how much representational drift do we incur, where, and with what safety implications?”
+on infra: i have run production inference systems where prefill and decode had to be optimized separately because they behave differently at the hardware and scheduler level.
 
-## What evidence exists today
+on research: in my persona-circuits work on Llama-3.1-8B-Instruct, i extracted contrastive directions from prefill activations and got robust steering during generation, but negative sufficiency outcomes under stricter tests.
 
-### 1) Goodfire’s R1 observations  
+so yeah, this is not abstract philosophy. this is where the paper story and the production story collide.
 
-Goodfire reports strong feature-distribution shifts across prompt, thinking trace, and assistant response in DeepSeek R1. They also report phase-sensitive steering behavior (e.g., naive early steering failure; dependence on model preamble dynamics).
+## prefill vs decode is not just a latency story
 
-That is direct evidence of within-generation regime heterogeneity under a shared SAE vocabulary.
+everyone knows the basic systems split:
 
-### 2) Exposure-bias quantification literature  
+- **prefill is compute-bound** (parallel token processing, high Tensor Core use)
+- **decode is memory-bandwidth-bound** (token-by-token, repeated reads from HBM)
 
-He et al. estimate relatively modest aggregate performance gaps (~3%) when removing train/infer mismatch. Encouraging - but aggregate metrics can hide local spikes at high-entropy or decision-critical positions, where sparse features are most brittle.
+in one QSR deployment, this split dictated architecture:
 
-### 3) Degeneration and anisotropy results  
+- prefill for 2k to 4k-token prompts sat around 100 to 200ms
+- decode sat around 15 to 30ms/token
+- prefix caching (SGLang RadixAttention) cut prefill latency by 60 to 80%
+- speculative decoding gave mixed outcomes (50 to 60% acceptance on conversational traffic, sometimes worse p50 after draft overhead)
 
-Holtzman et al. and SimCTG-style work indicate generated text and human text occupy different statistical/representational structure. If generated-token trajectories live in a different region of representation space, downstream activations inherit that mismatch relative to prefill training distributions.
+but this is the part people underweight: performance asymmetry is a symptom of representational asymmetry.
 
-### 4) Speculative decoding acceptance behavior  
+during prefill, the model is conditioned on human-written tokens.
 
-In production, acceptance rates vary materially by domain (e.g., lower on conversational vs higher on code). Even closely related draft/target models diverge substantially at decode time. This implies structured decode-time complexity not captured by standard proxy objectives.
+during decode, from generated token 1 onward, the model is conditioned on its own sampled outputs.
 
-## Activation outliers as a plausible mechanism
+that is exposure-bias territory. different conditioning distribution, potentially different activation geometry.
 
-Outlier-channel behavior in transformers is now well documented (LLM.int8(); later outlier/kurtosis studies). Outlier-sensitive SAE behavior (e.g., BOS-driven instability and cascading effects) is also documented in transfer analyses and practical training pipelines.
+## evidence today: strong hints, incomplete measurement
 
-**Hypothesis (Speculative):** decode-time uncertainty and self-conditioning could alter outlier structure enough to perturb sparse dictionaries trained on prefill distributions.
+### direct signal: Goodfire R1 observations
 
-I’m not asserting this as settled. I’m asserting it as a credible mechanism worth explicit measurement.
+Goodfire has already reported strong feature-distribution shift across prompt, thinking trace, and final response in R1-style reasoning behavior.
 
-## Implications for steering reliability
+that is not a tiny footnote. that is three internal regimes under one shared vocabulary.
 
-If prefill and decode differ materially, prefill-calibrated steering can drift in predictable ways:
+### indirect signal: generation distribution work
 
-1. **Activation-rate drift**: a 2% sparse feature in prefill may fire at 0.5% or 5% in decode.
-2. **Directional drift**: concept vectors may rotate between regimes.
-3. **Mechanism split/merge**: one prefill feature may conflate multiple decode-time mechanisms.
+exposure-bias literature and degeneration/anisotropy results keep pointing in the same direction: generated trajectories and human-written trajectories are statistically and representationally different enough to matter locally, even when aggregate metrics look fine.
 
-Steering can still “work,” but calibration and confidence bounds change. For safety-critical use, “works in demos” is insufficient.
+aggregate 3% gaps can still hide ugly local failures at high-entropy and decision-critical positions.
 
-## Why this matters in my own negative sufficiency results
+### production signal: speculative acceptance behavior
 
-In persona-circuits experiments, contrastive directions extracted from prefill activations could steer behavior (concentration signal present), but sufficiency tests degraded strongly when preserving only identified components.
+i have seen acceptance rates vary materially by domain. code often accepts more than open-ended conversational traffic. that alone suggests decode dynamics are structured in ways our usual training objectives do not fully capture.
 
-Two interpretations remain live:
+## plausible mechanism: outlier behavior can amplify regime mismatch
 
-- **Interpretation A:** I missed causal components (standard circuit incompleteness story).
-- **Interpretation B:** prefill-identified components are insufficient in decode because decode recruits additional regime-specific computation.
+transformer outlier channels are well documented.
 
-My current design cannot separate A from B. That ambiguity itself is the point: without decode-aware measurement, we can’t tell whether we’re missing components or missing regimes.
+SAE sensitivity to outlier-heavy regions is also documented.
 
-## Reasoning models make the gap first-order
+so the hypothesis is straightforward (and still speculative): if decode-time self-conditioning shifts outlier structure at key positions, prefill-trained sparse dictionaries can become miscalibrated exactly where steering confidence matters most.
 
-For reasoning models, long thinking traces keep the model in decode conditioning for hundreds/thousands of tokens. Internal dynamics are phase-structured, and chain-of-thought text is not consistently faithful to causal factors in final decisions.
+not guaranteed. not proven. absolutely worth measuring.
 
-So if the goal is to understand or monitor reasoning-time computation, decode activations are not optional - they are the object. Prefill-only instrumentation becomes increasingly misaligned with the behaviors we care most about.
+## what this changes for steering claims
 
-## A practical measurement program (minimum viable standard)
+if prefill and decode diverge materially, then prefill-calibrated steering can drift in at least three ways:
 
-Here’s a concrete, low-friction program:
+1. **activation-rate drift**: feature sparsity levels move (2% in prefill becomes 0.5% or 5% in decode)
+2. **directional drift**: feature directions rotate enough to reduce precision
+3. **mechanism split/merge**: one prefill feature maps onto multiple decode-time mechanisms
 
-### Experiment 1  -  Distribution drift by position
-Capture prefill activations and decode activations on matched prompts. Compare mean/variance/kurtosis/outlier frequency per layer and token position.
+this is why "it worked in a demo" is weaker than people think for safety framing.
 
-### Experiment 2  -  Reconstruction gap
-Evaluate prefill-trained SAE reconstruction on prefill vs decode activations (MSE, EV). Track drift over generation steps and entropy bands.
+## why this was a live confound in my persona-circuits results
 
-### Experiment 3  -  Feature-set overlap
-Compare top-k active features between regimes (e.g., Jaccard overlap, rank correlation).
+in my own runs, steering signal was real. sufficiency signal was weak to negative.
 
-### Experiment 4  -  Steering fidelity over depth
-Apply fixed steering at token 1, 10, 50, 200; measure effect size decay or instability.
+that leaves two live interpretations:
 
-### Experiment 5  -  Sparse online probes
-Lightweight decode-time snapshots (periodic or entropy-triggered) against a prefill reference profile; flag high-divergence trajectories.
+- i missed causal components (classic incompleteness)
+- i extracted components in prefill that do not fully mediate behavior during decode
 
-**Method note:** KL on per-dimension marginals is a **diagnostic proxy**, not a full characterization of joint geometry. Use it for triage, not proof.
+my current pipeline cannot separate those cleanly.
 
-**Evidence-quality note:** All quantitative claims are sourced where possible; estimates are labeled as estimates. This draft incorporates pre-publication fact-check corrections (2026-03-20), including attribution fixes (e.g., FAST by Jiaming Li et al.; Steering Awareness by Fonseca Rivera & Africa) and framing fixes on verbalized-reasoning rates.
+that ambiguity is the point. if we do not instrument decode drift, we cannot tell whether we are missing components or missing regimes.
 
-## The tooling gap is the blocker
+for related context on those experiments:
 
-Our mainstream mech-interp stack is optimized for fixed-input analysis (“microscope mode”). Decode-time monitoring requires streaming capture, low-overhead hooks, and KV-aware instrumentation (“telescope mode”).
+- [Persona Circuits: Progress & Findings](/research/experiments/persona-circuits-current-state/)
+- [Inverse Scaling in Activation Steering](https://sohailmo.ai/research/activation-steering/)
 
-A few efforts prove feasibility, but there is no broadly adopted, general-purpose workflow for:  
-**stream decode activations → compare to reference distribution → alert on regime drift**.
+## minimum viable measurement standard (what teams should actually run)
 
-That is an infrastructure opportunity. It should sit in the core engineering roadmap, not in a side research note.
+not a giant moonshot. a practical stack:
 
-## Where this leaves the field
+### 1) drift by position
 
-This piece focuses on limits and measurement gaps in prefill-based SAE practice. Prefill-first capture was the right engineering choice for scale.
+capture matched prefill and decode activations. compare per-layer and per-position stats (mean, variance, kurtosis, outlier frequency).
 
-But as systems become more reasoning-heavy, agentic, and long-horizon, the highest-leverage interpretability question shifts from:
+### 2) reconstruction gap
 
-> “Can we extract useful features from prefill data?”
+evaluate prefill-trained SAE reconstruction on prefill vs decode (MSE, explained variance). track drift over generation depth and entropy bands.
 
-to:
+### 3) feature overlap
 
-> “Can we trust prefill-learned features under decode-time dynamics where safety-critical behavior actually unfolds?”
+compare top-k active feature sets across regimes (Jaccard, rank correlation).
 
-We are still using microscopes calibrated for one room to study another. Sometimes that works. But we have not standardized how to measure when it stops working.
+### 4) steering effect decay
 
-**If your steering or monitoring pipeline cannot report prefill-vs-decode reconstruction drift by position, it is not yet safety infrastructure.**
+apply the same steering vector at token 1, 10, 50, 200. measure effect-size decay and instability.
+
+### 5) sparse online probes
+
+sample decode activations periodically (or entropy-triggered), compare against a prefill reference profile, and flag high-divergence trajectories.
+
+method caveat: per-dimension KL is a useful diagnostic proxy, not a full joint-geometry proof. use it for triage, not final truth claims.
+
+## the tooling problem is real
+
+most mainstream mech-interp tooling is microscope mode: fixed input, full capture, offline analysis.
+
+decode monitoring is telescope mode: streaming capture, low overhead hooks, KV-aware instrumentation, and alerting logic that does not tank latency.
+
+we have pieces of this. we do not have a clean, common workflow that teams can adopt quickly.
+
+that is an infra gap, not just a research gap.
+
+## closing position
+
+prefill-first capture was a good engineering choice for scale.
+
+it is not enough for the safety claims people now attach to steering and monitoring.
+
+we are still using microscopes calibrated for one room to study another. sometimes that works. sometimes it probably does not. right now we are mostly guessing where that boundary sits.
+
+**if your pipeline cannot report prefill-vs-decode reconstruction drift by position, it is not safety infrastructure yet.**
 
 ---
 
-*Code and experiment logs: [github.com/Sohailm25/persona-circuits](https://github.com/Sohailm25/persona-circuits)*  
-*Related: [Persona Circuits: Progress & Findings](https://sohailmo.ai/research/experiments/persona-circuits-current-state/)*  
-*Related: [Inverse Scaling in Activation Steering](https://sohailmo.ai/research/activation-steering/)*
+*Code and experiment logs: [github.com/Sohailm25/persona-circuits](https://github.com/Sohailm25/persona-circuits)*
 
 ## Related in this trilogy
 
 - [Backpressure Kills Silently: Failure Modes in Heterogeneous-Throughput Capture Pipelines](/research/experiments/backpressure-kills-silently-capture-pipelines/)
 - [What Continuous Batching Does to Your Activations (And Why Your SAE Might Not Know)](/research/experiments/continuous-batching-activations-sae/)
+- [More writing and research notes](/writings/)

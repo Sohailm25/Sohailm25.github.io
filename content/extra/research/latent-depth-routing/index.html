@@ -1,0 +1,700 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://distill.pub/template.v2.js"></script>
+
+<d-front-matter>
+  <script type="text/json">{
+    "title": "Latent Depth-Routing Spectroscopy in Standard Transformers",
+    "description": "Oracle evidence for input-dependent effective depth mixtures in frozen Gemma-2-2b",
+    "authors": [
+      {
+        "author": "Sohail Mohammad",
+        "authorURL": "https://sohailmo.ai",
+        "affiliation": "Independent Researcher"
+      }
+    ],
+    "katex": { "delimiters": [
+      {"left": "$$", "right": "$$", "display": true},
+      {"left": "$", "right": "$", "display": false}
+    ]}
+  }</script>
+</d-front-matter>
+
+<style>
+/* ==========================================================================
+   Everforest Dark Theme Tokens
+   ========================================================================== */
+:root {
+    --ef-bg: #2d353b;
+    --ef-bg-dim: #232a2e;
+    --ef-bg-card: #343f44;
+    --ef-text: #d3c6aa;
+    --ef-text-muted: #859289;
+    --ef-green: #A7C080;
+    --ef-green-dim: #859e7a;
+    --ef-aqua: #83C092;
+    --ef-blue: #7fbbb3;
+    --ef-red: #e67e80;
+    --ef-orange: #e69875;
+    --ef-yellow: #dbbc7f;
+    --ef-purple: #d699b6;
+    --ef-border: #4a555b;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+body {
+    background: var(--ef-bg) !important;
+    color: var(--ef-text) !important;
+}
+
+/* ==========================================================================
+   Header Treatment
+   ========================================================================== */
+d-title {
+    background-color: transparent !important;
+    padding: 1.5em 0 1em;
+    border-bottom: none !important;
+}
+d-title h1 {
+    color: var(--ef-green) !important;
+}
+d-title p {
+    color: var(--ef-text-muted) !important;
+}
+
+d-byline {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--ef-border) !important;
+    padding-top: 0.8em;
+    padding-bottom: 1.2em;
+    color: var(--ef-text-muted) !important;
+}
+d-byline a {
+    color: var(--ef-aqua) !important;
+}
+
+/* Hide Published/DOI auto-fields */
+d-byline .byline.grid > div:nth-child(2),
+d-byline .byline.grid > div:nth-child(3) { display: none !important; }
+
+/* ==========================================================================
+   Desktop Layout (>=1200px)
+   ========================================================================== */
+@media (min-width: 1200px) {
+    .page-layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 40px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 24px 0;
+    }
+    d-article {
+        max-width: 680px !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+        grid-column: 2 !important;
+        grid-row: 1;
+    }
+    d-title h1, d-title p.title-authors,
+    d-title .title-authors, d-title p {
+        margin-left: 106px !important;
+    }
+    d-byline .byline, d-byline .byline-container {
+        margin-left: 106px !important;
+    }
+}
+
+/* ==========================================================================
+   Left Rail TOC
+   ========================================================================== */
+.toc-rail {
+    grid-column: 1 !important;
+    grid-row: 1;
+    min-width: 0;
+    margin-top: 48px;
+}
+.toc-container {
+    position: sticky;
+    top: 120px;
+    max-height: calc(100vh - 144px);
+    overflow-y: auto;
+    background: transparent;
+    border: 0;
+    padding: 10px 0 0 0;
+    font-size: 0.85em;
+}
+.toc-container h3 { display: none; }
+.toc-container ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+.toc-container li {
+    margin: 0.4em 0;
+}
+.toc-container a {
+    color: var(--ef-text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.toc-container a:hover {
+    color: var(--ef-aqua);
+}
+.toc-container a.active {
+    color: var(--ef-aqua);
+    font-weight: 600;
+}
+
+/* Mobile TOC fallback */
+@media (max-width: 1199px) {
+    .toc-rail { display: block; margin-bottom: 1em; }
+    .toc-container {
+        position: static;
+        background: var(--ef-bg-dim);
+        border: 1px solid var(--ef-border);
+        border-radius: 4px;
+        padding: 1em 1.5em;
+        margin: 1.5em 0 2em;
+        max-height: none;
+    }
+    .toc-container ul {
+        columns: 2;
+        column-gap: 2em;
+    }
+}
+@media (max-width: 599px) {
+    .toc-container ul { columns: 1; }
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+d-article h2 {
+    color: var(--ef-green) !important;
+    border-bottom: 1px solid var(--ef-border);
+    padding-bottom: 0.3em;
+    margin-top: 1.2em;
+}
+d-article h3 {
+    color: var(--ef-aqua) !important;
+    margin-top: 0.8em;
+}
+d-article p {
+    color: var(--ef-text);
+    margin-top: 0.8em;
+    line-height: 1.6;
+}
+d-article a {
+    color: var(--ef-aqua);
+}
+d-article a:hover {
+    color: var(--ef-green);
+}
+d-article strong {
+    color: var(--ef-text);
+}
+d-article em {
+    color: var(--ef-text-muted);
+}
+d-article ul, d-article ol {
+    margin-top: 0.5em;
+    color: var(--ef-text);
+}
+d-article li {
+    margin: 0.3em 0;
+    line-height: 1.5;
+}
+
+/* Note box */
+.note {
+    margin-top: 1em;
+    border-left: 3px solid var(--ef-green);
+    background: var(--ef-bg-card);
+    padding: 0.8em 1.2em;
+    border-radius: 0 4px 4px 0;
+    color: var(--ef-text-muted);
+    font-size: 0.92em;
+    line-height: 1.5;
+}
+
+/* Blockquote */
+d-article blockquote {
+    border-left: 3px solid var(--ef-green-dim);
+    font-style: italic;
+    color: var(--ef-text-muted);
+    margin-top: 1em;
+    padding-left: 1em;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+d-article figure {
+    margin-top: 1em;
+}
+d-article figure img {
+    max-width: 100%;
+    border-radius: 4px;
+}
+d-article figcaption {
+    font-size: 0.9em;
+    color: var(--ef-text-muted);
+    margin-top: 0.5em;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+d-article table {
+    margin-top: 1em;
+    font-size: 0.9em;
+    border-collapse: collapse;
+    width: 100%;
+}
+d-article th {
+    background: var(--ef-bg-dim);
+    color: var(--ef-text);
+    padding: 0.5em 0.8em;
+    text-align: left;
+    border-bottom: 2px solid var(--ef-border);
+    font-weight: 600;
+}
+d-article td {
+    padding: 0.4em 0.8em;
+    border-bottom: 1px solid var(--ef-border);
+    color: var(--ef-text);
+}
+d-article tr:nth-child(even) td {
+    background: var(--ef-bg-card);
+}
+
+/* ==========================================================================
+   KPI Cards (Switzer add-on)
+   ========================================================================== */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 1.1rem 0 1.6rem;
+}
+@media (max-width: 720px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+}
+.kpi-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(211, 198, 170, 0.16);
+    border-radius: 12px;
+    padding: 14px 15px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.kpi-label {
+    color: var(--ef-text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+.kpi-value {
+    color: var(--ef-text);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+.kpi-note {
+    color: var(--ef-text-muted);
+    font-size: 0.82rem;
+    margin-top: 7px;
+}
+
+/* ==========================================================================
+   Finding Dropdowns
+   ========================================================================== */
+details.finding {
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(211, 198, 170, 0.15);
+    border-radius: 12px;
+    margin: 9px 0;
+    overflow: hidden;
+}
+details.finding summary {
+    cursor: pointer;
+    color: var(--ef-text);
+    font-weight: 600;
+    list-style: none;
+    padding: 11px 14px;
+    line-height: 1.35;
+}
+details.finding summary::-webkit-details-marker { display: none; }
+details.finding summary::before {
+    content: "\25B8";
+    color: var(--ef-text-muted);
+    font-weight: 700;
+    margin-right: 8px;
+}
+details.finding[open] summary::before { content: "\25BE"; }
+.finding-body {
+    color: var(--ef-text-muted);
+    padding: 10px 14px 12px;
+    border-top: 1px solid rgba(211, 198, 170, 0.12);
+    background: rgba(255, 255, 255, 0.01);
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   Sidenotes (Tufte-style)
+   ========================================================================== */
+.sidenote-number {
+    counter-increment: sidenote-counter;
+}
+.sidenote-number::after {
+    content: counter(sidenote-counter);
+    font-size: 0.7em;
+    vertical-align: super;
+    color: var(--ef-aqua);
+    cursor: pointer;
+}
+.margin-toggle { display: none; }
+.sidenote {
+    font-size: 0.82em;
+    line-height: 1.4;
+    color: var(--ef-text-muted);
+    border-left: 2px solid var(--ef-border);
+    padding-left: 0.8em;
+}
+@media (min-width: 1200px) {
+    .sidenote {
+        float: right;
+        clear: right;
+        margin-right: -280px;
+        width: 240px;
+    }
+}
+@media (max-width: 1199px) {
+    .sidenote {
+        display: none;
+        margin: 0.5em 0 0.5em 1em;
+        padding: 0.5em 0.8em;
+        background: var(--ef-bg-card);
+        border-radius: 4px;
+    }
+    .margin-toggle:checked + .sidenote {
+        display: block;
+    }
+}
+
+/* ==========================================================================
+   References
+   ========================================================================== */
+.references {
+    font-size: 0.9em;
+    color: var(--ef-text-muted);
+    line-height: 1.6;
+}
+.references p {
+    margin: 0.4em 0;
+    padding-left: 2em;
+    text-indent: -2em;
+}
+.references a {
+    color: var(--ef-aqua);
+}
+</style>
+
+<d-title>
+  <h1>Latent Depth-Routing Spectroscopy in Standard Transformers</h1>
+  <p>Oracle evidence for input-dependent effective depth mixtures in frozen Gemma-2-2b</p>
+</d-title>
+
+<d-byline></d-byline>
+
+<div class="page-layout">
+<aside class="toc-rail">
+  <nav class="toc-container" id="toc">
+    <!-- Auto-populated by JS -->
+  </nav>
+</aside>
+
+<d-article>
+
+<!-- ====================================================================== -->
+<h2 id="abstract">Abstract</h2>
+
+<p>Standard transformers process inputs through a fixed sequence of layers, but the degree to which different layers contribute to each prediction varies with the input. We introduce oracle-alpha, an optimization-based method that recovers input-dependent effective depth mixtures from the frozen residual stream of <code>google/gemma-2-2b</code> without modifying model weights.</p>
+
+<p>On a stratified confirm surface of 1024 prompts spanning four task strata, oracle routing improves next-token loss over uniform weighting by +1.6299 nats (95% CI [1.5865, 1.6758]; 1024/1024 prompts positive), and held-out predicted routing generalizes positively (+0.8292 nats; 958/1024 positive; $R^2 = 0.2392$). Softmax-constrained competitive routing outperforms matched unconstrained gating by +0.4888 nats (128/128 prompt-level wins), achieving this advantage with fewer effective sources (34.07 vs 45.59). Routing structure is non-random and task-conditioned, with strongest support in factual recall (silhouette 0.4709).</p>
+
+<p>Extension lanes are bounded: tool-breakage evidence is positive against fixed-alpha controls (+1.0898) but mixed under dynamic donor counterfactuals, safety mediator activity remains refusal-collapsed, and the OIH external anchor is positive but calibration-sensitive (+0.0478 dynamic minus calibrated static). We frame these results as frozen-model effective depth-mixture analysis, not trained-router equivalence.</p>
+
+<div class="note">
+  <strong>Methodology note:</strong> All results are from frozen <code>google/gemma-2-2b</code> (2B parameters). Oracle-alpha is post-hoc optimization on cached representations. Routing weights establish association, not causal mechanism. Extension lanes (tool-breakage, safety, OIH) use small sample sizes (N = 12 to 50). Non-causal framing throughout.
+</div>
+
+<!-- ====================================================================== -->
+<h2 id="why-this-matters">Why this matters</h2>
+
+<p>Transformer language models process every input through the same fixed stack of layers. But not all layers contribute equally to every prediction. If this contribution pattern varies with the input, standard transformers contain a latent depth-routing signal that no one has systematically characterized.</p>
+
+<p>Understanding this signal matters for three audiences: researchers designing adaptive-depth architectures (such as Attention Residuals or Mixture-of-Depths) need to know what routing structure already exists in standard models; interpretability researchers need tools to characterize how models allocate computation across depth; and practitioners considering layer pruning need to understand that depth value is input-dependent, not fixed.</p>
+
+<!-- ====================================================================== -->
+<h2 id="at-a-glance">At a glance</h2>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Oracle improvement</div>
+    <div class="kpi-value">+1.63 nats</div>
+    <div class="kpi-note">Over uniform weighting, 1024/1024 prompts positive</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Predicted positive</div>
+    <div class="kpi-value">958/1024</div>
+    <div class="kpi-note">Held-out ridge predictor, $R^2 = 0.24$</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Effective sources</div>
+    <div class="kpi-value">34.07</div>
+    <div class="kpi-note">Softmax regime (vs 45.59 unconstrained)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Factual silhouette</div>
+    <div class="kpi-value">0.4709</div>
+    <div class="kpi-note">Raw-source clustering, 32/32 resamples &gt; random</div>
+  </div>
+</div>
+
+<h3>What we did</h3>
+<p>We optimized per-sequence softmax-constrained routing weights (oracle-alpha) over the 53 frozen residual sources of <code>google/gemma-2-2b</code> on a stratified prompt surface of 1024 prompts across four task strata (factual recall, reasoning/math, code/procedural, general text). We compared routing regimes (softmax, unconstrained, top-k), analyzed task-conditioned routing structure, and evaluated three extension lanes (tool-breakage, safety alignment, external anchor).</p>
+
+<h3>What we found</h3>
+
+<details class="finding" open>
+  <summary>Strong, universal oracle routing signal</summary>
+  <div class="finding-body">Oracle routing improves over uniform on every tested prompt (1024/1024). The improvement generalizes to held-out prediction: a ridge predictor trained on 256 pilot prompts achieves +0.8292 nats improvement on 958/1024 confirm prompts. This indicates the signal reflects recoverable structure, not just in-sample fitting.</div>
+</details>
+
+<details class="finding">
+  <summary>Competition via softmax constraint is empirically beneficial</summary>
+  <div class="finding-body">Softmax-constrained routing outperforms unconstrained gating by +0.4888 nats on every prompt (128/128 wins) and all top-k variants. It achieves this with fewer effective sources (34.07 vs 45.59), consistent with the simplex constraint forcing sources to compete for weight and concentrating allocation on informative layers.</div>
+</details>
+
+<details class="finding">
+  <summary>Factual recall shows the most structured routing</summary>
+  <div class="finding-body">Factual recall achieves silhouette 0.4709 for raw-source clustering (vs 0.14 random), with 99.6% family purity across 12 clusters. Route modes differentiate by both semantic content and prompt presentation format. Reasoning/math shows secondary positive structure (silhouette 0.25); code and general text do not exceed random controls.</div>
+</details>
+
+<h3>What this does NOT show</h3>
+<ul>
+  <li>No claim that frozen-model oracle-alpha recovers or equals trained Attention Residuals routing. Oracle-alpha is effective depth-mixture analysis on fixed representations, not trained-router equivalence.</li>
+  <li>No claim that tool-breakage broadly supports matched dynamic routing superiority. The pooled dynamic donor controls are mixed.</li>
+  <li>No claim that safety mediator partitioning extends beyond refusal identification. The active partition is refusal-only.</li>
+  <li>No causal mechanism claim. Oracle-alpha establishes association, not causation.</li>
+  <li>No router-distillation readiness claim. The best $R^2$ (0.41) remains below the preregistered 0.5 gate.</li>
+  <li>No strong Figure 8 trained-routing alignment claim. The local proxy campaign shows inverted entropy ordering.</li>
+  <li>No generalization beyond <code>google/gemma-2-2b</code>. Single model, single architecture.</li>
+</ul>
+
+<h3>How to use this</h3>
+<ul>
+  <li><strong>Adaptive-depth researchers:</strong> The oracle ceiling (+1.63 nats) and competition mechanism (softmax &gt; unconstrained) provide empirical targets and design guidance for learned routing systems.</li>
+  <li><strong>Interpretability researchers:</strong> The stratum-conditioned routing structure, especially in factual recall, offers a new lens for studying how models allocate computation by task type.</li>
+  <li><strong>Practitioners:</strong> The catastrophic failure of static pruning on the OIH surface (-3.59 nats, 0/50 positive) motivates input-dependent routing over fixed layer dropping.</li>
+</ul>
+
+<!-- ====================================================================== -->
+<h2 id="methods">Methods overview</h2>
+
+<p><strong>Model:</strong> <code>google/gemma-2-2b</code> (2B parameters, 26 transformer layers, 53 residual sources). Frozen; no weight modification.
+<label for="sn-ldr-001" class="sidenote-number"></label>
+<input type="checkbox" id="sn-ldr-001" class="margin-toggle"/>
+<span class="sidenote">53 sources = 1 embedding output + 26 attention outputs + 26 MLP outputs.</span>
+</p>
+
+<p><strong>Prompt surface:</strong> <code>registry_v5</code>, 256 pilot / 1024 confirm prompts across four task strata (factual recall, reasoning/math, code/procedural, general text). All method choices locked on pilot before confirm evaluation.</p>
+
+<p><strong>Oracle-alpha optimization:</strong> For each sequence, optimize $\mathbf{z} \in \mathbb{R}^{53}$ with $\boldsymbol{\alpha} = \mathrm{softmax}(\mathbf{z})$, minimizing cross-entropy of the routed output against original next-token predictions. Adam optimizer, 20 steps, lr=0.1, seed=11.</p>
+
+<p><strong>Regime comparison:</strong> Softmax-constrained (probability simplex), unconstrained ($\sigma(z_i)$ per source), and top-k ($k \in \{2, 4, 8, 13, 26\}$ with straight-through gradient estimator). Matched initialization ($\mathbf{z} = \mathbf{0}$).</p>
+
+<p><strong>Null baselines:</strong> Uniform ($\alpha_i = 1/53$), random Dirichlet, magnitude proportional, last layer only.</p>
+
+<p><strong>Extension lanes:</strong> Tool-breakage (tuned-lens KL divergence under routing), safety alignment (refusal/harmfulness direction localization on gemma-2-2b-it), OIH external anchor (MIB-compatible MCQA surface).</p>
+
+<!-- ====================================================================== -->
+<h2 id="results">Results</h2>
+
+<h3>Oracle signal and generalization (C1)</h3>
+
+<p>On the confirm tranche (N=1024), oracle-alpha routing improves mean next-token loss over uniform weighting by +1.6299 nats (95% bootstrap CI [1.5865, 1.6758]). All 1024 prompts show positive improvement.</p>
+
+<table>
+  <tr><th>Baseline</th><th>Mean loss (nats)</th><th>Oracle advantage</th></tr>
+  <tr><td>Uniform</td><td>4.7341</td><td>+1.6299</td></tr>
+  <tr><td>Random Dirichlet</td><td>9.4581</td><td>+6.3539</td></tr>
+  <tr><td>Magnitude proportional</td><td>6.9846</td><td>+3.8804</td></tr>
+  <tr><td>Last layer only</td><td>20.9150</td><td>+17.8108</td></tr>
+  <tr><td><strong>Oracle</strong></td><td><strong>3.1042</strong></td><td>---</td></tr>
+</table>
+
+<p>Held-out predicted routing yields +0.8292 nats over uniform (958/1024 positive; $R^2 = 0.2392$; mean JS divergence to oracle = 0.0985).</p>
+
+<h3>Regime comparison (C3)</h3>
+
+<figure>
+  <img src="figures/figure1_regime_comparison.png" alt="Regime comparison bar chart">
+  <figcaption><strong>Figure 1.</strong> Softmax-constrained routing achieves the highest mean improvement (+2.55 nats) with fewer effective sources (34.1) than unconstrained gating (45.6). All pairwise comparisons show 128/128 prompt-level wins for softmax. <em>If implementing depth routing, the softmax simplex constraint is empirically preferred; the competition mechanism concentrates weight on informative sources.</em></figcaption>
+</figure>
+
+<p>Softmax outperforms unconstrained gating by +0.4888 nats on every prompt (128/128 wins). The effective-source analysis reveals the mechanism: softmax uses 34.07 effective sources vs 45.59 for unconstrained. The simplex constraint forces sources to compete for weight, producing more selective and more useful routing.
+<label for="sn-ldr-002" class="sidenote-number"></label>
+<input type="checkbox" id="sn-ldr-002" class="margin-toggle"/>
+<span class="sidenote">Effective sources = $2^{H(\alpha)}$ where $H$ is Shannon entropy. Higher values indicate more uniform weight distribution.</span>
+</p>
+
+<h3>Routing structure and task conditioning (C2)</h3>
+
+<figure>
+  <img src="figures/figure2_stratum_routing.png" alt="Stratum-conditioned routing structure">
+  <figcaption><strong>Figure 2.</strong> (a) Oracle improvement by stratum with predicted improvement overlay. (b) Silhouette scores for raw-source clustering. Factual recall shows the largest oracle improvement (+2.25 nats) and strongest clustering (silhouette 0.47). <em>Factual recall is the most amenable stratum for depth-routing analysis; code and general text lack raw-source structure.</em></figcaption>
+</figure>
+
+<p>Factual recall achieves silhouette 0.4709 (vs 0.1401 random; 32/32 resamples oracle > random). Reasoning/math achieves 0.2456 (32/32 resamples). Code/procedural and general text do not exceed random controls.</p>
+
+<figure>
+  <img src="figures/figure3_factual_route_modes.png" alt="Factual recall route modes">
+  <figcaption><strong>Figure 3.</strong> (a) Source-type mass by cluster. (b) Family sizes and mode counts. Within factual recall, k=12 clustering achieves 99.6% family purity (255/256). Route modes differentiate by both semantic family and prompt presentation format. <em>Factual queries route through measurably different depth mixtures by domain and prompt frame, suggesting routing captures processing strategy.</em></figcaption>
+</figure>
+
+<p>Within factual recall (N=256), k=12 clustering produces near-perfect family purity: 255/256 prompts cluster with their semantic family. Route modes differentiate by prompt presentation format, not just factual content. Map-style capital queries route differently from quiz-style capital queries, consistent with different processing strategies for the same factual domain.</p>
+
+<!-- ====================================================================== -->
+<h2 id="extension-lanes">Extension lanes (bounded evidence)</h2>
+
+<figure>
+  <img src="figures/figure4_extension_lanes.png" alt="Extension lanes boundary panel">
+  <figcaption><strong>Figure 4.</strong> (a) Tool-breakage: oracle routing exceeds fixed-alpha by +1.09 but dynamic donor controls are mixed. (b) Safety mediator: 3 active prompts (all refusal) vs 9 inactive, showing refusal-collapse. (c) OIH: dynamic routing is positive but the calibrated-static margin is modest (+0.05 nats); pruned static catastrophically fails (-3.59 nats). <em>Extension lanes provide bounded evidence with explicit caveats; none supports strong standalone claims.</em></figcaption>
+</figure>
+
+<h3>Tool-breakage (C4, mixed)</h3>
+
+<p>Oracle routing increases tuned-lens KL divergence by +2.9065 over original (all 10 route modes positive), and exceeds fixed pilot-mean-alpha by +1.0898. However, dynamic donor controls (prompt-permuted, within-family, cross-family) are mixed or slightly negative on the pooled metric. The fixed-alpha advantage supports route-specificity, but the mixed dynamic controls limit claims about matched routing superiority.
+<label for="sn-ldr-003" class="sidenote-number"></label>
+<input type="checkbox" id="sn-ldr-003" class="margin-toggle"/>
+<span class="sidenote">Dynamic donors use seeded-derangement pairing (seed 13) to remove prompt-order artifacts. The mixed result persists after this correction.</span>
+</p>
+
+<h3>Safety alignment (C5, mixed)</h3>
+
+<p>Refusal direction localizes at layer 22 and harmfulness at layer 25 in gemma-2-2b-it, with near-orthogonal directions (cosine similarity = -0.0162). Behavioral validation is perfect (hit rate = 1.0, pass rate = 1.0). However, mediator-conditioned routing collapses to refusal-only: 3 active prompts are all refusal-labeled, with no role diversity expansion. We cannot claim routing differences distinguish harmful contexts from safe responses on the current surface.</p>
+
+<h3>OIH external anchor (C6, mixed)</h3>
+
+<p>On the external MCQA surface (N=50 confirm), predicted improvement over uniform is +0.2290 nats. The pruned-static baseline catastrophically fails (-3.5916 nats, 0/50 positive), motivating input-dependent routing. The calibrated static comparator (pilot-mean-alpha) achieves +0.1813, producing a dynamic-over-calibrated margin of +0.0478 nats. The margin is modest and calibration-sensitive: dynamic minus pruned-static = +3.82, but dynamic minus pilot-mean = +0.05, an 80x difference.</p>
+
+<!-- ====================================================================== -->
+<h2 id="decision-relevance">Decision relevance</h2>
+
+<h3>What this shows</h3>
+<ul>
+  <li>Frozen standard transformers contain recoverable input-dependent depth-routing structure (+1.63 nats, universal across 1024 prompts).</li>
+  <li>The softmax competition mechanism is empirically superior: it achieves better loss with fewer effective sources than unconstrained gating.</li>
+  <li>Routing structure is richest in factual recall, with near-perfect family purity and prompt-frame conditioning within families.</li>
+  <li>Static layer pruning is catastrophically bad on some surfaces; input-dependent routing is motivated.</li>
+</ul>
+
+<h3>What this does NOT show</h3>
+<ul>
+  <li>No trained-router equivalence. Oracle-alpha characterizes what routing structure exists in fixed representations; it does not predict what a co-adapted trained router would learn.</li>
+  <li>No causal mechanism. The association between routing weights and loss improvement does not establish causation.</li>
+  <li>No multi-model generalization. All results are from a single model (gemma-2-2b, 2B parameters).</li>
+  <li>No extension-lane standalone claims. Tool-breakage, safety, and OIH each have explicit mixed/bounded caveats.</li>
+</ul>
+
+<!-- ====================================================================== -->
+<h2 id="limitations">Limitations</h2>
+
+<ol>
+  <li><strong>Single model.</strong> All core results are from frozen google/gemma-2-2b (2B parameters). Generalization beyond this specific model is unknown.</li>
+  <li><strong>Post-hoc analysis.</strong> Oracle-alpha operates on cached representations. Routing weights may reflect optimization artifacts of the 20-step Adam procedure rather than latent model structure. The held-out predictiveness check ($R^2 = 0.24$) partially addresses this but does not rule it out.</li>
+  <li><strong>Predictiveness gap.</strong> The $R^2$ of 0.24 means the majority of variance in oracle routing is unexplained by the linear predictor.</li>
+  <li><strong>Extension-lane sample sizes.</strong> Tool-breakage uses N=20 prompts with 10 route modes; safety uses 12 confirm prompts. Family-level decompositions use 6 to 8 prompts per family.</li>
+  <li><strong>Top-k gradient estimator.</strong> The straight-through estimator may inflate the apparent inferiority of low-k regimes.</li>
+  <li><strong>Mediator threshold sensitivity.</strong> The refusal-collapse result depends on a specific activation threshold (122.08); threshold sensitivity is not reported.</li>
+  <li><strong>No causal validation.</strong> Oracle-alpha establishes association, not causal mechanism.</li>
+  <li><strong>Prompt surface coverage.</strong> The registry_v5 surface covers four task strata but not all possible task types.</li>
+</ol>
+
+<!-- ====================================================================== -->
+<h2 id="references">References</h2>
+
+<div class="references">
+<p>[1] Chen, G., Zhang, Y., Su, J., et al. (2026). Attention Residuals. <em>arXiv:2603.15031</em>. Moonshot AI / Kimi Team.</p>
+<p>[2] Men, X., Xu, M., Zhang, Q., et al. (2024). ShortGPT: Layers in Large Language Models are More Redundant Than You Expect. <em>Findings of ACL 2025</em>. arXiv:2403.03853.</p>
+<p>[3] Veit, A., Wilber, M. J., &amp; Belongie, S. (2016). Residual Networks Behave Like Ensembles of Relatively Shallow Networks. <em>NeurIPS 2016</em>. arXiv:1605.06431.</p>
+<p>[4] Schwartz, R., Stanovsky, G., Swayamdipta, S., Dodge, J., &amp; Smith, N. A. (2020). The Right Tool for the Job: Matching Model and Instance Complexities. <em>ACL 2020</em>, 6640-6651.</p>
+<p>[5] Schuster, T., Fisch, A., Gupta, J., et al. (2022). Confident Adaptive Language Modeling. <em>NeurIPS 2022</em>. arXiv:2207.07061.</p>
+<p>[6] Elhoushi, M., Shrivastava, A., Liskovich, D., et al. (2024). LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding. <em>ACL 2024</em>.</p>
+<p>[7] Raposo, D., Ritter, S., Richards, B., Lillicrap, T., Humphreys, P. C., &amp; Santoro, A. (2024). Mixture-of-Depths: Dynamically Allocating Compute in Transformer-Based Language Models. <em>ICML 2024</em>. arXiv:2404.02258.</p>
+<p>[8] Pagliardini, M., Mohtashami, A., Fleuret, F., &amp; Jaggi, M. (2024). DenseFormer: Enhancing Information Flow in Transformers via Depth Weighted Averaging. <em>NeurIPS 2024</em>. arXiv:2402.02622.</p>
+<p>[9] Shazeer, N., Mirhoseini, A., Maziarz, K., et al. (2017). Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer. <em>ICLR 2017</em>. arXiv:1701.06538.</p>
+<p>[10] Fedus, W., Zoph, B., &amp; Shazeer, N. (2022). Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity. <em>JMLR</em>, 23, 1-40. arXiv:2101.03961.</p>
+<p>[11] Zhou, Y., Lei, T., Liu, H., et al. (2022). Mixture-of-Experts with Expert Choice Routing. <em>NeurIPS 2022</em>. arXiv:2202.09368.</p>
+<p>[12] nostalgebraist (2020). Interpreting GPT: the Logit Lens. <em>LessWrong blog post</em>.</p>
+<p>[13] Belrose, N., Furman, Z., Smith, L., et al. (2023). Eliciting Latent Predictions from Transformers with the Tuned Lens. <em>arXiv:2303.08112</em>. CoNLL 2023.</p>
+<p>[14] Elhage, N., Nanda, N., Olsson, C., et al. (2021). A Mathematical Framework for Transformer Circuits. <em>Transformer Circuits Thread</em>, Anthropic.</p>
+<p>[15] Meng, K., Bau, D., Andonian, A., &amp; Belinkov, Y. (2022). Locating and Editing Factual Associations in GPT. <em>NeurIPS 2022</em>. arXiv:2202.05262.</p>
+<p>[16] Meng, K., Sharma, A. S., Andonian, A., Belinkov, Y., &amp; Bau, D. (2023). Mass-Editing Memory in a Transformer. <em>ICLR 2023</em>. arXiv:2210.07229.</p>
+<p>[17] Geva, M., Schuster, R., Berant, J., &amp; Levy, O. (2021). Transformer Feed-Forward Layers Are Key-Value Memories. <em>EMNLP 2021</em>. arXiv:2012.14913.</p>
+<p>[18] Geva, M., Bastings, J., Filippova, K., &amp; Globerson, A. (2023). Dissecting Recall of Factual Associations in Auto-Regressive Language Models. <em>EMNLP 2023</em>, 12216-12235. arXiv:2304.14767.</p>
+<p>[19] Zou, A., Phan, L., Chen, S., et al. (2023). Representation Engineering: A Top-Down Approach to AI Transparency. <em>arXiv:2310.01405</em>.</p>
+<p>[20] Arditi, A., Obeso, O., Syed, A., et al. (2024). Refusal in Language Models Is Mediated by a Single Direction. <em>arXiv:2406.11717</em>.</p>
+<p>[21] Zhao, J., Huang, J., Wu, Z., Bau, D., &amp; Shi, W. (2025). LLMs Encode Harmfulness and Refusal Separately. <em>NeurIPS 2025</em>. arXiv:2507.11878.</p>
+<p>[22] Li, S., Yao, L., Zhang, L., &amp; Li, Y. (2025). Safety Layers in Aligned Large Language Models: The Key to LLM Security. <em>ICLR 2025</em>. arXiv:2408.17003.</p>
+<p>[23] Gemma Team, Google DeepMind (2024). Gemma 2: Improving Open Language Models at a Practical Size. <em>arXiv:2408.00118</em>.</p>
+<p>[24] Mueller, A., Geiger, A., Wiegreffe, S., et al. (2025). MIB: A Mechanistic Interpretability Benchmark. <em>ICML 2025</em>. arXiv:2504.13151.</p>
+<p>[25] Sun, W., Song, X., Li, P., Yin, L., Zheng, Y., &amp; Liu, S. (2025). The Curse of Depth in Large Language Models. <em>NeurIPS 2025</em>. arXiv:2502.05795.</p>
+<p>[26] Vaswani, A., Shazeer, N., Parmar, N., et al. (2017). Attention Is All You Need. <em>NeurIPS 2017</em>. arXiv:1706.03762.</p>
+</div>
+
+</d-article>
+</div>
+
+<!-- ====================================================================== -->
+<!-- TOC auto-population script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var toc = document.getElementById('toc');
+    if (!toc) return;
+    var headings = document.querySelectorAll('d-article h2[id]');
+    var ul = document.createElement('ul');
+    headings.forEach(function(h) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        li.appendChild(a);
+        ul.appendChild(li);
+    });
+    toc.appendChild(ul);
+
+    // Scroll spy
+    var links = toc.querySelectorAll('a');
+    window.addEventListener('scroll', function() {
+        var fromTop = window.scrollY + 140;
+        links.forEach(function(link) {
+            var section = document.querySelector(link.getAttribute('href'));
+            if (section && section.offsetTop <= fromTop &&
+                section.offsetTop + section.offsetHeight > fromTop) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+});
+</script>

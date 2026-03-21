@@ -24,6 +24,15 @@ Branch report testing whether GLP can preserve steering semantics while repairin
 
 ## Recent Publications and Reports
 
+### [Latent Depth-Routing Spectroscopy in Standard Transformers](/research/latent-depth-routing/)
+**Oracle evidence for input-dependent effective depth mixtures in frozen Gemma-2-2b**
+
+Sohail Mohammad · Preprint, 2026
+
+Oracle-alpha recovers input-dependent effective depth mixtures from frozen Gemma-2-2b without modifying model weights. On 1024 stratified prompts, oracle routing improves next-token loss by +1.63 nats (1024/1024 positive), with held-out predicted routing generalizing positively (R^2 = 0.24). Softmax-constrained routing outperforms unconstrained and top-k alternatives via a competition mechanism. Extension lanes (tool-breakage, safety, OIH) provide bounded evidence with explicit caveats.
+
+[Distill page](/research/latent-depth-routing/) · [Paper (PDF)]({static}/papers/latent-depth-routing-2026.pdf) · [Code (GitHub)](https://github.com/Sohailm25/latent-depth-routing)
+
 ### [Depth-Dynamics Signatures of Conversational Collapse](/research/ftle/)
 **Finite-Time Lyapunov Analysis of Transformer Forward Passes**
 

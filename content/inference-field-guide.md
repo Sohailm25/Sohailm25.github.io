@@ -7,9 +7,7 @@ Featured: true
 Template: longform_article
 Status: published
 
-*Sohail Mohammad is a Forward Deployed Engineer, Inference & Post-Training at Together AI. Previously fractional CTO specializing in RevOps and GTM engineering. Contributor to Unsloth, MLX-LM, and Blackwell kernel work. Opinions are his own.*
-
-[TOC]
+*Disclaimer: This post reflects patterns and lessons learned from building inference systems at production scale. Technical details have been generalized, and no proprietary information from any specific organization is disclosed.*
 
 ---
 

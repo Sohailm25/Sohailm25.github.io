@@ -25,8 +25,6 @@
             <ul>
               <li><a href="{{ SITEURL }}/"{% block nav_home %}{% endblock %}>Home</a></li>
               <li><a href="{{ SITEURL }}/writings/"{% block nav_writings %}{% endblock %}>Writings</a></li>
-              <li><a href="{{ SITEURL }}/pages/videos/"{% block nav_videos %}{% endblock %}>Videos</a></li>
-              <li><a href="{{ SITEURL }}/the-forge/"{% block nav_forge %}{% endblock %}>The Forge</a></li>
               <li><a href="{{ SITEURL }}/pages/research/"{% block nav_research %}{% endblock %}>Research</a></li>
               <li><a href="{{ SITEURL }}/pages/about/"{% block nav_about %}{% endblock %}>About</a></li>
             </ul>
@@ -64,31 +62,6 @@
     </div>
   </div>
   
-  <!-- Newsletter Signup -->
-  <div class="newsletter-section">
-    <div class="container">
-      <div class="newsletter-content">
-        <div class="newsletter-text">
-          <h3>📬 Get new articles in your inbox</h3>
-          <p>Deep dives on ML infrastructure, production systems, and lessons from the trenches. No spam, unsubscribe anytime.</p>
-        </div>
-        <form action="https://buttondown.email/api/emails/embed-subscribe/sohailmo" 
-              method="post" 
-              target="popupwindow"
-              class="newsletter-form"
-              onsubmit="window.open('https://buttondown.email/sohailmo', 'popupwindow', 'scrollbars=yes,width=800,height=600');return true;">
-          <input type="email" 
-                 name="email" 
-                 placeholder="you@example.com" 
-                 required 
-                 class="newsletter-input"
-                 aria-label="Email address" />
-          <input type="hidden" name="tag" value="website" />
-          <button type="submit" class="newsletter-button">Subscribe</button>
-        </form>
-      </div>
-    </div>
-  </div>
   
   <script src="{{ SITEURL }}/theme/js/sections.js"></script>
   <script src="{{ SITEURL }}/theme/js/lightbox.js"></script>

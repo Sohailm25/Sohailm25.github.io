@@ -3,36 +3,24 @@ Slug: about
 
 ![with maha]({static}/images/maha-sohail.jpg)
 
-i'm sohail. i'm building ai systems at amazon.
+i'm sohail. i'm a forward deployed engineer at together ai, working on inference optimization and post-training with enterprise customers.
 
-right now i'm working on agent platforms for 1.5m+ employees. before this i built a rag system at jpmorgan chase that went from 0 to 10k+ users. before that: mlops at wendy's (genai in the drive thru), gpu stuff at jack henry, ml systems at capgemini.
+before this i built agent platforms for 1.5m+ employees at amazon, a rag system at jpmorgan chase that went from 0 to 10k+ users, genai in the drive-thru at wendy's, gpu stuff at jack henry, and ml systems at capgemini.
 
 i love my wife. i love the gym. i love our cats.
 
 contributed to unsloth, mlx-lm, and some rlhf stuff.
 
-[github](https://github.com/sohailm25) · [linkedin](https://linkedin.com/in/sohail-mo) · [x](https://x.com/sohailmo)
+[github](https://github.com/sohailm25) · [linkedin](https://linkedin.com/in/sohail-mo) · [x](https://x.com/Sohailm25)
 
 sohailmo.ai@gmail.com
 
-## current snapshot of my research beliefs (mechinterp)
+## where i sit on inference
 
-i've been in technical work long enough to know output is cheap and signal is rare. publishing work that doesn't meaningfully move understanding forward feels empty. i optimize for depth over volume.
+most of what's written about inference cost is wrong in a specific way: it compares token prices instead of loaded cost per request. the gap between advertised cost and true production cost — retries, schema failures, quality gates, engineering overhead — is where most teams lose money without realizing it.
 
-i still feel like an amateur in mechanistic interpretability. i think that is the right posture. in this field, taste is earned experimentally. it is not declared. i bias toward fast, structured iteration. i run small ablations, smoke tests, and aggressive pruning of weak directions before scaling anything expensive.
+i think the open-weights cost advantage over closed apis is structural, not temporary. but "just switch to open models" is bad advice without a framework. volume, specialization requirements, and ownership constraints each independently justify (or block) migration. most teams skip straight to dedicated gpu when serverless is the right default for 90% of workloads.
 
-most failures sit below the abstraction layer you start with. i default to questioning assumptions in my own framing, in papers, and in the incentives behind what gets called good research. local maxima often present as consensus.
+on post-training: fine-tuning is underused because the feedback loop is slow and evaluation is hard. teams default to prompt engineering past the point of diminishing returns. the unlock is tighter eval → faster iteration → models that actually fit the task.
 
-i am most interested in applied interpretability. this includes auditing, production oversight, and practical intervention. i am less interested in interpretability as pure reverse engineering. this includes open questions around reasoning models, training regimes, and architecture shifts such as moe and multimodal systems. older interpretability intuitions may not transfer cleanly.
-
-i also think mechinterp is partly a meta-science right now. it is not only about studying model mechanisms. it is also about defining what valid mechanistic evidence should look like. causal mechanistic interpretability is methodological infrastructure for the field. this work helps future papers make stronger causal claims.
-
-my current mental model is a three-level hierarchy.
-
-1. **level 1: activation steering.** can i reliably manipulate behavior through internal interventions?
-2. **level 2: causal mediation.** which components causally transmit specific effects?
-3. **level 3: causal abstraction.** does the model's computation structurally correspond to an interpretable algorithm at the right grain?
-
-tools are increasingly accessible. i can run serious 8b forward-pass experiments locally. leverage now comes from better questions, tighter experiment design, and clearer visualizations. visuals are not decoration. they are part of the reasoning process.
-
-net: i am aiming for research that is technically rigorous, operationally useful, and genuinely novel.
+i wrote a longer version of this: [the honest field guide to production inference](/inference-field-guide/). there's also an [interactive lcpr calculator](https://inference-field-guide.streamlit.app/) if you want to run the math on your own workloads.

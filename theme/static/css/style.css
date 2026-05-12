@@ -1467,20 +1467,13 @@ code {
 }
 
 .longform-layout {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: var(--spacing-md);
+  display: block;
   position: relative;
 }
 
-/* TOC Sidebar */
+/* TOC Sidebar — hidden, replaced by collapsible toc-mobile */
 .toc-sidebar {
-  position: sticky;
-  top: 80px;
-  height: fit-content;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-  padding-right: var(--spacing-sm);
+  display: none;
 }
 
 .toc-header {
@@ -1551,9 +1544,9 @@ code {
   color: var(--primary-color);
 }
 
-/* Mobile TOC dropdown */
+/* Collapsible TOC (all screen sizes) */
 .toc-mobile {
-  display: none;
+  display: block;
   margin-bottom: var(--spacing-md);
 }
 
@@ -1616,7 +1609,7 @@ code {
   border-radius: 3px;
 }
 
-/* Responsive: collapse TOC on mobile */
+/* Responsive: mobile adjustments */
 @media (max-width: 900px) {
   .longform-page .main-container {
     max-width: 100%;
@@ -1624,18 +1617,6 @@ code {
 
   .longform-page .header-inner {
     max-width: 100%;
-  }
-
-  .longform-layout {
-    display: block;
-  }
-
-  .toc-sidebar {
-    display: none;
-  }
-
-  .toc-mobile {
-    display: block;
   }
 }
 

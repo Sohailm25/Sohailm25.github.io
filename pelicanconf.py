@@ -16,7 +16,7 @@ THEME = "theme"
 
 SOCIAL = (
     ("github", "https://github.com/Sohailm25"),
-    ("twitter", "https://x.com/Sohailmo"),
+    ("twitter", "https://x.com/Sohailm25"),
     ("linkedin", "https://www.linkedin.com/in/sohail-mo/"),
     ("email", "mailto:sohailmo.ai@gmail.com"),
 )

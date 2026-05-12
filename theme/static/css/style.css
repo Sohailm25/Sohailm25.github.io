@@ -1387,3 +1387,261 @@ pre code,
 code {
   font-family: var(--font-geist-mono), "Courier New", monospace !important;
 }
+
+/* ========================================
+   Table Styling (data tables in articles)
+   ======================================== */
+
+.page-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-md) 0 var(--spacing-lg) 0;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.page-content thead th {
+  background-color: var(--header-bg);
+  color: var(--primary-color);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--primary-color);
+  font-family: var(--font-geist-pixel-square), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.page-content tbody td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.page-content tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.page-content tbody tr:hover {
+  background-color: rgba(131, 192, 146, 0.06);
+}
+
+/* Right-align numeric columns (2nd column onward in data tables) */
+.page-content table td:nth-child(n+2),
+.page-content table th:nth-child(n+2) {
+  text-align: right;
+}
+
+/* First column stays left-aligned (provider names) */
+.page-content table td:first-child,
+.page-content table th:first-child {
+  text-align: left;
+}
+
+/* Mobile table scrolling */
+@media (max-width: 600px) {
+  .page-content table {
+    font-size: 0.75rem;
+  }
+
+  .page-content thead th,
+  .page-content tbody td {
+    padding: 0.4rem 0.5rem;
+  }
+}
+
+/* ========================================
+   Longform Article Layout with TOC Sidebar
+   ======================================== */
+
+/* Override container width for longform pages */
+.longform-page .main-container {
+  max-width: 1100px;
+}
+
+.longform-page .header-inner {
+  max-width: 1100px;
+}
+
+.longform-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-md);
+  position: relative;
+}
+
+/* TOC Sidebar */
+.toc-sidebar {
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  padding-right: var(--spacing-sm);
+  border-right: 1px solid var(--border-color);
+}
+
+.toc-header {
+  font-family: var(--font-geist-pixel-square), monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toc-sidebar .toc {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-sidebar .toc ul {
+  list-style: none;
+  padding-left: 0.75rem;
+  margin: 0;
+}
+
+.toc-sidebar .toc li {
+  margin-bottom: 0.25rem;
+}
+
+.toc-sidebar .toc a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--font-geist-mono), monospace;
+  line-height: 1.4;
+  display: block;
+  padding: 0.15rem 0;
+  transition: color 0.2s;
+  border-bottom: none;
+}
+
+.toc-sidebar .toc a:hover {
+  color: var(--primary-color);
+}
+
+/* Active TOC highlight */
+.toc-sidebar .toc a.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Permalink anchors from TOC extension */
+.page-content .headerlink {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8em;
+  margin-left: 0.3em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.page-content h2:hover .headerlink,
+.page-content h3:hover .headerlink {
+  opacity: 0.5;
+}
+
+.page-content .headerlink:hover {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* Mobile TOC dropdown */
+.toc-mobile {
+  display: none;
+  margin-bottom: var(--spacing-md);
+}
+
+.toc-mobile-toggle {
+  font-family: var(--font-geist-pixel-square), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+}
+
+.toc-mobile .toc {
+  list-style: none;
+  padding: var(--spacing-sm);
+  margin: 0;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  background: var(--card-bg);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.toc-mobile .toc ul {
+  list-style: none;
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.toc-mobile .toc li {
+  margin-bottom: 0.25rem;
+}
+
+.toc-mobile .toc a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-family: var(--font-geist-mono), monospace;
+  transition: color 0.2s;
+}
+
+.toc-mobile .toc a:hover {
+  color: var(--primary-color);
+}
+
+/* TOC scrollbar styling */
+.toc-sidebar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.toc-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+/* Responsive: collapse TOC on mobile */
+@media (max-width: 900px) {
+  .longform-page .main-container {
+    max-width: 100%;
+  }
+
+  .longform-page .header-inner {
+    max-width: 100%;
+  }
+
+  .longform-layout {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  .toc-mobile {
+    display: block;
+  }
+}
+
+/* Longform content inherits page-content styling */
+.longform-content {
+  min-width: 0;
+}

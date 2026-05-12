@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - {{ SITENAME }}{% endblock %}
+{% block body_class %} class="post-page longform-page"{% endblock %}
+
+{% block content %}
+<div class="back-link">
+  <a href="{{ SITEURL }}/">&larr; Back</a>
+</div>
+<div class="page-header">
+  {% if article.category %}
+  <div class="article-category">{{ article.category }}</div>
+  {% endif %}
+  <h1 class="page-title">{{ article.title }}</h1>
+  <div class="page-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+</div>
+
+{% if article.category != 'Poems' %}
+<!-- Compact Newsletter Signup -->
+<div class="article-newsletter">
+  <div class="article-newsletter-content">
+    <span class="newsletter-emoji">📬</span>
+    <span class="newsletter-text">Get articles like this in your inbox</span>
+    <form action="https://buttondown.email/api/emails/embed-subscribe/sohailmo"
+          method="post"
+          target="popupwindow"
+          class="article-newsletter-form"
+          onsubmit="window.open('https://buttondown.email/sohailmo', 'popupwindow', 'scrollbars=yes,width=800,height=600');return true;">
+      <input type="email"
+             name="email"
+             placeholder="you@example.com"
+             required
+             class="article-newsletter-input"
+             aria-label="Email address" />
+      <input type="hidden" name="tag" value="article" />
+      <button type="submit" class="article-newsletter-button">Subscribe</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="longform-layout">
+  <nav class="toc-sidebar" aria-label="Table of Contents">
+    <div class="toc-header">Contents</div>
+    {{ article.toc }}
+  </nav>
+  <!-- Mobile TOC toggle -->
+  <details class="toc-mobile">
+    <summary class="toc-mobile-toggle">Contents</summary>
+    {{ article.toc }}
+  </details>
+  <div class="page-content longform-content">
+    {{ article.content }}
+  </div>
+</div>
+<script>
+// Highlight active TOC section on scroll
+(function() {
+  var tocLinks = document.querySelectorAll('.toc-sidebar .toc a');
+  if (!tocLinks.length) return;
+  var headings = [];
+  tocLinks.forEach(function(link) {
+    var id = link.getAttribute('href');
+    if (id && id.startsWith('#')) {
+      var el = document.getElementById(id.slice(1));
+      if (el) headings.push({el: el, link: link});
+    }
+  });
+  function onScroll() {
+    var scrollPos = window.scrollY + 100;
+    var active = null;
+    for (var i = headings.length - 1; i >= 0; i--) {
+      if (headings[i].el.offsetTop <= scrollPos) {
+        active = headings[i];
+        break;
+      }
+    }
+    tocLinks.forEach(function(l) { l.classList.remove('active'); });
+    if (active) active.link.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, {passive: true});
+  onScroll();
+})();
+</script>
+{% endblock %}

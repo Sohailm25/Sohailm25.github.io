@@ -7,9 +7,7 @@ Featured: true
 Template: longform_article
 Status: published
 
-*Disclaimer: This post reflects patterns and lessons learned from building inference systems at production scale. Technical details have been generalized, and no proprietary information from any specific organization is disclosed.*
-
-Disclosure: I work at Together AI. This essay uses Together alongside every other major provider in worked examples, evaluated by the same LCPR math. Evidence tags are there so you can check my work.
+*I work at Together AI. This essay uses Together alongside every other major provider in worked examples, evaluated by the same LCPR math. Evidence tags are there so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
 ---
 
@@ -195,7 +193,7 @@ Migration has a fixed cost. The range varies by complexity:
 - A standard migration requiring prompt adaptation and quality gate validation takes **6-10 engineer-weeks**, plus another 4-8 weeks of optimization to reach cost parity.
 - Complex migrations involving fine-tuning, custom structured output validation, or domain-specific evaluation harnesses can extend to 12-20 weeks.
 
-[ESTIMATED from limited public data: Braincuber's anonymized fintech client (6 weeks, $38K for scaling from 2M to 15M daily tokens) and Introl's vLLM hardening estimate ("one to two weeks" for production hardening alone, which understates the upstream evaluation work).]
+[ANALYST_ESTIMATE from Braincuber's anonymized fintech client (6 weeks, $38K for scaling from 2M to 15M daily tokens) and Introl's vLLM hardening estimate ("one to two weeks" for production hardening alone, which understates the upstream evaluation work).]
 
 At a blended rate of $150/hour for a senior ML engineer, 8 engineer-weeks costs $48,000. Does your monthly savings exceed the amortized migration cost over a reasonable payback period?
 
@@ -695,7 +693,7 @@ This is the most forward-looking gate and the hardest to verify. The signal from
 Key questions:
 
 - Has the vendor raised prices in the last 12 months? (OpenAI doubled GPT-5.5 rates on April 23, 2026.)
-- What's the vendor's gross margin? (Fireworks estimated ~50% per Sacra research, targeting 60% [THIRD-PARTY ESTIMATE — Sacra reports are paywalled analyst estimates, not audited financials].)
+- What's the vendor's gross margin? (Fireworks estimated ~50% per Sacra research, targeting 60% [ANALYST_ESTIMATE].)
 - Does the vendor have structural cost advantages (custom kernels, speculative decoding, cache pooling) that protect margins without raising prices?
 
 **Verification method**: check pricing page history via Wayback Machine. Read earnings calls or funding announcements for margin signals. Vendors with structural cost advantages — custom speculative decoding (Together ATLAS, Fireworks FireOptimizer), KV cache pooling (LMCache integration), custom kernels (TKC, FireAttention) — can maintain pricing as GPU commodity markets tighten. Vendors relying on GPU arbitrage alone will face margin pressure and may raise prices or reduce service quality.
@@ -890,8 +888,8 @@ Check: quality gate pass rate on Provider B. If lower → model quality gap. You
 
 ## Resources
 
-- **[Interactive LCPR Calculator](https://inference-field-guide.streamlit.app)** — Run LCPR, sensitivity, and break-even analysis against your own workload profile. Built with the same calculation engine that generated every number in this essay.
-- **[GitHub Repository](https://github.com/Sohailm25/inference-field-guide)** — Source code for the calculator, provider pricing data (YAML), decision tree diagrams, and 114 tests verifying every claim.
+- **[Interactive LCPR Calculator](https://inference-field-guide.streamlit.app)** ([run locally](https://github.com/Sohailm25/inference-field-guide#running-locally)) — Run LCPR, sensitivity, and break-even analysis against your own workload profile. Built with the same calculation engine that generated every number in this essay.
+- **[GitHub Repository](https://github.com/Sohailm25/inference-field-guide)** — Source code for the calculator, provider pricing data (YAML), decision tree diagrams, and 191 tests verifying every claim.
 - **[Downloadable Templates](https://github.com/Sohailm25/inference-field-guide/tree/main/templates)** — Vendor Evaluation Scorecard, Migration Readiness Checklist, LCPR Worksheet, and Migration Readiness Assessment (polynomial complexity scoring template).
 
 ---
@@ -900,9 +898,7 @@ Check: quality gate pass rate on Provider B. If lower → model quality gap. You
 
 The frameworks in this guide (LCPR, Migration Gates, Inference Sourcing Patterns, the Stack Map, the Seven-Gate Scorecard, and the Staged Playbook) are tools for making decisions with math instead of vibes. They're opinionated, because frameworks that try to accommodate every edge case end up accommodating none.
 
-The companion [LCPR calculator](https://inference-field-guide.streamlit.app) lets you run these calculations against your actual workload. Every number in this essay was generated by that calculator and verified against May 2026 public pricing. When prices change — and they will — update the YAML and re-run.
-
-I work at Together AI. The evidence tags are there so you can check my work.
+The companion [LCPR calculator](https://inference-field-guide.streamlit.app) lets you run these calculations against your actual workload. Every number in this essay was generated by that calculator and verified against May 2026 public pricing. When prices change, update the YAML and re-run.
 
 The best time to calculate your LCPR was six months ago. The second best time is now.
 

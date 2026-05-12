@@ -17,9 +17,11 @@ Disclosure: I work at Together AI. This essay uses Together alongside every othe
 
 Speculative decoding is designed for single-request latency. At production batch sizes, it breaks.
 
-At batch 12, I measured 0.92x. *Slower.* I implemented it at Wendy's. We were running open-source models behind 100K+ daily drive-thru interactions, 400-600ms inference budget, and under production concurrency, we were paying 8% more compute with it enabled than without. The papers promise 2-3x decode speedup. The papers are measuring single-request latency on clean benchmarks. At batch 12-16, different sequences accept different numbers of draft tokens, creating batch-level inefficiency: some sequences are still verifying while others have moved on to generation. The memory bandwidth cost of maintaining KV caches for both draft and target models, plus the verification overhead, eats the theoretical single-request speedup. Add a draft model that's never seen "Baconator" in its training data, and you're underwater.
+At batch 12, I measured 0.92x. *Slower.* I implemented it at Wendy's. We were running open-source models behind 100K+ daily drive-thru interactions, 400-600ms inference budget, and under production concurrency, we were paying 8% more compute with it enabled than without.
 
-(This problem is solvable. Together's ATLAS uses a three-component architecture — a heavyweight static speculator for baseline throughput, a lightweight adaptive speculator that learns from live traffic patterns, and a confidence-aware controller that routes each request to the right strategy. By selecting draft strategies per-request rather than per-batch, ATLAS achieves 2.65x speedup even at production concurrency where static spec decode is net negative [CUSTOMER_STORY]. The per-request routing is why it works at batch 12: instead of forcing all sequences in a batch to use the same draft model, the controller adapts to each sequence's acceptance rate characteristics.)
+The papers promise 2-3x decode speedup. The papers are measuring single-request latency on clean benchmarks. At batch 12-16, different sequences accept different numbers of draft tokens, creating batch-level inefficiency: some sequences are still verifying while others have moved on to generation. The memory bandwidth cost of maintaining KV caches for both draft and target models, plus the verification overhead, eats the theoretical single-request speedup. Add a draft model that's never seen "Baconator" in its training data, and you're underwater.
+
+(This problem is solvable. Together's ATLAS uses a three-component architecture: a heavyweight static speculator for baseline throughput, a lightweight adaptive speculator that learns from live traffic patterns, and a confidence-aware controller that routes each request to the right strategy. By selecting draft strategies per-request rather than per-batch, ATLAS achieves 2.65x speedup even at production concurrency where static spec decode is net negative [CUSTOMER_STORY]. The per-request routing is why it works at batch 12: instead of forcing all sequences in a batch to use the same draft model, the controller adapts to each sequence's acceptance rate characteristics.)
 
 I spent two weeks on this before I killed it. Tried three draft model configurations. Fine-tuned a 1B speculator on 10K drive-thru transcripts. Acceptance rate went from 48% to 58%, still below breakeven. The math is unforgiving: at α=0.55, γ=5, you get 1.94 expected tokens per step for 1.15x the cost. Net negative.
 
@@ -29,7 +31,7 @@ The reason this matters isn't speculative decoding. It's the gap it represents.
 
 There's a concept from Elon Musk's early SpaceX days. He couldn't afford rockets, so he calculated the raw material cost (carbon fiber, metal, fuel) and compared it to what the aerospace industry charged for a finished product. The ratio was 50x. He called it the "idiot index": the cost of the finished product divided by the cost of its component materials. If the ratio is high, somewhere in the chain, a massive amount of unnecessary complexity has been layered on top.
 
-AI deployment has its own idiot index. Not in hardware. GPU pricing is competitive and transparent. The idiot index in inference is the gap between the *advertised cost* of running a model and the *true cost* of getting a correct answer out of it in production. Pricing pages quote token rates. Production systems pay for retries, schema failures, quality gate rejections (automated checks that validate output format, accuracy, and safety before passing results downstream), engineering time, and an observability bill that grows 30-50% year over year.
+AI deployment has its own idiot index. Not in hardware; GPU pricing is competitive and transparent. The idiot index in inference is the gap between the *advertised cost* of running a model and the *true cost* of getting a correct answer out of it in production. Pricing pages quote token rates. Production systems pay for retries, schema failures, quality gate rejections (automated checks that validate output format, accuracy, and safety before passing results downstream), engineering time, and an observability bill that grows 30-50% year over year.
 
 This essay is about closing that gap. Not with benchmarks; those lie in predictable ways. With math.
 
@@ -54,10 +56,10 @@ Where:
 
 - **Token cost** = (input tokens × input rate + output tokens × output rate) × total attempts. Total attempts = original requests × (1 + retry rate). Every retry is a full re-request that burns tokens, so retry cost is not a separate line item — it inflates total token spend directly.
 - **Repair cost** = requests that fail quality or schema gates × cost to re-prompt
-- **Engineering cost** = monthly hours maintaining the inference stack × hourly rate. This is the most volatile LCPR input. ML engineer turnover (median tenure 18-24 months at AI-native companies) resets institutional knowledge: the replacement engineer re-learns your prompt pipelines, eval harnesses, and provider quirks over 2-4 months, during which effective engineering hours double. A single departure on a 2-person inference team can spike LCPR 15-25% for a quarter. Budget for it by cross-training and documenting runbooks — the LCPR impact of attrition is a hidden tax that no vendor model captures.
+- **Engineering cost** = monthly hours maintaining the inference stack × hourly rate. This is the most volatile LCPR input. ML engineer turnover (median tenure 18-24 months at AI-native companies) resets institutional knowledge: the replacement re-learns your prompt pipelines, eval harnesses, and provider quirks over 2-4 months, during which effective engineering hours double. A single departure on a 2-person inference team can spike LCPR 15-25% for a quarter. Budget for it by cross-training and documenting runbooks; the LCPR impact of attrition is a hidden tax that no vendor model captures.
 - **Successful requests** = total requests × quality gate pass rate
 
-This formula is deliberately simplified. It omits cold start costs (relevant for scale-to-zero serverless), KV cache memory overhead (the stored intermediate computations reused during token generation; implicit in token cost for serverless, explicit for dedicated), and observability costs (covered separately in "The Observability Tax" below). A full-stack TCO model would include those. But even this simplified version produces materially different rankings than raw token pricing, which is the point.
+This formula is deliberately simplified. It omits cold start costs (relevant for scale-to-zero serverless), KV cache memory overhead (implicit in token cost for serverless, explicit for dedicated), and observability costs (covered separately in "The Observability Tax" below). A full-stack TCO model would include those. But even this simplified version produces materially different rankings than raw token pricing, which is the point.
 
 **Before you calculate, align on definitions.** LCPR only produces meaningful comparisons when every team member agrees on what the terms mean:
 
@@ -115,7 +117,9 @@ Here's what the LCPR looks like across deployment modes, using May 2026 public p
 
 Three things to notice.
 
-**First, the ranking doesn't change — but the magnitude does.** GPT-5.5's raw token cost is $0.016 per request. Its LCPR is $0.019, only 20% higher. For a managed API with near-zero engineering burden, that's a small overhead. But DeepInfra at $0.0001 per request (note: DeepInfra prices asymmetrically at $0.039/$0.19 per million input/output tokens [PUBLIC_PRICING]) has an LCPR of $0.0019: a 17.8x overhead ratio. This doesn't mean DeepInfra is inefficient; it's still the cheapest total cost in the table. The high ratio means tokens are cheap enough that fixed costs (engineering, retries, repair) dominate the per-request LCPR. Cheap providers need volume to amortize those fixed costs.
+**First, the ranking doesn't change, but the magnitude does.** GPT-5.5's raw token cost is $0.016 per request. Its LCPR is $0.019, only 20% higher. For a managed API with near-zero engineering burden, that's a small overhead.
+
+But DeepInfra at $0.0001 per request (DeepInfra prices asymmetrically at $0.039/$0.19 per million input/output tokens [PUBLIC_PRICING]) has an LCPR of $0.0019: a 17.8x overhead ratio. This doesn't mean DeepInfra is inefficient; it's still the cheapest total cost in the table. The high ratio means tokens are cheap enough that fixed costs (engineering, retries, repair) dominate the per-request LCPR. Cheap providers need volume to amortize those fixed costs.
 
 **Second, the cost ratios compress.** GPT-5.5 is 13.8x more expensive than Together on raw token cost. At LCPR level, it's 6.3x. Engineering overhead, retries, and repair costs are roughly fixed regardless of provider, so they compress the ratio. Any comparison that doesn't include these costs is overstating the savings from switching.
 
@@ -129,7 +133,7 @@ At 20% retry rate (not uncommon during model migrations or prompt changes), GPT-
 
 At 70% quality gate pass rate (a model that frequently fails structured output validation), GPT-5.5's LCPR jumps to $0.0267. Together's jumps to $0.0048. The ratio *compresses* to 5.5x because repair and engineering costs are provider-independent and start to dominate.
 
-**The I/O ratio matters more than most teams realize.** The GPT-5.5 vs Together cost advantage depends heavily on the output-to-input ratio because GPT-5.5 prices output at 6x its input rate ($30 vs $5 per million), while Together's output premium is smaller at 2.8x ($1.70 vs $0.60 per million). At 800 input tokens with varying output:
+**The I/O ratio matters more than most teams realize.** The GPT-5.5 vs Together cost advantage depends heavily on the output-to-input ratio. GPT-5.5 prices output at 6x its input rate ($30 vs $5 per million), while Together's output premium is smaller at 2.8x ($1.70 vs $0.60 per million). At 800 input tokens with varying output:
 
 | Output tokens | Raw ratio | LCPR ratio |
 |-------------:|----------:|-----------:|
@@ -185,7 +189,13 @@ This section provides three gates. Gate 1 (Volume) is the default economic prere
 
 ### Gate 1: The Volume Gate
 
-Migration has a fixed cost. The range varies by complexity: a straightforward API swap (same model family, OpenAI-compatible endpoints) can be done in 2-4 engineer-weeks. A standard migration requiring prompt adaptation and quality gate validation takes **6-10 engineer-weeks**, plus another 4-8 weeks of optimization to reach cost parity. Complex migrations involving fine-tuning, custom structured output validation, or domain-specific evaluation harnesses can extend to 12-20 weeks [ESTIMATED from limited public data: Braincuber's anonymized fintech client (6 weeks, $38K for scaling from 2M to 15M daily tokens) and Introl's vLLM hardening estimate ("one to two weeks" for production hardening alone, which understates the upstream evaluation work)].
+Migration has a fixed cost. The range varies by complexity:
+
+- A straightforward API swap (same model family, OpenAI-compatible endpoints) takes 2-4 engineer-weeks.
+- A standard migration requiring prompt adaptation and quality gate validation takes **6-10 engineer-weeks**, plus another 4-8 weeks of optimization to reach cost parity.
+- Complex migrations involving fine-tuning, custom structured output validation, or domain-specific evaluation harnesses can extend to 12-20 weeks.
+
+[ESTIMATED from limited public data: Braincuber's anonymized fintech client (6 weeks, $38K for scaling from 2M to 15M daily tokens) and Introl's vLLM hardening estimate ("one to two weeks" for production hardening alone, which understates the upstream evaluation work).]
 
 At a blended rate of $150/hour for a senior ML engineer, 8 engineer-weeks costs $48,000. Does your monthly savings exceed the amortized migration cost over a reasonable payback period?
 
@@ -208,23 +218,27 @@ But notice what happens at lower volume. In the Part 0 worked example (500K requ
 
 Volume isn't the only reason to migrate. Sometimes the workload requires something closed APIs can't provide.
 
-**Fine-tuned models.** If your quality evaluation shows that a fine-tuned 8B or 70B model matches frontier quality for your specific domain, the cost advantage is enormous. Cresta runs thousands of LoRA adapters (Low-Rank Adaptation: small trainable weight matrices attached to a frozen base model, enabling efficient fine-tuning) for per-domain contact center agents on Fireworks Multi-LoRA (serving multiple LoRA adapters from a single base model) at $0.20/M tokens — a 27.4x LCPR advantage over GPT-5.5 at 3M requests/month [MODELED]. Even accounting for the engineering cost of training and maintaining the fine-tune pipeline, the payback is measured in weeks, not months.
+**Fine-tuned models.** If your quality evaluation shows that a fine-tuned 8B or 70B model matches frontier quality for your specific domain, the cost advantage is enormous. Cresta runs thousands of LoRA adapters (Low-Rank Adaptation: small trainable weight matrices attached to a frozen base model, enabling efficient fine-tuning) for per-domain contact center agents on Fireworks Multi-LoRA at $0.20/M tokens, a 27.4x LCPR advantage over GPT-5.5 at 3M requests/month [MODELED]. Even accounting for the engineering cost of training and maintaining the fine-tune pipeline, the payback is measured in weeks, not months.
 
 **Latency SLOs.** Shared APIs under load produce P99 latency spikes from ~300ms to 2-4 seconds on 70B-class models. For agent pipelines with 5+ chained calls, that compounds: a 2-second P99 across 5 calls is a 10-second worst case. Dedicated inference lets you control batch size and KV cache budget.
 
-Decagon is the clearest illustration. They build voice AI agents for enterprise customer support (tens of millions of interactions, 80%+ deflection rate), running a multi-model voice stack (STT → LLM → TTS). Voice AI requires sub-100ms model latency to feel conversational, which shared APIs cannot guarantee under load. After migrating to Together AI on NVIDIA HGX B200 infrastructure with custom-trained speculators per application (not a static draft model; each application gets a speculator trained on its conversation patterns), Decagon achieved P95 model latency under 400ms, a 6x cost reduction per turn versus GPT-5 Mini, and 11x faster inference [CUSTOMER_STORY]. The custom-per-application speculator approach is key: generic speculators have low acceptance rates on domain-specific vocabulary, the same problem I hit at Wendy's with "Baconator."
+Decagon is the clearest illustration. They build voice AI agents for enterprise customer support (tens of millions of interactions, 80%+ deflection rate), running a multi-model voice stack (STT → LLM → TTS). Voice AI requires sub-100ms model latency to feel conversational, which shared APIs cannot guarantee under load.
+
+After migrating to Together AI on NVIDIA HGX B200 infrastructure with custom-trained speculators per application (each application gets a speculator trained on its conversation patterns, not a static draft model), Decagon achieved P95 model latency under 400ms, a 6x cost reduction per turn versus GPT-5 Mini, and 11x faster inference [CUSTOMER_STORY]. The custom-per-application speculator approach is key: generic speculators have low acceptance rates on domain-specific vocabulary, the same problem I hit at Wendy's with "Baconator."
 
 **Custom architectures.** Some workloads require model modifications that closed APIs don't support: constrained decoding, custom sampling strategies, domain-specific tokenizers, or inference-time interventions like activation steering. If you need to modify the model's forward pass, you need dedicated inference.
 
 **The Specialization Gate threshold**: if any of the following are true, migration passes this gate regardless of volume: (a) a fine-tuned model matches frontier quality for your task, (b) you have a hard P99 latency SLO under 500ms on chained calls, or (c) you need model-level modifications.
 
-**Quality degradation risk.** Passing the Specialization Gate requires eval infrastructure you may not have yet. Before committing to migration, run your target open-weights model against your production eval suite (not a public benchmark) and compare quality gate pass rates. A model that scores 92% on MMLU but 78% on your domain-specific extraction tasks will produce a *higher* LCPR than the frontier API it replaces — more retries, more repairs, more engineering time debugging failures. Budget 2-4 weeks of eval development before the migration clock starts. If you don't have a production eval suite, building one is prerequisite work, not migration work.
+**Quality degradation risk.** Passing the Specialization Gate requires eval infrastructure you may not have yet. Before committing to migration, run your target open-weights model against your production eval suite (not a public benchmark) and compare quality gate pass rates. A model that scores 92% on MMLU but 78% on your domain-specific extraction tasks will produce a *higher* LCPR than the frontier API it replaces: more retries, more repairs, more engineering time debugging failures.
+
+Budget 2-4 weeks of eval development before the migration clock starts. If you don't have a production eval suite, building one is prerequisite work, not migration work.
 
 ### Gate 3: The Ownership Gate
 
 The third gate is non-economic: compliance, data residency, and vendor dependency.
 
-**Data residency.** If your workload processes EU PII, Schrems II makes US-hosted inference legally fraught. The viable EU-resident options as of May 2026 are Nebius (Finland, France), Scaleway, Mistral La Plateforme, and OVH. None of the major closed APIs (OpenAI, Anthropic) offer guaranteed EU-only inference. Anthropic's `inference_geo=US` parameter confirms that their default routing *isn't* geo-constrained; it's the exception, not the rule. Verify data residency guarantees in your contract — vendor documentation and API parameters are not legal commitments.
+**Data residency.** If your workload processes EU PII, Schrems II makes US-hosted inference legally fraught. The viable EU-resident options as of May 2026 are Nebius (Finland, France), Scaleway, Mistral La Plateforme, and OVH. None of the major closed APIs (OpenAI, Anthropic) offer guaranteed EU-only inference. Anthropic's `inference_geo=US` parameter confirms that their default routing *isn't* geo-constrained; it's the exception, not the rule. Verify data residency guarantees in your contract. Vendor documentation and API parameters are not legal commitments.
 
 **Zero data retention.** For healthcare and financial workloads, the default storage behavior matters more than the compliance certification. Baseten stores nothing by default. Fireworks retains for 30 days on the Response API unless `store=false`. Together stores by default unless you disable it. OpenAI's fine-tuning retains training data. If your legal team requires contractual zero-retention by default, this narrows your vendor set.
 
@@ -246,7 +260,7 @@ Not every workload should move. Three patterns where closed APIs remain the righ
 
 The three cases above describe workloads where migration doesn't make sense *yet*. Some workloads should stay on closed APIs indefinitely:
 
-**Reasoning-dominated pipelines with no open-weights equivalent.** If your core product depends on frontier reasoning (multi-step mathematical proof, complex agentic workflows with 10+ tool calls, or code generation where GPT-5.5 or Claude Opus 4.7 measurably outperform the best open-weights models on your eval suite), the quality gap may never close. Open-weights models improve, but so do frontier models. If your eval pass rate on the best open model is 15+ points below frontier, plan to stay on closed APIs and optimize via caching and prompt engineering instead of migration.
+**Reasoning-dominated pipelines with no open-weights equivalent.** If your core product depends on frontier reasoning (multi-step mathematical proof, complex agentic workflows with 10+ tool calls, code generation where GPT-5.5 or Claude Opus 4.7 measurably outperform the best open-weights models on your eval suite), the quality gap may never close. Open-weights models improve, but so do frontier models. If your eval pass rate on the best open model is 15+ points below frontier, plan to stay on closed APIs and optimize via caching and prompt engineering instead of migration.
 
 **Rapid model rotation.** Teams that switch models every 2-3 months to chase the latest frontier release (GPT-5.5 → Claude Opus 4.7 → Gemini 2.5 Pro) get more value from closed API flexibility than from open-weights cost savings. Migration engineering amortizes poorly if you're rotating providers anyway. The LCPR math still applies — just run it with `engineering_hours_per_month` reflecting your actual switching costs.
 
@@ -272,11 +286,15 @@ The answer depends on the workload shape.
 
 The three gates above address *whether* to migrate from closed APIs. A separate question is *when* to move from serverless open-weights to dedicated GPU. This is a volume calculation with a specific crossover point.
 
-A Lambda H100 at $3.99/hr costs $2,873/month whether you use it or not. Running a 70B FP8 model with vLLM continuous batching, it sustains approximately 1,500 output tokens/sec at high batch utilization [INDEPENDENT_BENCHMARK]. At full utilization, that's 129.6M output tokens per day. (This break-even is calculated on output tokens because, for typical chat workloads with moderate input and streaming output, throughput is bottlenecked by autoregressive decode. For long-context workloads with >8K input tokens or short-output tasks like classification, prefill dominates and the economics shift. Dedicated becomes relatively more attractive because you're paying for compute you'd pay for anyway.)
+A Lambda H100 at $3.99/hr costs $2,873/month whether you use it or not. Running a 70B FP8 model with vLLM continuous batching, it sustains approximately 1,500 output tokens/sec at high batch utilization [INDEPENDENT_BENCHMARK]. At full utilization, that's 129.6M output tokens per day.
+
+(This break-even is calculated on output tokens because typical chat workloads are bottlenecked by autoregressive decode. For long-context workloads with >8K input tokens or short-output tasks like classification, prefill dominates and the economics shift. Dedicated becomes relatively more attractive because you're paying for compute you'd pay for anyway.)
 
 Against Together's serverless output rate of $1.70/M, break-even is **56.3M tokens/day at full utilization** [MODELED]. Against Fireworks at $0.90/M, it's 106.4M tokens/day.
 
-But production workloads don't saturate. Real utilization on dedicated inference runs 30-50%, with 40% as the midpoint. The gap comes from decode-phase memory bandwidth limits, variable batch sizes across time-of-day, cold start periods after deployments, and the fact that real traffic doesn't produce constant request rates. Cast AI's finding that 49% GPU utilization on a 136-H200 cluster represents "the ceiling, not the floor" is consistent with what we see in practice [ANALYST_ESTIMATE]. At 40% real utilization, break-even against Together rises to **140.8M tokens/day**. Against Fireworks, it's 266.0M tokens/day [MODELED].
+But production workloads don't saturate. Real utilization on dedicated inference runs 30-50%, with 40% as the midpoint. The gap comes from decode-phase memory bandwidth limits, variable batch sizes across time-of-day, cold start periods after deployments, and the fact that real traffic doesn't produce constant request rates. Cast AI's finding that 49% GPU utilization on a 136-H200 cluster represents "the ceiling, not the floor" is consistent with what we see in practice [ANALYST_ESTIMATE].
+
+At 40% real utilization, break-even against Together rises to **140.8M tokens/day**. Against Fireworks, it's 266.0M tokens/day [MODELED].
 
 For context: 140.8M output tokens per day is approximately 4.7 million requests at 30 tokens per response, or 469,000 requests at 300 tokens per response. Most teams don't reach this volume on a single model endpoint. If your utilization consistently stays below 40%, the correct move is back to serverless — or consolidating workloads onto the GPU via Multi-LoRA serving.
 
@@ -284,9 +302,9 @@ For context: 140.8M output tokens per day is approximately 4.7 million requests 
 
 Between serverless and self-managed GPU sits a third option — managed dedicated endpoints. You reserve GPU capacity (hourly or monthly billing), but the provider handles runtime optimization, quantization, autoscaling, and kernel selection.
 
-Together AI's dedicated endpoints illustrate the economics: H100 capacity at $1.76-$2.39/hr (on-demand) or B200 at $4-$5.50/hr, with the crossover from serverless at approximately 130,000 output tokens per minute of sustained traffic [PUBLIC_PRICING]. Below that rate, serverless is cheaper. Above it, dedicated saves money even at variable utilization — because you're paying for capacity, not tokens, and the provider's optimizations (ATLAS speculative decoding, FP8 quantization, custom kernels) increase effective throughput without additional cost to you.
+Together AI's dedicated endpoints illustrate the economics: H100 capacity at $1.76-$2.39/hr (on-demand) or B200 at $4-$5.50/hr, with the crossover from serverless at approximately 130,000 output tokens per minute of sustained traffic [PUBLIC_PRICING]. Below that rate, serverless is cheaper. Above it, dedicated saves money even at variable utilization, because you're paying for capacity, not tokens, and the provider's optimizations (ATLAS speculative decoding, FP8 quantization, custom kernels) increase effective throughput without additional cost to you.
 
-The operational difference is significant. Self-managed dedicated (Lambda H100 at $3.99/hr) requires you to run vLLM, handle OOMs, tune batch sizes, and manage failover. Managed dedicated (Together, Fireworks, Baseten) handles all of that — you get an endpoint URL with an SLA. The hourly rate is higher, but the loaded cost (factoring in engineering time) is often lower. Use the LCPR calculator to compare: if your engineering_hours_per_month for self-managed exceeds 40 hours at $150/hr, managed dedicated wins on total cost up to approximately $50K/month in GPU spend [MODELED].
+The operational difference is significant. Self-managed dedicated (Lambda H100 at $3.99/hr) requires you to run vLLM, handle OOMs, tune batch sizes, and manage failover. Managed dedicated (Together, Fireworks, Baseten) handles all of that; you get an endpoint URL with an SLA. The hourly rate is higher, but the loaded cost (factoring in engineering time) is often lower. Use the LCPR calculator to compare: if your engineering_hours_per_month for self-managed exceeds 40 hours at $150/hr, managed dedicated wins on total cost up to approximately $50K/month in GPU spend [MODELED].
 
 ### Quick reference: the math behind dedicated GPU economics
 
@@ -356,7 +374,7 @@ Sum your scores. The total determines your tier:
 
 *Complex (Score: 16).* Enterprise, 8 models across 4 use cases, complex tool-use chains, comprehensive eval harness, sub-500ms voice AI requirement, no dedicated inference team, deep integration with billing/compliance/multi-region. Migration: 16+ weeks with Field Deployment Engineer (FDE) partnership or equivalent expert engagement. Phased: one workload at a time with 2-week parallel-run per workload. (Factors: workload 3, prompts 3, evals 3, latency 3, team 1, integration 3.)
 
-**The engineering hours reality.** The hidden cost in migration isn't tokens — it's engineering time. The deployment mode you choose determines your ongoing maintenance burden:
+**The engineering hours reality.** The hidden cost in migration isn't tokens. It's engineering time. The deployment mode you choose determines your ongoing maintenance burden:
 
 | Deployment Mode | Setup (one-time) | Ongoing (monthly) | Source |
 |----------------|-------------------|-------------------|--------|
@@ -364,7 +382,7 @@ Sum your scores. The total determines your tier:
 | Managed dedicated | 8-20 hrs (SLA design, testing) | 5-10 hrs (capacity reviews, model updates) | [MODELED] from Decagon/Cursor case patterns |
 | Self-managed dedicated | 40-80 hrs (runtime setup, tuning) | 30-60 hrs (OOMs, scaling, kernel updates, on-call) | [ANALYST_ESTIMATE] from Lambda/CoreWeave community data |
 
-At a fully loaded engineer cost of $100-$200/hr (the calculator defaults to $100/hr; adjust in the sidebar), self-managed dedicated adds $3,000-$12,000/month in engineering overhead alone. That overhead is invisible in token pricing comparisons but dominates the LCPR calculation. A budget holder comparing "$3.99/hr GPU" to "$1.76/hr managed dedicated" is comparing the wrong numbers — the full picture requires engineering hours.
+At a fully loaded engineer cost of $100-$200/hr (the calculator defaults to $100/hr; adjust in the sidebar), self-managed dedicated adds $3,000-$12,000/month in engineering overhead alone. That overhead is invisible in token pricing comparisons but dominates the LCPR calculation. A budget holder comparing "$3.99/hr GPU" to "$1.76/hr managed dedicated" is comparing the wrong numbers. The full picture requires engineering hours.
 
 Use the [Migration Readiness tab](https://inference-field-guide.streamlit.app) in the LCPR calculator to score your factors interactively and see the payback calculation for your specific workload profile.
 
@@ -382,7 +400,11 @@ Multi-source inference architectures fall into four patterns. Most production de
 
 **Pattern 1: Workload-Segmented.** Different workloads go to different providers based on the workload's requirements. This is the most common pattern and the simplest to implement.
 
-Cursor is the canonical example. Fast Apply (their deterministic code-edit feature) runs on a fine-tuned Llama-3-70B at ~1,000 tokens/sec through Fireworks speculative decoding. Sualeh Asif, Cursor co-founder: "We leverage speculative decoding for our custom models deployed on Fireworks.ai, which power the Fast Apply and Cursor Tab features. Thanks to speculative decoding, we saw up to a 2x reduction in generation latency" [CUSTOMER_STORY]. Note: Cursor's 2x speedup is for deterministic code-edit operations with predictable output structure. That's a different workload shape than the high-concurrency, variable-output scenario described in Part 0 where naive spec decode is net negative. Adaptive speculative decoding (FireOptimizer, ATLAS) addresses the batch-size problem by selecting draft strategies per-request. Composer 2 (their agentic coding model) trains and serves through Fireworks with weight syncs every training step via delta-compressed S3 uploads. Chat features use Claude Sonnet and Opus directly.
+Cursor is the canonical example. Fast Apply (their deterministic code-edit feature) runs on a fine-tuned Llama-3-70B at ~1,000 tokens/sec through Fireworks speculative decoding. Sualeh Asif, Cursor co-founder: "We leverage speculative decoding for our custom models deployed on Fireworks.ai, which power the Fast Apply and Cursor Tab features. Thanks to speculative decoding, we saw up to a 2x reduction in generation latency" [CUSTOMER_STORY].
+
+Note: Cursor's 2x speedup is for deterministic code-edit operations with predictable output structure. That's a different workload shape than the high-concurrency, variable-output scenario described in Part 0 where naive spec decode is net negative. Adaptive speculative decoding (FireOptimizer, ATLAS) addresses the batch-size problem by selecting draft strategies per-request.
+
+Composer 2 (their agentic coding model) trains and serves through Fireworks with weight syncs every training step via delta-compressed S3 uploads. Chat features use Claude Sonnet and Opus directly.
 
 Cursor's production deployment spans multiple providers: Fireworks for speculative decoding on Fast Apply, Anthropic for frontier chat, and Together AI for Blackwell GPU inference with a quantization pipeline that moves new model weights from candidate to test endpoint within days [CUSTOMER_STORY]. Each provider wins on a different constraint — throughput, reasoning quality, or hardware access.
 
@@ -400,7 +422,12 @@ The implementation is straightforward: an AI gateway (LiteLLM, Helicone, Portkey
 
 This pattern doesn't save money. It costs slightly more because the fallback provider may have different pricing. Its value is availability: Anthropic outages in 2024-2025 demonstrated that single-source dependency on any provider, even a reliable one, is a business risk. If a single-provider outage costs more than 1% of monthly revenue, Primary-Fallback is table stakes.
 
-**Fallback design matters more than fallback existence.** Two common failure modes: (1) your fallback provider uses a different response format than your primary, so failover produces schema validation errors in your application layer — an outage that looks like recovery; (2) your fallback hasn't been tested under load in months, so when you actually need it, you discover rate limits, stale API keys, or model deprecation. Fix both: ensure your fallback produces identical response schemas (use your gateway's response normalization, or constrain both providers to the same structured output schema), and test failover monthly by routing 1-5% of live traffic to the fallback for 15 minutes. If the fallback can't handle 5% of traffic cleanly, it won't handle 100% during an outage.
+**Fallback design matters more than fallback existence.** Two common failure modes:
+
+1. Your fallback provider uses a different response format than your primary, so failover produces schema validation errors in your application layer: an outage that looks like recovery.
+2. Your fallback hasn't been tested under load in months, so when you actually need it, you discover rate limits, stale API keys, or model deprecation.
+
+Fix both: ensure your fallback produces identical response schemas (use your gateway's response normalization, or constrain both providers to the same structured output schema), and test failover monthly by routing 1-5% of live traffic to the fallback for 15 minutes. If the fallback can't handle 5% of traffic cleanly, it won't handle 100% during an outage.
 
 **Pattern 4: Geo-Segmented.** Traffic routes to different providers based on geographic or regulatory requirements. This is compliance-driven, not cost-driven.
 
@@ -414,13 +441,13 @@ Anthropic's `inference_geo=US` parameter with its 1.1x pricing multiplier is an 
 
 Multi-source isn't free. Every additional provider adds operational surface area.
 
-**Engineering overhead scales with providers, not linearly but noticeably.** Each provider has different API semantics, different error codes, different rate-limiting behavior, and different structured output support. Prompt portability between models is imperfect; a prompt tuned for Claude may perform differently on DeepSeek V3. My experience: budget 2-4 engineering days per provider for initial integration and 1-2 hours per month per provider for ongoing maintenance (API changes, deprecation notices, pricing updates).
+**Engineering overhead scales with providers, not linearly but noticeably.** Each provider has different API semantics, error codes, rate-limiting behavior, and structured output support. Prompt portability between models is imperfect; a prompt tuned for Claude may perform differently on DeepSeek V3. My experience: budget 2-4 engineering days per provider for initial integration and 1-2 hours per month per provider for ongoing maintenance (API changes, deprecation notices, pricing updates).
 
 **Observability multiplies.** Each provider produces telemetry in a different format. Standardizing on OpenTelemetry semantic conventions for GenAI helps, but the custom-metrics cost in Datadog or Grafana scales with the number of distinct provider×model combinations you're monitoring. Two providers with three models each is six metric series per telemetry dimension. That adds up fast against the observability tax described in Part 0.
 
 **Testing multiplies.** Quality gates need to run against each provider×model combination. If you have three providers and two models each, that's six evaluation runs per prompt change. Automated evaluation pipelines (using frameworks like Braintrust, Arize, or custom harnesses) are mandatory at this point; manual evaluation doesn't scale.
 
-The honest math: for a team running two providers with two models each, expect 8-16 engineering hours per month of multi-source overhead. At $100/hour, that's $800-$1,600/month, a meaningful fraction of the savings at lower volumes. This is why the Volume Gate matters: if you're saving $5,000/month by multi-sourcing, and spending $1,200/month managing the complexity, your net benefit is $3,800. Still positive, but not the 5-7x improvement the raw numbers suggest.
+The honest math: for a team running two providers with two models each, expect 8-16 engineering hours per month of multi-source overhead. At $100/hour, that's $800-$1,600/month, a meaningful fraction of the savings at lower volumes. This is why the Volume Gate matters. If you're saving $5,000/month by multi-sourcing and spending $1,200/month managing the complexity, your net benefit is $3,800. Still positive, but not the 5-7x improvement the raw numbers suggest.
 
 **Systems delay vs model delay.** When latency degrades in a multi-source architecture, the instinct is to blame the model or provider. Usually the bottleneck is upstream. Decompose P95 latency into its components before optimizing:
 
@@ -498,7 +525,11 @@ Build a custom runtime only if you have Character.AI-level scale (1B+ queries/da
 
 **Layer 3: Kernels.** *Recommendation: Buy.*
 
-FlashAttention-4 (Tri Dao, Together AI co-founder and Chief Scientist, Hot Chips 2025): up to 22% faster than cuDNN attention on Blackwell [INDEPENDENT_BENCHMARK]. Together Kernel Collection (TKC), built on Tri Dao's ThunderKittens framework developed with Stanford collaborators: reduces 1,000+ lines of CUDA to 100-200 lines while delivering 1.8x faster attention than FlashAttention-3, powering up to 75% faster FP8 inference on Blackwell [CUSTOMER_STORY]. The research-to-production pipeline (FlashAttention → ThunderKittens → TKC → ATLAS) is a structural cost advantage: improvements come from fundamental research at the attention kernel level, not GPU arbitrage. Speculative decoding kernels are now a vendor differentiator: Together's ATLAS achieves 500 TPS on DeepSeek-V3.1 (2.65x standard decoding) by adapting draft model selection per-request rather than using a static draft model [CUSTOMER_STORY]. Fireworks' FireOptimizer delivers ~2x latency reduction at Cursor [CUSTOMER_STORY]. NVIDIA cuBLAS + CUTLASS for everything else. The build case is essentially zero outside of foundation model labs and the handful of teams doing custom attention work.
+FlashAttention-4 (Tri Dao, Together AI co-founder and Chief Scientist, Hot Chips 2025): up to 22% faster than cuDNN attention on Blackwell [INDEPENDENT_BENCHMARK]. Together Kernel Collection (TKC), built on Tri Dao's ThunderKittens framework developed with Stanford collaborators, reduces 1,000+ lines of CUDA to 100-200 lines while delivering 1.8x faster attention than FlashAttention-3, powering up to 75% faster FP8 inference on Blackwell [CUSTOMER_STORY].
+
+The research-to-production pipeline (FlashAttention → ThunderKittens → TKC → ATLAS) is a structural cost advantage: improvements come from fundamental research at the attention kernel level, not GPU arbitrage.
+
+Speculative decoding kernels are now a vendor differentiator. Together's ATLAS achieves 500 TPS on DeepSeek-V3.1 (2.65x standard decoding) by adapting draft model selection per-request [CUSTOMER_STORY]. Fireworks' FireOptimizer delivers ~2x latency reduction at Cursor [CUSTOMER_STORY]. NVIDIA cuBLAS + CUTLASS for everything else. The build case is essentially zero outside of foundation model labs and the handful of teams doing custom attention work.
 
 **Layer 4: Hardware.** *Recommendation: Buy from neo-clouds.*
 
@@ -516,7 +547,9 @@ All prices are on-demand, per-GPU rates as of May 2026 [PUBLIC_PRICING]. Lambda 
 
 Lambda at $3.99/hr is 20% cheaper than AWS and 39% cheaper than Baseten. AWS hiked H200 prices ~15% in January 2026, widening the gap further [PUBLIC_PRICING].
 
-Two caveats. First, hyperscalers offer services neo-clouds don't: FedRAMP authorization, managed Kubernetes at scale, integrated data pipelines, and enterprise support contracts with meaningful remedies. If you need FedRAMP, AWS Bedrock Government or Azure Government are your only options. Second, if your application runs on AWS but inference runs on a neo-cloud, egress costs apply in both directions. For high-throughput workloads generating large outputs (code generation, long-form content), egress can add 20-40% to total cost. Factor this into your TCO calculation before committing.
+Two caveats. First, hyperscalers offer services neo-clouds don't: FedRAMP authorization, managed Kubernetes at scale, integrated data pipelines, and enterprise support contracts with meaningful remedies. If you need FedRAMP, AWS Bedrock Government or Azure Government are your only options.
+
+Second, if your application runs on AWS but inference runs on a neo-cloud, egress costs apply in both directions. For high-throughput workloads generating large outputs (code generation, long-form content), egress can add 20-40% to total cost. Factor this into your TCO calculation before committing.
 
 **Layer 5: Orchestration.** *Recommendation: Buy NVIDIA Dynamo if multi-node.*
 
@@ -545,7 +578,11 @@ For most teams: use your gateway's manual model-keyed routing. If you have a cle
 
 One risk that cuts across all seven layers: the gap between what you think you're spending and what you're actually spending.
 
-The chain from user request to provider invoice is longer than most teams realize: `user workflow → inference event → attempts (including retries) → tokens (input + output, per attempt) → cache discount → fallback/retry/repair → provider invoice → internal cost allocation`. Each step in this chain introduces metering error. Your tokenizer may count differently from the provider's. Retry tokens may not appear in your application logs. Cache discounts may not match what you expected from the provider's documentation.
+The chain from user request to provider invoice is longer than most teams realize:
+
+`user workflow → inference event → attempts (including retries) → tokens (input + output, per attempt) → cache discount → fallback/retry/repair → provider invoice → internal cost allocation`
+
+Each step in this chain introduces metering error. Your tokenizer may count differently from the provider's. Retry tokens may not appear in your application logs. Cache discounts may not match what you expected from the provider's documentation.
 
 A 5% metering error on $100K/month in inference spend is $60K/year in unaccounted cost. At $500K/month, it's $300K. The fix is unglamorous: reconcile your telemetry against the provider invoice monthly. Compare token counts from your gateway logs to the provider's usage dashboard. Investigate any variance above 5%. Common sources: tokenization differences between your local tokenizer and the provider's (especially for non-English text or code), uncounted retry attempts, cache hit rates lower than assumed, and batched requests that get double-counted in your logs but single-counted on the invoice.
 
@@ -675,7 +712,7 @@ Once you've selected vendors via the scorecard, negotiate pricing in tiers rathe
 
 - **Under $25K/month**: don't negotiate. Use public pricing. The vendor's sales team won't prioritize you, and the discount (if any) won't exceed 5-10%.
 - **$25K-$100K/month**: request a committed-use discount. Most providers offer 15-30% off for 3-6 month commitments. Get it in writing with clear terms on what happens if you under-commit.
-- **$100K-$500K/month**: negotiate custom pricing with a named account manager. At this level, you have leverage: the vendor's cost to serve you is low relative to revenue. Push for volume tiers with automatic step-downs, not flat discounts. Ensure the contract includes price protection (the vendor can't raise your rates mid-contract) and a 30-day out clause if they deprecate your model.
+- **$100K-$500K/month**: negotiate custom pricing with a named account manager. At this level, you have leverage; the vendor's cost to serve you is low relative to revenue. Push for volume tiers with automatic step-downs, not flat discounts. Ensure the contract includes price protection (the vendor can't raise your rates mid-contract) and a 30-day out clause if they deprecate your model.
 - **$500K+/month**: negotiate capacity commitments with SLAs. At this level, you're a strategic account. Push for dedicated capacity guarantees, custom model hosting, priority support, and co-development of optimizations. The vendor should be assigning engineering resources to your account.
 
 The key principle: never negotiate price alone. Negotiate price + SLA + capacity guarantees + contract flexibility as a package. A 20% discount with no SLA is worth less than a 10% discount with P99 latency guarantees and a 90-day out clause.
@@ -688,7 +725,7 @@ The key principle: never negotiate price alone. Negotiate price + SLA + capacity
 
 This final section synthesizes Parts 1-4 into concrete, staged guidance. Each stage has an entry threshold, a set of actions, and an exit threshold that tells you when to graduate to the next stage.
 
-**A note on thresholds.** Every dollar figure and percentage in this playbook ($10K/month, $100K/month, 40% utilization, 500ms P95) is a *configurable default*, not a law. These values reflect typical economics for 70B-class models at May 2026 pricing. They shift with: model size (smaller models have lower break-evens), provider pricing changes, your team's engineering efficiency, and your workload's I/O ratio. Use the LCPR calculator to compute your thresholds, not these defaults. When this essay says "$10K/month," read it as "the volume where your LCPR calculator shows migration savings exceeding amortized engineering cost."
+**A note on thresholds.** Every dollar figure and percentage in this playbook ($10K/month, $100K/month, 40% utilization, 500ms P95) is a *configurable default*, not a law. These values reflect typical economics for 70B-class models at May 2026 pricing. They shift with model size (smaller models have lower break-evens), provider pricing changes, your team's engineering efficiency, and your workload's I/O ratio. Use the LCPR calculator to compute your thresholds, not these defaults. When this essay says "$10K/month," read it as "the volume where your LCPR calculator shows migration savings exceeding amortized engineering cost."
 
 ### Stage 0: Prototype (under $10,000/month)
 
@@ -701,7 +738,7 @@ This final section synthesizes Parts 1-4 into concrete, staged guidance. Each st
 1. Pick one provider. Anthropic if you need reasoning quality and prompt caching (90% reduction on cached input tokens [PUBLIC_PRICING]). OpenAI if you need the broadest ecosystem. Gemini if you need the cheapest frontier option ($1.25/$10 for ≤200K context [PUBLIC_PRICING]).
 2. Use prompt caching aggressively. Anthropic's caching reduces cached input cost to 10% of base. OpenAI's automatic caching triggers on prompts ≥1,024 tokens at 50% discount [PUBLIC_PRICING].
 3. Don't optimize for inference cost. At $4,116/month on GPT-5.5 for 200K requests [MODELED], the savings from switching to open-weights ($2,987/month) don't justify the engineering distraction of migration. Ship the product.
-4. Use prompt caching to stretch your closed-API budget further. A Sonnet workload with 4,800 input tokens (4,000-token system prompt + 800 user input) and 600 output tokens at 500K requests/month costs $12,901/month without caching. With Anthropic's 83% cache hit rate (the system prompt is cacheable), LCPR drops 43% to $7,361/month — a $5,540 savings with zero migration effort [MODELED]. Even cached Sonnet at $0.0155 LCPR is still 1.7x Together's uncached $0.0091, but the gap narrows enough that migration ROI becomes marginal at this volume.
+4. Use prompt caching to stretch your closed-API budget further. A Sonnet workload with 4,800 input tokens (4,000-token system prompt + 800 user input) and 600 output tokens at 500K requests/month costs $12,901/month without caching. With Anthropic's 83% cache hit rate (the system prompt is cacheable), LCPR drops 43% to $7,361/month, a $5,540 savings with zero migration effort [MODELED]. Even cached Sonnet at $0.0155 LCPR is still 1.7x Together's uncached $0.0091, but the gap narrows enough that migration ROI becomes marginal at this volume.
 
 **Exit threshold**: monthly inference spend exceeds $10,000 (approximately 500K requests/month on GPT-5.5 at 800/400 tokens — the point where multi-source migration ROI exceeds $7.5K/month per the Part 1 worked example), OR you experience a provider outage that costs revenue, OR a customer asks about data residency. The $10K figure is a guideline; teams with tight margins or latency-sensitive workloads may justify Stage 1 earlier.
 
@@ -715,7 +752,7 @@ This final section synthesizes Parts 1-4 into concrete, staged guidance. Each st
 
 1. Add an AI gateway (LiteLLM in dev, Helicone or Portkey in prod).
 2. Add a fallback provider for your primary closed-API model (Anthropic via Bedrock, Gemini via Vertex).
-3. Move long-tail, quality-insensitive workloads to serverless open-weights: batch processing, summarization, classification, embeddings. Together, Fireworks, or DeepInfra on Llama 3.3 70B, DeepSeek V3, or Qwen 3. For offline batch workloads (embeddings, evaluation harnesses, bulk summarization), consider spot-priced dedicated GPUs (RunPod spot, Lambda spot) at 40-70% discount — batch workloads tolerate interruption and higher latency.
+3. Move long-tail, quality-insensitive workloads to serverless open-weights: batch processing, summarization, classification, embeddings. Together, Fireworks, or DeepInfra on Llama 3.3 70B, DeepSeek V3, or Qwen 3. For offline batch workloads (embeddings, evaluation harnesses, bulk summarization), consider spot-priced dedicated GPUs (RunPod spot, Lambda spot) at 40-70% discount. Batch workloads tolerate interruption and higher latency.
 4. Implement prompt caching everywhere it helps. On closed APIs, this means Anthropic's explicit caching (90% discount) or OpenAI's automatic caching (50% discount). On serverless open-weights, Together's always-on prefix caching gives ~90% reduction on cached input tokens with no configuration [PUBLIC_DOC]. Structure prompts with static content first, variable content last.
 5. Start measuring LCPR, not just token cost. The difference matters at this scale.
 
@@ -731,13 +768,16 @@ This final section synthesizes Parts 1-4 into concrete, staged guidance. Each st
 
 **Actions**:
 
-1. Move your 1-2 highest-volume workloads to dedicated inference. Pick the vendor by workload fit: Together if you need production speculative decoding (ATLAS, 500 TPS on DeepSeek-V3.1), fine-tuning and inference on a unified platform, or next-gen hardware access via their 36,000 GB200 GPU deployment (Decagon reference: 90ms latency, 11x faster). Together's FDE (Forward Deployed Engineering) model means their engineers optimize your deployment on an ongoing basis — custom speculators, quantization pipelines, rapid weight-to-endpoint cycles — rather than handing you an endpoint and leaving. Fireworks if you have agentic coding or RL post-training workloads (Cursor, Vercel v0 references). Baseten if you need TensorRT-LLM + observability tooling (Abridge, OpenEvidence, Writer references).
+1. Move your 1-2 highest-volume workloads to dedicated inference. Pick the vendor by workload fit:
+    - **Together** if you need production speculative decoding (ATLAS, 500 TPS on DeepSeek-V3.1), fine-tuning and inference on a unified platform, or next-gen hardware access via their 36,000 GB200 GPU deployment (Decagon reference: 90ms latency, 11x faster). Together's FDE model means their engineers optimize your deployment on an ongoing basis (custom speculators, quantization pipelines, rapid weight-to-endpoint cycles) rather than handing you an endpoint and leaving.
+    - **Fireworks** if you have agentic coding or RL post-training workloads (Cursor, Vercel v0 references).
+    - **Baseten** if you need TensorRT-LLM + observability tooling (Abridge, OpenEvidence, Writer references).
 2. Run vLLM or SGLang. Use FP8 quantization (8-bit floating point, which halves memory versus the standard BF16 16-bit format) for 70B-class models — quality holds within 1% of BF16 on most benchmarks [INDEPENDENT_BENCHMARK].
 3. Run NVIDIA Dynamo if multi-node.
 4. Buy compliance certifications (SOC 2, HIPAA BAA) from your dedicated vendor.
 5. Monitor GPU utilization weekly. The 40% threshold approximates the break-even between dedicated and serverless for 70B-class models: at Lambda's $3.99/hr and serverless rates of $0.90-$1.70/M tokens, you need roughly 10-11 hours/day of saturated throughput (43-44% daily utilization) to justify dedicated [MODELED]. Below that, serverless is cheaper. Consolidate via Multi-LoRA if you have multiple low-volume workloads that can share a GPU.
 
-**Worked example**: at 10M requests/month, GPT-5.5 costs $166,600/month. Together serverless costs $13,748. A Lambda H100 at 40% utilization costs $10,418 for that same workload [MODELED] — but this excludes egress costs. Lambda charges zero egress, but if you're routing outputs through a hyperscaler's load balancer or CDN, add $0.05-$0.09/GB. At higher utilization, the dedicated cost drops further. The dedicated option wins at this volume if (a) utilization stays above 40%, and (b) egress costs don't negate the savings. Serverless remains the safer default.
+**Worked example**: at 10M requests/month, GPT-5.5 costs $166,600/month. Together serverless costs $13,748. A Lambda H100 at 40% utilization costs $10,418 for that same workload [MODELED]. This excludes egress costs. Lambda charges zero egress, but if you're routing outputs through a hyperscaler's load balancer or CDN, add $0.05-$0.09/GB. At higher utilization, the dedicated cost drops further. The dedicated option wins at this volume if (a) utilization stays above 40%, and (b) egress costs don't negate the savings. Serverless remains the safer default.
 
 **Exit threshold**: total monthly spend exceeds $1M, OR you have a strategic reason to control kernels and models end-to-end.
 
@@ -751,7 +791,9 @@ This final section synthesizes Parts 1-4 into concrete, staged guidance. Each st
 
 1. Hire 2-4 dedicated inference engineers, plus SRE support for on-call, alerting, and capacity planning. This is not optional — you cannot run dedicated inference at $1M+/month without specialized expertise. The inference team owns runtime optimization, quantization, KV cache tuning, and failure recovery. SREs own runbooks and operational tooling.
 
-   Alternatively: if building an inference team isn't viable or desirable, managed dedicated endpoints offer the same cost economics without the operational burden. Together AI's FDE (Forward Deployed Engineering) model assigns dedicated engineers to optimize your deployment — custom speculators, quantization pipelines, kernel-level tuning — on reserved GPU capacity you control. Decagon runs sub-400ms p95 voice AI at 6x cost reduction versus GPT-4 mini this way [CUSTOMER_STORY]. Cursor gets new model weights quantized and on a test endpoint within days [CUSTOMER_STORY]. The trade-off: you cede runtime control to the vendor. If your models and workloads are stable enough that you don't need to tune kernels yourself, this is often the right call. If you need to iterate on custom attention patterns or exotic quantization schemes, you need the in-house team.
+   Alternatively: if building an inference team isn't viable or desirable, managed dedicated endpoints offer the same cost economics without the operational burden. Together AI's FDE (Forward Deployed Engineering) model assigns dedicated engineers to optimize your deployment (custom speculators, quantization pipelines, kernel-level tuning) on reserved GPU capacity you control. Decagon runs sub-400ms p95 voice AI at 6x cost reduction versus GPT-4 mini this way [CUSTOMER_STORY]. Cursor gets new model weights quantized and on a test endpoint within days [CUSTOMER_STORY].
+
+   The trade-off: you cede runtime control to the vendor. If your models and workloads are stable enough that you don't need to tune kernels yourself, this is often the right call. If you need to iterate on custom attention patterns or exotic quantization schemes, you need the in-house team.
 
 2. Adopt LMCache or Mooncake for KV cache pooling if your traffic has high prefix overlap (shared system prompts, RAG context, multi-turn chat). KV cache pooling deduplicates shared prefixes across requests — workloads with >70% prefix overlap see the largest gains. LMCache reports 1.9-8.1x smaller TTFT and 2.3-14x higher throughput versus baseline vLLM [INDEPENDENT_BENCHMARK]. Mooncake powers Kimi K2's production traffic at 100B+ tokens daily [CUSTOMER_STORY].
 3. Evaluate FP4 quantization on Blackwell with proper calibration. NVIDIA's analysis shows 1% or less accuracy degradation on key tasks [PUBLIC_DOC]. FP4 on B200 doubles throughput versus FP8.
@@ -760,10 +802,10 @@ This final section synthesizes Parts 1-4 into concrete, staged guidance. Each st
 
 ### The revert signals
 
-Every stage transition should be monitored for revert signals — indicators that you've graduated too early.
+Every stage transition should be monitored for revert signals, indicators that you've graduated too early.
 
 - **Stage 1 → Stage 0**: If your multi-source overhead (gateway maintenance, prompt migration testing, vendor management) exceeds 20% of your inference savings, simplify back to a single provider.
-- **Stage 2 → Stage 1**: If your dedicated GPU utilization stays below 40% for two consecutive months, move that workload back to serverless. At 40% utilization on a Lambda H100 ($3.99/hr), your effective cost per output token exceeds serverless rates ($0.90-$1.70/M) — you're paying $2,873/month in fixed GPU cost for throughput you could get cheaper on-demand [MODELED].
+- **Stage 2 → Stage 1**: If your dedicated GPU utilization stays below 40% for two consecutive months, move that workload back to serverless. At 40% utilization on a Lambda H100 ($3.99/hr), your effective cost per output token exceeds serverless rates ($0.90-$1.70/M). You're paying $2,873/month in fixed GPU cost for throughput you could get cheaper on-demand [MODELED].
 - **Stage 3 → Stage 2**: If your inference engineering team spends more than 50% of their time on operational issues (GPU failures, OOM errors, kernel debugging) rather than optimization, you don't have the operational maturity for build-side infrastructure yet.
 
 These revert signals are as important as the exit thresholds. The right architecture is the simplest one that meets your cost and performance requirements. Over-engineering inference is as wasteful as over-paying for it.
@@ -788,15 +830,45 @@ The common thread: any change to LCPR inputs should trigger a re-evaluation of L
 
 Each inference workload type has a characteristic bottleneck, failure mode, and set of calculator defaults. Use these as starting points, not gospel — your production numbers will differ.
 
-**Chat (customer-facing).** Bottleneck: decode latency (streaming TTFT and inter-token latency). Key metric: P95 time-to-first-token. Common failure: latency spikes under concurrency causing user abandonment. Calculator defaults: 500-1000 input tokens, 200-500 output tokens, 3-5% retry rate, 95% quality gate. Where defaults break: multi-turn conversations with long history (input tokens grow per turn), peak-hour traffic patterns (retry rate spikes).
+**Chat (customer-facing).**
 
-**RAG extraction.** Bottleneck: prefill (long retrieved context). Key metric: cost per extracted answer, measured by LCPR with cache hit rate. Common failure: irrelevant retrieved chunks inflating input tokens without improving output quality. Calculator defaults: 2000-8000 input tokens, 200-600 output tokens, 5% retry rate, 90% quality gate, 20-40% cache hit rate. Where defaults break: cache hit rate depends entirely on prompt structure — static system prompt + variable retrieved context yields 30-60% hit rate, but fully variable prompts yield <5%.
+- Bottleneck: decode latency (streaming TTFT and inter-token latency)
+- Key metric: P95 time-to-first-token
+- Common failure: latency spikes under concurrency causing user abandonment
+- Calculator defaults: 500-1000 input, 200-500 output, 3-5% retry, 95% quality gate
+- Where defaults break: multi-turn conversations with long history (input tokens grow per turn), peak-hour traffic patterns (retry rate spikes)
 
-**Code generation.** Bottleneck: decode (long output). Key metric: LCPR per accepted suggestion (quality gate includes human acceptance, not just schema validation). Common failure: high output token count with low acceptance rate — you're paying for code the developer immediately deletes. Calculator defaults: 500-2000 input tokens, 500-2000 output tokens, 3% retry rate, 70-85% quality gate. Where defaults break: quality gate varies enormously by task (autocomplete at 60% vs multi-file generation at 40%).
+**RAG extraction.**
 
-**Agent workflows.** Bottleneck: cumulative latency across chained calls. Key metric: end-to-end workflow success rate and total LCPR per workflow (sum of per-call LCPR × calls per workflow). Common failure: retry cascades — one failed call triggers retries that propagate through the chain. Calculator defaults: 1000-4000 input tokens per call, 200-500 output tokens per call, 5-10% retry rate per call, 90% quality gate per call, 3-8 calls per workflow. Where defaults break: tool-use failures compound — a 5% per-call failure rate across 6 calls gives a 26% workflow failure rate.
+- Bottleneck: prefill (long retrieved context)
+- Key metric: cost per extracted answer, measured by LCPR with cache hit rate
+- Common failure: irrelevant retrieved chunks inflating input tokens without improving output quality
+- Calculator defaults: 2000-8000 input, 200-600 output, 5% retry, 90% quality gate, 20-40% cache hit rate
+- Where defaults break: cache hit rate depends entirely on prompt structure. Static system prompt + variable retrieved context yields 30-60% hit rate, but fully variable prompts yield <5%
 
-**Batch / embeddings.** Bottleneck: throughput (total tokens per hour). Key metric: cost per million tokens processed, not latency. Common failure: underusing batch pricing tiers — many providers offer 50% batch discounts but teams don't restructure pipelines to qualify. Calculator defaults: variable input tokens, minimal output tokens (embeddings) or moderate (summarization), 1% retry rate, 98% quality gate, 50-100% batch eligible fraction. Where defaults break: batch APIs have higher latency (minutes to hours) and may have different rate limits.
+**Code generation.**
+
+- Bottleneck: decode (long output)
+- Key metric: LCPR per accepted suggestion (quality gate includes human acceptance, not just schema validation)
+- Common failure: high output token count with low acceptance rate. You're paying for code the developer immediately deletes
+- Calculator defaults: 500-2000 input, 500-2000 output, 3% retry, 70-85% quality gate
+- Where defaults break: quality gate varies enormously by task (autocomplete at 60% vs multi-file generation at 40%)
+
+**Agent workflows.**
+
+- Bottleneck: cumulative latency across chained calls
+- Key metric: end-to-end workflow success rate and total LCPR per workflow (sum of per-call LCPR × calls per workflow)
+- Common failure: retry cascades, where one failed call triggers retries that propagate through the chain
+- Calculator defaults: 1000-4000 input per call, 200-500 output per call, 5-10% retry per call, 90% quality gate per call, 3-8 calls per workflow
+- Where defaults break: tool-use failures compound. A 5% per-call failure rate across 6 calls gives a 26% workflow failure rate
+
+**Batch / embeddings.**
+
+- Bottleneck: throughput (total tokens per hour)
+- Key metric: cost per million tokens processed, not latency
+- Common failure: underusing batch pricing tiers. Many providers offer 50% batch discounts but teams don't restructure pipelines to qualify
+- Calculator defaults: variable input, minimal output (embeddings) or moderate (summarization), 1% retry, 98% quality gate, 50-100% batch eligible fraction
+- Where defaults break: batch APIs have higher latency (minutes to hours) and may have different rate limits
 
 ### Diagnostic trees
 
@@ -826,7 +898,7 @@ Check: quality gate pass rate on Provider B. If lower → model quality gap. You
 
 ## Closing
 
-The frameworks in this guide — LCPR, Migration Gates, Inference Sourcing Patterns, the Stack Map, the Seven-Gate Scorecard, and the Staged Playbook — are tools for making decisions with math instead of vibes. They're opinionated, because frameworks that try to accommodate every edge case end up accommodating none.
+The frameworks in this guide (LCPR, Migration Gates, Inference Sourcing Patterns, the Stack Map, the Seven-Gate Scorecard, and the Staged Playbook) are tools for making decisions with math instead of vibes. They're opinionated, because frameworks that try to accommodate every edge case end up accommodating none.
 
 The companion [LCPR calculator](https://inference-field-guide.streamlit.app) lets you run these calculations against your actual workload. Every number in this essay was generated by that calculator and verified against May 2026 public pricing. When prices change — and they will — update the YAML and re-run.
 

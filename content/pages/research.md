@@ -2,27 +2,23 @@ Title: Research
 Slug: research
 Template: page
 
-A curated index of active work, recent publications, experiments, and negative results.
+A curated index of publications, experiments, and negative results.
 
-## Active Research
+## Recent Publications and Reports
 
 ### [Persona Circuits: Progress & Findings (3-17-2026)](/research/experiments/persona-circuits-current-state/)
-**Status:** Active synthesis
+**Steering, concentration, and selectivity analysis**
 
 Current-state synthesis of persona-circuits: robust steering and partial concentration support, but mixed-to-negative evidence for stronger distinctness, necessity, and sufficiency claims under current protocols.
 
 [Write-up](/research/experiments/persona-circuits-current-state/) · [Code (GitHub)](https://github.com/Sohailm25/persona-circuits)
 
 ### [Persona Circuits: Exploring GLP Application](/research/experiments/glp-persona-circuits-current-state/)
-**Status:** Active branch analysis
+**GLP transfer for activation geometry repair**
 
 Branch report testing whether GLP can preserve steering semantics while repairing activation geometry. In this setting, public-checkpoint transfer failed, matched checkpoints were more stable but still nonselective, and mixed clean+edited training is the key pending test.
 
 [Write-up](/research/experiments/glp-persona-circuits-current-state/) · [Code (GitHub)](https://github.com/Sohailm25/persona-circuits)
-
----
-
-## Recent Publications and Reports
 
 ### [Latent Depth-Routing Spectroscopy in Standard Transformers](/research/latent-depth-routing/)
 **Oracle evidence for input-dependent effective depth mixtures in frozen Gemma-2-2b**

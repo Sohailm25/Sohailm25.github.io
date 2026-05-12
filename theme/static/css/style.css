@@ -1481,7 +1481,6 @@ code {
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   padding-right: var(--spacing-sm);
-  border-right: 1px solid var(--border-color);
 }
 
 .toc-header {
@@ -1492,7 +1491,6 @@ code {
   color: var(--text-muted);
   margin-bottom: var(--spacing-sm);
   padding-bottom: var(--spacing-xs);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .toc-sidebar .toc {

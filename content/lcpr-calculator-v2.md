@@ -7,7 +7,11 @@ Featured: true
 Template: longform_article
 Status: published
 
-*I wrote [The Denominator Problem]({filename}/inference-field-guide.md) because teams keep comparing token prices and calling it cost analysis. This post is the tool that makes the actual measurement repeatable.*
+*I work at Together AI. Evidence tags mark every claim so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
+
+*Production Inference Economics --- Part 3 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | **3. LCPR Calculator** | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+
+*I wrote [The Denominator Problem]({filename}/denominator-problem.md) because teams keep comparing token prices and calling it cost analysis. This post is the tool that makes the actual measurement repeatable.*
 
 ---
 
@@ -39,7 +43,7 @@ Not "cost per token." Not "cost per request." Cost per accepted result. `A` is t
 
 **3. Break-Even Analysis.** At what daily output token volume does dedicated capacity beat serverless? The answer involves goodput (accepted work per second under SLO), not peak throughput. A dedicated GPU that processes 200 requests per second but only 140 pass your quality gate has a goodput of 140. The break-even calculation uses the number that hits your invoice, not the number that hits your dashboard.
 
-**4. Goodput Frontier.** Derivation 5 from Production Inference Economics. Accepted requests per second under latency and quality SLOs:
+**4. Goodput Frontier.** Accepted requests per second under latency and quality SLOs (see [Goodput or It Didn't Happen]({filename}/goodput.md) for the full derivation):
 
 ```
 goodput = count(requests meeting ALL gates) / duration
@@ -47,9 +51,9 @@ goodput = count(requests meeting ALL gates) / duration
 
 The correct capacity metric. Peak throughput is a hardware spec. Goodput is an engineering outcome.
 
-**5. Trace-to-Margin Reconciliation.** Derivation 6. From raw traces to account margin via the four-source join: Trace + Invoice + Eval + Contract. `delta = invoice - trace_derived_cost`. If delta exceeds 5%, investigate. Your traces are either missing calls, miscounting tokens, or the provider is billing something your instrumentation does not capture.
+**5. Trace-to-Margin Reconciliation.** From raw traces to account margin via the four-source join (see [The Trace Autopsy]({filename}/trace-autopsy.md)): Trace + Invoice + Eval + Contract. `delta = invoice - trace_derived_cost`. If delta exceeds 5%, investigate. Your traces are either missing calls, miscounting tokens, or the provider is billing something your instrumentation does not capture.
 
-**6. Cache Break-Even.** Derivation 3. New in v2.
+**6. Cache Break-Even.** New in v2.
 
 ```
 N_break_even = (p_write - p_read) / (p_in - p_read)
@@ -59,7 +63,7 @@ Where `p_write` is the cache write cost per token, `p_read` is the cache read (h
 
 The formula is portable. The numbers are provider-specific. Do not trust the pricing page discount percentage --- trust the break-even count against your measured reuse rate. A 90% cache discount means nothing if your reuse pattern hits the same prefix 1.3 times within the TTL window.
 
-**7. KV Memory Sizing.** Derivation 2. New in v2.
+**7. KV Memory Sizing.** New in v2.
 
 ```
 kv_bytes_per_token = 2 * layers * KV_heads * head_dim * element_bytes
@@ -77,7 +81,7 @@ Each example ships with a seed YAML file. Clone the repo, run the seed, get the 
 
 **Seed:** `examples/support-answer.trace-margin.v1/calculator-seed.yaml`
 
-The 12-request trace from the Trace Autopsy section of Production Inference Economics. Eight customer tickets generate twelve inference calls: six first attempts, two retries after schema validation failures, one eval grader call to score answer quality, one repair call for a grader-rejected response, and two embedding lookups for the RAG retrieval step. Daily fleet: 1,000 tickets submitted, 820 accepted answers delivered [SYNTHETIC].
+The 12-request trace from [The Trace Autopsy]({filename}/trace-autopsy.md). Eight customer tickets generate twelve inference calls: six first attempts, two retries after schema validation failures, one eval grader call to score answer quality, one repair call for a grader-rejected response, and two embedding lookups for the RAG retrieval step. Daily fleet: 1,000 tickets submitted, 820 accepted answers delivered [SYNTHETIC].
 
 The numbers:
 
@@ -95,7 +99,7 @@ Naive cost per ticket: $14.20 / 1,000 = **$0.014**. You divide inference spend b
 
 LCPR: $140.65 / 820 = **$0.172**. You divide total loaded cost by accepted results and get the number that matches the invoice.
 
-The 12x gap is not a rounding error. It is a measurement error. The naive calculation excludes 90% of the cost and inflates the denominator by 22% (1,000 tickets submitted vs. 820 accepted).
+The 12x gap comes from measuring the wrong thing. The naive calculation excludes 90% of the cost and inflates the denominator by 22% (1,000 tickets submitted vs. 820 accepted).
 
 Human escalation is 71% of total loaded cost. Inference is 10%. Human cost runs roughly 7x inference cost on this workload. The team that switched providers to save on token price was optimizing the 10% while ignoring the 71%. The lever that moves LCPR on this workload is the quality gate pass rate --- every percentage point improvement in automated acceptance moves 50 fewer tickets to human review at $2 each.
 
@@ -152,9 +156,9 @@ Three changes matter.
 
 **Second: added delta.** The reconciliation term. Trace-derived cost and invoice cost always differ by 2-5%. Sometimes more. The delta captures cache discount application differences, rounding behavior, token count discrepancies between your instrumentation and the provider's billing system, and any API calls your traces missed. The delta is diagnostically important: if it exceeds 5%, your traces are not trustworthy for cost modeling. Fix the instrumentation before optimizing the model.
 
-**Third: added derivation-based computations.** Cache break-even (Derivation 3) and KV memory sizing (Derivation 2) give hardware and pricing foundations to decisions that teams currently make by intuition. "Should we enable caching?" is now a formula with a break-even count. "Can we serve 128K context on this GPU?" is now a capacity calculation, not a guess.
+**Third: added derivation-based computations.** Cache break-even and KV memory sizing give hardware and pricing foundations to decisions that teams currently make by intuition. "Should we enable caching?" is now a formula with a break-even count. "Can we serve 128K context on this GPU?" is now a capacity calculation, not a guess.
 
-239 tests. Every formula is checked against the derivation pack from Production Inference Economics. Every worked example is reproducible from the seed YAML. If a number in this post does not match what the calculator produces from the seed file, the calculator is the source of truth and this post has a bug.
+239 tests. Every formula is checked against the derivations in the Production Inference Economics series. Every worked example is reproducible from the seed YAML. If a number in this post does not match what the calculator produces from the seed file, the calculator is the source of truth and this post has a bug.
 
 ## How to Use It
 
@@ -201,14 +205,16 @@ Not every workload needs LCPR. Be specific about when simpler analysis is suffic
 
 ## Close
 
-The calculator does not tell you which provider to pick. It tells you which provider produces accepted work at the lowest loaded cost --- and shows you which input dominates the answer. The difference between those two statements is the difference between a procurement exercise and an engineering decision.
+The calculator tells you which provider produces accepted work at the lowest loaded cost --- and shows you which input dominates the answer. The difference between those two statements is the difference between a procurement exercise and an engineering decision.
 
-The full argument is in [The Denominator Problem]({filename}/inference-field-guide.md). The derivation pack and formal framework are in Production Inference Economics. The calculator is at [github.com/Sohailm25/inference-field-guide](https://github.com/Sohailm25/inference-field-guide).
+The full argument is in [The Denominator Problem]({filename}/denominator-problem.md). The derivations and formal framework are in the [Production Inference Economics series]({filename}/denominator-problem.md). The calculator is at [github.com/Sohailm25/inference-field-guide](https://github.com/Sohailm25/inference-field-guide).
 
-Contributions welcome: pricing updates as providers change rates, new workload profiles from production deployments, bug reports when the calculator disagrees with the derivations. File an issue or open a PR.
+Contributions welcome: pricing updates as providers change rates, new workload profiles from production deployments, bug reports when the calculator disagrees with the series derivations. File an issue or open a PR.
+
+*Production Inference Economics --- Part 3 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | **3. LCPR Calculator** | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
 *Sohail Mohammad --- May 2026*
 
 ---
 
-*This is Artifact 3 of five pre-book artifacts from Production Inference Economics. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MODELED] for calculations with methodology shown. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*
+*This is Part 3 of 5 in the Production Inference Economics series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MODELED] for calculations with methodology shown. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

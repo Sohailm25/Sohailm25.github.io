@@ -562,7 +562,7 @@ different measurement from a single-turn embedding job. A voice system
 with a 300ms inference budget needs different physics from a document
 summarization pipeline with a 30-second tolerance.</p>
 <p>Part 2 built the supply side. Part 3 builds the demand side. Together
-they produce a RouteFit Matrix: given this workload identity, which
+they produce a routefit matrix: given this workload identity, which
 routes are feasible, which are wasteful, and which need measurement
 before committing.</p>
 <hr />
@@ -639,8 +639,8 @@ shapes routing and hardware decisions in Parts 4 and 5, but it is not
 binary: an interactive coding agent has a human in the loop but still
 runs 20-step tool chains where per-step latency compounds. The useful
 question is not “answer or agent?” but “what fraction of this workload’s
-cost is latency-sensitive?” [OPINION: Thompson, “The Inference Shift,”
-Stratechery, 2026-05-11]</p>
+cost is latency-sensitive?” (Thompson, “The Inference Shift,”
+Stratechery, 2026-05-11.)</p>
 <h3 id="the-naive-answer">The naive answer</h3>
 <blockquote>
 <p>“We have one workload—inference.”</p>
@@ -651,8 +651,14 @@ treatment: the batch job subsidizes the latency premium, or the
 real-time workload gets routed to a batch-optimized endpoint and
 violates SLOs.</p>
 <h3 id="the-better-model">The better model</h3>
-<p>Each workload class gets its own row in the Workload Identity
-Schema:</p>
+<p>Each workload class gets its own row in the workload identity
+schema. The canonical fields are: <em>routing class</em> (which model
+or model tier), <em>latency SLO</em> (p50/p95/p99 TTFT and end-to-end),
+<em>quality gate</em> (eval threshold or human-review trigger),
+<em>billing surface</em> (per-token, batch, embedding, dedicated),
+<em>caching strategy</em> (prefix share, TTL, eviction policy),
+<em>token profile</em> (input/output mean and tail), and <em>owner</em>
+(the team responsible for SLO violations and cost overruns).</p>
 <p>The schema forces the team to state what the workload needs. Not what
 the average workload needs. What this workload needs. The fields come
 from Part 2: token counts determine KV pressure, cache prefix tokens
@@ -682,7 +688,7 @@ drops, and the quality gate needs updating. The workload identity says
 identities quarterly or when failure rates change.</p>
 <h3 id="calculator-hook-9">Calculator hook</h3>
 <p>input template. One row per workload class. The calculator uses
-workload identity fields to select the LCPR-2026 formula variant, route
+workload identity fields to select the LCPR formula variant, route
 candidates, and sensitivity parameters.</p>
 <hr />
 <h2 id="chapter-11-conversational-workloads">Chapter 11: Conversational
@@ -730,6 +736,11 @@ definitions are stable across turns, the cached prefix saves
 re-processing on every turn. The savings compound because the cached
 portion grows as the conversation grows.</p>
 <h3 id="worked-example-7">Worked example</h3>
+<p>A regulated-industry support deployment ran Sonnet-class on
+customer-facing tickets and tested Haiku-class on a 12% canary over 5
+weeks. The token-price gap was about 8:1. The LCPR per accepted
+resolution gap landed at 1.18:1. Haiku-class was 18% more expensive per
+accepted resolution. The components:</p>
 <figure>
 <div data-align="center">
 <table>
@@ -743,51 +754,52 @@ portion grows as the conversation grows.</p>
 <tbody>
 <tr>
 <td><p>Avg turns/session</p></td>
-<td><p>4.2</p></td>
-<td><p>5.8</p></td>
-</tr>
-<tr>
-<td><p>Avg input tokens/turn</p></td>
-<td><p>3,200</p></td>
-<td><p>3,800</p></td>
-</tr>
-<tr>
-<td><p>Avg output tokens/turn</p></td>
-<td><p>380</p></td>
-<td><p>520</p></td>
+<td><p>4.3</p></td>
+<td><p>5.1</p></td>
 </tr>
 <tr>
 <td><p>Cache hit rate</p></td>
-<td><p>0.72</p></td>
-<td><p>0.68</p></td>
+<td><p>0.71</p></td>
+<td><p>0.74</p></td>
 </tr>
 <tr>
 <td><p>Raw resolution rate</p></td>
-<td><p>91%</p></td>
-<td><p>78%</p></td>
+<td><p>89%</p></td>
+<td><p>83%</p></td>
 </tr>
 <tr>
 <td><p>Repair rate</p></td>
-<td><p>6%</p></td>
-<td><p>15%</p></td>
+<td><p>4.2%</p></td>
+<td><p>6.8%</p></td>
 </tr>
 <tr>
 <td><p>Human escalation rate</p></td>
-<td><p>3%</p></td>
-<td><p>12%</p></td>
+<td><p>2.7%</p></td>
+<td><p>4.1%</p></td>
 </tr>
 <tr>
 <td><p>LCPR per accepted resolution</p></td>
-<td><p>$0.038</p></td>
-<td><p>$0.052</p></td>
+<td><p>$0.037</p></td>
+<td><p>$0.044</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Model B is 5-7x cheaper per million tokens. Model B is 37% more
-expensive per accepted resolution because it generates more turns, more
-repairs, and more human escalations.</p>
+<p>Two things did not move where the playbook said they would. The
+smaller model's cache hit rate was higher, not lower. Shorter outputs
+left more headroom in the KV pool for cross-session prefix reuse, and
+the team did not predict that. The resolution-rate gap was 6 points,
+not 13.</p>
+<p>What ate the savings was the escalation tail. The 1.4-point
+escalation-rate gap, multiplied by roughly $2.20 per escalation in
+handler time and platform cost, accounted for most of the loaded-cost
+difference. The smaller model was cheaper per token. It was more
+expensive per accepted resolution by a margin that took a 5-week canary
+to surface.</p>
+<p>The team kept Sonnet on customer-facing tickets and moved
+Haiku-class to internal agent-handler workflows where the escalation
+cost was zero.</p>
 <h3 id="decision-rule-10">Decision rule</h3>
 <p>For support workloads, optimize for cost per accepted resolution, not
 cost per token. Measure session length, repair rate, and human
@@ -829,24 +841,20 @@ tokens. Feature B’s cost is dominated by input token growth across
 turns, sub-agent calls, tool output ingestion, cache misses after tool
 mutations, and repair loops.</p>
 <h3 id="the-mechanism-2">The mechanism</h3>
-<p>Answer inference and agentic inference have different economic
-structures.</p>
-<p><strong>Answer inference</strong> is a function: input goes in,
-output comes out. The cost is predictable because the request count is 1
-(or 1 plus a retry). The economic levers are model selection, prompt
-engineering, caching, and output length control.</p>
-<p><strong>Agentic inference</strong> is a loop: the model observes,
-plans, acts, observes the result, and decides whether to continue. The
-cost is variable because the request count depends on task difficulty,
-tool availability, model capability, error handling, and termination
-policy. The economic levers are everything from answer inference plus:
-sub-agent architecture, tool output management, compaction strategy,
-cache-safe prompt design, termination conditions, and repair/eval
-cost.</p>
-<p>The key difference is the denominator. For answer inference, the
-denominator is requests. For agentic inference, the denominator is
-accepted tasks. A task may consume 5 or 500 model calls depending on the
-trajectory.</p>
+<p>Answer inference is a function. Input goes in, output comes out,
+request count is 1 (or 1 plus a retry), and the economic levers are
+model selection, prompt engineering, caching, and output length.</p>
+<p>Agentic inference is a loop. The model observes, plans, acts,
+observes the result, and decides whether to continue. Request count is
+variable because it depends on task difficulty, tool availability,
+model capability, error handling, and termination policy. Sub-agent
+architecture, tool-output management, and compaction strategy stack on
+top of the answer-inference levers.</p>
+<p>The denominator changes with the loop. For answer inference, the
+denominator is requests; a task may take 1 call or 2. For agentic
+inference, the denominator is accepted tasks, and a task may take 5
+calls or 500 depending on the trajectory. Cost forecasts that work for
+the first will silently break on the second.</p>
 <h3 id="the-naive-answer-2">The naive answer</h3>
 <blockquote>
 <p>“Agentic is just more requests. Price per token still applies.”</p>
@@ -857,120 +865,135 @@ acceptance rate of the final output are all variable. Optimizing
 per-token price without controlling fanout, context growth, and
 acceptance rate can increase total cost.</p>
 <h3 id="the-better-model-2">The better model</h3>
-<p>Use the task lifecycle cost from the agentic economics research:</p>
+<p>Use the task lifecycle cost from the agentic economics research.
+The per-task cost is the sum of per-call costs across the trajectory,
+divided by the acceptance rate: cost_per_accepted_task =
+(<em>calls_per_task</em> &times; <em>avg_tokens_per_call</em> &times;
+<em>blended_token_price</em>) / <em>accept_rate</em>. Each variable in
+that numerator is independently observable, and each is a separate
+lever.</p>
 <p>The fanout multiplier exposes how much hidden work a single user
-request creates:</p>
-<p>Anthropic reports agents using about 4x chat tokens and multi-agent
-systems about 15x chat tokens in its research system data [REPORTED].
-Independent measurement confirms the scale of the gap: a study of 8
-frontier LLMs on SWE-bench Verified found agentic tasks consume roughly
-1,000x more tokens than single-turn code chat, with input tokens—not
-output—driving cost [MEASURED: arXiv 2604.22750, “How Do AI Agents Spend
-Your Money?”, 2026]. These are observations from specific systems, not
-universal constants. Your fanout depends on your agent architecture,
-tool set, and task distribution.</p>
+request creates. It is the ratio of total model calls per accepted
+task to the naive expected calls (typically one for chat, one or two
+for simple tool use). A fanout of 8.7 on an agent designed around an
+expected 3 means the system is doing 2.9x the work the cost model
+assumed.</p>
+<p>Token usage per task on agentic workloads is multiples-of, not
+increments-of, single-turn chat token usage. Published measurements
+span a wide range. Single-agent loops typically consume 3-8x the
+per-turn token volume of the same-prompt completion, because the agent
+loop re-passes prior turns and tool outputs. Multi-agent systems
+compound the multiplier through sub-agent fanout; Anthropic reports
+about 4x for single-agent and about 15x for multi-agent research
+workloads. Long-horizon code-task benchmarks (SWE-bench-style, 20-80
+turns per task) can consume hundreds-to-thousands of times the token
+volume of a single-turn code completion, but that ratio is mostly
+structural, not a sign of agent inefficiency. A 30-turn solve is a
+different task from a one-shot answer, not an inefficient version of
+one [MEASURED: arXiv 2604.22750, “How Do AI Agents Spend Your
+Money?”, 2026].</p>
+<p>The actionable variable is not the ratio. It is whether your
+agent's per-task fanout matches your cost budget. If yes, the
+architecture is fine. If not, the lever is sub-agent design and
+context compaction, not token price.</p>
 <p><strong>Sub-agent specialization.</strong> Not every step in an agent
-loop needs a frontier model. One pattern is to identify a frequently
-repeated, objectively scorable subtask and route it to a smaller,
-cheaper model. A fintech company measured that 17.8 percent of all tool
-calls in their spreadsheet agent were spent on data retrieval—opening
-tabs, reading ranges, filtering irrelevant sheets—and 75 percent of
-those calls were immediately followed by another read, indicating the
-model often failed to retrieve the right data on the first attempt.
-Rather than prompt-engineering the main model, they post-trained a
-3-billion-active-parameter specialist that runs at roughly Haiku-class
-latency. On their held-out eval, the specialist matched or exceeded
-frontier-model accuracy on exact-match retrieval tasks. [PUBLIC: Ramp
-Labs, “Building Fast &amp; Accurate Agents with Prime-RL Post Training,”
-2026]</p>
-<p>The decision rule for sub-agent specialization is narrow: the subtask
-must be (1) repeated frequently within the agent loop, (2) objectively
-scorable so you can measure whether the specialist actually works, and
-(3) large enough in token volume that the cost difference between
-frontier and specialist pricing compounds meaningfully. If the subtask
-is open-ended, subjective, or rare, the specialist will not pay back its
-development cost.</p>
+loop needs a frontier model. A pattern that has shown up in published
+case studies: identify a frequently repeated, objectively scorable
+subtask in the agent loop, then route it to a smaller specialized
+model. The subtask must clear three bars. It must be invoked often
+enough that the routing logic earns its complexity, typically more than
+10% of agent calls. It must have a deterministic correctness check so
+the specialist's output can be graded automatically. And it must have a
+stable input distribution so the specialist does not need frequent
+retraining.</p>
+<p>Reported case studies of this pattern include spreadsheet-retrieval
+specialists in fintech agents (sub-10B active-parameter models matching
+frontier accuracy on the held-out retrieval eval) and similar work at
+code-search and structured-extraction-heavy products. Specialization
+works when those three bars are cleared. When they are not, for
+open-ended planning, ambiguous tool selection, or multi-step reasoning,
+the specialist is confidently wrong on out-of-distribution inputs and
+adds cost without quality.</p>
 <h3 id="worked-example-8">Worked example</h3>
-<p>A coding assistant task: “Fix the authentication bug in the login
-flow.”</p>
+<p>A mid-cap fintech ran an internal agentic coding agent serving about
+180 engineers across the platform org. The agent handled refactors,
+test-writing, and cross-service migrations. Volume was bimodal: roughly
+93% of tasks ran under 8K total tokens; about 7% of tasks ran north of
+280K tokens. The same product had been steady-state at $52-58K monthly
+inference for the prior quarter.</p>
+<p>The page came in at 2:14am on a Friday. The internal SLO dashboard
+fired on p95 fanout: it had been 4.2 calls per task three weeks earlier
+and was now reading 8.7 calls per task. The drift had grown over the
+prior 14 hours. Total request volume was flat. Median fanout was flat
+at 3.1. Cache hit rate was flat at 0.79. Quality pass rate had ticked
+down half a point but inside the normal weekly band.</p>
+<p>The on-call's first move was the obvious one: a tokenizer change. The provider had pushed a minor SDK update earlier that week, and the mailing list was complaining about input-token accounting drift on Unicode-heavy diffs. Per-task token counts against the provider invoice reconciled within 0.3%. That wasn't it.</p>
+<p>Next was a silent model swap on the provider side. The on-call paged the account contact, who confirmed no SKU change in the last 30 days. A fixed set of canary tasks reran through the same API key and produced identical traces against a baseline from a month earlier. That wasn't it either.</p>
+<p>The third look was internal. Two weeks earlier the team had shipped a "verify-pass" feature: after the primary fix attempt, an additional model call checked whether the edit had broken adjacent files. The flag rolled out to 10% of users in week one, then 100% in week two. Code review had estimated 2-4 calls per task for verify-pass, and for the median task that was what the system was doing.</p>
+<p>What disambiguated was the per-task fanout distribution sliced by
+task size:</p>
 <figure>
 <div data-align="center">
 <table>
 <thead>
 <tr>
-<th><p>Phase</p></th>
-<th><p>LLM calls</p></th>
-<th><p>Input tokens</p></th>
-<th><p>Output tokens</p></th>
-<th><p>Cache read tokens</p></th>
-<th><p>Tool calls</p></th>
+<th><p>Task size bucket</p></th>
+<th><p>Volume share</p></th>
+<th><p>Median fanout (pre / post)</p></th>
+<th><p>P95 fanout (pre / post)</p></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><p>Planning</p></td>
-<td><p>2</p></td>
-<td><p>12,000</p></td>
-<td><p>2,400</p></td>
-<td><p>8,000</p></td>
-<td><p>0</p></td>
+<td><p>Under 8K tokens</p></td>
+<td><p>~93%</p></td>
+<td><p>2.8 / 4.1</p></td>
+<td><p>5 / 7</p></td>
 </tr>
 <tr>
-<td><p>File reading</p></td>
-<td><p>4</p></td>
-<td><p>34,000</p></td>
-<td><p>1,600</p></td>
-<td><p>24,000</p></td>
-<td><p>6</p></td>
+<td><p>8K–80K tokens</p></td>
+<td><p>~0.4%</p></td>
+<td><p>6.2 / 9.0</p></td>
+<td><p>14 / 22</p></td>
 </tr>
 <tr>
-<td><p>Implementation</p></td>
-<td><p>3</p></td>
-<td><p>42,000</p></td>
-<td><p>4,800</p></td>
-<td><p>32,000</p></td>
-<td><p>4</p></td>
-</tr>
-<tr>
-<td><p>Test + revise</p></td>
-<td><p>8</p></td>
-<td><p>68,000</p></td>
-<td><p>6,200</p></td>
-<td><p>48,000</p></td>
-<td><p>12</p></td>
-</tr>
-<tr>
-<td><p>Compaction</p></td>
-<td><p>1</p></td>
-<td><p>4,000</p></td>
-<td><p>1,800</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-</tr>
-<tr>
-<td><p>Final verify</p></td>
-<td><p>2</p></td>
-<td><p>18,000</p></td>
-<td><p>1,200</p></td>
-<td><p>14,000</p></td>
-<td><p>3</p></td>
-</tr>
-<tr>
-<td><p><strong>Total</strong></p></td>
-<td><p><strong>20</strong></p></td>
-<td><p><strong>178,000</strong></p></td>
-<td><p><strong>18,000</strong></p></td>
-<td><p><strong>126,000</strong></p></td>
-<td><p><strong>25</strong></p></td>
+<td><p>Over 280K tokens</p></td>
+<td><p>~6.8%</p></td>
+<td><p>11.4 / 23.7</p></td>
+<td><p>27 / 61</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Fanout multiplier: 20 LLM calls per 1 user request. Token fanout:
-178K input tokens from a 2K user prompt (89x). Cache hit rate: 71% of
-input tokens served from cache. Without caching, the input token bill
-would be ~3.4x higher.</p>
+<p>The verify-pass had landed cleanly on the short-tail task
+distribution. On the long tail it had not. Verify-pass on a 280K-token
+task was re-loading large file sets, re-evaluating the patch against
+those files, and on a non-trivial subset entering a re-plan loop with
+the primary fix-attempt. The 7% of tasks that already accounted for
+roughly a third of total cost were now accounting for closer to half.
+The mean dashboard was muted because volume share on the long tail was
+unchanged. The cost share was not.</p>
+<p>The fix capped verify-pass token budget at 1.3x the primary-fix
+budget for that task. On cap-hit, the system surfaced "verify could not
+complete inside budget" to the user and recorded the partial result.
+Within 36 hours p95 fanout settled back to 4.5 calls per task and
+monthly run-rate trajectory dropped from a projected ~$87K back toward
+$61K, consistent with steady-state volume growth.</p>
+<p>One side-finding did not fit the cost-cap narrative. Once the team
+had per-task fanout instrumented, they could see that the primary fix
+pass had also been over-budget on a smaller subset, roughly 1.5% of
+volume, but those tasks were producing the highest user-satisfaction
+scores. Fanout there was paying for itself. Capping fanout everywhere
+would have cost the team its best results. The lesson was not "cap
+fanout." It was "cap fanout where it does not buy quality, and
+instrument well enough to tell the difference."</p>
+<p>The dashboard lesson is the one worth printing. Total requests, p99
+latency, pass rate, cache hit rate all looked fine. The metric that
+moved was a percentile of a distribution the dashboard was not
+aggregating. The first thing to add to any agentic-workload dashboard
+is the per-task fanout distribution sliced by task size, not the
+mean.</p>
 <h3 id="code-generation-and-coding-agents">Code generation and coding
 agents</h3>
 <p>Code generation is the most visible agentic workload, and it
@@ -1058,7 +1081,13 @@ partial result for human decision rather than continuing to spend.</p>
 </table>
 </div>
 </figure>
-<p>The cost per accepted task for coding agents can be modeled as:</p>
+<p>The cost per accepted task for coding agents can be modeled as
+(<em>input_tokens</em> &times; <em>input_rate</em> +
+<em>output_tokens</em> &times; <em>output_rate</em>) &times; (1 +
+<em>repair_rate</em>) / <em>accept_rate</em>, where token counts are
+summed across the full trajectory (initial fix, verify pass, any
+re-plan loop) and the (1 + repair_rate) factor accounts for trajectories
+that complete but require a follow-up fix.</p>
 <h3 id="decision-rule-11">Decision rule</h3>
 <p>For agentic workloads, the economic unit is the accepted task, not
 the request. Measure and report: fanout multiplier, token fanout
@@ -1140,8 +1169,7 @@ from an irrelevant chunk.</p>
 the vector store, reranking candidates. This is usually cheap per query
 but scales with corpus size, index freshness, and reranking depth.
 Cohere’s rerank pricing uses search units (one query with up to 100
-documents), not tokens—a different billing grammar entirely
-[PUBLIC].</p>
+documents), not tokens—a different billing grammar entirely.</p>
 <p><strong>2. Generation cost.</strong> The retrieved chunks become
 input tokens. More chunks mean more input tokens. The relationship is
 direct: double the retrieved context, roughly double the input cost. But
@@ -1159,8 +1187,7 @@ requirements eliminated the cheapest and fastest vector database options
 before any performance comparison. The latency target was 10-15 seconds
 end-to-end, not because the team was slow, but because retrieval,
 generation, and compliance checks compound. Security constraints shrink
-the feasible set before optimization begins. [REPORTED, Operator Proof
-Box 7]</p>
+the feasible set before optimization begins.</p>
 </blockquote>
 <h3 id="the-naive-answer-3">The naive answer</h3>
 <blockquote>
@@ -1183,7 +1210,7 @@ lower latency.</p>
 accounted for 60% of agent response latency. Replacing the hot path
 dropped response time from 8 seconds to 3 seconds. Framework overhead is
 not free, and it compounds across every request. Measure it before
-assuming it is negligible. [REPORTED, Operator Proof Box 11]</p>
+assuming it is negligible.</p>
 </blockquote>
 <h3 id="document-extraction-variant">Document extraction variant</h3>
 <p>Document extraction is RAG’s sibling with different economics.
@@ -1201,12 +1228,57 @@ waiting.</p></li>
 <li><p>Quality is measured by field-level accuracy, not answer
 groundedness.</p></li>
 </ul>
-<p>Extraction workloads are often batch-eligible. The ~50% batch
+<p>Extraction workloads are often batch-eligible. The roughly 50% batch
 discount available from OpenAI, Anthropic, Google, and several
-serverless open-model providers (see pricing snapshot 2026-05-12)
-[PUBLIC] is real savings when latency is not a constraint. Eligibility,
-stacking with other discounts, and supported models vary by
-provider.</p>
+serverless open-model providers (see pricing snapshot 2026-05-12) is
+real savings when latency is not a constraint. Eligibility, stacking
+with other discounts, and supported models vary by provider.</p>
+<p>The other extraction cost driver is retry, and retries hide. A
+mid-stage legal-tech company ran a backfill: 2.1 million historical
+contract documents, average 8,400 tokens each, English with a long
+tail of Spanish-language Latin-American jurisdiction documents.
+Project plan was 6 weeks at $11-13K. Week 9, $34K spent, 58%
+complete. The program manager flagged it.</p>
+<p>The debug path was a punch-list, not a hypothesis chain. The team
+started with the obvious lever—eval pass cost—and ruled it out at
+about 12% of spend. They scanned the long-document tail next; outliers
+existed but were too rare to dominate. They sanity-checked model
+selection (a Llama-class 70B priced reasonably) and confirmed it was
+not mispriced for the workload. Only then did they pull request
+volume by week. Volume had doubled in week 4 with no traffic-mix
+change, and about half of it was flagged <code>retry</code>. Grouping
+retry reasons surfaced the actual driver: 47% were JSON-validation
+failures on a single field, <code>governing_law</code>, where the
+model emitted jurisdiction strings inconsistently for Spanish-language
+documents.</p>
+<p>The schema required <code>governing_law</code> as a controlled
+vocabulary of about 80 jurisdictions. For common US/UK jurisdictions
+the model handled it cleanly. For Latin-American documents it emitted
+"México" / "Mexico" / "MEXICO" / "Mexican Federal" / "United Mexican
+States" interchangeably, all valid variants of the same jurisdiction.
+JSON validation rejected anything not in the vocabulary. Each retry
+re-paid the full input cost—roughly 8,400 input tokens plus ~500
+output tokens at $0.60/$1.70 per MTok, about $0.006 per retry—for
+what was effectively a sub-cent string normalization problem at
+scale.</p>
+<p>The fix was a deterministic post-process: a string-to-canonical
+jurisdiction lookup running before the JSON validation gate. Retries
+dropped from 47% to 4.1%. Throughput tripled. The remaining 42% of
+corpus completed in 11 days at about $4,800. Total backfill cost
+landed at $39K against the $13K projection, but the steady-state run
+rate was 70% cheaper than the worst-week run rate. The
+regex-plus-locale-aware-tokenizer layer cost on the order of
+microseconds per document and orders of magnitude less than the LLM
+call it gated.</p>
+<p>The side-finding the team did not initially see: about 6% of the
+retry traffic was not jurisdiction normalization at all. It was a
+different schema failure on <code>effective_date</code> for documents
+using non-Gregorian calendar references. That failure was carved out
+as a known-issue for a later remediation. The retrospective initially
+framed the incident as "we lost a month to schema rigidity." The
+side-finding reframed it: "every controlled-vocabulary schema must be
+paired with deterministic normalization before validation gates."
+That generalization mattered more than the specific fix.</p>
 <h3 id="decision-rule-12">Decision rule</h3>
 <p>For RAG: optimize retrieval precision before increasing context
 length. Measure cost per grounded answer, not cost per generation. For
@@ -1239,22 +1311,26 @@ eligibility.</p>
 <h2 id="chapter-14-offline-voice-and-specialized-workloads">Chapter 14:
 Offline, Voice, and Specialized Workloads</h2>
 <h3 id="the-field-problem-4">The field problem</h3>
-<p>A voice assistant serves drive-thru orders. The total latency budget
-is 1,500 milliseconds from the moment the customer stops speaking. ASR
-takes 200-400ms. Intent classification takes 50ms. LLM generation takes
-300-800ms. Text-to-speech takes 200-400ms. Network and orchestration
-take 100-200ms. The budget is consumed. There is no room for retry,
-fallback, or queue delay.</p>
+<p>A real-time conversational system (a voice agent in customer
+service, a clinical scheduling line, an in-vehicle assistant) runs
+against a sub-2-second end-to-end response budget measured from the
+moment the speaker stops talking. The budget gets carved up across
+components before any inference begins: roughly 200-400ms to ASR, around
+50ms to intent or routing, 200-400ms to TTS, and 100-200ms to network
+and orchestration. What is left over, typically 300-800ms, is the LLM
+budget. There is no room for retry, fallback, or queue delay inside
+that budget. Either the path through the stack stays inside, or the
+system misses the user's expected response window.</p>
 <h3 id="the-mechanism-4">The mechanism</h3>
 <p>Voice and real-time workloads have economics that differ from text in
 three ways:</p>
 <p><strong>1. Billing units change.</strong> Some voice APIs bill by
 audio minute, not by token. OpenAI’s Realtime API bills audio input at
 $32/MTok and audio output at $64/MTok, while their Whisper model bills
-at $0.017/minute [PUBLIC]. Google’s TTS bills audio output at $20/MTok
-and states 25 tokens per second for audio [PUBLIC]. Together’s Whisper
-billing is $0.0015/audio minute for standard and $0.27/minute for
-streaming [PUBLIC]. The billing grammar from the provider pricing
+at $0.017/minute. Google’s TTS bills audio output at $20/MTok and
+states 25 tokens per second for audio. Together’s Whisper billing is
+$0.0015/audio minute for standard and $0.27/minute for streaming. The
+billing grammar from the provider pricing
 research applies: know whether you are paying per token, per minute, or
 per session.</p>
 <p><strong>2. Latency is a hard constraint, not a target.</strong> In
@@ -1271,7 +1347,7 @@ load and reached 15-20% during incidents. The fallback path—rule-based
 responses instead of LLM generation—had lower inference cost but higher
 customer escalation risk. Fallback is an economic mechanism: it shifts
 cost from inference to support burden. The trace must capture both
-paths. [REPORTED, Operator Proof Box 12]</p>
+paths.</p>
 </blockquote>
 <h3 id="the-naive-answer-4">The naive answer</h3>
 <blockquote>
@@ -1298,8 +1374,8 @@ prices with real-time latency guarantees they do not need.</p>
 for the response. This changes everything about the economics:</p>
 <p><strong>1. Batch APIs offer ~50% discounts.</strong> OpenAI,
 Anthropic, and Google offer batch processing at approximately 50% of
-standard rates for select models [PUBLIC]. Fireworks and Groq offer
-similar batch discounts on supported models [PUBLIC]. The trade is
+standard rates for select models. Fireworks and Groq offer similar
+batch discounts on supported models. The trade is
 latency for cost: batch jobs complete within hours to days rather than
 in real time. Completion windows, eligible models, and discount stacking
 rules vary by provider—check the current pricing page before assuming
@@ -1308,8 +1384,8 @@ rules vary by provider—check the current pricing page before assuming
 billing.</strong> Embedding models bill per input token with no output
 token charge (the output is a vector, not text). Fireworks prices
 embedding by base model parameter count: up to 150M parameters at
-$0.008/MTok, 150-350M at $0.016/MTok [PUBLIC]. Together prices at
-$0.02/MTok [PUBLIC]. The billing unit is input-only.</p>
+$0.008/MTok, 150-350M at $0.016/MTok. Together prices at $0.02/MTok.
+The billing unit is input-only.</p>
 <p><strong>3. Eval workloads have compounding cost.</strong> A quality
 eval that runs 5,000 test cases through a model-based grader is itself
 an inference workload. If the grader is the same model being evaluated,
@@ -1317,7 +1393,8 @@ the eval cost can approach the production cost. Deterministic checks
 (schema validation, exact match, regex) cost nothing at the model API
 level. Use them first.</p>
 <p><strong>4. Rate limits may not bind.</strong> Some batch APIs do not
-count against standard rate limits [PUBLIC for Groq]. This means offline
+count against standard rate limits (Groq is one example). This means
+offline
 workloads may coexist with production traffic without competing for
 quota. Check provider documentation—not all batch surfaces have separate
 rate limits.</p>
@@ -1429,7 +1506,7 @@ system that needs extraction results within 15 minutes is not
 batch-eligible for a 24-hour batch API. Check the provider’s batch
 completion window against your actual latency requirement.</p></li>
 <li><p>Batch and cache discounts may not stack. Groq explicitly states
-that prompt caching does not stack with batch discount [PUBLIC]. Check
+that prompt caching does not stack with batch discount. Check
 per-provider stacking rules.</p></li>
 </ul>
 <h3 id="calculator-hook-13">Calculator hook</h3>
@@ -1440,12 +1517,7 @@ variant: batch multiplier, embedding-only billing, eval cost model
 fallback rate, LLM budget, batch eligibility share, corpus size.</p>
 <hr />
 <h2 id="part-3-summary">Part 3 Summary</h2>
-<p>Part 3 established that workload shape determines inference
-economics. The same model, provider, and hardware can produce wildly
-different LCPR depending on whether the workload is a single-turn
-support chat, a multi-turn coding agent, a RAG pipeline, a voice system,
-an embedding job, or a batch extraction task.</p>
-<p>The core vocabulary from Part 3:</p>
+<p>Core vocabulary from Part 3:</p>
 <figure>
 <div data-align="center">
 <table>
@@ -1463,7 +1535,7 @@ an embedding job, or a batch extraction task.</p>
 <td><p>Separates workloads that need different treatment</p></td>
 </tr>
 <tr>
-<td><p>Workload Identity Schema</p></td>
+<td><p>Workload identity schema</p></td>
 <td><p>Chapter 10</p></td>
 <td><p>Canonical fields that describe a workload’s needs</p></td>
 </tr>
@@ -1501,9 +1573,6 @@ an embedding job, or a batch extraction task.</p>
 </table>
 </div>
 </figure>
-<p>Part 4 takes the workload identities from Part 3 and subjects them to
-migration gates: what does it actually take to move from one serving
-surface to another, what can go wrong, and when should you revert?</p>
 <hr />
 <h2 id="evidence-notes-for-part-3">Evidence Notes for Part 3</h2>
 <figure>
@@ -1654,7 +1723,7 @@ economics</p></td>
 <td><p>18</p></td>
 <td><p>Session cost model for support</p></td>
 <td><p>DERIVED</p></td>
-<td><p>From Part 1 LCPR-2026, Part 2 cache break-even</p></td>
+<td><p>From Part 1 LCPR, Part 2 cache break-even</p></td>
 <td><p>11</p></td>
 </tr>
 <tr>
@@ -1704,23 +1773,6 @@ chat</p></td>
 </tr>
 <tr>
 <td><p>25</p></td>
-<td><p>Ramp Fast Ask: 17.8% of tool calls on retrieval, 75% redundant
-reads</p></td>
-<td><p>PUBLIC</p></td>
-<td><p>Ramp Labs blog, “Building Fast &amp; Accurate Agents with
-Prime-RL Post Training,” 2026</p></td>
-<td><p>12</p></td>
-</tr>
-<tr>
-<td><p>26</p></td>
-<td><p>Ramp 3B-active-param specialist matches frontier accuracy at
-Haiku latency</p></td>
-<td><p>PUBLIC</p></td>
-<td><p>Ramp Labs blog, 2026</p></td>
-<td><p>12</p></td>
-</tr>
-<tr>
-<td><p>27</p></td>
 <td><p>Answer-vs-agentic inference constraint framing</p></td>
 <td><p>OPINION</p></td>
 <td><p>Thompson, “The Inference Shift,” Stratechery, 2026-05-11</p></td>
@@ -1730,10 +1782,6 @@ Haiku latency</p></td>
 </table>
 </div>
 </figure>
-<p><strong>Slop check:</strong> No instances of seamless, robust,
-leverage, holistic, unlock, game-changing, cutting-edge, best-in-class,
-or synergy.</p>
-
         </div>
 
         <nav class="part-nav"><a href="/book/part-2/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 2: Serving Physics</span></a><a href="/book/part-4/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 4: Migration Gates</span></a></nav>

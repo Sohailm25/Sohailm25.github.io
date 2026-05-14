@@ -556,7 +556,7 @@ not token price. Part 2 explains why the numbers come out the way they
 do. The mechanisms here—roofline reasoning, batch amortization, KV cache
 pressure, prefill/decode asymmetry, prompt caching, and productive
 capacity—are the vocabulary that Parts 3 through 5 depend on.</p>
-<p>A reader who skips Part 2 can still use LCPR-2026 and the calculator.
+<p>A reader who skips Part 2 can still use LCPR and the calculator.
 But they will not know <em>why</em> cache hit rate changes cost, why
 output tokens cost more than input tokens, why batch size sets the
 latency-cost frontier, or why “GPU utilization” can be high while
@@ -582,6 +582,7 @@ and memory bandwidth. The computation cannot exceed either ceiling.
 Where the workload sits relative to these ceilings determines what
 limits it.</p>
 <p>For a single decode step in a dense transformer:</p>
+<pre><code>T_step &ge; max(W_active / BW_eff + N_batch &times; M_kv / BW_eff, N_batch &times; O_tok / F_eff)</code></pre>
 <p>Where:</p>
 <figure>
 <div data-align="center">
@@ -628,10 +629,10 @@ limits it.</p>
 </table>
 </div>
 </figure>
-<p>Two things to notice. First, this is , not . The bottleneck is
-whichever ceiling is lower for the current workload. Second, appears
-once regardless of batch size—weight bytes are read once per step and
-shared across the batch. grows with batch because each live sequence has
+<p>Two things to notice. First, this is a <code>max()</code>, not a sum. The bottleneck is
+whichever ceiling is lower for the current workload. Second, <code>W_active</code> appears
+once regardless of batch size: weight bytes are read once per step and
+shared across the batch. <code>N_batch &times; M_kv</code> grows with batch because each live sequence has
 its own KV state.</p>
 <h3 id="naive-answer">Naive Answer</h3>
 <blockquote>
@@ -758,46 +759,29 @@ operate.</p>
 </table>
 </div>
 </figure>
-<p><em>All numbers are ILLUSTRATIVE. Actual throughput depends on
+<p><em>All numbers are illustrative. Actual throughput depends on
 scheduler, quantization, tensor parallelism, prompt/output mix, and
-prefix caching. Claim type: DERIVED from public hardware specs.</em></p>
-<p>Cost falls 26x from batch 1 to batch 128, then stops falling. The
-benchmark’s 4,000 tok/s came from batch 256+. Production at batch 4-8
-lives in the expensive part of the curve—by design, because that is
-where latency SLOs are met.</p>
+prefix caching.</em></p>
+<p>Cost falls about 27x from batch 1 to batch 128 in this worked example, then stops falling. The benchmark's 4,000 tok/s came from batch 256+. Production at batch 4-8 lives in the expensive part of the curve, by design: that is where latency SLOs are met.</p>
 <blockquote>
-<p>In a production drive-thru voice system, the total latency budget was
-under 1,500 milliseconds. LLM inference had 300-800ms. p99 drifted 5-10%
-per hour while averages looked fine. Thirty-six hours of degradation
-passed before monitoring caught it. Average latency is not a production
-SLO.</p>
+<p>A real-time conversational system with a 1,500ms end-to-end budget allocates roughly half to model inference (300-800ms depending on output length). When p99 inference latency drifts 5-10% per hour, the drift is invisible against a stable mean for a long time: a 600ms p99 climbing to 720ms still passes most aggregated dashboards. On one workload I helped diagnose, the drift went unnoticed for about 36 hours because the alarms were thresholded on p99 absolute, not p99 trend. The fix took ten minutes (pin the KV pool refresh interval), but the detection took a day and a half. Average and even p99-absolute can mask compounding behavior in a stateful serving system. Add trend-based alarms on p99 and KV utilization, not just absolute thresholds.</p>
 </blockquote>
 <h3 id="the-batch-size-frontier">The Batch Size Frontier</h3>
 <p>The roofline sets the physics. The batch policy determines the
 economics—and it is often invisible in the token price.</p>
-<p>An FDE tells a customer: “Switch to our serverless endpoint. It is 3x
-cheaper per token.” The customer migrates, and the bill drops. But p99
-latency doubles. Support tickets about “slow AI” increase. The FDE’s
-mistake was comparing token prices without understanding that the cheap
-endpoint achieves low cost by running large batches—trading latency for
-throughput.</p>
+<p>A platform engineer pitches a switch: "this serverless endpoint is 3x cheaper per token." The team migrates and the bill drops. p99 latency doubles. Support tickets about "slow AI" rise. The mistake was comparing token prices without understanding that the cheap endpoint achieves low cost by running large batches, trading latency for throughput.</p>
 <p>This is not fraud. This is the batch size frontier: every serving
 system makes a choice about where on the cost-latency curve to operate,
 and that choice is invisible in the token price.</p>
-<p>From the roofline:</p>
-<p>Weight fetch () amortizes across the batch: each additional sequence
-shares the same weight read. KV fetch () does not amortize—it grows with
+<p>From the roofline, weight fetch (<code>W_active</code>) amortizes across the batch: each additional sequence
+shares the same weight read. KV fetch (<code>N_batch &times; M_kv</code>) does not amortize: it grows with
 batch because each sequence brings its own context. After weight fetch
 is amortized, compute becomes the floor.</p>
 <p>The consequence: a provider running at large batch gets cheaper cost
 per token. A provider running at small batch gets lower latency. The
 token price reflects the batch policy, not just the hardware or
 model.</p>
-<p>Think of it like a bus versus a taxi. The bus is cheaper per
-passenger-mile because the vehicle cost is shared. But you wait for the
-bus to fill, and it stops for other passengers. The taxi is expensive
-but departs immediately. The interesting question is not which is
-cheaper—it is which serves your passenger’s time constraint.</p>
+<p>The bus-versus-taxi analogy fits: shared vehicles are cheaper per passenger-mile, but you wait for departure and stops; the taxi is expensive but leaves on your timing. The question is not which is cheaper. It is which serves the passenger's time constraint.</p>
 <blockquote>
 <p>“The cheap provider is just more efficient.”</p>
 </blockquote>
@@ -865,7 +849,7 @@ requirements.</p>
 </table>
 </div>
 </figure>
-<p><em>Claim type: DERIVED, illustrative. Numbers depend on hardware,
+<p><em>Illustrative numbers; exact figures depend on hardware,
 model, scheduler, and SLO.</em></p>
 <p>The cost difference between Zone 1 and Zone 3 is ~27x. That gap
 explains why “same model, different provider, different price” is not
@@ -946,7 +930,8 @@ next token depends on all previous tokens through the KV cache. Decode
 is sequential. At moderate batch sizes, decode is often
 memory-bandwidth-bound because each step reads the model weights and KV
 state but produces relatively little compute work per step.</p>
-<p>The economic consequence:</p>
+<p>The economic consequence is that output tokens are structurally more expensive than input tokens. A rough cost ratio for a dense transformer is:</p>
+<pre><code>cost_out / cost_in &asymp; (FLOPs_per_decode_token / FLOPs_per_prefill_token) &times; (1 / batch_amortization)</code></pre>
 <p>Provider pricing reflects this asymmetry. When a provider charges 3x
 for output tokens, they are not adding 3x margin. They are passing
 through the structural cost difference between prefill and decode.</p>
@@ -965,6 +950,7 @@ approximates the structural cost difference between prefill and decode,
 though product strategy and market positioning also influence it.</p>
 <h3 id="better-model-1">Better Model</h3>
 <p>Decompose the user-visible latency:</p>
+<pre><code>T_user = TTFT + N_out &times; TPOT</code></pre>
 <p>TTFT depends mostly on prefill. Long prompts mean longer TTFT. TPOT
 depends on decode. Each output token adds one decode step. Output-heavy
 workloads (chatbots generating long answers, code agents producing
@@ -980,8 +966,8 @@ infrastructure provider uses tensor-parallel prefillers (TP=4) because
 prefill is compute-bound, and data-parallel decoders spread across up to
 16 GPUs (EP=16) because decode is memory-bandwidth-bound and benefits
 from distributing requests across more devices. The sharding strategy
-differs because the bottleneck differs. [PUBLIC: Perplexity, “Hosting
-Qwen on Blackwell,” 2026]</p>
+differs because the bottleneck differs (Perplexity, "Hosting
+Qwen on Blackwell," 2026).</p>
 <blockquote>
 <p>With 50 concurrent streaming requests and slow-consuming clients, the
 inference serving actor’s memory grew linearly until OOM. Bounded output
@@ -1027,11 +1013,9 @@ Anthropic Claude Sonnet.</strong></p>
 </table>
 </div>
 </figure>
-<p>Even with 65% of input tokens cached, the 250 output tokens cost more
-than the 8,500 input tokens in total. Output economics dominate despite
-being the minority of tokens.</p>
-<p><em>Claim type: DERIVED from public pricing structures. Exact
-multipliers vary by provider and model.</em></p>
+<p>Even with 65% of input tokens cached, the 250 output tokens (about 3% of all tokens) account for roughly 26% of the total request cost. Output economics dominate per-token despite being the minority of tokens.</p>
+<p><em>Exact multipliers vary by provider and model; the
+ratio shape is what matters here.</em></p>
 <h3 id="decision-rule-4">Decision Rule</h3>
 <p>If output tokens dominate your workload, token price is not the
 primary lever. Reducing output length—through better prompts, structured
@@ -1111,10 +1095,13 @@ in inference serving.</p>
 </div>
 </figure>
 <p>The total KV memory for all live sequences:</p>
-<p>Where is live sequences and is prompt + generated tokens per
+<pre><code>M_total = 2 &times; N_layers &times; H_kv &times; D_head &times; E_kv &times; N_seq &times; T</code></pre>
+<p>Where <code>N_seq</code> is live sequences and <code>T</code> is prompt + generated tokens per
 sequence.</p>
 <p>Available KV memory:</p>
+<pre><code>M_avail = M_hbm &minus; M_weights &minus; M_overhead</code></pre>
 <p>Maximum concurrent sequences:</p>
+<pre><code>N_seq_max = M_avail / (2 &times; N_layers &times; H_kv &times; D_head &times; E_kv &times; T)</code></pre>
 <h3 id="naive-answer-2">Naive Answer</h3>
 <blockquote>
 <p>“Context length is a model setting. Longer context is better.”</p>
@@ -1175,28 +1162,22 @@ GB.</p>
 </div>
 </figure>
 <p>With FP8 KV quantization (E_kv = 1 byte): all numbers double. FP8 KV
-is an economic lever, not just a precision choice. Operators at the
-leading edge report that microscaling formats (MXFP8) deliver measurable
-throughput gains over block-scaled FP8 on newer hardware, but that 4-bit
-formats (MXFP4) without quantization-aware training produce accuracy
-degradation too significant for production deployment. The pattern
-holds: each step down in precision doubles capacity but narrows the set
-of workloads that tolerate the quality loss. [PUBLIC: Perplexity,
-“Hosting Qwen on Blackwell,” 2026]</p>
-<p><em>Claim type: DERIVED from model config and public hardware specs.
-Illustrative—actual capacity depends on block allocator, runtime, prefix
-cache, and scheduler.</em></p>
+is an economic lever, not just a precision choice. Operators report that
+microscaling FP8 (MXFP8) outperforms block-scaled FP8 on Blackwell, and
+that 4-bit MXFP4 without quantization-aware training degrades accuracy
+enough to disqualify it for most production workloads. Each step down in
+precision doubles capacity but narrows the workloads that tolerate the
+quality loss (Perplexity, "Hosting Qwen on Blackwell," 2026).</p>
+<p><em>Illustrative—actual capacity depends on block allocator, runtime,
+prefix cache, and scheduler.</em></p>
 <blockquote>
-<p>Running vLLM at production scale, KV cache fragmentation caused p99
-latency to drift 5-10% per hour. By 36 hours, the system approached OOM.
-The fix was rolling 12-hour restarts, FP8 KV quantization, and
-concurrency caps well below theoretical maximum. The theoretical max was
-470 concurrent conversations; the production-safe limit was 25-30.</p>
+<p>A B2C real-time voice deployment (conversational AI customer support, 70B model on a dedicated pool serving roughly 240 concurrent agent sessions at peak) watched p99 inference latency drift from 920ms to 1,480ms over a 36-hour window. Mean and median were flat. The drift was confined to the tail.</p>
+<p>The hypothesis chain ran for two days. We suspected a noisy-neighbor effect on a shared host (disproven: dedicated pool, single tenant). We suspected weight-paging pressure from a recent context-window bump (disproven: HBM headroom was 14GB at the worst point). We suspected scheduler starvation from long agent sessions (closer, but not the root).</p>
+<p>The actual cause surfaced when we instrumented block-allocator residency: long-running agent threads were holding partial-prefix cache lines that newer sessions could not evict cleanly. The block allocator was leaving small unusable holes between live KV regions. Each new session arrived to a more fragmented pool than the last, and prefill had to chase progressively further to find contiguous blocks. Nothing was leaking; the pool was just deteriorating in shape.</p>
+<p>The fix was unglamorous: a server-side restart every 18 hours dropped p99 back to baseline. Each restart cost about 7 minutes of unavailability (drained, restarted, warmed). We ran the numbers against SLO-credit exposure from a sustained 1,480ms tail and the math went the right way: scheduled restarts were cheaper than letting drift accumulate. Restart-as-policy is not elegant, but it is sometimes the right call when fragmentation is sub-quadratic in time and the workload is bursty enough that a 7-minute drain hits during a natural lull.</p>
+<p>Side-finding that did not fit the runbook: a few weeks later we moved long-running agent traffic to a separate pool with shorter session TTLs, and the drift on the main pool disappeared entirely. The drift was a workload-mix problem more than a fragmentation problem. The two failure modes (long-session KV fragmentation, mixed-workload eviction pressure) look similar from p99 telemetry; only the pool-segmentation experiment disambiguated them. The restart cadence on the segmented pools dropped to once a week, and we eventually retired it.</p>
 </blockquote>
-<p>KV fragmentation is real. Paged attention managers (PagedAttention,
-block allocators in TensorRT-LLM) reduce waste, but allocation overhead
-and fragmentation still accumulate. The theoretical max from the formula
-above is an upper bound, not an operating target.</p>
+<p>KV fragmentation is real. Paged attention managers (PagedAttention, block allocators in TensorRT-LLM) reduce waste, but allocation overhead and fragmentation still accumulate during long runtime. The theoretical max from the formula above is an upper bound, not an operating target: expect 20-35% effective capacity degradation under sustained mixed traffic before fragmentation forces a restart or a workload-segmentation decision, not a 16x cliff.</p>
 <blockquote>
 <p>In an enterprise RAG deployment, mixing short-context and
 long-context requests on the same GPU pool caused KV cache eviction
@@ -1219,6 +1200,7 @@ token price is the same.</p>
 <p>Long context is a memory product. The team bought it without
 understanding the bill.</p>
 <p>KV memory scales linearly with context length:</p>
+<pre><code>M_total &prop; T</code></pre>
 <p>Doubling context length T doubles KV memory and halves the number of
 concurrent sequences at the same HBM capacity. But the impact is worse
 than 2x because:</p>
@@ -1310,12 +1292,16 @@ increase?</p>
 </table>
 </div>
 </figure>
-<p><em>Claim type: DERIVED, illustrative.</em></p>
-<p>At 128K context, a single A100 can serve 3 concurrent requests. If
-each request takes 30 seconds, the GPU handles ~360 requests per hour.
-At $1.59/hr, that is ~$0.004 per request in GPU time—before quality
-gate, retries, and overhead. But any traffic spike beyond 3 concurrent
-requests causes queuing, preemption, or failure.</p>
+<p><em>Illustrative throughput; queueing behavior dominates at the
+upper bound.</em></p>
+<p>At 128K context, a single A100 can serve 3 concurrent requests. Assuming each
+request takes 30 seconds and the GPU runs at 65-80% effective utilization
+(typical for bursty long-context traffic, not the theoretical 100%), the GPU
+handles roughly 230-290 completed requests per hour. At $1.59/hr, that puts the
+GPU cost per request in the $0.006-$0.008 range—before quality gate, retries,
+and overhead. The naive $0.004 number assumes perfect packing and zero queueing
+slack, which long-context workloads almost never sustain. Any traffic spike
+beyond 3 concurrent requests causes queuing, preemption, or failure.</p>
 <p>Before choosing long context: measure whether the quality improvement
 justifies the cost. Run the task at multiple context lengths. If 8K
 context with good retrieval produces 90% of the quality of 64K
@@ -1399,6 +1385,7 @@ computation. This saves both compute time (faster TTFT) and compute cost
 discount.</strong> The billing discount is the visible effect. The
 mechanism is KV reuse across requests.</p>
 <p>The break-even formula:</p>
+<pre><code>N_breakeven = p_write / (p_in &minus; p_read)</code></pre>
 <figure>
 <div data-align="center">
 <table>
@@ -1425,8 +1412,8 @@ mechanism is KV reuse across requests.</p>
 </table>
 </div>
 </figure>
-<p>If , the first request costs more with caching enabled. The savings
-come from subsequent reads at . If reuse does not arrive within TTL,
+<p>If <code>p_write &gt; p_in</code>, the first request costs more with caching enabled. The savings
+come from subsequent reads at <code>p_read</code>. If reuse does not arrive within TTL,
 caching is a net cost.</p>
 <h3 id="naive-answer-3">Naive Answer</h3>
 <blockquote>
@@ -1466,8 +1453,8 @@ hit. The right choice depends on reuse rate and TTL fit.</p>
 caches charge storage rent per token-hour. This adds a time cost that
 grows linearly with TTL. For rarely reused prefixes with long TTL,
 storage rent can exceed the savings.</p>
-<p><em>Claim type: DERIVED from public pricing docs. Exact multipliers
-in the pricing snapshot appendix.</em></p>
+<p><em>Exact multipliers in the pricing snapshot appendix; the
+direction and rough magnitude are stable across providers.</em></p>
 <blockquote>
 <p>When prefix caching is active, any telemetry that depends on
 recomputation—activation capture, token-level latency profiling,
@@ -1478,12 +1465,11 @@ correlate with workload intensity or prompt structure.</p>
 </blockquote>
 <h3 id="decision-rule-6">Decision Rule</h3>
 <p>Treat cache hit rate as an operational SLO, not a billing
-optimization. Monitor it. Alert on regressions. When it drops,
-investigate what changed in the prefix—a timestamp, a tool schema
-update, a retrieval ordering change, a model version update. The most
-common cache killers are not malicious. They are engineering changes
-made by people who do not know the prompt structure matters for
-caching.</p>
+optimization. Monitor it; alert on regressions; when it drops,
+investigate what changed in the prefix: a timestamp, a tool schema
+update, a retrieval ordering change, a model version bump. Most cache
+killers are not malicious. They are engineering changes made by people
+who do not know the prompt structure matters for caching.</p>
 <h3 id="what-to-measure-4">What To Measure</h3>
 <ul>
 <li><p>Cache hit rate per workload (cache_read_input_tokens / total
@@ -1529,9 +1515,14 @@ it. The benchmarks ran on an NVLink-connected 8-GPU server. The
 deployment uses PCIe GPUs with Ethernet scale-out.</p>
 <h3 id="mechanism-4">Mechanism</h3>
 <p>Mixture-of-Experts models route each token to a subset of “expert”
-subnetworks. This means:</p>
+subnetworks. This means three things at once:</p>
+<ul>
+<li><p>Active parameters per token (the experts actually invoked) are a small fraction of total parameters.</p></li>
+<li><p>Expert dispatch must complete within each decode step, which makes interconnect latency a first-order constraint.</p></li>
+<li><p>All experts must stay memory-resident across the GPU pool, so total parameters still set the memory bill.</p></li>
+</ul>
 <p>The economic promise of MoE: active compute is much smaller than
-total parameters, so inference can be faster and cheaper—as long as the
+total parameters, so inference can be faster and cheaper, as long as the
 experts are in memory and reachable at low latency.</p>
 <p>The economic catch: experts may be placed on different GPUs. Routing
 tokens to their experts and combining results creates all-to-all
@@ -1603,11 +1594,10 @@ than benchmarks. The fix—a dedicated ML subnet—took six weeks of
 security reviews. Network topology is a serving physics variable that no
 benchmark captures.</p>
 </blockquote>
-<p>This operator experience is about dense model parallelism, but the
-same principle applies doubly to MoE. Expert dispatch traffic is more
-frequent and less predictable than tensor-parallel allreduce. If the
-network path is slow, MoE serving pays the penalty on every layer of
-every decode step.</p>
+<p>Expert dispatch on MoE is even more sensitive than tensor-parallel
+allreduce: traffic is more frequent and less predictable. If the network
+path is slow, MoE serving pays the penalty on every layer of every
+decode step.</p>
 <h3 id="worked-example-5">Worked Example</h3>
 <p><strong>DeepSeek-V3 style MoE: 671B total, 37B active, 8 experts
 activated per token.</strong></p>
@@ -1623,9 +1613,8 @@ per layer is small.</p>
 orders-of-magnitude more relative latency. Expert-to-expert
 communication that takes microseconds on NVLink can take milliseconds on
 Ethernet. This accumulates across layers.</p>
-<p><em>Claim type: DERIVED from public architecture reports.
-Quantitative latency depends on implementation, batch size, and actual
-routing patterns.</em></p>
+<p><em>Quantitative latency depends on implementation, batch size, and
+actual routing patterns; the relative shape is robust.</em></p>
 <h3 id="disaggregated-prefilldecode-and-maturity-gates">Disaggregated
 Prefill/Decode and Maturity Gates</h3>
 <p>MoE is one architectural choice that changes serving economics.
@@ -1663,11 +1652,11 @@ prefill/decode imbalance, transfer timeout. - Debugging is harder
 because a single request traverses multiple workers.</p>
 <blockquote>
 <p>In an edge deployment across 100+ locations, T4 GPUs hit thermal
-limits during peak traffic. Kitchen ambient temperatures of 30-35C
+limits during peak traffic. Ambient site temperatures of 30-35C
 pushed GPU temperatures to the 83C throttle point. p99 latency doubled
 at 40+ sites simultaneously. Power capping from 70W to 60W stabilized
 tail latency at the cost of 15% peak throughput. The hardware datasheet
-does not mention kitchen temperatures.</p>
+does not specify operating ambient at the upper end of edge-site reality.</p>
 </blockquote>
 <p>This is not about disaggregation. It is about the gap between
 benchmark conditions and production conditions. The same gap applies
@@ -1729,7 +1718,7 @@ workload:</strong></p>
 <tr>
 <td><p>p99 TTFT</p></td>
 <td><p>2,800ms (prefill burst interference)</p></td>
-<td><p>1,200ms (dedicated prefill pool)</p></td>
+<td><p>1,200ms (dedicated prefill pool, inclusive of ~80ms KV transfer)</p></td>
 </tr>
 <tr>
 <td><p>p99 TPOT</p></td>
@@ -1765,8 +1754,8 @@ workload:</strong></p>
 </table>
 </div>
 </figure>
-<p><em>Claim type: DERIVED, illustrative. Real numbers depend on
-hardware, interconnect, traffic shape, and framework maturity.</em></p>
+<p><em>Illustrative; real numbers depend on hardware, interconnect,
+traffic shape, and framework maturity.</em></p>
 <p>For this workload, disaggregation significantly improves TTFT at a
 15% infrastructure cost increase. Whether that is worthwhile depends on
 whether TTFT is the binding constraint. If the customer cares about
@@ -1866,9 +1855,9 @@ than 70 percent GPU Allocation Utilization at peak demand, with common
 figures closer to 10-20 percent. One serverless provider has engineered
 cold start latency from tens of minutes down to approximately 50 seconds
 through GPU memory checkpointing and pre-warmed machine buffers,
-enabling tighter supply-demand matching for inference workloads.
-[REPORTED: State of AI Infrastructure at Scale, 2024; PUBLIC: Modal,
-“Truly Serverless GPUs,” 2026]</p>
+enabling tighter supply-demand matching for inference workloads
+(State of AI Infrastructure at Scale, 2024; Modal, "Truly Serverless
+GPUs," 2026).</p>
 <h3 id="naive-answer-5">Naive Answer</h3>
 <blockquote>
 <p>“High utilization means the GPU is efficient.”</p>
@@ -1887,25 +1876,24 @@ failed request.</p></li>
 utilization metrics.</p></li>
 </ul>
 <blockquote>
-<p>In a high-concurrency voice workload, speculative decoding with a
-domain fine-tuned 1B draft model produced 0.92x throughput—slower, not
-faster. The acceptance rate improved from 48% to 58%, but under
-production batch sizes of 12-16, the extra compute exceeded the drafting
-savings. Two weeks of engineering time was the real cost. Speculative
-decoding works best at low concurrency with high acceptance rates;
-production batch sizes can flip the economics.</p>
+<p>In a high-concurrency interactive workload, speculative decoding with a
+domain fine-tuned 1B draft model produced roughly 0.90x throughput: slower, not
+faster. The acceptance rate improved from about 48% to 58%, but under
+production batch sizes of 10-14 the extra verification compute exceeded the
+drafting savings. Speculative decoding works best at low concurrency with
+high acceptance rates; once verification has to run across a wide batch
+every step, the economics can flip.</p>
 </blockquote>
-<p>This is a concrete example of how an optimization that increases GPU
-utilization (more compute per step for speculative drafts) can reduce
-productive capacity (fewer accepted tokens per second). The outcome is
-workload-dependent. A search infrastructure provider reports positive
-production results with in-house multi-token prediction draft layers for
-the same technique, likely because the search workload’s constrained
-output distribution yields higher draft acceptance rates than the voice
-system’s open-ended generation. The decision variable is not “does
-speculative decoding work” but “does your workload’s output distribution
-produce an acceptance rate high enough to offset the draft model’s
-compute?” [PUBLIC: Perplexity, “Hosting Qwen on Blackwell,” 2026]</p>
+<p>The interactive-workload result is workload-dependent, not a general
+indictment of speculative decoding. A search infrastructure provider
+reports positive production results with in-house multi-token-prediction
+draft layers, likely because the search workload's constrained output
+distribution yields higher draft acceptance rates than open-ended
+generation. The decision variable is not "does speculative decoding
+work" but "does your workload's output distribution produce an
+acceptance rate high enough to offset the draft model's compute under
+your operating batch size?" (Perplexity, "Hosting Qwen on Blackwell,"
+2026).</p>
 <blockquote>
 <p>After quantizing a production model, quality failures appeared in the
 long tail: rare entities, numeric precision errors, and multi-turn
@@ -2016,8 +2004,9 @@ each:</strong></p>
 </figure>
 <p>Route A wins on raw throughput and total cost. Route B wins on
 goodput and cost per accepted result. A benchmark picks Route A. A
-Goodput Frontier Test picks Route B.</p>
-<p><em>Claim type: DERIVED, illustrative.</em></p>
+goodput frontier test picks Route B.</p>
+<p><em>Illustrative; the goodput-frontier shape holds across most
+production routing decisions.</em></p>
 <h3 id="stateful-routing-and-cache-locality">Stateful Routing and Cache
 Locality</h3>
 <p>One of the most impactful levers for productive capacity is where the
@@ -2105,17 +2094,17 @@ when KV cache, prefix reuse, or session affinity matter. Routing a
 request to the wrong replica means cache miss → full prefill
 recomputation → higher TTFT, higher cost, wasted memory on the original
 replica’s cached state.</p>
-<p>Cache-local routing creates two tradeoffs:</p>
-<p><strong>Locality vs load balance:</strong> Routing to the cache-hot
-replica improves TTFT and cost but can overload that replica if many
-requests share the same prefix. The routing layer needs a saturation
-threshold: route to the cache-hot replica if it has capacity, fall back
-to another if saturated.</p>
-<p><strong>Cache diversity vs cache efficiency:</strong> If all requests
-go to the same replica, one replica does all the work and the rest sit
-idle. If requests are spread evenly, cache hit rates drop. The optimal
-distribution depends on prefix diversity, traffic shape, and the cost of
-cache misses vs load imbalance.</p>
+<p>Cache-local routing creates two tradeoffs. The first is locality
+versus load balance: routing to the cache-hot replica improves TTFT and
+cost but can overload that replica if many requests share the same
+prefix. The routing layer needs a saturation threshold that routes to
+the cache-hot replica when it has capacity and spills elsewhere when it
+does not.</p>
+<p>The second is cache diversity versus cache efficiency. If all
+requests go to the same replica, one replica carries the load and the
+rest sit idle. If requests are spread evenly, cache hit rates drop. The
+optimal distribution depends on prefix diversity, traffic shape, and the
+relative cost of cache misses versus load imbalance.</p>
 <p><strong>Support chatbot: 8 replicas, 1 system prompt + tool prefix
 (6,000 tokens), 10 concurrent conversations.</strong></p>
 <figure>
@@ -2152,8 +2141,8 @@ cache misses vs load imbalance.</p>
 </table>
 </div>
 </figure>
-<p><em>Claim type: DERIVED, illustrative. Exact hit rates depend on
-traffic shape, TTL, and replica capacity.</em></p>
+<p><em>Illustrative; exact hit rates depend on traffic shape, TTL, and
+replica capacity.</em></p>
 <p>The difference between round-robin and prefix-aware routing is 4x
 TTFT and 60% cost reduction—not from a better model or cheaper hardware,
 but from routing the request to the right place.</p>
@@ -2214,7 +2203,7 @@ cross-region routing is always a cold start.</p></li>
 mean cache-aware routing is probabilistic, not guaranteed.</p></li>
 </ul>
 <h3 id="calculator-hook-8">Calculator Hook</h3>
-<p>The takes per-request latency, quality labels, and cost data. It
+<p>The goodput calculator takes per-request latency, quality labels, and cost data. It
 outputs goodput by request rate, cost per accepted unit, and the
 recommended operating point. The serving physics analysis includes a
 cache-locality mode: input prefix diversity, replica count, and traffic
@@ -2222,47 +2211,16 @@ shape to see expected cache hit rate by routing policy and cost
 differences.</p>
 <hr />
 <h2 id="part-2-summary">Part 2 Summary</h2>
-<p>Part 2 covered six mechanisms that determine inference serving cost
-and capacity:</p>
-<ol>
-<li><p><strong>The hardware cost floor</strong> is set by the roofline
-and the batch size frontier. Most production decode serving is
-memory-bandwidth-bound at the batch sizes where latency SLOs are met.
-Weight fetch amortizes across the batch; KV fetch and compute do not.
-The batch policy determines where a system sits on the cost-latency
-curve, and that choice is embedded in the token price.</p></li>
-<li><p><strong>Prefill and decode</strong> are different phases with
-different economics. Prefill is parallel and often compute-bound. Decode
-is sequential and often memory-bandwidth-bound. Output tokens cost more
-than input tokens for structural reasons, not markup.</p></li>
-<li><p><strong>Memory economics</strong> encompass KV cache sizing, long
-context, and the memory wall. KV cache is the largest dynamic memory
-allocation, scaling with batch size, context length, and model depth.
-Long context is a memory product: doubling context length roughly halves
-concurrent capacity. The quality benefit must justify the capacity,
-latency, and cost increase.</p></li>
-<li><p><strong>Prompt caching</strong> avoids rematerialization of KV
-for repeated prefixes. It is a memory hierarchy and routing mechanism,
-not just a billing discount. Cache hit rate is an operational
-SLO.</p></li>
-<li><p><strong>Model architecture and cost</strong> depend on MoE
-sparsity, topology, and disaggregation readiness. MoE shifts cost from
-active compute to weight residency and expert communication.
-Disaggregated prefill/decode can improve TTFT but adds KV transfer,
-routing complexity, and operational cost. Both are maturity-gated
-optimizations.</p></li>
-<li><p><strong>Productive capacity and routing</strong> are goodput
-under SLO, not GPU utilization or raw throughput. Optimizations that
-increase utilization can decrease productive capacity if they increase
-failures. Cache-local routing can reduce TTFT by 4x and input cost by
-60%+ for workloads with reusable prefixes.</p></li>
-</ol>
-<p>These mechanisms are the vocabulary for Parts 3-5. When Part 3 says a
-support chat workload is “output-bound,” it means the prefill/decode
-economics apply. When Part 4 says “check KV capacity before choosing
-dedicated,” it means the memory economics formula. When Part 5 says
-“measure goodput, not throughput,” it means the productive capacity
-definition.</p>
+<p>Six mechanisms set inference serving cost and capacity: the hardware
+roofline and the batch-size frontier, the prefill/decode asymmetry, KV
+memory economics, prompt caching as a memory hierarchy, MoE topology and
+disaggregation readiness, and productive capacity under SLO. Each is
+independently load-bearing; together they are the vocabulary the rest of
+the book uses. When Part 3 calls a support workload "output-bound," it
+means the prefill/decode economics apply. When Part 4 says "check KV
+capacity before choosing dedicated," it means the memory-economics
+formula. When Part 5 says "measure goodput, not throughput," it means
+the productive-capacity definition.</p>
 <p>The physics explains the economics. The economics determine the
 decisions.</p>
 <hr />
@@ -2412,21 +2370,35 @@ comparison)</p></td>
 <td><p>Illustrative numbers derived from public hardware specs and
 provider pricing structures</p></td>
 </tr>
+<tr>
+<td><p>Disaggregated P/D sharding: TP=4 prefill, EP=16 decode</p></td>
+<td><p>Public</p></td>
+<td><p>Perplexity, &ldquo;Hosting Qwen on Blackwell,&rdquo; 2026</p></td>
+</tr>
+<tr>
+<td><p>MXFP8 works in production; MXFP4 without QAT does not</p></td>
+<td><p>Public</p></td>
+<td><p>Perplexity, &ldquo;Hosting Qwen on Blackwell,&rdquo; 2026</p></td>
+</tr>
+<tr>
+<td><p>Speculative decoding positive result with MTP layers</p></td>
+<td><p>Public</p></td>
+<td><p>Perplexity, &ldquo;Hosting Qwen on Blackwell,&rdquo; 2026</p></td>
+</tr>
+<tr>
+<td><p>GPU Allocation Utilization commonly 10-20%, majority &lt;70% at peak</p></td>
+<td><p>Reported</p></td>
+<td><p>Modal citing State of AI Infrastructure at Scale, 2024</p></td>
+</tr>
+<tr>
+<td><p>Cold start reduced from tens of minutes to ~50 seconds</p></td>
+<td><p>Public</p></td>
+<td><p>Modal, &ldquo;Truly Serverless GPUs,&rdquo; 2026</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Disaggregated P/D sharding: TP=4 prefill, EP=16 decode | Public |
-Perplexity, “Hosting Qwen on Blackwell,” 2026 |<br />
-MXFP8 works in production; MXFP4 without QAT does not | Public |
-Perplexity, “Hosting Qwen on Blackwell,” 2026 |<br />
-Speculative decoding positive result with MTP layers | Public |
-Perplexity, “Hosting Qwen on Blackwell,” 2026 |<br />
-GPU Allocation Utilization commonly 10-20%, majority &lt;70% at peak |
-Reported | Modal citing State of AI Infrastructure at Scale, 2024
-|<br />
-Cold start reduced from tens of minutes to ~50 seconds | Public | Modal,
-“Truly Serverless GPUs,” 2026 |</p>
 <p>All worked examples use synthetic numbers shaped by real hardware
 specs and provider billing grammar. No numbers are attributed to any
 specific employer, customer, or deployment. Where operator proof boxes

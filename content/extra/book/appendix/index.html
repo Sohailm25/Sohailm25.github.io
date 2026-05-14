@@ -531,7 +531,7 @@ Calculator Manual And Living Reference — Production Inference Economics</title
         
       </div>
       <ul class="sidebar-toc"><li><a href="#a.1-what-the-calculator-does">A.1 What The Calculator Does</a></li><li><a href="#a.2-calculator-views">A.2 Calculator Views</a></li><li><a href="#a.3-running-the-worked-examples">A.3 Running The Worked
-Examples</a></li><li><a href="#a.4-source-snapshot-schema">A.4 Source Snapshot Schema</a></li><li><a href="#a.5-evidence-labels">A.5 Evidence Labels</a></li><li><a href="#a.6-formulas-reference">A.6 Formulas Reference</a></li><li><a href="#a.7-glossary">A.7 Glossary</a></li><li><a href="#a.8-what-lives-in-the-repo">A.8 What Lives In The Repo</a></li></ul>
+Examples</a></li><li><a href="#a.4-source-snapshot-schema">A.4 Source Snapshot Schema</a></li><li><a href="#a.5-formulas-reference">A.5 Formulas Reference</a></li><li><a href="#a.6-glossary">A.6 Glossary</a></li><li><a href="#a.7-what-lives-in-the-repo">A.7 What Lives In The Repo</a></li></ul>
       <div class="sidebar-nav">
         <a href="/book/part-5/">&larr; Part 5: Operating The
 Decision</a>
@@ -569,28 +569,21 @@ work.</p></li>
 thresholds, routing policy, pricing snapshot, account revenue. These set
 the constraints the calculator evaluates against.</p></li>
 </ol>
-<p>The calculator produces views. Each view answers one question. This
-appendix documents the book-facing view surface, the formula behind each
-view, how to populate it, what the result means, and when not to trust
-it.</p>
-<p>Not every view has the same evidence status. Implemented UI means the
-current Streamlit app exposes the view directly. Template UI means the
-app exposes a structured input/review surface, but the user supplies the
-evidence. It is not a telemetry integration. Derived means the output
-follows from formula inputs, not a provider capacity guarantee. Measured
-means the user supplied trace, eval, invoice, or benchmark data from a
-real workload.</p>
+<p>The calculator produces views. Each view answers one question. For
+each view this appendix documents the formula, the inputs, the output,
+and when not to trust it. The companion app lives at <a
+href="https://inference-econ.streamlit.app">inference-econ.streamlit.app</a>.</p>
+<p>Implementation status (which views the app exposes directly vs as
+templates) lives in the calculator's view registry, not in this prose.</p>
 <hr />
 <h2 id="a.2-calculator-views">A.2 Calculator Views</h2>
-<p>The book defines 14 book-facing calculator views. The current
-companion app exposes 13 tabs: seven direct analysis tabs, two formula
-tabs that wrap existing backend derivations, three template/audit tabs,
-and one grouped operating tab that contains the finance, usage,
-compliance, and latency templates. In body prose, these are described by
-their function. In the calculator and companion repo, each view has a
-versioned internal name for schema stability.</p>
+<p>The appendix documents fourteen book-facing calculator views. The
+companion app implements them across thirteen tabs (finance, usage,
+compliance, and latency share an operating tab). Body prose names views
+by function; the calculator names each view in
+<code>view_registry.py</code> for schema stability.</p>
 <h3 id="view-1-workload-profile">View 1: Workload Profile</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>workload_profile</code> (registry: <code>Workload Profile v1</code>)</p>
 <p><strong>Body reference:</strong> “workload profile” or “workload
 identity” (Part 1 Ch 2, Part 3 Ch 10)</p>
 <p><strong>What it does:</strong> Captures the canonical identity of one
@@ -671,9 +664,9 @@ quality floor has not been validated with human review, the
 accepted-work denominator is wrong.</p>
 <hr />
 <h3 id="view-2-trace-event-schema">View 2: Trace Event Schema</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>trace_event_schema</code> (registry: <code>Trace Event Schema v1</code>)</p>
 <p><strong>Body reference:</strong> “trace event schema” or “request
-event fields” (Part 1 Ch 3, Part 5 Ch 24)</p>
+event fields” (Part 1 Ch 3, Part 5 Ch 25)</p>
 <p><strong>What it does:</strong> Defines the minimum fields per
 inference request needed for economics-grade analysis. This is a schema
 definition, not a dashboard.</p>
@@ -768,18 +761,18 @@ definition, not a dashboard.</p>
 </table>
 </div>
 </figure>
-<p><strong>When not to trust it:</strong> If is missing or always zero,
-cache economics calculations will be wrong. If is missing, the
+<p><strong>When not to trust it:</strong> If <code>cached_input_tokens</code> is missing or always zero,
+cache economics calculations will be wrong. If <code>quality_label</code> is missing, the
 calculator cannot distinguish accepted work from raw throughput.</p>
 <hr />
 <h3 id="view-3-latency-decomposition">View 3: Latency Decomposition</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>latency_decomposition</code> (registry: <code>Latency Decomposition v1</code>)</p>
 <p><strong>Body reference:</strong> “latency decomposition” or “timing
 breakdown” (Part 2 Ch 4-7)</p>
 <p><strong>What it does:</strong> Breaks end-to-end latency into
 components: queue time, TTFT (prefill), inter-token latency (decode),
 tool execution, retrieval, and orchestration overhead.</p>
-<p><strong>Formula:</strong></p>
+<p><strong>Formula:</strong> <code>T_e2e = T_queue + T_ttft + (T_tpot × N_out) + T_tool + T_retrieval + T_orchestration</code>.</p>
 <p><strong>Output:</strong> Per-request timing breakdown showing which
 component dominates.</p>
 <p><strong>When not to trust it:</strong> If the serving engine does not
@@ -788,7 +781,7 @@ from prefill. If tool calls are asynchronous, T_tool may overlap with
 T_decode.</p>
 <hr />
 <h3 id="view-4-slo-to-route-mapping">View 4: SLO-to-Route Mapping</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>slo_to_route_mapping</code> (registry: <code>SLO-to-Route Mapping v1</code>)</p>
 <p><strong>Body reference:</strong> “SLO-to-route mapping” or “routing
 policy” (Part 3 Ch 10, Part 4 Ch 20)</p>
 <p><strong>What it does:</strong> Maps each workload’s SLO constraints
@@ -796,7 +789,7 @@ to eligible routes. A route is eligible only if it passes all gates:
 latency, quality, security, and cost.</p>
 <p><strong>Inputs:</strong> Workload profile (View 1), route candidates
 with measured latency and quality, security constraints.</p>
-<p><strong>Decision rule:</strong> A route is eligible if:</p>
+<p><strong>Decision rule:</strong> A route is eligible if measured TTFT p95 &le; <code>ttft_slo_ms</code>, measured E2E p95 &le; <code>e2e_slo_ms</code>, measured eval pass rate &ge; <code>quality_floor</code>, and the route satisfies every security gate in the workload profile.</p>
 <p><strong>Output:</strong> Eligible route set per workload, ranked by
 cost per accepted work.</p>
 <p><strong>When not to trust it:</strong> If latency was measured under
@@ -806,18 +799,13 @@ distribution, eval pass rate may not transfer.</p>
 <hr />
 <h3 id="view-5-cost-per-accepted-work-lcpr">View 5: Cost Per Accepted
 Work (LCPR)</h3>
-<p><strong>Internal name:</strong> Part of (Tier 1 framework)</p>
-<p><strong>Body reference:</strong> LCPR-2026 (Part 1 Ch 1-2, every
+<p><strong>Internal name:</strong> <code>cost_per_accepted_work</code> (registry: <code>Cost Per Accepted Work v1</code>; also exposed in the app as <code>LCPR</code> via the Compare tab)</p>
+<p><strong>Body reference:</strong> LCPR (Part 1 Ch 1-2, every
 worked example)</p>
 <p><strong>What it does:</strong> Calculates loaded cost per result,
 normalized to accepted output.</p>
-<p><strong>Formula (Derivation 6):</strong></p>
-<p>Where: - C_trace = sum of per-request costs from traces (input tokens
-* price + output tokens * price, adjusted for cache pricing) - delta =
-C_invoice - C_trace (discrepancy between trace estimate and invoice) -
-C_human = human escalation and repair cost - C_ops = operational
-overhead (monitoring, on-call, deployment) - A = accepted work units
-(requests passing quality, latency, and reliability gates)</p>
+<p><strong>Formula (Derivation 6):</strong> <code>LCPR = (C_inference + C_eval + C_human + C_ops + delta) / A</code></p>
+<p>Where: <code>C_inference</code> is the sum of per-request costs from traces (first attempt + retry + repair, with cache pricing applied); <code>C_eval</code> is the eval-grader cost (LLM grader calls and rubric checks); <code>C_human</code> is human review, escalation, and repair labor; <code>C_ops</code> is amortized operational overhead (monitoring, on-call, deployment) allocated to the workload; <code>delta = C_invoice &minus; C_trace</code> is the discrepancy between trace-derived cost and the provider invoice for the same period; and <code>A</code> is accepted work units (requests passing quality, latency, and reliability gates).</p>
 <p><strong>What the result means:</strong> LCPR is the real unit cost
 your business operates on. If LCPR exceeds revenue per accepted unit,
 the workload loses money regardless of what the token price page
@@ -829,9 +817,9 @@ window does not match the trace window, delta will be noisy.</p>
 <hr />
 <h3 id="view-6-spend-movement-waterfall">View 6: Spend Movement
 Waterfall</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>spend_movement_waterfall</code> (registry: <code>Spend Movement Waterfall v1</code>)</p>
 <p><strong>Body reference:</strong> “spend movement waterfall” or
-“month-over-month spend” (Part 5 Ch 25)</p>
+“month-over-month spend” (Part 5 Ch 26)</p>
 <p><strong>What it does:</strong> Decomposes month-over-month spend
 change into contributing factors: volume, mix, price, cache rate,
 quality, retry rate, and new workloads.</p>
@@ -844,9 +832,9 @@ apparent mix shifts.</p>
 <hr />
 <h3 id="view-7-commitment-utilization">View 7: Commitment
 Utilization</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>commitment_utilization</code> (registry: <code>Commitment Utilization v1</code>)</p>
 <p><strong>Body reference:</strong> “commitment utilization” or “credit
-coverage” (Part 4 Ch 18, Part 5 Ch 25)</p>
+coverage” (Part 4 Ch 18, Part 5 Ch 26)</p>
 <p><strong>What it does:</strong> Tracks committed spend against actual
 usage. Shows burn rate, projected exhaustion date, overage exposure, and
 utilization percentage.</p>
@@ -855,9 +843,9 @@ models but not others, and the calculator does not model credit scope,
 utilization will be wrong.</p>
 <hr />
 <h3 id="view-8-variance-analysis">View 8: Variance Analysis</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>variance_drilldown</code> (registry: <code>Variance Drilldown v1</code>)</p>
 <p><strong>Body reference:</strong> “variance analysis” or “cost/latency
-root cause” (Part 5 Ch 24, 25)</p>
+root cause” (Part 5 Ch 25, 26)</p>
 <p><strong>What it does:</strong> Identifies the top contributors to
 cost or latency variance between periods or between expected and actual.
 Decomposes variance into rate (price change), volume (traffic change),
@@ -868,21 +856,21 @@ model aliases across periods, rate variance will appear where none
 exists.</p>
 <hr />
 <h3 id="view-9-account-margin-model">View 9: Account Margin Model</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>account_margin_model</code> (registry: <code>Account Margin Model v1</code>)</p>
 <p><strong>Body reference:</strong> “account margin model” or “account
-economics” (Part 5 Ch 24, 25)</p>
+economics” (Part 5 Ch 25, 26)</p>
 <p><strong>What it does:</strong> Joins LCPR, account revenue, support
 cost, and operational overhead to calculate gross margin per account or
 per workload.</p>
-<p><strong>Formula (Derivation 6 extended):</strong></p>
+<p><strong>Formula (Derivation 6 extended):</strong> <code>margin = (R_account &minus; LCPR &times; A &minus; C_support &minus; C_overhead_allocated) / R_account</code>, where <code>R_account</code> is account revenue, <code>A</code> is accepted work units, <code>C_support</code> is account-specific support cost, and <code>C_overhead_allocated</code> is the allocated share of platform overhead.</p>
 <p><strong>When not to trust it:</strong> If account revenue includes
 bundled products that are not inference-related, margin attribution is
 ambiguous.</p>
 <hr />
 <h3 id="view-10-usage-signals">View 10: Usage Signals</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>usage_signals</code> (registry: <code>Usage Signals v1</code>)</p>
 <p><strong>Body reference:</strong> “usage signals” or “expansion/risk
-signals” (Part 5 Ch 25)</p>
+signals” (Part 5 Ch 26)</p>
 <p><strong>What it does:</strong> Tracks leading indicators of workload
 health: volume trend, cache hit rate trend, retry rate trend, p95
 latency trend, eval drift, context length growth, and provider error
@@ -893,7 +881,7 @@ usage.</p>
 <hr />
 <h3 id="view-11-security-and-compliance-filter">View 11: Security and
 Compliance Filter</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>security_compliance_filter</code> (registry: <code>Security and Compliance Filter v1</code>)</p>
 <p><strong>Body reference:</strong> “security/compliance route filter”
 (Part 3 Ch 10, Part 4 Ch 21)</p>
 <p><strong>What it does:</strong> Evaluates each candidate route against
@@ -907,12 +895,12 @@ assumed rather than confirmed with the compliance team, the filter may
 be too permissive or too restrictive.</p>
 <hr />
 <h3 id="view-12-cache-break-even">View 12: Cache Break-Even</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>cache_break_even</code> (registry: <code>Cache Policy Gate v1</code>)</p>
 <p><strong>Body reference:</strong> “cache break-even analysis” or
 “cache eligibility” (Part 2 Ch 7)</p>
 <p><strong>What it does:</strong> Calculates how many requests must
 reuse a cached prefix within TTL for caching to save money.</p>
-<p><strong>Formula (Derivation 3):</strong></p>
+<p><strong>Formula (Derivation 3):</strong> <code>N_break_even = P_write / (P_uncached − P_read)</code>, where <code>P_write</code> is the cache write premium per million input tokens, <code>P_uncached</code> is the standard input price per million tokens, and <code>P_read</code> is the cache read price per million tokens. Cache saves money only when the prefix is reused at least <code>N_break_even</code> times within TTL.</p>
 <p><strong>Inputs:</strong> Cache write price, cache read price,
 uncached input price, TTL, measured inter-request gap, prefix
 stability.</p>
@@ -923,12 +911,12 @@ volatile content (timestamps, request IDs, retrieval results before the
 static prefix), the effective hit rate will be lower than measured.</p>
 <hr />
 <h3 id="view-13-kv-memory-sizing">View 13: KV Memory Sizing</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>kv_memory_sizing</code> (registry: <code>KV Capacity Envelope v1</code>)</p>
 <p><strong>Body reference:</strong> “KV memory sizing” or
 “context-length capacity” (Part 2 Ch 6)</p>
 <p><strong>What it does:</strong> Calculates maximum concurrent
 sequences at a given context length on a given GPU.</p>
-<p><strong>Formula (Derivation 2):</strong></p>
+<p><strong>Formula (Derivation 2):</strong> <code>N_max = (HBM_total − M_weights − M_activations) / (2 × L × H_kv × d_head × ctx × bytes_per_elem)</code>, where <code>HBM_total</code> is per-GPU memory, <code>M_weights</code> is model weight memory, <code>M_activations</code> is per-sequence activation reserve, <code>L</code> is the number of transformer layers, <code>H_kv</code> is the number of KV heads (after GQA), <code>d_head</code> is per-head dimension, <code>ctx</code> is sequence context length, and <code>bytes_per_elem</code> reflects KV dtype (fp16 = 2, fp8 = 1).</p>
 <p><strong>What the result means:</strong> This is the hard ceiling on
 concurrent conversations for a given model, hardware, and context
 length. The production-safe limit is lower after accounting for
@@ -939,12 +927,12 @@ overestimates per-token KV cost. If beam search or n-sampling is active,
 live sequences multiply beyond user-facing concurrency.</p>
 <hr />
 <h3 id="view-14-dedicated-break-even">View 14: Dedicated Break-Even</h3>
-<p><strong>Internal name:</strong></p>
+<p><strong>Internal name:</strong> <code>dedicated_break_even</code> (registry: <code>Dedicated Utilization Gate v1</code>)</p>
 <p><strong>Body reference:</strong> “dedicated capacity break-even”
 (Part 4 Ch 18)</p>
 <p><strong>What it does:</strong> Calculates the minimum utilization at
 which dedicated capacity is cheaper than serverless.</p>
-<p><strong>Formula (Derivation 4):</strong></p>
+<p><strong>Formula (Derivation 4):</strong> <code>u_required = (C_dedicated_hourly + C_ops_hourly) / (G_slo × P_serverless × 3600)</code>, where <code>C_dedicated_hourly</code> is the dedicated capacity hourly rate, <code>C_ops_hourly</code> is allocated operational overhead per hour, <code>G_slo</code> is goodput in accepted requests per second under the SLO, and <code>P_serverless</code> is the equivalent serverless price per accepted request. Dedicated is cheaper only when actual utilization exceeds <code>u_required</code>.</p>
 <p><strong>What the result means:</strong> If your actual weekly-average
 utilization is below u_required, stay serverless or use hybrid (base
 dedicated + burst serverless).</p>
@@ -956,8 +944,8 @@ incident response, the gate is too permissive.</p>
 <hr />
 <h2 id="a.3-running-the-worked-examples">A.3 Running The Worked
 Examples</h2>
-<p>The companion repo contains three worked examples. Each has a that
-provides the inputs and a that describes the workload. To run an
+<p>The companion repo contains three worked examples. Each has a calculator seed that
+provides the inputs and a workload identity file that describes the workload. To run an
 example:</p>
 <ol>
 <li><p>Copy the seed file.</p></li>
@@ -969,33 +957,24 @@ pricing data.</p></li>
 <code>calculator_views</code> field.</p></li>
 </ol>
 <h3 id="example-1-support-answer-trace-to-margin">Example 1: Support
-Answer Trace-to-Margin</h3>
-<p><strong>Seed:</strong></p>
+Answer trace-to-loaded-cost</h3>
+<p><strong>Seed:</strong> <code>examples/support-answer.trace-margin.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> What does one accepted support
 answer actually cost after retries, eval failures, cache misses, and
 human escalation?</p>
-<p><strong>Views exercised:</strong> LCPR-2026, Trace-to-Margin Review
-v1, Cache Policy Gate v1.</p>
+<p><strong>Views exercised:</strong> LCPR, trace-to-loaded-cost review, cache policy gate.</p>
 <p><strong>What to look for:</strong> - The gap between naive cost
-(inference cost / total requests) and loaded cost (LCPR). The companion
-seed is the monthly trace-to-margin example: 100,000 attempts, 82,000
-accepted units, $19,150 loaded cost, $0.234 LCPR, $0.142 naive trace
-cost, and a 1.65x loaded-to-naive ratio. - The opener uses a smaller
-daily teaching fixture: 1,000 attempts, 820 accepted units, $140.65
-loaded cost, $0.172 LCPR, $0.0142 naive trace cost, and a 12.1x
-loaded-to-naive ratio. Do not mix the daily fixture with the monthly
-calculator seed. - The cache hit rate delta. The seed shows expected 60%
+(inference cost / total queries) and loaded cost (LCPR). The seed mirrors the opener fixture: a regional bank answer-drafting workload at ~30,247 first-attempt queries per workday, 28,674 accepted answers, $503/day inference, $5,287/day loaded cost, $0.184 LCPR, $0.0166 naive per-query cost, and a roughly 10x loaded-to-naive ratio. - The cache hit rate delta. The seed shows expected 60%
 vs actual 35%. The cache break-even view shows whether caching is still
-net positive at 35%. - Eval pass rate at 75%. One in four attempts does
+net positive at 35%. - Eval pass rate. Roughly one in four attempts does
 not produce accepted work, but every attempt costs money.</p>
 <h3 id="example-2-coding-agent-task-lifecycle">Example 2: Coding Agent
 Task Lifecycle</h3>
-<p><strong>Seed:</strong></p>
+<p><strong>Seed:</strong> <code>examples/coding-agent.lifecycle.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> What does one accepted bug fix
 cost across an entire agent session with sub-agent calls, tool loops,
 compaction, and retries?</p>
-<p><strong>Views exercised:</strong> LCPR-2026, Cache Policy Gate v1,
-Goodput Frontier Test v1.</p>
+<p><strong>Views exercised:</strong> LCPR, cache policy gate, goodput frontier test.</p>
 <p><strong>What to look for:</strong> - Total input tokens processed
 (~3.5M) vs output tokens (~85K). The input-to-output ratio is roughly
 41:1. Input cost dominates unless cache hit rate is high. - Cache hit
@@ -1007,11 +986,10 @@ acceptance rate (90%) includes first-pass success (65%) plus repaired
 tasks (25%). The 10% that require manual takeover have human cost
 outside the inference bill.</p>
 <h3 id="example-3-benchmark-audit">Example 3: Benchmark Audit</h3>
-<p><strong>Seed:</strong></p>
+<p><strong>Seed:</strong> <code>examples/support-rag-answer-drafting.audit.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> Does the benchmark winner
 change when methodology errors are corrected?</p>
-<p><strong>Views exercised:</strong> Goodput Frontier Test v1, RouteFit
-Matrix v1, LCPR-2026.</p>
+<p><strong>Views exercised:</strong> goodput frontier test, routefit matrix, LCPR.</p>
 <p><strong>What to look for:</strong> - The naive benchmark uses
 closed-loop arrivals, cold cache, excluded cold starts, no retries, and
 mean latency only. The corrected benchmark uses Poisson arrivals, warm
@@ -1024,7 +1002,7 @@ contributor to the cost-per-accepted-work reversal.</p>
 <hr />
 <h2 id="a.4-source-snapshot-schema">A.4 Source Snapshot Schema</h2>
 <p>Provider prices belong in dated snapshots, not in body prose. The
-snapshot schema lives in .</p>
+snapshot schema lives in <code>source-snapshots/&lt;YYYY-MM-DD&gt;/providers.yaml</code> (alongside <code>hardware.yaml</code>, <code>cache-semantics.yaml</code>, <code>benchmark-sources.yaml</code>, and <code>model-licenses.yaml</code>).</p>
 <p><strong>Required fields per provider entry:</strong></p>
 <figure>
 <div data-align="center">
@@ -1121,61 +1099,7 @@ come from official pricing pages. If a price is inferred, modeled,
 reported by a third party, or unavailable, label it explicitly and add a
 note explaining the evidence source.</p>
 <hr />
-<h2 id="a.5-evidence-labels">A.5 Evidence Labels</h2>
-<p>Every claim in this book carries one of the following labels. The
-calculator inherits the same discipline.</p>
-<figure>
-<div data-align="center">
-<table>
-<thead>
-<tr>
-<th><p>Label</p></th>
-<th><p>Meaning</p></th>
-<th><p>Example</p></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><p>PUBLIC</p></td>
-<td><p>Public source states it directly</p></td>
-<td><p>Official pricing page, published docs</p></td>
-</tr>
-<tr>
-<td><p>DERIVED</p></td>
-<td><p>Follows from shown assumptions and units</p></td>
-<td><p>Batch/cost curve from roofline formula</p></td>
-</tr>
-<tr>
-<td><p>REPORTED</p></td>
-<td><p>Credible external source reports it, not independently
-verified</p></td>
-<td><p>Conference talk, engineering blog</p></td>
-</tr>
-<tr>
-<td><p>OPINION</p></td>
-<td><p>Judgment based on experience or synthesis</p></td>
-<td><p>“This architecture is not worth it below X maturity”</p></td>
-</tr>
-<tr>
-<td><p>SYNTHETIC</p></td>
-<td><p>Illustrative numbers shaped by public sources but not
-measured</p></td>
-<td><p>Worked example trace rows</p></td>
-</tr>
-<tr>
-<td><p>MEASURED</p></td>
-<td><p>Directly measured by the author or team</p></td>
-<td><p>Benchmark run, production trace sample</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-<p><strong>Rule:</strong> If a number changes the conclusion, it needs a
-source or a sensitivity analysis. If a number is illustrative, it is
-labeled SYNTHETIC and must not be cited as proof.</p>
-<hr />
-<h2 id="a.6-formulas-reference">A.6 Formulas Reference</h2>
+<h2 id="a.5-formulas-reference">A.5 Formulas Reference</h2>
 <p>The six derivations in the body are the mathematical spine of the
 calculator. Each derivation kills a wrong conclusion that survives in
 naive analysis.</p>
@@ -1184,31 +1108,31 @@ id="derivation-1-batch-amortization-roofline-part-2-ch-4-5">Derivation
 1: Batch Amortization / Roofline (Part 2, Ch 4-5)</h3>
 <p>Wrong conclusion: “GPU-hour divided by peak tokens/sec is my
 cost.”</p>
-<p>Calculator views: Goodput Frontier Test v1, Serving Physics Lens.</p>
+<p>Calculator views: goodput frontier test, serving physics lens.</p>
 <h3 id="derivation-2-kv-cache-memory-sizing-part-2-ch-6">Derivation 2:
 KV Cache Memory Sizing (Part 2, Ch 6)</h3>
 <p>Wrong conclusion: “Context length is just a model setting.”</p>
-<p>Calculator view: KV Capacity Envelope v1.</p>
+<p>Calculator view: kv capacity envelope.</p>
 <h3 id="derivation-3-prompt-cache-break-even-part-2-ch-7">Derivation 3:
 Prompt-Cache Break-Even (Part 2, Ch 7)</h3>
 <p>Wrong conclusion: “Caching is a discount.”</p>
-<p>Calculator view: Cache Policy Gate v1.</p>
+<p>Calculator view: cache policy gate.</p>
 <h3 id="derivation-4-dedicated-utilization-part-4-ch-18">Derivation 4:
 Dedicated Utilization (Part 4, Ch 18)</h3>
 <p>Wrong conclusion: “Dedicated is cheaper because the hourly rate looks
 low.”</p>
-<p>Calculator view: Dedicated Utilization Gate v1.</p>
-<h3 id="derivation-5-goodput-under-slo-part-5-ch-23">Derivation 5:
-Goodput Under SLO (Part 5, Ch 23)</h3>
+<p>Calculator view: dedicated utilization gate.</p>
+<h3 id="derivation-5-goodput-under-slo-part-5-ch-24">Derivation 5:
+Goodput Under SLO (Part 5, Ch 24)</h3>
 <p>Wrong conclusion: “Peak throughput is capacity.”</p>
-<p>Calculator view: Goodput Frontier Test v1.</p>
+<p>Calculator view: goodput frontier test.</p>
 <h3
-id="derivation-6-trace-to-margin-reconciliation-part-5-ch-24">Derivation
-6: Trace-to-Margin Reconciliation (Part 5, Ch 24)</h3>
+id="derivation-6-trace-to-margin-reconciliation-part-5-ch-25">Derivation
+6: trace-to-loaded-cost Reconciliation (Part 5, Ch 25)</h3>
 <p>Wrong conclusion: “The provider bill is my margin model.”</p>
-<p>Calculator view: Trace-to-Margin Review v1.</p>
+<p>Calculator view: trace-to-loaded-cost review.</p>
 <hr />
-<h2 id="a.7-glossary">A.7 Glossary</h2>
+<h2 id="a.6-glossary">A.6 Glossary</h2>
 <p>Terms are defined at first use in the body. This glossary collects
 them for reference.</p>
 <p><strong>Accepted work unit.</strong> A completed inference result
@@ -1230,15 +1154,15 @@ output tokens are produced one at a time. Often memory-bandwidth-bound.
 Defined in Part 2 Ch 5.</p>
 <p><strong>Delta.</strong> The discrepancy between trace-derived cost
 and provider invoice for the same period. Investigate if delta exceeds
-5%. Defined in Part 5 Ch 24.</p>
+5%. Defined in Part 5 Ch 25.</p>
 <p><strong>E2E latency.</strong> End-to-end latency from request arrival
 to last output token delivered. Defined in Part 2.</p>
 <p><strong>Eval pass rate.</strong> The fraction of outputs passing the
 quality gate. Directly affects the accepted-work denominator and
-therefore LCPR. Defined in Part 5 Ch 22.</p>
+therefore LCPR. Defined in Part 5 Ch 23.</p>
 <p><strong>Goodput.</strong> Accepted requests per unit time, where
 “accepted” means passing latency, quality, and reliability gates. The
-correct capacity metric. Defined in Part 5 Ch 23.</p>
+correct capacity metric. Defined in Part 5 Ch 24.</p>
 <p><strong>GQA (Grouped Query Attention).</strong> An attention variant
 where multiple query heads share fewer KV heads, reducing KV cache
 memory. Defined in Part 2 Ch 6.</p>
@@ -1252,9 +1176,6 @@ Defined in Part 2 Ch 6.</p>
 economic unit. Total loaded cost (inference + invoice delta + evals +
 repairs + human escalation + ops overhead) divided by accepted work
 units. Defined in Part 1 Ch 2.</p>
-<p><strong>LCPR-2026.</strong> The versioned framework name for the
-loaded cost per result methodology. The year tag indicates that pricing
-assumptions are time-sensitive. Defined in Part 1 Ch 2.</p>
 <p><strong>MoE (Mixture of Experts).</strong> A model architecture where
 only a subset of parameters is active per token, improving compute
 efficiency but creating routing, all-to-all communication, and
@@ -1275,7 +1196,7 @@ Defined in Part 2 Ch 4.</p>
 <p><strong>Route.</strong> A specific combination of provider, model,
 serving mode, and configuration used to serve a workload. Defined in
 Part 3 Ch 10.</p>
-<p><strong>RouteFit Matrix v1.</strong> The framework for mapping
+<p><strong>Routefit matrix.</strong> The framework for mapping
 workload identity and SLO constraints to eligible routes, ranked by cost
 per accepted work. Defined in Part 4 Ch 15.</p>
 <p><strong>Serving physics.</strong> The hardware and software
@@ -1294,12 +1215,12 @@ duration. Defined in Part 2 Ch 5.</p>
 <p><strong>Trace.</strong> A per-request record containing tokens,
 latency, cost, quality label, and routing metadata. The atomic unit of
 inference economics analysis. Defined in Part 1 Ch 3.</p>
-<p><strong>Trace Autopsy v1.</strong> The diagnostic walkthrough from
+<p><strong>Trace autopsy.</strong> The diagnostic walkthrough from
 one trace to root cause. The book’s primary diagnostic framework.
-Defined in the Opener.</p>
-<p><strong>Trace-to-Margin Review v1.</strong> The framework for joining
+Defined in the Trace Autopsy article (see front matter cross-links).</p>
+<p><strong>Trace-to-margin review.</strong> The framework for joining
 traces, invoices, evals, and account data to calculate margin. The
-book’s reconciliation instrument. Defined in Part 5 Ch 24.</p>
+book’s reconciliation instrument. Defined in Part 5 Ch 25.</p>
 <p><strong>TTFT (Time To First Token).</strong> Latency from request
 arrival to first output token. Dominated by prefill computation and
 queue time. Defined in Part 2 Ch 5.</p>
@@ -1311,7 +1232,7 @@ goodput, not utilization. Defined in Part 2 Ch 9.</p>
 the economics, SLOs, failure modes, and operating decisions differ
 enough to justify separate treatment. Defined in Part 3 Ch 10.</p>
 <hr />
-<h2 id="a.8-what-lives-in-the-repo">A.8 What Lives In The Repo</h2>
+<h2 id="a.7-what-lives-in-the-repo">A.7 What Lives In The Repo</h2>
 <p>The companion repo extends this appendix with material that does not
 belong in static pages:</p>
 <figure>

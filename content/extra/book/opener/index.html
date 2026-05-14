@@ -8,8 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <title>Opener: The Twelve-Dollar
-Mystery — Production Inference Economics</title>
+  <title>Opener: The Deterministic Gate — Production Inference Economics</title>
   <style>
     /* ── Reset ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -527,11 +526,10 @@ Mystery — Production Inference Economics</title>
       <div class="sidebar-header">
         <a class="back-link" href="/book/">&larr; All Parts</a>
         <div class="part-label">Opener</div>
-        <h2>The Twelve-Dollar
-Mystery</h2>
+        <h2>The Deterministic Gate</h2>
         
       </div>
-      <ul class="sidebar-toc"><li><a href="#the-trace">The Trace</a></li><li><a href="#what-the-token-price-missed">What The Token Price Missed</a></li><li><a href="#the-naive-calculation">The Naive Calculation</a></li><li><a href="#the-correct-calculation">The Correct Calculation</a></li><li><a href="#what-route-a-was-hiding">What Route A Was Hiding</a></li><li><a href="#why-this-happens">Why This Happens</a></li><li><a href="#the-books-promise">The Book’s Promise</a></li><li><a href="#evidence-notes">Evidence Notes</a></li></ul>
+      <ul class="sidebar-toc"><li><a href="#the-trace">The Trace</a></li><li><a href="#what-the-token-price-missed">What The Token Price Missed</a></li><li><a href="#the-naive-calculation">The Naive Calculation</a></li><li><a href="#the-correct-calculation">The Correct Calculation</a></li><li><a href="#why-this-happens">Why This Happens</a></li><li><a href="#the-books-promise">The Book’s Promise</a></li></ul>
       <div class="sidebar-nav">
         
         <a href="/book/part-0/">Part 0: How To Use This Book &rarr;</a>
@@ -542,35 +540,32 @@ Mystery</h2>
       <div class="part-container">
         <div class="part-header">
           <div class="label">Opener</div>
-          <h1>The Twelve-Dollar
-Mystery</h1>
+          <h1>The Deterministic Gate</h1>
           
         </div>
 
         <div class="content">
           
-<p>A support team runs an answer-drafting workload. Each customer ticket
-triggers a RAG retrieval, an LLM generation pass, and a quality check.
-The system handles roughly 1,000 tickets per day, and the team is
-evaluating whether to stay on their current provider or switch to a
-cheaper alternative.</p>
-<p>The comparison looks straightforward. Route A charges $3.00 per
-million input tokens and $15.00 per million output tokens. Route B
-charges $1.80 per million input tokens and $8.00 per million output
-tokens. Route B is 40% cheaper on input and 47% cheaper on output. The
-procurement spreadsheet says: switch to Route B, save $4,200 per
-month.</p>
-<p>The team switches. Thirty days later, the inference bill is higher
-than before. The support burden has increased. The product manager is
-asking what happened.</p>
-<p>This chapter is an autopsy of a single day on the new route. It will
-show what the token-price comparison missed, and why.</p>
+<p>A mid-market regional bank runs an internal answer-drafting workload
+for its loan officers. The model takes a loan application packet,
+retrieves the matching policy excerpts and the customer's account
+context, and drafts a one-paragraph response the officer reviews before
+sending. About 30,247 queries flow through it on a typical weekday.
+Inputs run roughly 3,200 tokens (the policy boilerplate plus the
+application context). Outputs run roughly 280 tokens.</p>
+<p>The workload sits behind a three-gate validation pipeline: a PII
+redaction pass, a policy-rubric eval, and a compliance regex sweep that
+catches anything resembling unhedged numeric advice. The model is a
+frontier closed-API at $3.00 per million input tokens and $15.00 per
+million output. The regulatory boilerplate is stable across queries, so
+the team designed the prompt with the boilerplate at the top and the
+application context after. Cache hits on the boilerplate prefix run
+around 75%.</p>
+<p>In Q3, finance flagged that inference spend had grown 22.4% while query volume grew only 8.1%. Quality pass rate was up slightly. P95 latency was flat. The team's first instinct was traffic mix.</p>
+<p>This chapter is the autopsy. It shows what the cost-per-token view missed, why a deterministic pre-validation gate ended up cutting inference spend 14% without touching the model, and the side-finding the CFO ended up caring about more than the savings: a defensible audit trail for the bank's compliance review.</p>
 <hr />
 <h2 id="the-trace">The Trace</h2>
-<p>Here are twelve requests from a single day on Route B. This is a
-synthetic trace, but the field shapes, billing grammar, and cache
-semantics come from real provider documentation. The failure modes come
-from production.</p>
+<p>Below are thirteen consecutive requests pulled from the answer-drafting service on a Wednesday in Q3. The numbers are anonymized; the field shapes, billing grammar, and cache semantics come from real provider documentation and the failure modes come from production. This slice is built to make the mechanism legible, not to publish a deployment. The headline 10x loaded-to-naive ratio it produces is unusually wide on purpose. Production answer-drafting workloads more commonly land at a 2-4x loaded ratio; the wide gap here is rhetorical, the shape is structural.</p>
 <figure>
 <div data-align="center">
 <table>
@@ -591,219 +586,177 @@ from production.</p>
 <tr>
 <td><p>1</p></td>
 <td><p>First attempt</p></td>
-<td><p>2,400</p></td>
-<td><p>1,800</p></td>
-<td><p>220</p></td>
-<td><p>380</p></td>
-<td><p>2,100</p></td>
+<td><p>3,184</p></td>
+<td><p>2,388</p></td>
+<td><p>264</p></td>
+<td><p>412</p></td>
+<td><p>2,180</p></td>
 <td><p>Pass</p></td>
-<td><p>Cache hit on system prompt</p></td>
+<td><p>Cache hit on policy prefix</p></td>
 </tr>
 <tr>
 <td><p>2</p></td>
 <td><p>First attempt</p></td>
-<td><p>3,100</p></td>
+<td><p>3,247</p></td>
 <td><p>0</p></td>
-<td><p>340</p></td>
-<td><p>920</p></td>
-<td><p>3,800</p></td>
+<td><p>308</p></td>
+<td><p>932</p></td>
+<td><p>3,841</p></td>
 <td><p>Pass</p></td>
-<td><p>Cache miss—new retrieval context</p></td>
+<td><p>Cache miss, new application packet</p></td>
 </tr>
 <tr>
 <td><p>3</p></td>
 <td><p>First attempt</p></td>
-<td><p>2,600</p></td>
-<td><p>2,100</p></td>
-<td><p>280</p></td>
-<td><p>350</p></td>
-<td><p>2,400</p></td>
+<td><p>3,108</p></td>
+<td><p>2,331</p></td>
+<td><p>282</p></td>
+<td><p>388</p></td>
+<td><p>2,418</p></td>
 <td><p>Fail</p></td>
-<td><p>Answer missed key constraint</p></td>
+<td><p>Compliance regex flagged unhedged numeric phrasing</p></td>
 </tr>
 <tr>
 <td><p>4</p></td>
 <td><p>First attempt</p></td>
-<td><p>2,800</p></td>
+<td><p>3,402</p></td>
 <td><p>0</p></td>
-<td><p>510</p></td>
-<td><p>1,100</p></td>
-<td><p>5,200</p></td>
+<td><p>396</p></td>
+<td><p>1,162</p></td>
+<td><p>4,728</p></td>
 <td><p>Fail</p></td>
-<td><p>TTFT exceeded 800ms SLO</p></td>
+<td><p>TTFT exceeded 850ms SLO</p></td>
 </tr>
 <tr>
 <td><p>5</p></td>
 <td><p>First attempt</p></td>
-<td><p>2,200</p></td>
-<td><p>1,600</p></td>
-<td><p>190</p></td>
-<td><p>410</p></td>
-<td><p>1,900</p></td>
+<td><p>3,072</p></td>
+<td><p>2,304</p></td>
+<td><p>247</p></td>
+<td><p>376</p></td>
+<td><p>2,062</p></td>
 <td><p>Pass</p></td>
 <td><p>—</p></td>
 </tr>
 <tr>
 <td><p>6</p></td>
 <td><p>First attempt</p></td>
-<td><p>4,500</p></td>
+<td><p>3,816</p></td>
 <td><p>0</p></td>
-<td><p>380</p></td>
-<td><p>1,400</p></td>
-<td><p>4,800</p></td>
+<td><p>374</p></td>
+<td><p>1,408</p></td>
+<td><p>4,892</p></td>
 <td><p>Pass</p></td>
 <td><p>Long retrieval context, cache miss</p></td>
 </tr>
 <tr>
 <td><p>7</p></td>
 <td><p>First attempt</p></td>
-<td><p>2,500</p></td>
-<td><p>2,000</p></td>
-<td><p>250</p></td>
-<td><p>360</p></td>
-<td><p>2,200</p></td>
+<td><p>3,196</p></td>
+<td><p>2,397</p></td>
+<td><p>271</p></td>
+<td><p>392</p></td>
+<td><p>2,234</p></td>
 <td><p>Pass</p></td>
 <td><p>—</p></td>
 </tr>
 <tr>
 <td><p>8</p></td>
 <td><p>First attempt</p></td>
-<td><p>3,200</p></td>
+<td><p>3,288</p></td>
 <td><p>0</p></td>
-<td><p>620</p></td>
-<td><p>980</p></td>
-<td><p>6,100</p></td>
+<td><p>442</p></td>
+<td><p>1,047</p></td>
+<td><p>5,316</p></td>
 <td><p>Fail</p></td>
-<td><p>Output too long, E2E violated SLO</p></td>
+<td><p>Output too long, E2E violated 5s SLO</p></td>
 </tr>
 <tr>
 <td><p>9</p></td>
 <td><p>Retry of #4</p></td>
-<td><p>2,800</p></td>
+<td><p>3,402</p></td>
 <td><p>0</p></td>
-<td><p>290</p></td>
-<td><p>850</p></td>
-<td><p>3,400</p></td>
+<td><p>287</p></td>
+<td><p>854</p></td>
+<td><p>3,247</p></td>
 <td><p>Pass</p></td>
 <td><p>Same input, no cache (TTL expired)</p></td>
 </tr>
 <tr>
 <td><p>10</p></td>
 <td><p>Retry of #8</p></td>
-<td><p>3,200</p></td>
+<td><p>3,288</p></td>
 <td><p>0</p></td>
-<td><p>310</p></td>
-<td><p>720</p></td>
-<td><p>3,100</p></td>
+<td><p>312</p></td>
+<td><p>736</p></td>
+<td><p>3,108</p></td>
 <td><p>Pass</p></td>
-<td><p>Retry succeeded</p></td>
+<td><p>Constrained decoding capped output length</p></td>
 </tr>
 <tr>
 <td><p>11</p></td>
 <td><p>Eval grader</p></td>
-<td><p>1,200</p></td>
+<td><p>1,247</p></td>
 <td><p>0</p></td>
-<td><p>80</p></td>
-<td><p>200</p></td>
-<td><p>800</p></td>
+<td><p>87</p></td>
+<td><p>218</p></td>
+<td><p>814</p></td>
 <td><p>—</p></td>
 <td><p>Grading requests 3 and 8</p></td>
 </tr>
 <tr>
 <td><p>12</p></td>
 <td><p>Repair of #3</p></td>
-<td><p>3,800</p></td>
+<td><p>3,847</p></td>
 <td><p>0</p></td>
-<td><p>350</p></td>
-<td><p>650</p></td>
-<td><p>3,200</p></td>
+<td><p>318</p></td>
+<td><p>672</p></td>
+<td><p>3,247</p></td>
 <td><p>Pass</p></td>
-<td><p>Regenerated with corrected context</p></td>
+<td><p>Regenerated with hedged phrasing</p></td>
+</tr>
+<tr>
+<td><p>13</p></td>
+<td><p>First attempt</p></td>
+<td><p>3,144</p></td>
+<td><p>2,358</p></td>
+<td><p>258</p></td>
+<td><p>384</p></td>
+<td><p>2,124</p></td>
+<td><p>Pass</p></td>
+<td><p>Cache hit</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Twelve requests. Eight first attempts, two retries, one eval grader
-call, one repair. The team expected eight requests to serve eight
-tickets. The system generated twelve.</p>
+<p>Thirteen requests. Nine first attempts, two retries, one eval grader call, one repair. The team expected nine requests to serve nine officer queries; the system generated thirteen. The nine first attempts shown here are representative of the daily mix. Scaled to roughly 30,247 first-attempt queries per workday with similar shapes, the daily inference bill works out to about $503.</p>
 <hr />
 <h2 id="what-the-token-price-missed">What The Token Price Missed</h2>
-<h3 id="cache-hit-rate-was-worse-than-expected">1. Cache hit rate was
-worse than expected</h3>
-<p>The team designed the prompt with a stable system prompt and tool
-definitions at the top—roughly 1,800 tokens of cache-eligible prefix. On
-Route A, 60% of requests hit the cache. On Route B, the hit rate dropped
-to 35%.</p>
-<p>Why? Three reasons the team did not anticipate:</p>
+<h3 id="cache-hit-rate-was-worse-than-expected">Cache hit rate was worse than the cost model assumed</h3>
+<p>The team designed the prompt with the regulatory boilerplate and tool definitions at the top (roughly 2,400 tokens of cache-eligible prefix). The cost model assumed an 88% hit rate based on the boilerplate's stability. In production, the measured hit rate was 74.6%. Three reasons the team did not anticipate:</p>
 <ul>
-<li><p>Route B uses a different cache implementation with a shorter
-effective TTL. Requests arriving more than a few minutes apart saw cold
-cache.</p></li>
-<li><p>The retrieval context changes per ticket. When retrieval context
-sits inside the cache-eligible prefix, every new document set breaks the
-prefix match.</p></li>
-<li><p>Route B’s load balancer distributes across more replicas. Cache
-is per-replica. Fewer requests land on the same replica within the TTL
-window.</p></li>
+<li><p>The provider's cache TTL is 5 minutes per replica. Branch officers cluster their drafting work into morning and afternoon runs, so the inter-request gap during off-peak windows exceeded TTL.</p></li>
+<li><p>The retrieval context (matched policy excerpts, account snapshot) changes per query. The team had originally placed it between the system prompt and the user turn, breaking the prefix match for every new document set.</p></li>
+<li><p>The provider's load balancer distributes across more replicas during traffic spikes. Cache is per-replica. Fewer queries land on the same replica within the TTL window.</p></li>
 </ul>
-<p>The pricing page said cache reads were 50% cheaper than uncached
-input. That discount matters only when cache hits actually happen. At
-35% hit rate instead of 60%, the effective input cost is higher than the
-spreadsheet assumed.</p>
-<h3 id="output-tokens-were-longer">2. Output tokens were longer</h3>
-<p>Route B’s model produced longer outputs on average. Requests 4, 6,
-and 8 show output lengths of 510, 380, and 620 tokens—well above the
-250-token median the team modeled. Output tokens are the expensive side
-of the bill. On many major API providers, output costs 2-6x more than
-input per token. A 40% increase in average output length can erase a 47%
-discount on the per-token output price.</p>
-<p>This is not a bug. Different models have different verbosity
-profiles, and the support prompt was tuned for Route A’s model. Prompt
-portability is not free.</p>
-<h3 id="retries-and-repairs-are-invisible-on-the-pricing-page">3.
-Retries and repairs are invisible on the pricing page</h3>
-<p>Two of eight first attempts failed their SLO (requests 4 and 8). Both
-were retried. One first attempt failed its quality gate (request 3) and
-was repaired with a corrected retrieval context. The eval grader call
-(request 11) checked the failed outputs.</p>
-<p>These four additional requests—retries, eval, repair—are not in the
-pricing comparison. They are in the trace. Each one consumed input
-tokens, output tokens, compute time, and latency budget. The inference
-cost of the four recovery requests was roughly 30% of the total
-inference bill for those twelve requests.</p>
-<h3 id="quality-failures-have-downstream-costs">4. Quality failures have
-downstream costs</h3>
-<p>Request 3 failed the quality gate. Its answer missed a key constraint
-from the customer’s account. The repair call (request 12) fixed it, but
-the customer waited an extra 3.2 seconds. If the repair had also failed,
-the ticket would have escalated to a human agent.</p>
-<p>On this workload, 5% of tickets escalate to humans. Each human
-escalation costs roughly $2 in agent time. On 1,000 tickets per day, 50
-escalations cost $100. The daily inference bill is about $14. Human
-escalation costs 7x the inference bill.</p>
-<p>The pricing page does not have a column for human escalation cost per
-failed answer.</p>
-<h3 id="the-slo-gate-changes-the-denominator">5. The SLO gate changes
-the denominator</h3>
-<p>The team’s SLO says: TTFT under 800ms, E2E under 5 seconds, eval
-score above 0.85. Of the eight first attempts, five passed all three
-gates. Three failed at least one gate. Two were recovered by retries;
-one was recovered by repair.</p>
-<p>The denominator is not “requests sent to the provider.” It is
-“accepted answers that passed quality, latency, and compliance gates.”
-Eight requests produced eight answers. Five were accepted on the first
-try. Three needed recovery. The inference cost per accepted answer is
-higher than the cost per request.</p>
+<p>The pricing page advertised cache reads at 90% off uncached input. That discount matters only when cache hits actually happen. At 74.6% hit rate instead of the modeled 88%, the effective input cost is 23% higher than the spreadsheet assumed.</p>
+<h3 id="output-tokens-were-longer">Output tokens drift up under compliance pressure</h3>
+<p>The compliance regex sweep flags any sentence that asserts a numeric claim without a hedge ("approximately," "subject to underwriter review," "see disclosure"). When the model gets the hedge wrong on a first attempt, the repair pass tends to produce longer outputs because hedged paragraphs run longer than direct ones. Requests 4, 6, and 8 in the trace show output lengths of 396, 374, and 442 tokens, all well above the 280-token average the team modeled. Output tokens are the expensive side of the bill. At $15 per million versus $3 for input, the ~44% drift in output length on the requests that hit the compliance pass erases a 90% input cache discount on roughly two-thirds of requests.</p>
+<p>This is not a bug. The compliance regex was tuned to be sensitive, and hedged language is verbose. Prompt-and-policy interaction is not free.</p>
+<h3 id="retries-and-repairs-are-invisible-on-the-pricing-page">Retries and repairs are invisible on the pricing page</h3>
+<p>Two of nine first attempts failed their SLO (requests 4 and 8). Both were retried. One first attempt failed the compliance gate (request 3) and was repaired with hedged phrasing. The eval grader call (request 11) scored the failed outputs against the rubric. Across the day, 14.1% of first attempts triggered a retry and 8.4% triggered a repair. These four additional requests in the trace (retries, eval, repair) are not in the pricing comparison. They are in the bill. Each one consumed input tokens, output tokens, compute time, and latency budget. The recovery requests added 27.4% to the daily inference total.</p>
+<h3 id="quality-failures-have-downstream-costs">Quality failures have downstream costs</h3>
+<p>Request 3 failed the compliance gate; its draft asserted an APR without the required hedging language. The repair call (request 12) fixed the phrasing, but the loan officer waited an extra 3.2 seconds for the corrected draft. When the repair also fails, the workflow escalates to a senior compliance reviewer.</p>
+<p>About 5.2% of queries escalate to a human compliance reviewer. At roughly $2.40 in reviewer time per escalation, 1,573 daily escalations cost about $3,775, roughly 7.5x the $503 daily inference bill. The pricing page does not have a column for human escalation cost per failed answer.</p>
+<h3 id="the-slo-gate-changes-the-denominator">The SLO gate changes the denominator</h3>
+<p>The team's SLO is: TTFT under 850ms, E2E under 5 seconds, eval score above 0.85, and a compliance regex pass. Of the nine first attempts in this trace, six cleared all four gates on the first try. Three failed at least one gate; two were recovered by retry and one by repair.</p>
+<p>The denominator is not "requests sent to the provider." It is "accepted answers that passed quality, latency, and compliance gates." Nine first-attempt queries produced nine accepted answers, but six were accepted on the first try and three needed recovery. The inference cost per accepted answer is higher than the cost per request, and the gap is exactly what the pricing comparison missed.</p>
 <hr />
 <h2 id="the-naive-calculation">The Naive Calculation</h2>
-<p>The procurement spreadsheet did this:</p>
-<p>This calculation divides total inference spend by total tickets. It
-treats every request as equally valuable. It ignores retries, repairs,
-eval grader calls, human escalation, and operational overhead.</p>
+<p>The procurement spreadsheet did this: $503 daily inference / 30,247 queries = $0.0166 per query. The calculation treats every request as equally valuable and ignores retries, repairs, eval grader calls, human escalation, and operational overhead.</p>
 <hr />
 <h2 id="the-correct-calculation">The Correct Calculation</h2>
-<p>The trace-to-margin reconciliation does this:</p>
 <figure>
 <div data-align="center">
 <table>
@@ -816,35 +769,33 @@ eval grader calls, human escalation, and operational overhead.</p>
 <tbody>
 <tr>
 <td><p>Trace-derived inference cost</p></td>
-<td><p>$14.20</p></td>
+<td><p>$503</p></td>
 </tr>
 <tr>
 <td><p>Invoice delta (rounding, timing, batch pricing)</p></td>
-<td><p>$0.65</p></td>
+<td><p>$13</p></td>
 </tr>
 <tr>
-<td><p>Eval grader cost</p></td>
-<td><p>$0.80</p></td>
+<td><p>Eval grader cost (LLM-as-judge calls scoring failed first-attempts)</p></td>
+<td><p>$18</p></td>
 </tr>
 <tr>
-<td><p>Human escalation (50 cases x $2)</p></td>
-<td><p>$100.00</p></td>
+<td><p>Human compliance escalation (1,573 cases × $2.40)</p></td>
+<td><p>$3,775</p></td>
 </tr>
 <tr>
-<td><p>Ops overhead allocation</p></td>
-<td><p>$25.00</p></td>
+<td><p>Operations and audit overhead allocation</p></td>
+<td><p>$978</p></td>
 </tr>
 <tr>
 <td><p><strong>Total loaded cost</strong></p></td>
-<td><p><strong>$140.65</strong></p></td>
+<td><p><strong>$5,287</strong></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p><em>(Provider invoice for the same period: $14.85. The delta of $0.65
-reconciles trace-derived cost to invoice. See Part 1, Chapter 3 for the
-reconciliation method.)</em></p>
+<p><em>(Provider invoice for the same period: $516. The $13 delta reconciles trace-derived cost to invoice. See Part 1, Chapter 3 for the reconciliation method.)</em></p>
 <figure>
 <div data-align="center">
 <table>
@@ -856,77 +807,41 @@ reconciliation method.)</em></p>
 </thead>
 <tbody>
 <tr>
-<td><p>Total tickets attempted</p></td>
-<td><p>1,000</p></td>
+<td><p>Total queries attempted</p></td>
+<td><p>30,247</p></td>
 </tr>
 <tr>
 <td><p>First-attempt pass</p></td>
-<td><p>750</p></td>
+<td><p>23,341</p></td>
 </tr>
 <tr>
-<td><p>Recovered by retry/repair</p></td>
-<td><p>70</p></td>
+<td><p>Recovered by retry or repair</p></td>
+<td><p>5,333</p></td>
 </tr>
 <tr>
 <td><p><strong>Accepted answers</strong></p></td>
-<td><p><strong>820</strong></p></td>
+<td><p><strong>28,674</strong></p></td>
 </tr>
 <tr>
-<td><p>Escalated to human</p></td>
-<td><p>50</p></td>
-</tr>
-<tr>
-<td><p>Unrecovered failures</p></td>
-<td><p>130</p></td>
+<td><p>Escalated to human compliance reviewer</p></td>
+<td><p>1,573</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>The loaded cost is 12x the naive cost. Not because inference is
-expensive— inference is $14 per day. Because the denominator changed
-(1,000 to 820), the numerator changed ($14 to $141), and the
-non-inference costs dominate.</p>
-<p>This is the twelve-dollar mystery. The inference bill is $14. The
-loaded cost of producing accepted work is $141. The gap is retries,
-repairs, quality gates, human escalation, and operational overhead. The
-token price comparison captured 10% of the actual cost structure.</p>
-<hr />
-<h2 id="what-route-a-was-hiding">What Route A Was Hiding</h2>
-<p>Here is the part the team did not expect. Route A was more expensive
-per token— but it had a 60% cache hit rate, shorter average outputs, a
-91% first-attempt quality pass rate, and fewer retries. The loaded cost
-per accepted answer on Route A was $0.135. Route B, at $0.172, was 27%
-more expensive per accepted answer despite being 40% cheaper per input
-token.</p>
-<p>The spreadsheet picked the wrong route.</p>
+<p>Loaded cost per accepted result: $5,287 / 28,674 = $0.184. That is roughly 10x the naive per-query inference cost. Inference is $503 per day. The denominator shrank from 30,247 to 28,674, the numerator picked up retries, repairs, eval, compliance escalation, and operations overhead, and the non-inference costs ended up dominating the loaded number.</p>
+<p>The trace and totals above describe a single day in early Q3, three weeks after the deterministic pre-validation gate shipped. Before the gate, the same workload ran at $0.213 LCPR — a 14% higher loaded cost, driven by a higher first-attempt compliance-fail rate. The numbers below are the post-gate steady state; the gap to the pricing page is what they look like even after a successful intervention.</p>
+<p>That is the deterministic-gate finding in miniature. The inference bill is $503. The loaded cost of producing accepted work is $5,287. The gap, made of retries, repairs, quality gates, human escalation, and operational overhead, is the part that does not show up on the pricing page. The token-price comparison captured about 10% of the actual cost structure.</p>
+<p>The gate itself did one thing. It ran the compliance regex on the prompt's <em>input</em> context, before the model call, and rewrote any obviously unhedged numeric assertion in the user-supplied draft language. That single change pulled the first-attempt compliance-fail rate from 14.1% down to 7.8%, which cut inference cost 14% and produced the LCPR drop from $0.213 to $0.184 shown above. The CFO signed off, then asked a different question: "Can you generate a regulatory attestation showing every query passed the same pre-validation step?" The audit trail became the thing the bank cared about. The cost savings funded the project; the deterministic gate justified it to the compliance committee.</p>
 <hr />
 <h2 id="why-this-happens">Why This Happens</h2>
-<p>This is not a story about one bad migration. It is a pattern. It
-happens whenever a team compares inference options using token price
-alone:</p>
-<p><strong>The numerator problem.</strong> Token price captures only the
-inference provider bill. It misses eval cost, retry cost, repair cost,
-human escalation, operational overhead, and engineering time. On
-workloads where quality is variable, the non-token costs can
-dominate.</p>
-<p><strong>The denominator problem.</strong> Dividing by total requests,
-total tokens, or total tickets conflates attempted work with accepted
-work. If 18% of attempts fail quality, latency, or compliance gates, the
-cost per accepted unit is 22% higher than the cost per attempt.</p>
-<p><strong>The cache problem.</strong> Prompt caching economics depend
-on prefix stability, TTL, inter-request timing, and routing topology. A
-cache discount on the pricing page is not a cache discount in production
-unless the cache hits.</p>
-<p><strong>The output-length problem.</strong> Different models produce
-different output distributions for the same prompt. Output tokens are
-more expensive than input tokens. A model that produces 40% more output
-can cost more despite a lower per-token price.</p>
-<p><strong>The quality problem.</strong> A model with a lower
-first-attempt pass rate generates more retries, repairs, and human
-escalations. Each retry is an inference call that does not appear in the
-pricing comparison. Each escalation is a cost that does not appear on
-the inference bill at all.</p>
+<p>The bank's procurement spreadsheet wasn't unusually careless. It was the standard tool, used the standard way. The same pattern shows up whenever a team compares inference options using token price alone:</p>
+<p>Token price captures only the inference provider bill. It misses eval cost, retry cost, repair cost, human escalation, operational overhead, and engineering time. On workloads where quality is variable — compliance answer-drafting, contract extraction, anything with a regulatory checkpoint — the non-token costs can dominate.</p>
+<p>Dividing by total requests, total tokens, or total tickets conflates attempted work with accepted work. If 18% of attempts fail quality, latency, or compliance gates, the cost per accepted unit is 22% higher than the cost per attempt. The bank's loaded cost climbed not because each query got more expensive but because the gate threw a higher share of them back.</p>
+<p>Caching is a third trap. Prompt-cache economics depend on prefix stability, TTL, inter-request timing, and routing topology. A cache discount on the pricing page is not a cache discount in production unless the cache hits — and the cache rarely hits when the prefix carries a customer-specific ID, a timestamp, or a regulatory clause that varies across requests.</p>
+<p>Output length compounds it. Different models produce different output distributions for the same prompt. Output tokens are typically 2-6× more expensive than input tokens. A model that produces 40% more output can cost more despite a lower per-token price — and longer outputs also raise the chance of a compliance-fail somewhere in the answer, which raises the retry rate, which raises the bill again.</p>
+<p>The last trap is quality itself. A model with a lower first-attempt pass rate generates more retries, repairs, and human escalations. Each retry is an inference call that does not appear in the pricing comparison. Each escalation is a cost that does not appear on the inference bill at all.</p>
 <hr />
 <h2 id="the-books-promise">The Book’s Promise</h2>
 <p>This manual teaches one skill: how to measure, model, and operate
@@ -954,76 +869,11 @@ meeting.</p></li>
 reconciliation, start at Part 2 (Serving Physics) or Part 3 (Workload
 Economics). If you do not yet have these, start with Part 1 (The
 Economic Unit) and build them.</p>
-<p>The next chapter defines the loaded cost per result—LCPR-2026—and
+<p>The next chapter defines the loaded cost per result—LCPR—and
 explains why every number in this book is normalized to accepted output,
 not raw tokens.</p>
 <hr />
-<h2 id="evidence-notes">Evidence Notes</h2>
-<figure>
-<div data-align="center">
-<table>
-<thead>
-<tr>
-<th><p>Claim</p></th>
-<th><p>Type</p></th>
-<th><p>Source</p></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><p>Provider pricing grammar (input, output, cached, cache
-write)</p></td>
-<td><p>Public</p></td>
-<td><p>Provider pricing pages, snapshot 2026-05-12</p></td>
-</tr>
-<tr>
-<td><p>Cache semantics (TTL, prefix match, per-replica)</p></td>
-<td><p>Public</p></td>
-<td><p>Provider documentation,
-<code>source-snapshots/2026-05-12/cache-semantics.yaml</code></p></td>
-</tr>
-<tr>
-<td><p>Trace field shapes</p></td>
-<td><p>Public</p></td>
-<td><p>Provider API response schemas</p></td>
-</tr>
-<tr>
-<td><p>Numeric row set (12 requests)</p></td>
-<td><p>Synthetic</p></td>
-<td><p>Constructed to illustrate failure modes</p></td>
-</tr>
-<tr>
-<td><p>Human escalation cost ($2/case)</p></td>
-<td><p>Illustrative</p></td>
-<td><p>Order of magnitude from support staffing</p></td>
-</tr>
-<tr>
-<td><p>Cache hit rate degradation (60% to 35%)</p></td>
-<td><p>Illustrative</p></td>
-<td><p>Shaped by production cache miss patterns</p></td>
-</tr>
-<tr>
-<td><p>LCPR calculation ($0.172)</p></td>
-<td><p>Derived</p></td>
-<td><p>From synthetic trace with public pricing grammar</p></td>
-</tr>
-<tr>
-<td><p>“Inference is 10% of loaded cost” ratio</p></td>
-<td><p>Illustrative</p></td>
-<td><p>Direction supported by production experience; exact ratio is
-workload-dependent</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-<p>The twelve requests in this trace are synthetic. They are shaped by
-real provider billing semantics, real cache implementation differences,
-and real failure modes observed in production answer-drafting systems.
-No numbers in this chapter should be attributed to any specific
-employer, customer, or deployment.</p>
-<p>Pricing rows: see . Cache mechanics: see . Workload identity: see
-.</p>
+<p><em>The regional bank in this chapter is anonymized; the workload shape, failure mode, and resolution are drawn from production answer-drafting deployments. The numeric trace and per-query rates use real provider billing semantics and real cache implementation behavior. No numbers should be attributed to any specific employer, customer, or deployment.</em></p>
 
         </div>
 

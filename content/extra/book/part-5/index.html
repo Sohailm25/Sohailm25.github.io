@@ -529,13 +529,14 @@ Decision — Production Inference Economics</title>
         <div class="part-label">Part 5</div>
         <h2>Operating The
 Decision</h2>
-        <div class="chapters-info">Chapters 22–25</div>
+        <div class="chapters-info">Chapters 23–27</div>
       </div>
-      <ul class="sidebar-toc"><li><a href="#chapter-22-baselines-and-evals">Chapter 22: Baselines And
-Evals</a></li><li><a href="#chapter-23-benchmarks-and-goodput">Chapter 23: Benchmarks And
-Goodput</a></li><li><a href="#chapter-24-observability-and-trace-to-margin">Chapter 24:
-Observability And Trace-to-Margin</a></li><li><a href="#chapter-25-incidents-review-and-forecast">Chapter 25: Incidents,
-Review, And Forecast</a></li><li><a href="#part-5-summary">Part 5 Summary</a></li><li><a href="#evidence-notes-for-part-5">Evidence Notes for Part 5</a></li></ul>
+      <ul class="sidebar-toc"><li><a href="#chapter-23-baselines-and-evals">Chapter 23: Baselines And
+Evals</a></li><li><a href="#chapter-24-benchmarks-and-goodput">Chapter 24: Benchmarks And
+Goodput</a></li><li><a href="#chapter-25-observability-and-trace-to-loaded-cost">Chapter 25:
+Observability And Trace-to-Loaded-Cost</a></li><li><a href="#chapter-26-incidents-review-and-forecast">Chapter 26: Incidents,
+Review, And Forecast</a></li><li><a href="#chapter-27-cost-attribution-and-chargeback">Chapter 27: Cost
+Attribution And Chargeback</a></li><li><a href="#part-5-summary">Part 5 Summary</a></li><li><a href="#evidence-notes-for-part-5">Evidence Notes for Part 5</a></li></ul>
       <div class="sidebar-nav">
         <a href="/book/part-4/">&larr; Part 4: Migration Gates</a>
         <a href="/book/appendix/">Appendix:
@@ -549,29 +550,28 @@ Calculator Manual And Living Reference &rarr;</a>
           <div class="label">Part 5</div>
           <h1>Operating The
 Decision</h1>
-          <div class="chapters-label">Chapters 22–25</div>
+          <div class="chapters-label">Chapters 23–27</div>
         </div>
 
         <div class="content">
           
 <p>Parts 1 through 4 chose a route. Part 5 keeps it honest. The
-migration happened, the endpoint is live, traffic is flowing. How do you
-know the decision is still correct? How do you detect when it stops
-being correct? How do you present the evidence to an engineer, a product
-manager, and a finance partner in the same meeting?</p>
-<p>Operating inference is measurement, not faith. The workload changes
-shape. The provider changes pricing. The model changes behavior after an
-update. The quality floor drifts when nobody is looking. The eval suite
-covers last quarter’s failure modes, not this quarter’s. The finance
-team sees the invoice and asks why it moved, and the engineering team
-cannot explain the movement because they measure tokens while finance
-measures dollars.</p>
-<p>Part 5 supplies the operating cadence: what to measure, how to
-evaluate, how to benchmark honestly, how to connect traces to invoices
-to margins, how to handle incidents, how to package it for review, and
-how to forecast what comes next.</p>
+migration happened, the endpoint is live, traffic is flowing. The
+decision can drift in three ways: it can stop being correct, you can
+fail to detect that it stopped, or you can detect it but be unable to
+explain the drift to the engineer, product manager, and finance partner
+who all have to act on it.</p>
+<p>Operating inference is measurement, not faith. The workload shape
+shifts, the provider's pricing changes, the model's post-update behavior
+moves, and the quality floor drifts in the background. The eval suite
+covers last quarter's failure modes; this quarter has new ones. Finance
+sees an invoice moving and asks why, and the engineering team, which
+measures tokens, cannot answer in dollars.</p>
+<p>Part 5 supplies the operating cadence: measurement, evaluation,
+honest benchmarking, trace-to-invoice reconciliation, incident response,
+review discipline, and forecasting.</p>
 <hr />
-<h2 id="chapter-22-baselines-and-evals">Chapter 22: Baselines And
+<h2 id="chapter-23-baselines-and-evals">Chapter 23: Baselines And
 Evals</h2>
 <h3 id="the-field-problem-12">The field problem</h3>
 <p>Two weeks after migrating a support chat workload to a new model, the
@@ -661,11 +661,21 @@ distribution, output length distribution, and cache hit rate alongside
 the cost and quality metrics.</p>
 <h3 id="evals-as-an-economic-instrument">Evals as an economic
 instrument</h3>
-<p>The baseline depends on the eval to determine the denominator. A team
-runs evals. Pass rate is 88%. But the eval set has 200 cases—150 from
-initial development, 30 from the first incident, 20 synthetic. The top
-failure mode in production is represented by 3 cases. The eval says 88%.
-The users say the system is getting worse.</p>
+<p>The baseline depends on the eval to determine its denominator. An
+eval set built during initial development tends to over-represent the
+failure modes the team imagined at design time and under-represent the
+failure modes production traffic actually produces. A typical
+development-era eval skews roughly three-quarters toward
+design-imagined cases, a fraction harvested from incident postmortems,
+and the remainder synthetic adversarial. The top production failure
+mode by frequency — often a tool-call output format the original
+prompt assumed but a newer model emits differently — appears in only a
+handful of eval cases. The eval pass rate stays comfortably high while
+the production complaint rate tells a different story. The fix is not
+to recalibrate the eval; it is to redistribute eval mass against
+production failure-mode frequency. Rebuilt evals that weight cases by
+production frequency typically drop the headline pass rate by ten to
+twenty points, which is what an honest denominator looks like.</p>
 <p>Evals are not a quality score. They are a measurement instrument. For
 economics, the eval serves two functions:</p>
 <p><strong>1. Denominator control.</strong> The accepted-output count in
@@ -721,7 +731,7 @@ comparison view shows delta between baseline and current state. The eval
 cost layer: deterministic check cost, model-grader cost, human review
 cost per sampled request.</p>
 <hr />
-<h2 id="chapter-23-benchmarks-and-goodput">Chapter 23: Benchmarks And
+<h2 id="chapter-24-benchmarks-and-goodput">Chapter 24: Benchmarks And
 Goodput</h2>
 <h3 id="the-field-problem-13">The field problem</h3>
 <p>“Model X achieves 2,500 tokens/sec on A100.” The published benchmark
@@ -803,8 +813,9 @@ correct question: is it faster, cheaper, and good enough under my
 conditions? That requires running the benchmark with your traffic shape,
 your SLO constraints, and your quality gate.</p>
 <h3 id="the-better-model-14">The better model</h3>
-<p>The is the book’s answer to benchmark hygiene. It replaces
-single-point throughput numbers with a multi-dimensional evaluation:</p>
+<p>The goodput frontier test is the book's answer to benchmark hygiene.
+It replaces single-point throughput numbers with a multi-dimensional
+evaluation:</p>
 <p><strong>1. Define your SLO.</strong> TTFT threshold, TPOT threshold,
 E2E threshold, quality pass rate threshold. These are inputs, not
 outputs.</p>
@@ -823,11 +834,11 @@ candidate route. The route with the lowest cost per accepted result at
 your operating point wins. Not the route with the highest throughput or
 the lowest token price.</p>
 <h3 id="decision-rule-22">Decision rule</h3>
-<p>Never compare routes using vendor benchmarks alone. Run the with your
-traffic shape, SLO, and quality gate. The results will differ from
-vendor benchmarks. That difference is the benchmark-to-production
-transfer gap, and it determines whether the benchmark result is useful
-or misleading.</p>
+<p>Never compare routes using vendor benchmarks alone. Run a
+goodput-bounded load test with your traffic shape, SLO, and quality
+gate. The results will differ from the vendor numbers; that difference
+is the benchmark-to-production transfer gap, and it determines whether
+the vendor result is useful or misleading.</p>
 <h3 id="what-to-measure-20">What to measure</h3>
 <ul>
 <li><p>Goodput (accepted results/sec) at your target request
@@ -842,7 +853,7 @@ throughput?)</p></li>
 </ul>
 <h3 id="where-this-breaks-22">Where this breaks</h3>
 <p>Goodput testing requires a quality gate, which requires evals. If the
-eval suite is weak (Chapter 22), the goodput number is inflated. Run
+eval suite is weak (Chapter 23), the goodput number is inflated. Run
 goodput tests only with a calibrated eval suite.</p>
 <p>Goodput testing also requires representative traffic. If the test
 traffic does not match production (different prompt lengths, different
@@ -854,8 +865,8 @@ from a load test. It outputs: goodput curve by request rate, cost per
 accepted result curve, capacity ceiling under SLO, and comparison across
 routes.</p>
 <hr />
-<h2 id="chapter-24-observability-and-trace-to-margin">Chapter 24:
-Observability And Trace-to-Margin</h2>
+<h2 id="chapter-25-observability-and-trace-to-loaded-cost">Chapter 25:
+Observability And Trace-to-Loaded-Cost</h2>
 <h3 id="the-field-problem-14">The field problem</h3>
 <p>The dashboards show p99 latency, error rate, GPU utilization, and
 request volume—all the standard signals. The finance partner asks: “Why
@@ -958,26 +969,33 @@ increases by more than 10% week-over-week, cache hit rate drops by more
 than 15 percentage points, output length p95 increases by more than 25%,
 quality pass rate drops below the quality floor, or human escalation
 rate spikes.</p>
-<h3 id="trace-to-margin-reconciliation">Trace-to-margin
+<h3 id="trace-to-loaded-cost-reconciliation">Trace-to-loaded-cost
 reconciliation</h3>
-<p>Observability answers “why did cost change?” Trace-to-margin
-reconciliation answers the harder question: “what is the true
-margin?”</p>
-<p>An FDE presents an account review. The inference bill is
-$18,000/month. The account revenue is $45,000/month. The FDE reports 60%
-gross margin. But the $18,000 does not include eval grading ($4,200),
-human escalation ($2,800), engineering time ($1,200), and ops overhead
-($3,000). The loaded cost is $29,200. Margin is 35%, not 60%.</p>
-<p>Trace-to-margin reconciliation joins four data sources:</p>
-<p><strong>The trace</strong> provides per-request cost estimates (sum =
-). <strong>The invoice</strong> provides what the provider actually
-charged (delta reveals timing, credits, missing traces). <strong>The
-eval</strong> provides the quality gate that determines (accepted
-outputs). <strong>The contract</strong> provides account revenue .</p>
-<p>Derivation 6 defines the reconciliation in five steps:
-trace-to-invoice delta (investigate if &gt;5%), add non-inference costs,
-calculate accepted denominator, compute LCPR, calculate margin.</p>
-<h3 id="worked-example-11">Worked example</h3>
+<p>Observability answers "why did cost change?" Trace-to-loaded-cost
+reconciliation answers the harder question: "what is the true
+loaded cost, and does it match what the vendor billed?"</p>
+<p>Trace-to-loaded-cost reconciliation joins four data sources. The trace
+provides per-request cost estimates summed across the period. The
+invoice shows what the provider actually charged; the delta reveals
+timing skew, credits, dropped traces, or rate-card drift. The eval
+supplies the quality gate that determines the accepted denominator. The
+contract pins the unit price the vendor agreed to charge.</p>
+<p>Reconciliation runs in five steps: compute trace-to-invoice delta and
+investigate anything beyond 5%, add non-inference costs (eval grading,
+human escalation, ops allocation), calculate the accepted-output
+denominator, compute LCPR, and roll the loaded cost up against
+contracted unit rates.</p>
+<h3 id="worked-example-11">Worked example: mid-cap pharmacy,
+clinical-prior-auth drafting</h3>
+<p>A mid-cap pharmacy chain runs a clinical-prior-auth answer-drafting
+workload — the LLM drafts the medical-necessity narrative that gets
+attached to payer prior-authorization submissions. Roughly 8,431 queries
+per day. The bill landed at $14,127 for May; the loaded cost when the
+ops lead reconciled came in at $19,283. The driver of the gap was
+schema-drift on payer-specific JSON contracts: each major payer demands
+a slightly different field shape on the prior-auth response, and three
+of the seven payers had quietly updated their schemas inside a quarter
+without versioned notice.</p>
 <figure>
 <div data-align="center">
 <table>
@@ -985,75 +1003,163 @@ calculate accepted denominator, compute LCPR, calculate margin.</p>
 <tr>
 <th><p>Component</p></th>
 <th><p>Value</p></th>
+<th><p>Source</p></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><p>Trace-derived inference cost</p></td>
-<td><p>$14,200</p></td>
+<td><p>$14,127</p></td>
+<td><p>Sum of per-request token cost from serving traces</p></td>
 </tr>
 <tr>
 <td><p>Provider invoice</p></td>
-<td><p>$14,850</p></td>
+<td><p>$15,341</p></td>
+<td><p>Vendor billing system, May statement</p></td>
 </tr>
 <tr>
-<td><p>Delta</p></td>
-<td><p>$650 (4.4% — within threshold)</p></td>
+<td><p>Delta vs. trace</p></td>
+<td><p>$1,214 (8.6%, above 5% threshold)</p></td>
+<td><p>Investigated — see contract finding below</p></td>
 </tr>
 <tr>
 <td><p>Eval grader cost</p></td>
-<td><p>$800</p></td>
+<td><p>$847</p></td>
+<td><p>Model-graded eval over 12% sample, grader model invoice</p></td>
 </tr>
 <tr>
-<td><p>Human escalation (500 cases at $2)</p></td>
-<td><p>$1,000</p></td>
+<td><p>Schema-repair retries (payer-specific JSON)</p></td>
+<td><p>$1,386</p></td>
+<td><p>Trace tag: 14.3% of requests required a repair pass on
+schema-drift days</p></td>
+</tr>
+<tr>
+<td><p>Human escalation (pharmacist sign-off on rejected
+drafts)</p></td>
+<td><p>$1,162</p></td>
+<td><p>EMR audit log; 581 cases at $2/case fully-loaded</p></td>
 </tr>
 <tr>
 <td><p>Ops overhead allocation</p></td>
-<td><p>$2,500</p></td>
+<td><p>$1,761</p></td>
+<td><p>Finance allocation rule, prorated by workload share</p></td>
 </tr>
 <tr>
 <td><p>Total loaded cost</p></td>
-<td><p>$19,150</p></td>
+<td><p>$19,283</p></td>
+<td><p>Reconciled across trace, invoice, eval, and contract</p></td>
 </tr>
 <tr>
-<td><p>Total requests</p></td>
-<td><p>100,000</p></td>
+<td><p>Total requests (May)</p></td>
+<td><p>261,361</p></td>
+<td><p>Serving trace count</p></td>
 </tr>
 <tr>
-<td><p>Accepted outputs</p></td>
-<td><p>82,000</p></td>
+<td><p>Accepted outputs (eval-pass + pharmacist-sign-off)</p></td>
+<td><p>218,749</p></td>
+<td><p>Joined eval-pass and human-review systems on request_id</p></td>
 </tr>
 <tr>
 <td><p>LCPR</p></td>
-<td><p>$0.234</p></td>
-</tr>
-<tr>
-<td><p>Account revenue</p></td>
-<td><p>$45,000</p></td>
-</tr>
-<tr>
-<td><p>Account margin</p></td>
-<td><p>$45,000 - $19,150 = $25,850</p></td>
-</tr>
-<tr>
-<td><p>Margin %</p></td>
-<td><p>57.4%</p></td>
+<td><p>$0.0882 per accepted prior-auth draft</p></td>
+<td><p>Total loaded cost ÷ accepted outputs</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Compare to naive: $45,000 - $14,200 = $30,800, or 68.4%. The naive
-calculation overstates margin by 11 percentage points.</p>
+<p>The 8.6% trace-to-invoice delta was the thread that unraveled
+everything. The ops lead pulled the contract rate card and matched it
+against the invoice line items. Two of the line items were billed at
+the wrong rate — a tier the pharmacy had never been moved off of after
+a contract amendment three months earlier. The overcharge worked out to
+$1,214 per month and had run for two billing cycles before anyone
+noticed. The reconciliation surfaced a contract-rate mistake on the
+vendor's side; the credit, when issued, paid for the next month of
+schema-repair retries.</p>
+<p>Use the reconciliation when: the invoice has moved more than 5%
+without an obvious volume or model change, finance is questioning the
+unit economics of a workload, or a contract amendment has just gone
+into effect. Skip it when the invoice has been stable for three
+consecutive months and the workload shape has not shifted.</p>
+
+<h3 id="regulatory-observability">Regulatory observability for
+explanation LLMs</h3>
+
+<p>The pharmacy example sat in a regulated workload but stopped short
+of the deepest cost driver in regulated inference: the audit and
+model-risk apparatus that wraps an LLM the moment its output becomes
+part of a decision a regulator can ask you to defend.</p>
+
+<p>When an LLM drafts an explanation that accompanies a regulated
+decision — a denied loan, a denied claim, a prior-auth narrative, an
+adverse-action notice — that explanation LLM is no longer just an
+inference workload. Under the Federal Reserve's SR 11-7 guidance on
+model risk management, any quantitative method that informs a business
+decision is a "model" and falls under the bank or insurer's
+model-risk-management program. That means model inventory, independent
+validation, ongoing performance monitoring, change-control logs, and
+periodic re-validation — typically a two-to-six-month exercise per
+model version (Federal Reserve, SR Letter 11-7, "Guidance on Model Risk
+Management," April 2011). When the model is an LLM whose weights and
+prompt and tool-use scaffolding all sit on a third-party provider, the
+inventory entry has to capture each of those layers and the validation
+has to cover the joint behavior.</p>
+
+<p>The Equal Credit Opportunity Act (ECOA, 15 U.S.C. §1691) layers on
+top. Under ECOA and Regulation B, a creditor that takes an adverse
+action against an applicant must provide a statement of "specific
+reasons" for the action. The CFPB's 2023 circular (Consumer Financial
+Protection Circular 2023-03) clarifies that creditors using complex
+algorithms — explicitly including generative AI — cannot fall back on
+generic templated reasons and remain compliant. If the explanation LLM
+hallucinates a reason that did not factor into the underlying decision,
+the creditor has issued a non-compliant adverse-action notice. The
+hallucination is not just a quality bug; it is a regulatory
+finding.</p>
+
+<p>OCC Bulletin 2026-13 is the gray-zone wrinkle. The bulletin
+explicitly excludes general-purpose generative AI tools from the OCC's
+formal model-risk-management scope — the intent was to avoid sweeping
+every chat interface into a SR 11-7 review cycle. In practice, banks
+have read the carve-out conservatively and applied SR 11-7 anyway to
+any LLM whose output enters a regulated workflow. The legal posture is
+"the regulator did not require it, but the regulator did not bless
+skipping it either, and the cost of an examination finding exceeds the
+cost of validation." The result is that the gray zone collapses
+into the same operational burden as the in-scope case.</p>
+
+<p>What this does to inference observability is concrete. Audit-log
+retention runs seven years for most banking workloads and ten years
+for insurance claims; each request needs the prompt, the model version,
+the system-prompt version, the tool-call graph, the raw model output,
+the post-processing, the eval result, and the final downstream
+decision, all joined on a request ID and immutable. The audit-log
+infrastructure — the storage, the indexing, the access controls, the
+retrieval API for a regulator request — typically runs two to three
+times the pure inference cost in regulated workloads when ops teams
+honestly account for it. The pharmacy LCPR of $0.0882 per accepted
+draft would land closer to $0.21 to $0.26 with the regulated audit
+stack rolled in.</p>
+
+<p>Use the regulated-workload framing when: the LLM output enters a
+decision a regulator can ask you to defend (adverse-action notices,
+denied claims, prior-auth narratives, clinical decision support,
+suitability assessments). The deterministic gate (Part 1) is not
+optional in these workloads; it is the only artifact that survives a
+model swap intact. Skip the framing when the workload is purely
+internal — engineering productivity, customer support that does not
+issue binding decisions, content drafting that a human always
+reviews.</p>
 <h3 id="decision-rule-23">Decision rule</h3>
 <p>If you cannot explain a cost change from your observability system,
 you are missing economic signals. The minimum viable economic
 observability is: per-request token counts (input, output, cached),
 cache hit rate, quality gate result, and cost estimate.</p>
-<p>Present LCPR and margin to engineering, product, and finance. The
-trace-to-margin reconciliation is the artifact that connects all three
-teams” views. Run it monthly. Investigate deltas above 5%.</p>
+<p>Present LCPR and the loaded-cost roll-up to engineering, product, and
+finance. The trace-to-loaded-cost reconciliation is the artifact that
+connects all three teams' views. Run it monthly. Investigate deltas
+above 5%.</p>
 <h3 id="what-to-measure-21">What to measure</h3>
 <ul>
 <li><p>Economic signal set: input/output tokens, cache hit rate, quality
@@ -1063,7 +1169,7 @@ gate pass rate, retry rate, model/prompt version</p></li>
 <li><p>Trace-to-invoice delta by workload</p></li>
 <li><p>Cost breakdown: inference, cache, eval, human, ops</p></li>
 <li><p>LCPR by workload and by account</p></li>
-<li><p>Margin by account</p></li>
+<li><p>Loaded cost vs invoice by account</p></li>
 </ul>
 <h3 id="where-this-breaks-23">Where this breaks</h3>
 <p>Economic observability requires joining data from multiple systems:
@@ -1077,10 +1183,10 @@ model is bundled.</p>
 <h3 id="calculator-hook-23">Calculator hook</h3>
 <p>The observability signals feed the calculator. The calculator view
 takes traces, invoice, eval results, human costs, ops overhead, and
-account revenue. It outputs: LCPR by workload, margin by account, delta
-analysis, and variance waterfall.</p>
+contracted unit rates. It outputs: LCPR by workload, loaded-cost
+roll-up by account, delta analysis, and variance waterfall.</p>
 <hr />
-<h2 id="chapter-25-incidents-review-and-forecast">Chapter 25: Incidents,
+<h2 id="chapter-26-incidents-review-and-forecast">Chapter 26: Incidents,
 Review, And Forecast</h2>
 <h3 id="the-field-problem-15">The field problem</h3>
 <p>A model provider ships an update. The model version changes silently.
@@ -1182,16 +1288,15 @@ The resolution time determines whether the incident recurs.</p>
 engineering time), blast radius (requests affected during detection +
 mitigation window), and root cause category (model, prompt, cache,
 capacity, quality drift).</p>
-<h3 id="the-inference-review-pack">The Inference Review Pack</h3>
+<h3 id="the-inference-review-pack">The inference review pack</h3>
 <p>The operational response to incidents and ongoing cost management
-needs a structured cadence. The is a monthly operating artifact that
-connects engineering metrics to business decisions—a curated package
-designed for a 30-minute review with engineering, product, and
-finance.</p>
-<p><strong>Section 1: LCPR summary.</strong> LCPR by workload, this
-month vs last month, with delta explanation. The delta explanation is
-the most important part: it answers “why did cost change?” not just “how
-much did it change?”</p>
+needs a structured cadence. The inference review pack is a monthly
+artifact that connects engineering metrics to business decisions in a
+30-minute review with engineering, product, and finance.</p>
+<p>The pack opens with an LCPR summary: LCPR by workload, this month
+vs last month, with a delta explanation for each line. The delta
+explanation is the load-bearing column. It answers "why did cost
+change?" rather than "how much did it change?"</p>
 <figure>
 <div data-align="center">
 <table>
@@ -1230,18 +1335,19 @@ much did it change?”</p>
 </table>
 </div>
 </figure>
-<p><strong>Section 2: Quality summary.</strong> Eval pass rate by
-workload, trending, and notable failure modes.</p>
-<p><strong>Section 3: Cost breakdown.</strong> Inference, cache, eval,
-human, ops by workload. Month-over-month waterfall showing which
-component drove the cost movement.</p>
-<p><strong>Section 4: Capacity and utilization.</strong> For dedicated
-workloads: utilization vs , headroom assessment. For serverless: volume
-trend and rate-limit proximity.</p>
-<p><strong>Section 5: Incidents.</strong> Incident count, total incident
-cost, root causes, and preventive actions.</p>
-<p><strong>Section 6: Recommendations.</strong> Two to three specific
-actions with expected impact.</p>
+<p>From there the pack moves through quality, cost composition,
+capacity, incidents, and recommended actions. The quality view shows
+eval pass rate by workload, the trend over recent months, and any
+notable failure modes. The cost breakdown decomposes inference, cache,
+eval, human, and ops spend by workload, with a month-over-month
+waterfall that points to the component that drove the movement.</p>
+<p>Capacity reporting splits by deployment shape. Dedicated workloads
+get a utilization-versus-latency view and a headroom assessment;
+serverless workloads get a volume trend and a rate-limit proximity
+check. The incidents section closes the operational loop: count, total
+cost, root causes, and the preventive actions that fell out of the
+post-mortem. The pack ends with two or three specific recommendations,
+each with an expected impact and an owner.</p>
 <p>The review pack forces three disciplines: explanation over
 observation (every delta needs a proposed cause), multi-audience
 communication (LCPR is the shared language between engineering, product,
@@ -1360,7 +1466,7 @@ for budget planning.</p>
 <h3 id="decision-rule-24">Decision rule</h3>
 <p>Treat quality incidents with the same severity as availability
 incidents. Invest in quality detection proportionally to the cost of
-undetected quality degradation. Produce the Inference Review Pack
+undetected quality degradation. Produce the inference review pack
 monthly. Forecast by component and by scenario—present ranges, not
 points.</p>
 <h3 id="what-to-measure-22">What to measure</h3>
@@ -1393,15 +1499,55 @@ model pricing changes without notice, or the forecast model is not
 updated with actuals. The biggest forecasting failure is presenting a
 single number without assumptions.</p>
 <h3 id="calculator-hook-24">Calculator hook</h3>
-<p>The incident cost view in : additional inference cost during
-incident, human escalation cost, engineering time, blast radius. The is
-a calculator output template with the six sections above. The forecast
-view takes current LCPR by workload, planned changes, and outputs
-quarterly cost by scenario with an assumption register tagging each
-input as MEASURED, ESTIMATED, or ASSUMED.</p>
+<p>The incident cost view tracks additional inference cost during
+incident, human escalation cost, engineering time, and blast radius.
+The review-pack view is a calculator output template with the six
+sections above. The forecast view takes current LCPR by workload,
+planned changes, and outputs quarterly cost by scenario with an
+assumption register tagging each input as measured, estimated, or
+assumed.</p>
+<hr />
+<h2 id="chapter-27-cost-attribution-and-chargeback">Chapter 27: Cost Attribution and Chargeback</h2>
+<h3 id="the-field-problem-16">The field problem</h3>
+<p>A single inference platform serves four product teams. The provider invoice arrives once a month as one line item. Finance asks engineering to allocate the spend. Engineering pulls usage from the platform logs and discovers the four teams cannot be reconciled to the invoice within 6%. Two of the teams insist their workloads are smaller than what the logs show. One team is using a fine-tuned LoRA that costs no more than the base model on the invoice but should be allocated differently for internal margin. The fourth team's traffic spikes are absorbed by spare capacity that exists only because team one's workload is bursty in the opposite direction.</p>
+<p>The platform owner had three weeks to produce a chargeback model. The teams had to agree that the model was fair before the next budget cycle. None of the standard frameworks for cost allocation handle workloads that share capacity, share caches, share fine-tunes, or share the same provider account.</p>
+<h3 id="why-attribution-is-not-the-same-as-measurement">Why attribution is not the same as measurement</h3>
+<p>Measurement asks how much was spent. Attribution asks who pays. Two requests can be measured identically and attributed differently. A 4,000-token completion served at 6am on a dedicated endpoint costs the platform the same as the same completion served at 6pm, but the 6pm request occupied capacity that another team would have used; the 6am request did not. Attribution that ignores this asymmetry rewards teams whose workload shape happens to align with the platform's underused windows and punishes teams whose workload shape forces capacity additions.</p>
+<p>The decision is not which model is mathematically correct. It is which model survives a negotiation with four teams that all want the lowest number. The attribution framework that minimizes negotiation cost across renewal cycles is usually the one that maps cleanly to observable per-team behavior, even if it loses some accuracy at the margins.</p>
+<h3 id="four-allocation-modes">Four allocation modes</h3>
+<p>Most production attribution settles into one of four shapes:</p>
+<p><strong>Uniform.</strong> Total spend divided by team count, or by seat count, or by some other coarse denominator. Easiest to compute. Easiest to game. Defensible only when usage is genuinely similar across teams; almost never true once one team has a high-fanout agentic workload and another has a chat workload. The right default for the first 90 days of a platform when nobody has the data to argue with it.</p>
+<p><strong>Proportional.</strong> Each team's share of measured usage (tokens, requests, accepted outputs) multiplied by the invoice total. Reconciles to the invoice exactly. Loses the asymmetry: a team with bursty traffic that requires capacity additions pays the same per-token as a team with smooth traffic that fits in the gaps. Right when traffic shape is roughly uniform across teams or when capacity is genuinely elastic (serverless) and the invoice reflects only consumed work.</p>
+<p><strong>Weighted by SLA and shape.</strong> Proportional, but each team's share is multiplied by a factor that reflects how much capacity their workload requires beyond average use. A coefficient over 1 for high-burst or tight-SLA workloads; under 1 for batch-tolerant or off-peak workloads. The coefficients are usually inherited from the SLA tier the team purchased internally (tier-1 latency = 1.4x; tier-3 batch = 0.7x). Reconciles to the invoice if the weights sum correctly. Survives the negotiation because the coefficients are tied to a tier choice the team already made.</p>
+<p><strong>Hybrid.</strong> A floor (uniform or per-seat) covering the platform's fixed cost — engineering time, the eval system, monitoring, the on-call burden — plus a usage-weighted variable component for inference cost itself. The floor solves the "team one moved their workload off the platform and the platform still costs the same to run" problem. The variable component handles the usage asymmetry. This is what most mature internal platforms end up running.</p>
+<h3 id="the-shared-cache-and-fine-tune-problem">The shared cache and fine-tune problem</h3>
+<p>Two specific allocation cases break naive proportional models.</p>
+<p>The first is prompt caching. A shared system prompt across teams pays for itself the first time it loads, then runs at a 50-90% discount for every subsequent team that hits it. The team that warmed the cache subsidizes the teams that benefit. Three options: pretend the discount does not exist and bill each team the un-cached rate (the platform pockets the discount, teams underconsume the cache); pass the cache discount through evenly by measured token (the warming team subsidizes the followers); attribute the cache to the first team that used it in each TTL window (penalizes the warming team in proportion to the cache TTL). The third is fairest in principle and impossible to audit in practice. Most platforms settle on the second.</p>
+<p>The second is fine-tunes and LoRA adapters. A LoRA trained by one team that improves accuracy for another team's workload is a transfer payment the proportional model misses. If the LoRA training cost is allocated only to the team that ran the training, that team subsidizes the consumers. If it is allocated to anyone who calls the LoRA, the team that trained it captures revenue inside its budget that did not flow through any contract. Most platforms either (a) charge the training cost to the training team and let the benefit flow to consumers (encourages investment, punishes the investor at budget time), or (b) treat the LoRA as a shared asset with a one-time amortization across all expected callers (cleaner economically, harder to negotiate).</p>
+<h3 id="the-internal-chargeback-report">What goes in the internal chargeback report</h3>
+<p>The monthly chargeback report a platform owner sends to product teams should contain, at minimum:</p>
+<ul>
+<li><p>Total spend by team, broken into inference, eval grader, human escalation, and operational allocation.</p></li>
+<li><p>LCPR by team, with the denominator (accepted outputs) defined per team's quality gate. A team running answer-drafting and a team running batch enrichment should not share an LCPR definition.</p></li>
+<li><p>Variance versus prior month and versus quarterly forecast, with the largest three deltas explained.</p></li>
+<li><p>Cache and fine-tune transfers (which team warmed which cache; which team's fine-tune is callable by which other team).</p></li>
+<li><p>Capacity attribution: how much of the dedicated capacity each team's workload pinned, and what fraction of that capacity went unused.</p></li>
+<li><p>One paragraph of trend analysis — not "team X is up 12%" but "team X moved from chat to agentic and the per-accepted-output cost reflects the fanout."</p></li>
+</ul>
+<p>The report is for the budget conversation, not the operational one. Treat it as a quarterly negotiation artifact rather than a real-time dashboard.</p>
+<h3 id="anonymized-case-public-sector-platform">An anonymized case: a mid-size public-sector platform</h3>
+<p>A consolidated state-agency platform served seven program offices on one inference contract. The initial chargeback model was proportional by token. After two quarters, three offices stopped using the platform and stood up their own contracts; the remaining four absorbed the fixed cost and complained loudly. The platform owner switched to a hybrid model: a $14K monthly floor split by seat count covering the contract minimum and the platform engineering team, plus a per-token usage charge above the floor at the rate that reconciled to the invoice. Two of the three departed offices came back within a quarter when their standalone contracts ran into minimum commits they could not fill. The fourth never returned. The lesson the owner reported: the proportional model was technically accurate and politically dead. The hybrid model was technically inferior on margin attribution and survived three renewal cycles.</p>
+<p>The side-finding: the floor exposed how much of the platform cost was actually platform overhead rather than inference. The seven offices, taken together, were paying about $42K/month in inference and $14K/month in fixed costs. The first reaction inside finance was to drive the fixed cost down. The second reaction, after the platform team explained what the floor covered, was to consolidate two adjacent platforms onto the same floor — the marginal cost of supporting an eighth office was small, and the existing four were happy to dilute their floor share with new entrants.</p>
+<h3 id="where-cost-attribution-breaks">Where this breaks</h3>
+<p>Attribution fails when teams share a single LLM call across two product surfaces (the call cannot be split without re-running it), when the eval system is centralized and the cost of running evals is not allocated by which team's outputs were graded, or when a fine-tune fails in production and the cost of the rollback (re-running on the previous model) is borne by the team that requested the fine-tune rather than the team that approved it.</p>
+<p>Attribution also breaks during incidents. A two-hour outage costs the platform's dedicated capacity the same as a normal two-hour window, but no team accepts being billed for capacity that produced no accepted outputs. The usual remedy is to credit incident windows against the affected teams' usage, paid out of the platform's reserve. The reserve has to be funded by something — usually a small percentage of every team's usage charge — which is itself an attribution decision that teams will eventually challenge.</p>
+<h3 id="calculator-hook-25">Calculator hook</h3>
+<p>The cost-attribution view takes per-team trace volume, per-team accepted output counts, the team's SLA tier coefficient, the cache and fine-tune transfer table, and the platform fixed cost. It outputs allocated spend by team under each of the four allocation modes, along with the variance between modes so the platform owner can see how much of the negotiation is mode-driven rather than usage-driven.</p>
+<p>Use the hybrid mode when the platform has more than two teams, runs a dedicated capacity floor, or has fixed engineering overhead that does not vary with usage. Use proportional when the platform is serverless and every dollar of cost is directly traceable to a team's request. Use weighted when teams have explicit SLA tiers. Use uniform only for the first quarter of a platform, before there is enough data to argue.</p>
 <hr />
 <h2 id="part-5-summary">Part 5 Summary</h2>
-<p>Part 5 established the operating cadence for inference economics:</p>
+<p>Part 5 established the operating cadence for inference economics and
+the attribution mechanics that decide who pays for what:</p>
 <figure>
 <div data-align="center">
 <table>
@@ -1415,26 +1561,32 @@ input as MEASURED, ESTIMATED, or ASSUMED.</p>
 <tbody>
 <tr>
 <td><p>Baseline and eval instrument</p></td>
-<td><p>Chapter 22</p></td>
+<td><p>Chapter 23</p></td>
 <td><p>Snapshot before change; three-layer eval stack controls LCPR
 denominator</p></td>
 </tr>
 <tr>
 <td><p>Benchmark hygiene and goodput</p></td>
-<td><p>Chapter 23</p></td>
-<td><p>Goodput Frontier Test replaces vendor throughput numbers</p></td>
+<td><p>Chapter 24</p></td>
+<td><p>goodput frontier test replaces vendor throughput numbers</p></td>
 </tr>
 <tr>
-<td><p>Observability and trace-to-margin</p></td>
-<td><p>Chapter 24</p></td>
+<td><p>Observability and trace-to-loaded-cost</p></td>
+<td><p>Chapter 25</p></td>
 <td><p>Economic signals explaining cost movement; joins trace, invoice,
-eval, contract into margin</p></td>
+eval, and contract into a reconciled loaded cost</p></td>
 </tr>
 <tr>
 <td><p>Incidents, review, and forecast</p></td>
-<td><p>Chapter 25</p></td>
+<td><p>Chapter 26</p></td>
 <td><p>Quality incidents, review pack cadence, scenario-based LCPR
 forecasting</p></td>
+</tr>
+<tr>
+<td><p>Cost attribution and chargeback</p></td>
+<td><p>Chapter 27</p></td>
+<td><p>Allocation modes (uniform, proportional, weighted, hybrid) that
+divide a shared inference bill across teams</p></td>
 </tr>
 </tbody>
 </table>
@@ -1446,10 +1598,11 @@ Measurement feeds evaluation. Evaluation enables reconciliation.
 Reconciliation informs the review. The review drives actions. Actions
 change the system. The forecast predicts the impact of changes. And the
 cycle starts again with a new baseline.</p>
-<p>The book began with a $12 mystery in the opener. It ends here with
-the operating system that prevents the mystery from recurring: measure
-LCPR, evaluate quality, reconcile traces to invoices, review monthly,
-forecast by scenario, and act on evidence.</p>
+<p>The book opened with the deterministic gate as the cheapest unit of
+inference economics. Part 5 closes the loop: measure LCPR, evaluate
+quality, reconcile traces to invoices, review monthly, forecast by
+scenario, and act on evidence. The gate keeps the cheapest workloads
+cheap. The cadence keeps the rest honest.</p>
 <hr />
 <h2 id="evidence-notes-for-part-5">Evidence Notes for Part 5</h2>
 <figure>
@@ -1470,15 +1623,15 @@ forecast by scenario, and act on evidence.</p>
 <td><p>Goodput under SLO formula and worked example</p></td>
 <td><p>DERIVED</p></td>
 <td><p>Derivation 5, from SLO definition and standard metrics</p></td>
-<td><p>23</p></td>
+<td><p>24</p></td>
 </tr>
 <tr>
 <td><p>2</p></td>
-<td><p>Trace-to-margin reconciliation formula</p></td>
+<td><p>Trace-to-loaded-cost reconciliation formula</p></td>
 <td><p>DERIVED</p></td>
-<td><p>Derivation 6, from LCPR-2026 extended to invoice and
+<td><p>Derivation 6, from LCPR extended to invoice and
 revenue</p></td>
-<td><p>24</p></td>
+<td><p>25</p></td>
 </tr>
 <tr>
 <td><p>3</p></td>
@@ -1486,7 +1639,7 @@ revenue</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From roofline analysis (Part 2) applied to benchmark
 conditions</p></td>
-<td><p>23</p></td>
+<td><p>24</p></td>
 </tr>
 <tr>
 <td><p>4</p></td>
@@ -1494,7 +1647,7 @@ conditions</p></td>
 providers</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>Provider pricing pages, accessed 2026-05-12</p></td>
-<td><p>24</p></td>
+<td><p>25</p></td>
 </tr>
 <tr>
 <td><p>5</p></td>
@@ -1502,14 +1655,14 @@ providers</p></td>
 transcript</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>Anthropic agent eval guidance, OpenAI eval docs</p></td>
-<td><p>22</p></td>
+<td><p>23</p></td>
 </tr>
 <tr>
 <td><p>6</p></td>
 <td><p>SWE-bench Verified flawed tests and contamination</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>OpenAI benchmark analysis post, 2026-03</p></td>
-<td><p>23</p></td>
+<td><p>24</p></td>
 </tr>
 <tr>
 <td><p>7</p></td>
@@ -1517,7 +1670,7 @@ transcript</p></td>
 postmortem)</p></td>
 <td><p>REPORTED</p></td>
 <td><p>Anthropic engineering postmortem, 2026-04-23</p></td>
-<td><p>25</p></td>
+<td><p>26</p></td>
 </tr>
 <tr>
 <td><p>8</p></td>
@@ -1526,14 +1679,14 @@ human)</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From Anthropic, OpenAI, and Google eval guidance
 synthesized</p></td>
-<td><p>22</p></td>
+<td><p>23</p></td>
 </tr>
 <tr>
 <td><p>9</p></td>
-<td><p>Inference Review Pack structure</p></td>
+<td><p>inference review pack structure</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author synthesis of operating review practices</p></td>
-<td><p>25</p></td>
+<td><p>26</p></td>
 </tr>
 <tr>
 <td><p>10</p></td>
@@ -1541,7 +1694,7 @@ synthesized</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author synthesis of financial planning applied to
 inference</p></td>
-<td><p>25</p></td>
+<td><p>26</p></td>
 </tr>
 <tr>
 <td><p>11</p></td>
@@ -1549,7 +1702,7 @@ inference</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From inference serving characteristics vs traditional
 services</p></td>
-<td><p>25</p></td>
+<td><p>26</p></td>
 </tr>
 <tr>
 <td><p>12</p></td>
@@ -1558,36 +1711,33 @@ example)</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From cache break-even analysis (Part 2) applied to
 operations</p></td>
-<td><p>24, 25</p></td>
+<td><p>25, 26</p></td>
 </tr>
 <tr>
 <td><p>13</p></td>
 <td><p>Minimum viable baseline metrics</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author synthesis from production observability</p></td>
-<td><p>22</p></td>
+<td><p>23</p></td>
 </tr>
 <tr>
 <td><p>14</p></td>
 <td><p>Delta investigation threshold 5%</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author recommendation, calibrated from Part 1</p></td>
-<td><p>24</p></td>
+<td><p>25</p></td>
 </tr>
 <tr>
 <td><p>15</p></td>
 <td><p>All worked example numbers</p></td>
 <td><p>SYNTHETIC</p></td>
 <td><p>Illustrative, shaped by real billing semantics</p></td>
-<td><p>24, 25</p></td>
+<td><p>25, 26</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p><strong>Slop check:</strong> No instances of seamless, robust,
-leverage, holistic, unlock, game-changing, cutting-edge, best-in-class,
-or synergy.</p>
 
         </div>
 

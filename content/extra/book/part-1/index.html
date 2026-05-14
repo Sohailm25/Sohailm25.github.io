@@ -530,8 +530,7 @@
         <div class="chapters-info">Chapters 1–3</div>
       </div>
       <ul class="sidebar-toc"><li><a href="#chapter-1-token-price-is-not-cost">Chapter 1: Token Price Is Not
-Cost</a></li><li><a href="#chapter-2-lcpr-2026-loaded-cost-per-result">Chapter 2: LCPR-2026
-— Loaded Cost Per Result</a></li><li><a href="#chapter-3-trace-invoice-eval-and-contract">Chapter 3: Trace,
+Cost</a></li><li><a href="#chapter-2-lcpr-loaded-cost-per-result">Chapter 2: LCPR — Loaded Cost Per Result</a></li><li><a href="#chapter-3-trace-invoice-eval-and-contract">Chapter 3: Trace,
 Invoice, Eval, and Contract</a></li><li><a href="#part-1-summary">Part 1 Summary</a></li><li><a href="#evidence-notes-for-part-1">Evidence Notes for Part 1</a></li></ul>
       <div class="sidebar-nav">
         <a href="/book/part-0/">&larr; Part 0: How To Use This Book</a>
@@ -626,7 +625,7 @@ discount)</p></td>
 <tr>
 <td><p>Dedicated capacity</p></td>
 <td><p>Hourly/monthly fee for reserved compute</p></td>
-<td><p>Together, Fireworks, AWS, Azure, Google</p></td>
+<td><p>AWS, Azure, Baseten, CoreWeave, DeepInfra, Fireworks, Google, Lambda, Replicate, Together</p></td>
 </tr>
 <tr>
 <td><p>Minimum billing</p></td>
@@ -687,37 +686,16 @@ meaningful?)</p></td>
 <p>A provider can report 100% uptime while your workload experiences p99
 latency violations, cache miss storms, and quality regressions. The
 metrics live in different systems and answer different questions.</p>
-<h3 id="the-five-costs-that-are-not-on-the-invoice">The Five Costs That
-Are Not On The Invoice</h3>
-<p>Token price captures the inference provider bill. Five other costs
-affect the loaded economics of producing accepted work:</p>
-<p><strong>1. Retry cost.</strong> When a request fails—timeout, rate
-limit, quality failure, malformed output—the system retries. Each retry
-consumes tokens. On workloads with 5-10% first-attempt failure rates,
-retries add 5-10% to the inference bill. But the retry cost is invisible
-if you divide total spend by total requests instead of by accepted
-work.</p>
-<p><strong>2. Eval and grader cost.</strong> Quality-sensitive workloads
-run an eval pass on generated output. The eval might use a second LLM
-call (LLM-as-judge), a deterministic check, or a human review. LLM
-grader calls cost tokens. Human review costs labor. Neither appears on
-the inference provider invoice for the primary model.</p>
-<p><strong>3. Repair cost.</strong> When a first attempt fails quality
-but the task is worth retrying with corrected input (better retrieval
-context, adjusted prompt, longer context window), the repair attempt
-adds a second full inference cycle. Repair rates of 5-15% are common on
-RAG workloads where retrieval quality is uneven.</p>
-<p><strong>4. Human escalation cost.</strong> Some failures cannot be
-repaired by the system. A support answer that hallucinates a policy, a
-document extraction that misses a key field, a code generation that
-introduces a security flaw—these escalate to humans. The cost per human
-escalation is typically 50-200x the cost of the inference call that
-triggered it.</p>
-<p><strong>5. Operational overhead.</strong> On-call engineering time
-for inference incidents. Monitoring and observability tooling. Prompt
-engineering and eval maintenance. Model evaluation cycles. Deployment
-pipeline costs. These costs are real, amortized across workloads, and
-invisible on any per-request metric unless deliberately allocated.</p>
+<h3 id="what-is-not-on-the-invoice">What Is Not On The Invoice</h3>
+<p>Token price captures one line on the LCPR statement of work: the provider invoice. Four other lines are typically larger combined.</p>
+<ul>
+<li><p><strong>Retries</strong> add 4-8% on most workloads, more on workloads with strict structured-output gates. The retry is invisible if you divide total spend by total requests rather than by accepted work.</p></li>
+<li><p><strong>Eval and grader calls</strong> are themselves inference, sized to the eval cadence and the grader model. A quality-sensitive workload running LLM-graded eval on 20% of traffic with a same-class grader runs roughly 5-15% of primary inference in grader cost. Deterministic checks and human review run a different cost surface but are still off the inference invoice.</p></li>
+<li><p><strong>Repairs</strong> (retry with corrected input: better context, longer window, adjusted prompt) concentrate on the failure tail. 5-12% of traffic is typical for RAG workloads where retrieval quality is uneven.</p></li>
+<li><p><strong>Human escalation</strong> usually dominates the loaded cost on quality-sensitive interactive workloads. Per-escalation cost runs 50-300x the per-request inference cost, depending on the support staffing model.</p></li>
+<li><p><strong>Operational overhead</strong> covers on-call, deployment, prompt and eval upkeep. It is a fixed cost amortized into per-request economics only if you allocate it. Most teams don't.</p></li>
+</ul>
+<p>A workload where retries plus eval plus repair plus escalation plus ops are under 20% of inference is unusual. A workload where they are under 50% is the case where token price is a useful proxy for cost. The rest of the book is about the workloads where they are not.</p>
 <h3 id="the-unit-problem">The Unit Problem</h3>
 <p>The most common mistake in inference economics is choosing the wrong
 denominator.</p>
@@ -784,9 +762,9 @@ cost, the loaded-cost exercise is not the binding constraint.</p></li>
 units, not raw tokens. The view takes raw traces and produces loaded
 cost per accepted request. The sensitivity analysis shows which input
 dominates the result.</p>
+<p>If you do not yet have the trace coverage to drive the calculator, jump to the twenty-trace exercise in Chapter 3. It is the minimum viable starting point and the prerequisite for everything else in Part 1.</p>
 <hr />
-<h2 id="chapter-2-lcpr-2026-loaded-cost-per-result">Chapter 2: LCPR-2026
-— Loaded Cost Per Result</h2>
+<h2 id="chapter-2-lcpr-loaded-cost-per-result">Chapter 2: LCPR — Loaded Cost Per Result</h2>
 <h3 id="field-problem-1">Field Problem</h3>
 <p>Two teams at the same company both report “inference cost per
 request.” Team A divides the monthly provider bill by total API calls.
@@ -848,53 +826,22 @@ compliance gates)</p></td>
 </table>
 </div>
 </figure>
-<p>The numerator includes all costs incurred in producing the
-output—including costs of failed attempts. The denominator includes only
-accepted output.</p>
-<p>This is not an approximation or a simplification. It is a definition.
-LCPR is what it costs to produce accepted work. The alternative—dividing
-inference spend by total requests—produces a number that is accurate but
-not useful.</p>
-<h3 id="why-2026">Why “2026”</h3>
-<p>The year tag marks the pricing, provider semantics, and cache
-behavior that shaped the formula’s inputs. Provider billing grammar
-changes. Cache semantics change. Token prices change. The formula
-structure is durable; the inputs need dated snapshots.</p>
-<p>When provider pricing shifts enough to change a routing decision,
-refresh the snapshot and recalculate. The formula does not change. The
-inputs do.</p>
+<p>The numerator includes all costs incurred in producing the output, including the cost of failed attempts. The denominator includes only accepted output.</p>
+<p>This is a definition, not a simplification. LCPR is what it costs to produce accepted work. The alternative is dividing inference spend by total requests, which produces a number that is accurate but not useful. Pricing snapshots, provider semantics, and cache behavior change. The formula is durable; the inputs are dated. See the assumption register in Chapter 3.</p>
 <h3 id="worked-example">Worked Example</h3>
-<p>This example uses the trace from the opener. One day, one workload,
-1,000 support tickets.</p>
-<p><strong>Step 1: Sum all inference costs from traces.</strong></p>
-<p>The trace contains every API call—first attempts, retries, repairs,
-eval grader calls. Each call has input tokens, cached tokens, output
-tokens, and the applicable price from the pricing snapshot.</p>
-<p><strong>Step 2: Add the invoice delta.</strong></p>
-<p>The provider invoice for the same period says $14.85. The gap is
-$0.65. This comes from rounding, timing differences between trace
-timestamps and billing period boundaries, batch pricing adjustments, and
-model alias resolution.</p>
-<p>If delta exceeds 5% of C_inference, investigate. Common causes:
-missing traces, model name aliases, batch vs real-time pricing splits,
-or token count discrepancies between your tokenizer and the
-provider’s.</p>
-<p><strong>Step 3: Add eval grader cost.</strong></p>
-<p>The system ran an LLM grader on outputs that fell below the
-auto-accept threshold. The grader cost $0.80 for the day.</p>
-<p><strong>Step 4: Add human escalation cost.</strong></p>
-<p>Fifty tickets escalated to human agents. At $2 per escalation (agent
-time, not fully loaded labor cost), this is $100.</p>
-<p><strong>Step 5: Add operational overhead.</strong></p>
-<p>Monitoring, on-call, prompt maintenance, and deployment costs
-amortized to this workload: $25 per day.</p>
-<p><strong>Step 6: Count accepted work.</strong></p>
-<p>Of 1,000 tickets: 750 passed on first attempt, 70 were recovered by
-retry or repair, 50 escalated to humans (counted as human-handled, not
-LLM-accepted), 130 were unrecovered failures.</p>
-<p><strong>Step 7: Calculate LCPR.</strong></p>
-<h3 id="what-each-component-contributes">What Each Component
-Contributes</h3>
+<p>Anonymized: a mid-market property and casualty insurance carrier runs an internal-only model that drafts claims-adjuster guidance answers. Adjusters open a case, ask a natural-language question ("does this water-damage claim fall under the burst-pipe rider on policy form HF-3?"), and the model produces a draft response with citations to the underlying policy language. Adjusters edit and approve before any text reaches the policyholder. Roughly 11,800 queries per weekday. Three-gate validation pipeline: PII redaction, policy-rubric eval, and a compliance-regex pass that flags any draft containing boilerplate language tied to coverage decisions the model is not authorized to make.</p>
+<p>In a six-week window the inference bill climbed 31% while case volume grew 7%. Quality pass rate was flat. Latency was stable. The team's first guess was traffic-mix shift toward longer-context cases, then a provider price change on the underlying model. Both were wrong. The trace-by-rejection-reason breakdown was the disambiguating measurement: compliance-regex rejections had climbed from 6.3% of traffic in the prior quarter to 22% in the current one. A risk-management team had widened the boilerplate regex to flag any draft mentioning "covered," "not covered," "subject to," or "pursuant to" outside of a citation block. Most flagged drafts were false positives. Each rejection paid the full input cost again on the regenerate cycle.</p>
+<p>The denominator-collapse showed up two weeks later. Adjusters with experience on the prior tool noticed the AI was returning to the queue more often than not. They started routing around it: typing answers manually, skipping the suggestion panel entirely. A traffic audit found that once the false-positive rate exceeded 18%, daily accepted drafts dropped from roughly 9,400 to roughly 5,100. The numerator (gross inference spend) was up 31%. The denominator (accepted drafts) had collapsed to 54% of its prior level. LCPR roughly doubled, and the doubling was almost entirely from the denominator side.</p>
+<p>Computing LCPR over a representative week, with the numerator including all failed regenerate-cycles and the denominator counting only drafts that cleared all three gates and reached an adjuster who accepted them:</p>
+<ul>
+<li><p><strong>C_inference</strong> (trace-derived, all attempts): roughly $2,840</p></li>
+<li><p><strong>C_eval</strong> (policy-rubric grader pass): roughly $173</p></li>
+<li><p><strong>C_human</strong> (review queue allocated to drafts that bypassed adjuster acceptance): roughly $1,290</p></li>
+<li><p><strong>C_ops</strong> (pipeline maintenance, allocated): roughly $164</p></li>
+<li><p><strong>A</strong> (accepted drafts that passed all three gates and reached an adjuster who accepted them): roughly 27,300 over the week</p></li>
+<li><p><strong>LCPR</strong>: roughly $0.163 per accepted draft</p></li>
+</ul>
+<h3 id="what-each-component-contributes">What Each Component Contributes</h3>
 <figure>
 <div data-align="center">
 <table>
@@ -908,45 +855,36 @@ Contributes</h3>
 <tbody>
 <tr>
 <td><p>Inference (trace)</p></td>
-<td><p>$14.20</p></td>
-<td><p>10.1%</p></td>
-</tr>
-<tr>
-<td><p>Invoice delta</p></td>
-<td><p>$0.65</p></td>
-<td><p>0.5%</p></td>
+<td><p>$2,840</p></td>
+<td><p>63.7%</p></td>
 </tr>
 <tr>
 <td><p>Eval grader</p></td>
-<td><p>$0.80</p></td>
-<td><p>0.6%</p></td>
+<td><p>$173</p></td>
+<td><p>3.9%</p></td>
 </tr>
 <tr>
-<td><p>Human escalation</p></td>
-<td><p>$100.00</p></td>
-<td><p>71.1%</p></td>
+<td><p>Human review queue</p></td>
+<td><p>$1,290</p></td>
+<td><p>28.9%</p></td>
 </tr>
 <tr>
 <td><p>Ops overhead</p></td>
-<td><p>$25.00</p></td>
-<td><p>17.8%</p></td>
+<td><p>$164</p></td>
+<td><p>3.7%</p></td>
 </tr>
 <tr>
-<td><p><strong>Total</strong></p></td>
-<td><p><strong>$140.65</strong></p></td>
+<td><p><strong>Total numerator</strong></p></td>
+<td><p><strong>$4,467</strong></p></td>
 <td><p><strong>100%</strong></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Inference is 10% of the loaded cost. Human escalation is 71%.
-Optimizing the token price while ignoring the quality-driven escalation
-rate is optimizing the wrong lever.</p>
-<p>This is a general pattern: on quality-sensitive interactive
-workloads, the non-inference costs often dominate. On batch or
-low-stakes workloads, inference cost may genuinely be the majority. LCPR
-makes the distribution visible.</p>
+<p>The team's first reflex on seeing a 31% inference-bill jump was to negotiate a token-price discount. The breakdown said the move was a deterministic pre-validation pass that flagged drafts likely to fail the regex and routed them straight to a manual-edit path rather than regenerate: 9ms per draft, zero LLM tokens. After deployment, gross inference cost dropped 17% in two weeks. The accepted-draft count began recovering as adjusters returned to the suggestion panel; within four weeks A had climbed back toward its prior level.</p>
+<p>The side-finding: the deterministic pre-validation surfaced a class of drafts that <em>passed</em> the regex but contained coverage-determination language that the original regex authors had not anticipated. Roughly 3.4% of historically accepted drafts were re-classified as needing risk-management review. The compliance team had been treating the regex as the gate. It was missing a category of language entirely. The remediation took two more quarters of regex and rubric work and was a much larger project than the cost overrun that started the investigation.</p>
+<p>The LCPR pointed at the wrong lever first (token price). The numerator-and-denominator breakdown pointed at the right one (the deterministic gate and adjuster trust). The gate itself turned out to be incomplete in the other direction. Inference is 64% of LCPR on this workload, but the lever that moved LCPR most was not the inference cost. It was the false-positive rate driving the denominator.</p>
 <h3 id="the-accepted-work-unit">The Accepted Work Unit</h3>
 <p>The denominator deserves its own definition. An accepted work unit
 is:</p>
@@ -1047,11 +985,7 @@ limit, quality fail, malformed output) - Retry and repair chains
 adjustments applied by the provider - Credits, commitments, and contract
 terms - Costs outside the inference call (human review, ops overhead) -
 Whether the provider’s token count matches your tokenizer’s count</p>
-<p><strong>Common trace failure modes:</strong> - Missing traces
-(sampling, logging failures, async calls) - Stale pricing in the cost
-calculation (using last month’s prices) - Token count mismatch between
-trace and invoice - Model name aliases (the trace says but the invoice
-says )</p>
+<p>Traces fail in characteristic ways: sampling or logging gaps drop calls (especially async tool calls and retry chains); the cost calculation uses a stale pricing snapshot from before a provider change; the trace's token count disagrees with the provider's tokenizer; and model-name aliases ("claude-sonnet-4" in the trace, "claude-sonnet-4-20260415" on the invoice) break the join. The model-name alias issue eats the most time in practice and is the one to instrument first.</p>
 <h4 id="source-2-the-invoice">Source 2: The Invoice</h4>
 <p>The invoice is the provider’s billing record. It is the ground truth
 for what was charged, but not for why.</p>
@@ -1064,11 +998,7 @@ items</p>
 mix, cache miss rate, or output length?) - Latency, quality, or
 reliability information - Costs from other providers in a multi-source
 architecture</p>
-<p><strong>Common invoice failure modes:</strong> - Delayed posting
-(usage from the last day of the month appears on next month’s invoice) -
-Aggregate line items that combine workloads - Model aliases that do not
-match trace model names - Credits applied inconsistently across line
-items</p>
+<p>Invoices fail in characteristic ways: end-of-month usage posts to the following invoice and breaks trace-invoice reconciliation across the boundary; aggregate line items combine workloads that traces separate; invoice model aliases do not match trace model names; and credits apply inconsistently across line items, so the charged-amount displayed on the dashboard can be wrong by a credit cycle.</p>
 <h4 id="source-3-the-eval">Source 3: The Eval</h4>
 <p>The eval is the quality measurement. It answers whether the inference
 output was accepted work or failed work.</p>
@@ -1080,12 +1010,7 @@ denominator for LCPR</p>
 information (unless combined with trace) - Whether the eval itself is
 calibrated and reliable - Long-term quality drift vs point-in-time
 score</p>
-<p><strong>Common eval failure modes:</strong> - LLM grader disagrees
-with human judgment - Eval set does not represent production
-distribution - Quality threshold set too low (everything passes,
-failures are invisible) - Quality threshold set too high (unnecessary
-repairs and escalations) - Eval coverage is partial (only a sample of
-outputs is evaluated)</p>
+<p>Evals fail in characteristic ways: the LLM grader and a human reviewer disagree on the same outputs at rates above 10%; the eval set was built during initial development and no longer reflects production failure-mode frequency; the quality threshold is set low enough that everything passes (and real failures are invisible) or high enough that the workload triggers repairs and escalations it does not need; and eval coverage is partial, with a 5-10% sample on a long-tail workload missing the tail entirely.</p>
 <h4 id="source-4-the-contract">Source 4: The Contract</h4>
 <p>The contract is the commercial agreement between your organization
 and the inference provider, or between your organization and your
@@ -1098,11 +1023,7 @@ requirements - Rate limits and burst allowances - Overage pricing</p>
 Quality or latency performance - Whether committed spend is being
 utilized efficiently - Whether the customer is actually using the
 features that generate inference cost</p>
-<p><strong>Common contract failure modes:</strong> - Committed spend
-that does not match actual usage patterns - Credits that mask true
-run-rate cost - SLA terms that do not match the product’s actual
-reliability - Revenue recognition that does not align with inference
-cost timing</p>
+<p>Contracts fail in characteristic ways: committed spend does not match actual usage patterns, so over-commit burns credits and under-commit pays overage rates; credits mask the true run-rate cost on the dashboard; SLA terms do not match the product's actual reliability profile; and revenue recognition is out of sync with inference-cost timing, so margin reads correctly only at a quarterly aggregate.</p>
 <h3 id="joining-the-four-sources">Joining The Four Sources</h3>
 <p>None of the four sources is sufficient alone. Inference economics
 requires joining them:</p>
@@ -1118,9 +1039,7 @@ produce telemetry.</p></li>
 <p>The join produces a number. But every cost model depends on inputs,
 and not all inputs are equally trustworthy. A team builds a cost model,
 puts LCPR = $0.14 and margin = 45% into a quarterly review deck, and six
-months later margin has dropped to 28%—because three assumptions were
-wrong from the start: cache hit rate was 35-40% not 60%, output length
-p50 was 340 tokens not 250, and human escalation rate was 5.5% not 3%.
+months later margin has dropped to 28%, because three assumptions were wrong from the start: cache hit rate was 35-40% not 60%, output length p50 was 340 tokens not 250, and human escalation rate was 5.5% not 3%.
 Nobody tracked these assumptions. Nobody owned them. Nobody checked
 them.</p>
 <h3 id="the-assumption-register">The Assumption Register</h3>
@@ -1268,32 +1187,14 @@ guess with equal weight.</p>
 </table>
 </div>
 </figure>
-<p>A cost model with three ASSUMED inputs and two UNKNOWN inputs is not
-wrong—it is incomplete. The assumption register makes the incompleteness
-visible so the team knows where to invest in measurement.</p>
-<h3 id="the-data-quality-gate">The Data Quality Gate</h3>
-<p>Before a cost model is used for a decision—migration, pricing change,
-capacity reservation, vendor negotiation—it should pass a data quality
-gate:</p>
-<p><strong>Gate 1: Coverage.</strong> What fraction of inference calls
-have complete traces? If trace coverage is below 95%, the cost model is
-working with a biased sample. Missing traces are not random; they
-correlate with timeouts, errors, and edge cases.</p>
-<p><strong>Gate 2: Freshness.</strong> When were the pricing snapshots
-last refreshed? When was the cache hit rate last measured? When was the
-eval pass rate last calculated? Any input older than its refresh trigger
-is stale.</p>
-<p><strong>Gate 3: Reconciliation.</strong> Does the trace-derived cost
-match the invoice within 5%? If not, the trace is not trustworthy for
-cost modeling until the gap is explained.</p>
-<p><strong>Gate 4: Denominator.</strong> Is the accepted work unit
-defined? Is the quality gate running? If there is no eval, the
-denominator is “requests” not “accepted work,” and the LCPR is
-understated.</p>
-<p><strong>Gate 5: Confidence floor.</strong> How many ASSUMED or
-UNKNOWN inputs feed the cost model? If more than two key inputs are
-ASSUMED, the model is a hypothesis, not a measurement. Label it as
-such.</p>
+<p>A cost model with three ASSUMED inputs and two UNKNOWN inputs is not wrong. It is incomplete. The assumption register makes the incompleteness visible so the team knows where to invest in measurement.</p>
+<h3 id="the-data-quality-gate">Data-Quality Conditions</h3>
+<p>Before a cost model is used for a decision (migration, pricing change, capacity reservation, vendor negotiation), five conditions should hold.</p>
+<p><strong>Coverage.</strong> Trace coverage above 95%. Missing traces are not random; they correlate with timeouts, errors, and edge cases, so a 90%-coverage trace systematically under-reports the cost of the tail.</p>
+<p><strong>Freshness.</strong> Pricing snapshot, cache hit rate, and eval pass rate all dated within their refresh trigger. Stale inputs flow through unchanged and silently lie.</p>
+<p><strong>Reconciliation.</strong> Trace-derived cost within 5% of invoice for the same period. If the gap is wider, the trace is not trustworthy for cost modeling until the gap is explained.</p>
+<p><strong>Denominator.</strong> The accepted work unit defined and the quality gate running. Without an eval, the denominator is "requests" rather than "accepted work" and LCPR is understated.</p>
+<p><strong>Confidence floor.</strong> Fewer than two key inputs in ASSUMED or UNKNOWN status. Above that threshold, the model is a hypothesis. Label it that way in the deck and use it for scoping, not for commitments.</p>
 <h3 id="the-unknown-bucket">The Unknown Bucket</h3>
 <p>Every workload has traffic that cannot be attributed, classified, or
 evaluated. Requests with missing workload IDs. Calls from deprecated
@@ -1438,14 +1339,12 @@ traces to the corresponding invoice period. Calculate LCPR. Measure the
 delta between trace-derived cost and invoice. If the delta is under 5%,
 the trace is trustworthy for daily monitoring. If it exceeds 5%,
 investigate before relying on trace-based cost reporting.</p>
-<p>Before using the cost model for a decision—migration, pricing change,
-capacity reservation, vendor negotiation—check the assumption register.
+<p>Before using the cost model for a decision (migration, pricing change, capacity reservation, vendor negotiation), check the assumption register.
 If more than two key inputs are ASSUMED or UNKNOWN, the model is
 directional, not reliable. Label it as such in the deck. Use it for
 scoping, not for commitments.</p>
 <p>Upgrade assumptions to measurements by investing in trace coverage,
-eval pipeline, and invoice reconciliation—in that order. Trace coverage
-is first because without traces, you cannot measure anything else.</p>
+eval pipeline, and invoice reconciliation, in that order. Trace coverage is first because without traces, you cannot measure anything else.</p>
 <h3 id="where-this-breaks-2">Where This Breaks</h3>
 <ul>
 <li><p><strong>Multi-provider architectures</strong> where traces span
@@ -1504,11 +1403,7 @@ single source is sufficient. Every input to the cost model has a
 confidence level. ASSUMED inputs are hypotheses, not measurements. The
 twenty-trace exercise is the minimum viable starting point.</p></li>
 </ol>
-<p>The next part—Serving Physics—explains the mechanisms behind the
-numbers. Why output tokens cost more than input tokens. Why batch size
-sets the cost-latency frontier. Why cache hit rate is an economic
-variable. Why context length is a memory product. The economics in Part
-1 depend on the physics in Part 2.</p>
+<p>The next part is Serving Physics: the mechanisms behind the numbers. Output tokens cost more than input tokens; batch size sets the cost-latency frontier; cache hit rate is an economic variable; context length is a memory product. The economics in Part 1 depend on the physics in Part 2.</p>
 <hr />
 <h2 id="evidence-notes-for-part-1">Evidence Notes for Part 1</h2>
 <figure>
@@ -1534,21 +1429,19 @@ variable. Why context length is a memory product. The economics in Part
 inference</p></td>
 </tr>
 <tr>
-<td><p>Worked example (1,000 tickets, LCPR = $0.172)</p></td>
-<td><p>Synthetic</p></td>
-<td><p>Illustrative numbers shaped by public billing grammar</p></td>
+<td><p>Worked example (insurance carrier claims-adjuster guidance, LCPR roughly $0.163)</p></td>
+<td><p>Anonymized</p></td>
+<td><p>Anonymized scenario; numbers fabricated but representative of the pattern</p></td>
 </tr>
 <tr>
-<td><p>Human escalation cost ($2/case)</p></td>
+<td><p>Human review queue cost</p></td>
 <td><p>Illustrative</p></td>
-<td><p>Order of magnitude; actual cost depends on support staffing
-model</p></td>
+<td><p>Order of magnitude; actual cost depends on review staffing model</p></td>
 </tr>
 <tr>
 <td><p>Cache hit rate degradation pattern</p></td>
 <td><p>Reported</p></td>
-<td><p>Shaped by production observations; see operator proof boxes 4,
-6</p></td>
+<td><p>Shaped by production observations of prefix-cache eviction under multi-tenant load</p></td>
 </tr>
 <tr>
 <td><p>Invoice-trace delta patterns</p></td>
@@ -1570,9 +1463,7 @@ inputs</p></td>
 </table>
 </div>
 </figure>
-<p>All worked examples in this chapter use synthetic numbers shaped by
-real provider semantics. No numbers should be attributed to any specific
-employer, customer, or deployment.</p>
+<p>The Chapter 2 worked example uses an anonymized scenario; numbers are fabricated but representative of the pattern. Other examples use synthetic numbers shaped by real provider semantics. No numbers should be attributed to any specific employer, customer, or deployment.</p>
 
         </div>
 

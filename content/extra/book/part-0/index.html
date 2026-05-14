@@ -529,10 +529,9 @@
         <h2>How To Use This Book</h2>
         
       </div>
-      <ul class="sidebar-toc"><li><a href="#who-this-is-for">Who This Is For</a></li><li><a href="#evidence-labels">Evidence Labels</a></li><li><a href="#volatile-facts">Volatile Facts</a></li><li><a href="#reading-paths">Reading Paths</a></li><li><a href="#the-calculator">The Calculator</a></li><li><a href="#a-note-on-numbers">A Note On Numbers</a></li><li><a href="#evidence-notes-for-part-0">Evidence Notes for Part 0</a></li></ul>
+      <ul class="sidebar-toc"><li><a href="#who-this-is-for">Who This Is For</a></li><li><a href="#sources">Sources and Numbers</a></li><li><a href="#reading-paths">Reading Paths</a></li><li><a href="#the-calculator">The Calculator</a></li></ul>
       <div class="sidebar-nav">
-        <a href="/book/opener/">&larr; Opener: The Twelve-Dollar
-Mystery</a>
+        <a href="/book/opener/">&larr; Opener: The Deterministic Gate</a>
         <a href="/book/part-1/">Part 1: The Economic Unit &rarr;</a>
       </div>
     </nav>
@@ -549,264 +548,82 @@ Mystery</a>
           
 <hr />
 <h2 id="who-this-is-for">Who This Is For</h2>
-<p>This is a field manual for people who make, defend, and operate
-production inference decisions. It is not an inference engineering
-textbook, a benchmark report, a vendor comparison, or a beginner
-introduction to transformers.</p>
-<p>The primary reader is a senior engineer, staff engineer, platform
-engineer, ML engineer, FDE, solutions engineer, technical founder, or
-engineering leader who owns or advises on production AI systems. You
-probably run inference workloads that cost real money, serve real users,
-and break in production. You need to decide what should run where, what
-it actually costs, and when your current architecture is wrong.</p>
-<p>The secondary reader is a finance partner, operations lead, or
-technical GTM leader who needs the cost model without deep GPU
-implementation detail. Parts 1, 3, and 5 are written for you. Part 2
-explains why the numbers work the way they do—you can skim it and still
-use the calculator and artifacts.</p>
-<p>This book assumes you can read a formula, understand what a p99
-percentile means, and know what an API call is. It does not assume you
-know how KV cache works, why output tokens cost more than input tokens,
-or what a roofline model is. Part 2 teaches those from first
-principles.</p>
+<p>A field manual for people who own production inference decisions: what runs where, what it actually costs, when the architecture is wrong. The primary reader is an engineer or technical leader running real workloads. The secondary reader is a finance or operations partner who needs the cost model without the GPU detail; Parts 1, 3, and 5 are written for them.</p>
+<p>The book assumes you can read a formula and know what p99 means. It does not assume you know KV cache, the prefill/decode asymmetry, or roofline analysis. Part 2 teaches those from first principles.</p>
 <hr />
-<h2 id="evidence-labels">Evidence Labels</h2>
-<p>Every important claim in this book carries a label. The label tells
-you how confident you should be and what would change the claim.</p>
-<figure>
-<div data-align="center">
-<table>
-<thead>
-<tr>
-<th><p>Label</p></th>
-<th><p>Meaning</p></th>
-<th><p>What would change it</p></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><p>MEASURED</p></td>
-<td><p>Observed from production telemetry or a reproducible
-experiment</p></td>
-<td><p>Better measurement, different workload, different time
-period</p></td>
-</tr>
-<tr>
-<td><p>PUBLIC</p></td>
-<td><p>Stated directly in official documentation, pricing page, or
-published paper</p></td>
-<td><p>Provider changes the page, paper is superseded</p></td>
-</tr>
-<tr>
-<td><p>CONTRACTED</p></td>
-<td><p>In a signed agreement</p></td>
-<td><p>Contract renegotiation</p></td>
-</tr>
-<tr>
-<td><p>DERIVED</p></td>
-<td><p>Follows logically from stated assumptions and dimensional
-analysis</p></td>
-<td><p>Assumptions are wrong or incomplete</p></td>
-</tr>
-<tr>
-<td><p>REPORTED</p></td>
-<td><p>A credible external party reports it, but we have not
-independently verified</p></td>
-<td><p>Original report was wrong, conditions changed</p></td>
-</tr>
-<tr>
-<td><p>INFERRED</p></td>
-<td><p>Inferred from public pricing, documented behavior, or observable
-patterns</p></td>
-<td><p>Provider changes implementation, inference was wrong</p></td>
-</tr>
-<tr>
-<td><p>SYNTHETIC</p></td>
-<td><p>Illustrative numbers constructed to show a mechanism</p></td>
-<td><p>Not intended to match any specific deployment</p></td>
-</tr>
-<tr>
-<td><p>OPINION</p></td>
-<td><p>Judgment based on experience and synthesis</p></td>
-<td><p>Author could be wrong; conditions could differ</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-<p><strong>How to use these labels:</strong></p>
-<ul>
-<li><p>MEASURED and PUBLIC claims are the safest to rely on for
-decisions. Check the access date.</p></li>
-<li><p>DERIVED claims are safe if you accept the assumptions. The
-assumptions are stated.</p></li>
-<li><p>REPORTED claims are leads, not proof. Validate before acting on
-them.</p></li>
-<li><p>SYNTHETIC examples teach mechanisms. Do not treat them as
-benchmarks.</p></li>
-<li><p>OPINION claims are the author’s judgment. They are marked so you
-can disagree.</p></li>
-</ul>
-<p>If a claim has no label, it is either a definition or a structural
-statement about the book. Factual claims about production systems,
-costs, or provider behavior always carry labels.</p>
-<hr />
-<h2 id="volatile-facts">Volatile Facts</h2>
-<p>Provider prices change. Model availability changes. Cache semantics
-change. Hardware specifications get superseded. Rate limits get
-adjusted. Contracts get renegotiated.</p>
-<p>This book handles volatility with three mechanisms:</p>
-<p><strong>1. Versioned pricing snapshots.</strong> All provider prices
-live in dated YAML files, not in chapter prose. When a chapter says “see
-the pricing snapshot,” the snapshot has a date and a source URL. If the
-snapshot is older than its refresh trigger, the number is stale.</p>
-<p><strong>2. Assumption registers.</strong> Every worked example lists
-its inputs with confidence labels. If an input is ASSUMED, the example
-tells you. If it is MEASURED, it tells you when and how. The sensitivity
-analysis shows which inputs dominate the result—those are the ones worth
-refreshing.</p>
-<p><strong>3. Refresh triggers.</strong> Each volatile input has a
-condition that should trigger re-verification: a provider price change,
-a quarterly trace review, a contract renewal, a model upgrade. The
-assumption register tracks these.</p>
-<p>The goal is not to freeze the numbers. It is to make the assumptions
-visible so you know what to check when your situation changes.</p>
+<h2 id="sources">Sources and Numbers</h2>
+<p>Factual claims about pricing, throughput, capability, or provider behavior carry inline sources: a URL, a citation, or a dated snapshot in the appendix. Synthetic or illustrative material (numbers built to teach a mechanism rather than predict your bill) is called out in prose at the point of use. Prices change, models change, contracts change; if a number in this book would change your decision, check the snapshot date and re-verify.</p>
 <hr />
 <h2 id="reading-paths">Reading Paths</h2>
-<p>Not every reader needs every chapter. Start where your problem
-is.</p>
-<p><strong>“I need to cut inference cost.”</strong></p>
-<p>Start with the Opener (Trace Autopsy). Then Part 1’s LCPR chapter to
-define your cost correctly. Then Part 2’s roofline, batch frontier, and
-prompt caching chapters for the biggest cost levers. Then Part 3 for
-your specific workload. Then Part 4 for migration options.</p>
-<p><strong>“I need to evaluate a vendor or provider.”</strong></p>
-<p>Start with Part 1’s “Token Price Is Not Cost” and “Trace, Invoice,
-Eval, and Contract” chapters. Then Part 2’s productive capacity chapter
-for why benchmarks mislead. Then Part 3 for your workload profile. Then
-Part 5’s baseline and benchmark hygiene chapters.</p>
-<p><strong>“I need to decide serverless vs dedicated.”</strong></p>
-<p>Start with Part 2’s roofline and batch frontier chapters for the
-physics. Then Part 4’s serverless open models and managed dedicated
-chapters. The dedicated utilization derivation gives you the break-even
-formula.</p>
-<p><strong>“I need to understand why our bill changed.”</strong></p>
-<p>Start with Part 1’s “Trace, Invoice, Eval, and Confidence” chapter
-(which includes the assumption register). Then Part 5’s observability
-and trace-to-margin chapter and the incidents and review chapter.</p>
-<p><strong>“I need to leave closed APIs.”</strong></p>
-<p>Start with Part 4’s model candidate funnel and RouteFit Matrix
-chapter. Then Part 4’s “Do Nothing Is A Decision” and serverless open
-models chapters. Then Part 4’s migration gates and reversion signals
-chapter.</p>
-<p><strong>“I am building or advising on an agentic
-system.”</strong></p>
-<p>Start with the Opener for the cost structure. Then Part 2’s prompt
-caching chapter. Then Part 3’s agentic workloads chapter (which covers
-both answer-vs-agentic economics and coding agents). The agent trace
-pack and fanout multiplier model are in the agentic workloads
-chapter.</p>
-<p><strong>“I run the technical or financial review.”</strong></p>
-<p>The Inference Review Pack in Part 5 is designed for you. Read Part 1
-for the economic unit, then go directly to Part 5.</p>
-<hr />
-<h2 id="the-calculator">The Calculator</h2>
-<p>The calculator is the execution layer for this book. The book teaches
-the mechanism, the wrong conclusion, the better model, and the decision
-rule. The calculator carries the repeatable computations, sensitivity
-analysis, and versioned source data.</p>
-<p>Every worked example in the book has a corresponding calculator seed:
-a YAML file with the inputs, assumptions, and expected outputs. You can
-load the seed, change the inputs to match your workload, and see how the
-result changes.</p>
-<p>Calculator views referenced in the book:</p>
-<ul>
-<li><p><strong>LCPR-2026</strong>: loaded cost per result, component
-breakdown, sensitivity</p></li>
-<li><p><strong>Goodput Frontier Test</strong>: accepted work per second
-under SLO constraints</p></li>
-<li><p><strong>Trace-to-Margin Review</strong>: four-source join from
-traces, invoices, evals, and contracts</p></li>
-<li><p><strong>RouteFit Matrix</strong>: workload identity mapped to
-route candidates</p></li>
-<li><p><strong>Cache break-even</strong>: write/read/TTL economics by
-provider</p></li>
-<li><p><strong>KV capacity</strong>: concurrent sequences by context
-length and model config</p></li>
-<li><p><strong>Dedicated utilization gate</strong>: break-even
-utilization for dedicated vs serverless</p></li>
-</ul>
-<p>Every calculator output shows: the pricing snapshot date, assumption
-confidence labels, which inputs dominate the result, and what would
-change the recommendation.</p>
-<p>The calculator is not a substitute for measurement. It is a
-structured way to make assumptions explicit and find out which
-assumptions matter most.</p>
-<hr />
-<h2 id="a-note-on-numbers">A Note On Numbers</h2>
-<p>All worked examples in this book use synthetic numbers unless
-explicitly sourced. The numbers are shaped by real provider billing
-semantics, real hardware specifications, and real production failure
-modes—but they should not be attributed to any specific employer,
-customer, or deployment.</p>
-<p>When an example says “illustrative,” it means the numbers teach the
-mechanism. When it says “public,” the source URL is in the evidence
-notes. When it says “derived,” the assumptions are stated.</p>
-<p>If a number changes your decision, verify it. The assumption register
-and pricing snapshot tell you where the number came from and when it was
-last checked.</p>
-<hr />
-<h2 id="evidence-notes-for-part-0">Evidence Notes for Part 0</h2>
+<p>Parts 1 and 5 are useful to engineering, product, and finance partners together. Part 2 is the engineering foundation: if your team hasn't reasoned about roofline or KV capacity quantitatively, start there. Part 3 maps workloads to constraints; Part 4 maps options to operational commitment. Most readers will go nonlinear. The table below is a cross-reference, not a curriculum.</p>
 <figure>
 <div data-align="center">
 <table>
 <thead>
 <tr>
-<th><p>Claim</p></th>
-<th><p>Type</p></th>
-<th><p>Source</p></th>
+<th><p>Working on</p></th>
+<th><p>Start with</p></th>
+<th><p>Then</p></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><p>Reader personas and book scope</p></td>
-<td><p>OPINION</p></td>
-<td><p>Author’s synthesis from plan and writing guidelines</p></td>
+<td><p>Cost reduction</p></td>
+<td><p>Opener, Part 1 (loaded cost)</p></td>
+<td><p>Part 2 (cost levers), Part 3 (your workload)</p></td>
 </tr>
 <tr>
-<td><p>Evidence label taxonomy</p></td>
-<td><p>DERIVED</p></td>
-<td><p>Standard data quality framework adapted for inference
-economics</p></td>
+<td><p>Vendor evaluation</p></td>
+<td><p>Part 1 (trace/invoice/eval/contract)</p></td>
+<td><p>Part 2 (productive capacity), Part 5 (benchmark hygiene)</p></td>
 </tr>
 <tr>
-<td><p>Volatile fact handling mechanisms</p></td>
-<td><p>DERIVED</p></td>
-<td><p>Standard source management applied to pricing and provider
-docs</p></td>
+<td><p>Serverless vs dedicated</p></td>
+<td><p>Part 2 (roofline, batch frontier)</p></td>
+<td><p>Part 4 (utilization break-even)</p></td>
 </tr>
 <tr>
-<td><p>Reading path recommendations</p></td>
-<td><p>OPINION</p></td>
-<td><p>Based on book structure and chapter content</p></td>
+<td><p>Bill investigation</p></td>
+<td><p>Part 1 (assumption register)</p></td>
+<td><p>Part 5 (observability, incidents)</p></td>
 </tr>
 <tr>
-<td><p>Calculator view list</p></td>
-<td><p>DERIVED</p></td>
-<td><p>From worked examples and derivations in Parts 1-5</p></td>
+<td><p>Closed-API migration</p></td>
+<td><p>Part 4 (candidate funnel, migration gates)</p></td>
+<td><p>Part 4 (reversion signals)</p></td>
+</tr>
+<tr>
+<td><p>Agentic / coding-agent systems</p></td>
+<td><p>Opener, Part 2 (prompt caching)</p></td>
+<td><p>Part 3 (agentic workloads, fanout)</p></td>
+</tr>
+<tr>
+<td><p>Monthly technical/financial review</p></td>
+<td><p>Part 1 (economic unit)</p></td>
+<td><p>Part 5 (inference review pack)</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>Part 0 does not make claims about production systems or provider
-behavior. It establishes the contract between the book and the
-reader.</p>
+<hr />
+<h2 id="the-calculator">The Calculator</h2>
+<p>The calculator runs the math. The book teaches the mechanism and the decision rule; the calculator carries the repeatable computations and sensitivity analysis. Every worked example has a corresponding seed: a YAML file with inputs, assumptions, and expected outputs. Load a seed, change inputs to match your workload, see what moves.</p>
+<p>Views referenced in the book:</p>
+<ul>
+<li><p><strong>LCPR</strong>: loaded cost per result, component breakdown, sensitivity.</p></li>
+<li><p><strong>goodput frontier</strong>: accepted work per second under SLO constraints.</p></li>
+<li><p><strong>trace-to-invoice reconciliation</strong>: four-source join from traces, invoices, evals, and contracts.</p></li>
+<li><p><strong>workload-to-route mapping</strong>: workload identity mapped to route candidates.</p></li>
+<li><p><strong>cache break-even</strong>: write/read/TTL economics by provider.</p></li>
+<li><p><strong>KV capacity</strong>: concurrent sequences by context length and model config.</p></li>
+<li><p><strong>dedicated utilization gate</strong>: break-even utilization for dedicated vs serverless.</p></li>
+</ul>
+<p>Every output shows the pricing snapshot date, the inline sources, and which inputs dominate. The calculator doesn't replace measurement; it makes the assumptions explicit. If a number would change your decision, verify it.</p>
 
         </div>
 
-        <nav class="part-nav"><a href="/book/opener/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Opener: The Twelve-Dollar
-Mystery</span></a><a href="/book/part-1/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 1: The Economic Unit</span></a></nav>
+        <nav class="part-nav"><a href="/book/opener/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Opener: The Deterministic Gate</span></a><a href="/book/part-1/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 1: The Economic Unit</span></a></nav>
       </div>
     </div>
   </div>

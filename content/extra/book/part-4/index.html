@@ -527,14 +527,14 @@
         <a class="back-link" href="/book/">&larr; All Parts</a>
         <div class="part-label">Part 4</div>
         <h2>Migration Gates</h2>
-        <div class="chapters-info">Chapters 15–21</div>
+        <div class="chapters-info">Chapters 15–22</div>
       </div>
       <ul class="sidebar-toc"><li><a href="#chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter
-15: The Model Candidate Funnel And RouteFit Matrix</a></li><li><a href="#chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A
+15: The Model Candidate Funnel And routefit matrix</a></li><li><a href="#chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A
 Decision</a></li><li><a href="#chapter-17-move-workloads-to-serverless-open-models">Chapter 17:
 Move Workloads To Serverless Open Models</a></li><li><a href="#chapter-18-use-managed-dedicated">Chapter 18: Use Managed
-Dedicated</a></li><li><a href="#chapter-19-self-manage-gpus">Chapter 19: Self-Manage GPUs</a></li><li><a href="#chapter-20-multi-source-and-background-agent-routing">Chapter
-20: Multi-Source And Background Agent Routing</a></li><li><a href="#chapter-21-migration-gates-and-reversion-signals">Chapter 21:
+Dedicated</a></li><li><a href="#chapter-19-fine-tuning-and-post-training-as-cost-levers">Chapter 19: Fine-Tuning and Post-Training as Cost Levers</a></li><li><a href="#chapter-20-self-manage-gpus">Chapter 20: Self-Manage GPUs</a></li><li><a href="#chapter-21-multi-source-and-background-agent-routing">Chapter
+21: Multi-Source And Background Agent Routing</a></li><li><a href="#chapter-22-migration-gates-and-reversion-signals">Chapter 22:
 Migration Gates And Reversion Signals</a></li><li><a href="#part-4-summary">Part 4 Summary</a></li><li><a href="#evidence-notes-for-part-4">Evidence Notes for Part 4</a></li></ul>
       <div class="sidebar-nav">
         <a href="/book/part-3/">&larr; Part 3: Workload Economics</a>
@@ -548,12 +548,12 @@ Decision &rarr;</a>
         <div class="part-header">
           <div class="label">Part 4</div>
           <h1>Migration Gates</h1>
-          <div class="chapters-label">Chapters 15–21</div>
+          <div class="chapters-label">Chapters 15–22</div>
         </div>
 
         <div class="content">
           
-<p>Part 3 produced a RouteFit Matrix: each workload identity mapped to
+<p>Part 3 produced a routefit matrix: each workload identity mapped to
 candidate routes, with feasibility gates, estimated LCPR, and primary
 constraints. Part 4 takes each route column and subjects it to a harder
 question: what does it actually take to get there, what goes wrong along
@@ -565,7 +565,7 @@ decision from “self-manage GPUs,” which is a different decision from
 operational costs, and reversion triggers. And the first option—staying
 where you are—is a decision too.</p>
 <p>The chapters proceed roughly in order of operational commitment. The
-model candidate funnel and RouteFit Matrix filter candidates before any
+model candidate funnel and routefit matrix filter candidates before any
 migration begins. Do Nothing requires the least change. Serverless open
 models require prompt portability and eval work but no infrastructure
 ownership. Managed dedicated requires capacity planning and utilization
@@ -577,7 +577,7 @@ signals that apply to all transitions.</p>
 <hr />
 <h2
 id="chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter
-15: The Model Candidate Funnel And RouteFit Matrix</h2>
+15: The Model Candidate Funnel And routefit matrix</h2>
 <h3 id="the-field-problem-5">The field problem</h3>
 <p>Fourteen model-provider combinations. Three months of evaluation. At
 the end: a spreadsheet of benchmark scores, pricing tiers, and feature
@@ -663,19 +663,59 @@ benchmark throughput. LCPR from traces: input tokens, output tokens,
 cache hit rate, quality gate cost, retry rate, and the accepted-work
 denominator.</p>
 <p>This is where the calculator becomes essential. Run each candidate
-through the LCPR-2026 formula with workload-specific parameters from the
-Workload Identity Schema (Part 3 Chapter 10).</p>
+through the LCPR formula with workload-specific parameters from the
+workload identity schema (Part 3 Chapter 10).</p>
 <p><strong>Stage 4: Route mapping.</strong> The surviving candidates
-become columns in the RouteFit Matrix.</p>
-<h3 id="the-routefit-matrix">The RouteFit Matrix</h3>
-<p>The RouteFit Matrix maps workload identities (rows) to serving routes
-(columns).</p>
+become columns in the routefit matrix.</p>
+<h3 id="the-routefit-matrix">The routefit matrix</h3>
+<p>The routefit matrix maps workload identities (rows) to serving routes
+(columns). Each cell is a measured LCPR per accepted output, not a
+pricing-page estimate. The illustration below shows a three-workload
+fleet at the end of a funnel pass:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Workload identity</p></th>
+<th><p>Closed API (baseline)</p></th>
+<th><p>Serverless open</p></th>
+<th><p>Managed dedicated</p></th>
+<th><p>Self-managed</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Support resolution (500K/mo, diurnal)</p></td>
+<td><p>$0.041</p></td>
+<td><p><strong>$0.031</strong></p></td>
+<td><p>$0.034</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr>
+<td><p>Document extraction (compliance-bound, 80K/mo)</p></td>
+<td><p><strong>$0.058</strong></p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr>
+<td><p>Background classification (2M/day, stable)</p></td>
+<td><p>$0.012</p></td>
+<td><p>$0.009</p></td>
+<td><p><strong>$0.006</strong></p></td>
+<td><p>$0.005</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
 <p>* N/A means the candidate was eliminated in Stage 1 (volume too low
-for dedicated).</p>
-<p>Each cell is a measured LCPR, not a pricing-page estimate. Empty
-cells mean the route was eliminated by the funnel. The matrix makes the
-migration decision visible: which routes are feasible, which are
-cheapest, and which require operational investment.</p>
+for dedicated). Em-dashes mean the route was eliminated by the funnel
+(failed feasibility or capability screen). Bold cells are the
+recommended route. The matrix makes the migration decision visible:
+which routes are feasible, which are cheapest, and which require
+operational investment.</p>
 <h3 id="the-naive-answer-6">The naive answer</h3>
 <blockquote>
 <p>“Compare prices on the provider’s pricing page and pick the
@@ -688,13 +728,13 @@ team from optimizing the wrong metric.</p>
 <h3 id="the-better-model-6">The better model</h3>
 <p>Run the funnel before the spreadsheet. The funnel is fast: Stage 1
 takes hours (constraint checks), Stage 2 takes days (eval runs), Stage 3
-takes a week (instrumented traffic). The RouteFit Matrix is the output.
+takes a week (instrumented traffic). The routefit matrix is the output.
 Every migration decision in the chapters that follow uses the matrix as
 its input.</p>
 <h3 id="decision-rule-14">Decision rule</h3>
 <p>Do not compare economics until feasibility and capability are
 confirmed. The funnel order—constraints, capability, economics, route
-mapping—prevents wasted evaluation effort. Update the RouteFit Matrix
+mapping—prevents wasted evaluation effort. Update the routefit matrix
 quarterly, or when models, pricing, or workload shapes change
 materially.</p>
 <h3 id="what-to-measure-12">What to measure</h3>
@@ -706,7 +746,7 @@ where)</p></li>
 evals</p></li>
 <li><p>LCPR per accepted output by candidate (from traces, not pricing
 pages)</p></li>
-<li><p>RouteFit Matrix coverage (which workload-route cells are measured
+<li><p>routefit matrix coverage (which workload-route cells are measured
 vs estimated)</p></li>
 </ul>
 <h3 id="where-this-breaks-14">Where this breaks</h3>
@@ -718,7 +758,7 @@ requirement can invalidate weeks of evaluation work. Run Stage 1 against
 current and anticipated constraints.</p>
 <h3 id="calculator-hook-14">Calculator hook</h3>
 <p>input template. One row per workload identity, one column per
-surviving route candidate. Each cell populates from LCPR-2026 with
+surviving route candidate. Each cell populates from LCPR with
 workload-specific parameters. The calculator flags cells with estimated
 rather than measured LCPR.</p>
 <hr />
@@ -742,6 +782,7 @@ rewriting, quality regression risk, operational learning curve, and
 opportunity cost—exceeds the savings over the planning horizon.</p>
 <p>The naive calculation compares token prices. The correct calculation
 compares:</p>
+<p><strong>payback period = migration cost ÷ (current LCPR − target LCPR) × monthly accepted volume</strong></p>
 <p>If the payback period exceeds the planning horizon, or if the
 denominator is uncertain because the target LCPR has not been measured,
 Do Nothing is the rational choice until better data arrives.</p>
@@ -753,36 +794,35 @@ Do Nothing is the rational choice until better data arrives.</p>
 candidate’s token price is not the migration savings. The migration
 savings are the gap between current LCPR and target LCPR, minus the
 migration cost, over the payback period. If the LCPR gap is 40% but
-migration consumes 8 engineer-months, the payback calculation matters
-more than the token price comparison.</p>
+migration consumes a team-quarter (typically 4-12 engineer-weeks
+depending on workflow complexity, eval maturity, and prompt-pipeline
+drift), the payback calculation matters more than the token-price
+comparison.</p>
 <h3 id="the-better-model-7">The better model</h3>
 <p>Do Nothing is the right decision when any of these conditions
 hold:</p>
-<p><strong>1. The workload is small.</strong> If total inference spend
-is under $5,000/month, migration engineering time may never pay back.
-Optimize prompts, enable caching, reduce output length, and revisit when
-the workload grows.</p>
-<p><strong>2. The eval suite does not exist yet.</strong> Without
-task-specific evals, you cannot measure whether the new route matches
-the old route’s quality. Migrating without evals is moving blind. Build
-the eval first; migration becomes a measured experiment rather than a
-bet.</p>
-<p><strong>3. Compliance or contractual constraints eliminate the target
-route.</strong> Data residency, model training rights, BAA requirements,
-or customer contracts may make the target route infeasible regardless of
-price. Verify feasibility before calculating savings.</p>
-<p><strong>4. The planning horizon is short.</strong> If the product may
-pivot, the workload may change shape, or the team may restructure within
-6 months, locking in migration work creates sunk cost against an
-uncertain future.</p>
-<p><strong>5. The current provider is improving.</strong> Model quality,
-pricing, caching features, and latency improve continuously. The gap you
-measure today may narrow by the time migration completes.</p>
+<p>The workload is small. Under about $5,000/month in inference spend,
+migration engineering time may never pay back. Optimize prompts, enable
+caching, reduce output length, and revisit when the workload grows.</p>
+<p>The eval suite does not exist yet. Without task-specific evals, you
+cannot measure whether the new route matches the old route’s quality.
+Migrating without evals is moving blind. Build the eval first; migration
+becomes a measured experiment rather than a bet.</p>
+<p>Compliance or contractual constraints eliminate the target route.
+Data residency, model training rights, BAA requirements, or customer
+contracts may make the target route infeasible regardless of price.
+Verify feasibility before calculating savings.</p>
+<p>The planning horizon is short. If the product may pivot, the workload
+may change shape, or the team may restructure within six months, locking
+in migration work creates sunk cost against an uncertain future.</p>
+<p>The current provider is improving. Model quality, pricing, caching
+features, and latency improve continuously. The gap you measure today
+may narrow by the time migration completes.</p>
 <h3 id="decision-rule-15">Decision rule</h3>
 <p>Before starting a migration, calculate the payback period. If it
 exceeds 6 months with uncertain LCPR estimates, stay and invest in
 measurement instead: build the eval suite, instrument the traces,
-calculate current LCPR, and populate the RouteFit Matrix. Those
+calculate current LCPR, and populate the routefit matrix. Those
 investments pay off regardless of the migration decision.</p>
 <h3 id="what-to-measure-13">What to measure</h3>
 <ul>
@@ -798,11 +838,11 @@ price)</p></li>
 reliability, or quality degrades and the team has the eval suite and
 operational capacity to migrate. The risk of Do Nothing is lock-in and
 complacency: staying because migration seems hard, not because it is
-uneconomic. Review the decision quarterly. If the RouteFit Matrix shows
+uneconomic. Review the decision quarterly. If the routefit matrix shows
 a feasible, measured, cheaper route, the payback period has shortened,
 and the team has evals—migrate.</p>
 <h3 id="calculator-hook-15">Calculator hook</h3>
-<p>comparison: current route vs candidate route, with migration cost
+<p>The do-nothing comparison takes current route vs candidate route, with migration cost
 amortized over the payback period. The sensitivity analysis shows how
 engineering cost assumptions change the payback period.</p>
 <hr />
@@ -824,31 +864,34 @@ capacity planning, and no GPU management. The economics change from “pay
 per token at the closed model’s rate” to “pay per token at the open
 model’s rate.”</p>
 <p>The economic advantage of open models on serverless endpoints comes
-from three places:</p>
-<p><strong>1. Model size efficiency.</strong> A 70B open model may match
-a frontier closed model on many tasks at lower per-token cost. The
-smaller model processes fewer FLOPs per token, which translates to lower
-provider serving cost, which translates to lower token price.</p>
-<p><strong>2. Competition.</strong> Multiple providers serve the same
-open model (Llama, Mistral, Qwen, DeepSeek). Price competition between
-Together, Fireworks, Groq, and others drives serverless open-model
-prices below what a single provider would charge.</p>
-<p><strong>3. Caching and batch availability.</strong> Open-model
-serverless endpoints generally support the same caching and batch
-features as closed APIs. The cost levers from Part 2 apply equally.</p>
+from three places.</p>
+<p>Model size efficiency. A 70B open model may match a frontier closed
+model on many tasks at lower per-token cost. The smaller model processes
+fewer FLOPs per token, which translates to lower provider serving cost,
+which translates to lower token price.</p>
+<p>Competition. Multiple providers serve the same open models — Llama,
+Mistral, Qwen, DeepSeek, GLM, and Kimi families are all multi-host. The
+catalog of serverless open-model providers in mid-2026 spans Anyscale
+Endpoints, Cerebras, DeepInfra, Fireworks, Groq, Hyperbolic, Replicate,
+and Together, plus the hyperscaler open-model surfaces (Bedrock for
+Llama, Vertex for several open families). Price competition across this
+set, not any single provider, is what pushes serverless open-model rates
+below what a sole-source provider would charge.</p>
+<p>Caching and batch availability. Open-model serverless endpoints
+usually support the same caching and batch features as closed APIs. The
+Part 2 chapters on caching and batch economics apply unchanged.</p>
 <p>The risks are:</p>
-<p><strong>1. Prompt portability.</strong> Prompts engineered for one
-model family may not transfer to another. System prompts, tool
-definitions, output format instructions, and few-shot examples often
-need rewriting. This is engineering work, not a configuration
-change.</p>
-<p><strong>2. Quality regression.</strong> The open model may score well
-on general benchmarks but fail on the specific task distribution. The
-model candidate funnel from Chapter 15 exists to catch this—but only if
-the eval set represents production traffic.</p>
-<p><strong>3. Eval coverage.</strong> Moving from a closed model to an
-open model changes the failure mode distribution. New failure modes may
-not be covered by the existing eval suite.</p>
+<p>Prompt portability. Prompts engineered for one model family may not
+transfer to another. System prompts, tool definitions, output format
+instructions, and few-shot examples often need rewriting. This is
+engineering work, not a configuration change.</p>
+<p>Quality regression. The open model may score well on general
+benchmarks but fail on the specific task distribution. The model
+candidate funnel from Chapter 15 exists to catch this, but only if the
+eval set represents production traffic.</p>
+<p>Eval coverage. Moving from a closed model to an open model changes
+the failure-mode distribution. New failure modes may not be covered by
+the existing eval suite.</p>
 <h3 id="the-naive-answer-8">The naive answer</h3>
 <blockquote>
 <p>“Open models are cheaper. Switch everything.”</p>
@@ -875,87 +918,80 @@ engineering hours does prompt rewriting require? Include this in the
 migration cost.</p></li>
 </ol>
 <p>The migration is economic when:</p>
+<p><strong>(LCPR_current − LCPR_serverless_open) × monthly_volume × payback_horizon &gt; migration_cost</strong></p>
 <p>And the quality gate confirms that the quality floor is met.</p>
 <h3 id="worked-example-9">Worked example</h3>
+<p>A 500K-resolution-per-month support workload migrated from a
+closed Sonnet-class API to a serverless open-model endpoint on a 70B
+Llama-class model. Token price gap: roughly 78%. Below are sample
+results from the 4-week canary at 35% traffic.</p>
 <figure>
 <div data-align="center">
 <table>
 <thead>
 <tr>
 <th><p>Metric</p></th>
-<th><p>Closed API (current)</p></th>
-<th><p>Serverless open (candidate)</p></th>
+<th><p>Closed (baseline)</p></th>
+<th><p>Serverless open (canary)</p></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><p>Input price/MTok</p></td>
-<td><p>$3.00</p></td>
-<td><p>$0.88</p></td>
-</tr>
-<tr>
-<td><p>Output price/MTok</p></td>
-<td><p>$15.00</p></td>
-<td><p>$0.88</p></td>
-</tr>
-<tr>
 <td><p>Cache hit rate</p></td>
-<td><p>72%</p></td>
-<td><p>68% (different prefix handling)</p></td>
+<td><p>0.71</p></td>
+<td><p><strong>0.79</strong> (different prefix handling, simpler tool
+schema)</p></td>
 </tr>
 <tr>
 <td><p>Quality pass rate</p></td>
-<td><p>91%</p></td>
-<td><p>86%</p></td>
+<td><p>0.91</p></td>
+<td><p>0.86</p></td>
 </tr>
 <tr>
 <td><p>Repair rate</p></td>
-<td><p>6%</p></td>
-<td><p>11%</p></td>
+<td><p>5.2%</p></td>
+<td><p>9.8%</p></td>
 </tr>
 <tr>
-<td><p>Human escalation</p></td>
-<td><p>3%</p></td>
-<td><p>5%</p></td>
+<td><p>Repair success rate</p></td>
+<td><p>87%</p></td>
+<td><p><strong>94%</strong> (the new model accepted repair instructions
+more cleanly)</p></td>
+</tr>
+<tr>
+<td><p>Escalation rate</p></td>
+<td><p>3.1%</p></td>
+<td><p>4.9%</p></td>
 </tr>
 <tr>
 <td><p>LCPR per accepted resolution</p></td>
-<td><p>$0.038</p></td>
-<td><p>$0.029</p></td>
+<td><p>$0.041</p></td>
+<td><p>$0.031</p></td>
 </tr>
 <tr>
 <td><p>Prompt rewrite cost</p></td>
-<td><p>$0</p></td>
-<td><p>$15,000 (one-time)</p></td>
-</tr>
-<tr>
-<td><p>Eval expansion cost</p></td>
-<td><p>$0</p></td>
-<td><p>$8,000 (one-time)</p></td>
-</tr>
-<tr>
-<td><p>Monthly volume</p></td>
-<td><p>500,000 resolutions</p></td>
-<td><p>500,000 resolutions</p></td>
-</tr>
-<tr>
-<td><p>Monthly savings</p></td>
 <td><p>—</p></td>
-<td><p>$4,500</p></td>
+<td><p>~$11K (lower than estimated; existing tool schemas ported
+cleanly)</p></td>
 </tr>
 <tr>
-<td><p>Payback period</p></td>
+<td><p>Payback period at full ramp</p></td>
 <td><p>—</p></td>
-<td><p>~5 months</p></td>
+<td><p>~2.2 months ($11K rewrite ÷ $5K/mo full-ramp savings; add 0.5-1 month of ramp-up before savings reach steady state)</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
-<p>The token price gap is ~80%. The LCPR gap is ~24% because quality
-regression partially offsets the token savings. The payback period
-accounts for the one-time migration costs. After payback, the savings
-compound monthly.</p>
+<p>Two side-findings the migration deck did not predict: cache hit rate
+<em>improved</em> on the new endpoint (longer effective TTL plus a
+simpler tool schema), and repair success <em>improved</em> (the new
+model handled “your previous answer missed X” prompts more cleanly than
+the baseline). The token-price gap was misleading. The LCPR gap was
+real. The headline savings landed at about 22%, not 78%. After payback
+the savings compound, but the lesson the deck buried was that two of
+the dimensions the team was sure would degrade actually got better,
+which is what real migrations look like.</p>
 <h3 id="decision-rule-16">Decision rule</h3>
 <p>Serverless open models are economic when the LCPR gap (not the token
 price gap) exceeds migration cost within an acceptable payback period,
@@ -992,14 +1028,11 @@ pass rate.</p>
 Dedicated</h2>
 <h3 id="the-field-problem-8">The field problem</h3>
 <p>Two million requests per day through a serverless open-model
-endpoint. Monthly bill: $42,000. The FDE suggests a managed dedicated
-endpoint—same model, same provider, but on reserved GPUs at
-$3.50/GPU-hour. At 800 accepted requests per hour per GPU, the cost
-would be $28,000/month. A 33% savings. Two GPUs are provisioned.</p>
-<p>Three months later, the bill is $50,400/month—higher than serverless.
+endpoint. Monthly bill: $42,000. An inference platform engineer's recommendation: price the same model on managed dedicated — same provider, same weights, but on reserved GPUs at a representative H100 reserved rate around $3.20/GPU-hour (mid-2026 reserved rates run roughly $2.95-$4.30 across CoreWeave, Lambda, RunPod, and Together). At 800 accepted requests per hour per GPU, the projection is $28,000/month. A 33% savings. Two GPUs are provisioned.</p>
+<p>Three months later, the bill is $50,400/month, higher than serverless.
 The GPUs run 24/7 ($5,040/month each), but traffic is concentrated in 10
 hours per day. During the other 14 hours, utilization averages 8%. The
-team is paying for idle hardware. The FDE’s calculation assumed uniform
+team is paying for idle hardware. The original projection assumed uniform
 utilization. Production has a pronounced diurnal pattern.</p>
 <h3 id="the-mechanism-8">The mechanism</h3>
 <p>Managed dedicated endpoints convert token economics into capacity
@@ -1066,8 +1099,7 @@ deployment)</p></td>
 </table>
 </div>
 </figure>
-<p>Dedicated is cheaper only when AND leaves enough headroom for p99
-latency.</p>
+<p>Dedicated is cheaper only when <code>u_observed × G_slo × C_serverless &gt; (C_hw × R_min) + C_ops</code>, and only when the realized utilization leaves enough headroom for p99 latency. Equivalently, the break-even utilization <code>u_required = ((C_hw × R_min) + C_ops) / (G_slo × C_serverless)</code>; if your trough utilization is below <code>u_required</code> for sustained windows, dedicated is the wrong shape.</p>
 <h3 id="worked-example-10">Worked example</h3>
 <p><strong>Setup:</strong> Support answer drafting, considering
 dedicated vs serverless.</p>
@@ -1090,7 +1122,7 @@ dedicated vs serverless.</p>
 <tr>
 <td><p>GPU-hour cost</p></td>
 <td><p>—</p></td>
-<td><p>$3.50/hr</p></td>
+<td><p>$3.20/hr (illustrative H100 reserved midpoint)</p></td>
 </tr>
 <tr>
 <td><p>Min replicas</p></td>
@@ -1111,10 +1143,7 @@ dedicated vs serverless.</p>
 </table>
 </div>
 </figure>
-<p>Need 42% average utilization to break even. Dedicated monthly cost is
-fixed at $4.00/hr × 720 hr = $2,880. Serverless monthly cost = monthly
-volume × $0.012. Monthly volume = G_slo ×
-utilization-during-active-hours × active hours/month.</p>
+<p>At a blended cost of $3.70/hr (GPU plus ops overhead), the break-even utilization is roughly 39%. Dedicated monthly cost is fixed at $3.70/hr × 720 hr = $2,664. Serverless monthly cost = monthly volume × $0.012. Monthly volume = goodput × utilization-during-active-hours × active hours/month. The <em>shape</em> of the gate is what matters; against a $2.95/hr reserved rate the threshold drops to 35%, against a $4.30/hr on-demand rate it rises to 45%. Run the calculation against your contracted rate, not against any illustrative midpoint.</p>
 <figure>
 <div data-align="center">
 <table>
@@ -1135,7 +1164,7 @@ utilization-during-active-hours × active hours/month.</p>
 <td><p>720</p></td>
 <td><p>345,600</p></td>
 <td><p>60%</p></td>
-<td><p>$2,880</p></td>
+<td><p>$2,664</p></td>
 <td><p>$4,147</p></td>
 <td><p>Dedicated</p></td>
 </tr>
@@ -1144,7 +1173,7 @@ utilization-during-active-hours × active hours/month.</p>
 <td><p>300</p></td>
 <td><p>168,000</p></td>
 <td><p>29%</p></td>
-<td><p>$2,880</p></td>
+<td><p>$2,664</p></td>
 <td><p>$2,016</p></td>
 <td><p>Serverless</p></td>
 </tr>
@@ -1153,7 +1182,7 @@ utilization-during-active-hours × active hours/month.</p>
 <td><p>240</p></td>
 <td><p>153,600</p></td>
 <td><p>27%</p></td>
-<td><p>$2,880</p></td>
+<td><p>$2,664</p></td>
 <td><p>$1,843</p></td>
 <td><p>Serverless</p></td>
 </tr>
@@ -1162,7 +1191,7 @@ utilization-during-active-hours × active hours/month.</p>
 <td><p>Varies</p></td>
 <td><p>Varies</p></td>
 <td><p>Varies</p></td>
-<td><p>$2,880 + burst</p></td>
+<td><p>$2,664 + burst</p></td>
 <td><p>Elastic</p></td>
 <td><p>Serverless</p></td>
 </tr>
@@ -1170,8 +1199,8 @@ utilization-during-active-hours × active hours/month.</p>
 </table>
 </div>
 </figure>
-<p>The stable 24/7 workload saves 31% on dedicated. The diurnal
-workloads cost 43-56% more on dedicated because the GPU runs 24/7 while
+<p>The stable 24/7 workload saves roughly 36% on dedicated. The diurnal
+workloads cost 32-45% more on dedicated because the GPU runs 24/7 while
 traffic fills only 10-14 of 24 hours. The bursty workload is worse on
 dedicated because burst handling requires either over-provisioning or
 hybrid serverless fallback.</p>
@@ -1187,15 +1216,17 @@ only if you use 50 pounds of flour before it expires. Dedicated
 endpoints are the restaurant supply store.</p>
 <h3 id="the-better-model-9">The better model</h3>
 <p>The dedicated decision has three layers:</p>
-<p><strong>1. Utilization gate.</strong> Calculate . If your trough
-utilization (nights, weekends) is below , pure dedicated costs more.
-Consider hybrid: base dedicated capacity for the floor, serverless burst
-for peaks.</p>
-<p><strong>2. Goodput measurement.</strong> must be measured on your
-workload, not estimated from provider benchmarks. Provider benchmarks
-use synthetic prompts at optimal batch sizes. Your workload has a
-specific prompt/output distribution, cache hit rate, and quality gate
-pass rate. Measure goodput with your traffic.</p>
+<p><strong>1. Utilization gate.</strong> Calculate
+<code>u_required = (GPU_hour_cost + ops_overhead) / (serverless_LCPR × measured_goodput)</code>.
+If your trough utilization (nights, weekends) is below
+<code>u_required</code>, pure dedicated costs more. Consider hybrid:
+base dedicated capacity for the floor, serverless burst for peaks.</p>
+<p><strong>2. Goodput measurement.</strong> Measured goodput (accepted
+outputs per GPU-hour under SLO) must be measured on your workload, not
+estimated from provider benchmarks. Provider benchmarks use synthetic
+prompts at optimal batch sizes. Your workload has a specific
+prompt/output distribution, cache hit rate, and quality gate pass rate.
+Measure goodput with your traffic.</p>
 <p><strong>3. Operational cost.</strong> Dedicated endpoints need
 monitoring, deployment pipelines, model updates, capacity changes, and
 incident response. If the team does not have these capabilities,
@@ -1203,12 +1234,13 @@ operational overhead is higher than the $0.50/hour used in the example.
 If the provider manages everything, ops overhead is lower but the
 GPU-hour price is higher.</p>
 <h3 id="decision-rule-17">Decision rule</h3>
-<p>Calculate from your actual serverless LCPR and your measured
-dedicated goodput. Plot your utilization by hour across a full week
-including nights and weekends. If trough utilization exceeds with
-headroom for p99 latency, dedicated is economic. If trough utilization
-is below , stay serverless or use a hybrid approach with a dedicated
-base and serverless overflow.</p>
+<p>Calculate <code>u_required</code> from your actual serverless LCPR and
+your measured dedicated goodput. Plot your utilization by hour across a
+full week including nights and weekends. If trough utilization exceeds
+<code>u_required</code> with headroom for p99 latency, dedicated is
+economic. If trough utilization is below <code>u_required</code>, stay
+serverless or use a hybrid approach with a dedicated base and serverless
+overflow.</p>
 <h3 id="what-to-measure-15">What to measure</h3>
 <ul>
 <li><p>Utilization by hour across a full week (not just business
@@ -1243,21 +1275,84 @@ first place.</p></li>
 expose the tuning controls (batch size, scheduler policy, KV cache
 configuration) needed to achieve the goodput measured in your
 benchmark.</p></li>
-<li><p>GPU-hour prices vary by commitment duration. Together’s H100
-ranges from $3.99/hr on-demand to $2.95/hr for 91-180 day commitment
-[PUBLIC]. Lambda’s H100 is $4.29/hr on-demand for single-GPU instances;
-reserved pricing requires custom negotiation [PUBLIC, accessed
-2026-05-13]. The utilization gate calculation changes with the GPU-hour
-price.</p></li>
+<li><p>GPU-hour prices vary by provider and commitment duration. On H100 in May 2026, on-demand single-GPU rates run roughly $3.99/hr (Together), $4.29/hr (Lambda 1x), and $6-7/hr (Fireworks, CoreWeave), with reserved 91-180 day rates falling to roughly $2.95-3.50/hr at Together, CoreWeave, and several neo-clouds; Lambda and AWS require custom-negotiated reserved terms (provider pricing pages, accessed 2026-05-13). The utilization gate threshold moves with the rate: at the low end of the reserved range, dedicated wins on lower utilization; at the on-demand end, it requires sustained utilization above 50%. Plug in your contracted rate; do not run the calculation against any single posted price.</p></li>
 </ul>
 <h3 id="calculator-hook-17">Calculator hook</h3>
 <p>The dedicated capacity break-even analysis takes serverless LCPR,
 dedicated GPU-hour cost, measured goodput, operational overhead, and
-hourly utilization pattern. It outputs , break-even utilization, monthly
+hourly utilization pattern. It outputs the break-even utilization, monthly
 cost comparison, and the hybrid split point where base dedicated plus
 burst serverless is cheapest.</p>
 <hr />
-<h2 id="chapter-19-self-manage-gpus">Chapter 19: Self-Manage GPUs</h2>
+<h2 id="chapter-19-fine-tuning-and-post-training-as-cost-levers">Chapter 19: Fine-Tuning and Post-Training as Cost Levers</h2>
+<h3 id="the-field-problem-ft">The field problem</h3>
+<p>A support-automation team running a 70B Llama-class model on managed dedicated noticed that 38% of resolutions were going through a two-call repair loop: the first call produced an answer in the wrong tone, a second call rewrote it. The token-cost line was real. The deeper line was harder to see: every repair extended end-to-end latency by 1.8 seconds and added a quality-gate pass against the rewritten output, which itself failed 12% of the time. The team's first instinct was to switch to a larger model. The actual fix was a $4,200 LoRA adapter, trained on three months of approved-style production answers, that brought the first-call accept rate from 62% to 89%. Inference cost dropped 31%; latency dropped 1.4 seconds at p90.</p>
+<p>The chapter so far has treated the route (serverless, managed dedicated, self-managed) as the cost lever. Model customization is a parallel lever that often does more.</p>
+<h3 id="the-mechanism-ft">The mechanism</h3>
+<p>Fine-tuning and post-training change the model itself rather than the route it runs on. A LoRA adapter — a small set of low-rank weights trained on top of a base model — can ship the same workload through a smaller base than the workload would otherwise need, or through fewer calls than the un-customized version requires. Both translate to lower cost per accepted output.</p>
+<p>There are three operating models worth distinguishing. Supervised fine-tuning (SFT) trains the model on labeled input/output pairs and is the default starting point: cheapest, most predictable, lands accuracy and format compliance gains. Direct Preference Optimization (DPO) trains on preference pairs (which output is better) and is the right lever when the workload has stylistic or judgment dimensions that labels cannot fully express. Group Relative Policy Optimization (GRPO) and similar reinforcement-from-verifier methods train against an automated grader and are useful when the verifier itself is reliable and the workload has multi-step reasoning or tool-use components that SFT/DPO cannot reach. SFT is cheap and predictable; DPO costs roughly 2-3x SFT for the same training run; GRPO is more expensive still and is the most likely to surprise on the downside if the verifier is wrong.</p>
+<p>Multi-LoRA hosting changes the deployment economics. A single base model loaded on a managed dedicated endpoint can host dozens of LoRA adapters at the base-model serving price, swapping the adapter in per request. The fixed cost (GPU capacity) is paid once; the variable cost (per-adapter training and storage) is small. This is how a platform team supports 40 product teams' custom models without paying for 40 endpoints.</p>
+<h3 id="the-naive-answer-ft">The naive answer</h3>
+<blockquote>
+<p>"Fine-tune everything. The token economics will get better."</p>
+</blockquote>
+<p>Fine-tuning has an upfront cost, an iteration cost, and a sustained operating cost. Many workloads do not earn back the upfront cost. The teams that succeed at fine-tuning treat it as a cost lever for workloads that already have clear evals, a known failure mode, and enough volume for the training cost to amortize. The teams that fail at fine-tuning treat it as a substitute for prompt engineering or model selection.</p>
+<h3 id="the-better-model-ft">The better model</h3>
+<p>Fine-tuning is a cost lever for accuracy-bound workloads and an accuracy lever for cost-bound workloads. Concretely:</p>
+<ul>
+<li><p>If the workload is repair-rate or escalation-rate bound on a large base model, fine-tuning the small base model on the workload's distribution often closes the accuracy gap. The cost lever: serve the smaller fine-tuned model at lower per-token cost with similar accept rate.</p></li>
+<li><p>If the workload is throughput-bound on a managed dedicated endpoint, a LoRA adapter that reduces output length or eliminates a repair loop directly reduces capacity demand. The cost lever: same GPU footprint, more accepted work per hour.</p></li>
+<li><p>If the workload is one of many on a shared platform, multi-LoRA hosting is the deployment unlock. A 100+ adapter fleet on one base-model endpoint preserves base-model economics while letting each tenant tune for its own data distribution.</p></li>
+</ul>
+<h3 id="lora-economics">LoRA economics</h3>
+<p>Training cost is the most-quoted number and usually the least important. Posted LoRA training rates on managed providers run roughly $0.48 per million training tokens for base models up to 16B (Together's published tier), with 17-69B at roughly $1.50/M and 70-100B at roughly $2.90/M. Concretely: a 50K-example dataset at 1,500 tokens per example trains a 7B-class LoRA for under $40. The training cost is rarely the constraint.</p>
+<p>The amortization math matters more. At a representative ~$30 training cost on an 8B LoRA, payback at 10K requests/day is under one day if the adapter reduces cost per accepted output by even 5%. At 1K requests/day payback stretches to a week or two. Below ~200 requests/day on the target workload, the training cost is small but the iteration cost (data curation, eval runs, ongoing maintenance) often exceeds the savings.</p>
+<p>DPO costs roughly 2-3x the equivalent SFT run because the per-step compute is higher and the preference pairs typically require more curation. GRPO is expensive to a degree that depends heavily on the verifier — a fast reliable verifier makes it tractable; a slow or noisy verifier makes it open-ended.</p>
+<h3 id="readiness-scorecard">Readiness scorecard</h3>
+<p>The 90-9 gap is the visible result of teams attempting fine-tuning without the pre-conditions. About 90% of teams believe fine-tuning will help; about 9% actually deploy it (Menlo Ventures, 2024). The gap is not skepticism; it is missing infrastructure. Before greenlighting a fine-tune, confirm:</p>
+<ul>
+<li><p>Eval suite exists and is representative of production traffic. Without evals, the team cannot measure whether the fine-tune helped.</p></li>
+<li><p>The workload has a clear, named failure mode. "The model gets answers wrong" is not a failure mode; "the model uses the wrong title format for clinical-prior-auth requests in California Medicaid contracts" is.</p></li>
+<li><p>Labeled or preference-pair data exists at scale, or can be generated from production traces with reasonable curation. Most teams under-budget data preparation by 2-5x.</p></li>
+<li><p>The base model's license permits the fine-tune and the resulting weights' intended use. Several open-model licenses constrain commercial use of derivatives.</p></li>
+<li><p>Volume is high enough that the per-month operating-cost reduction exceeds the per-month iteration cost (data refresh, eval re-runs, drift monitoring, periodic retraining as the base model evolves).</p></li>
+</ul>
+<h3 id="hidden-costs-ft">Hidden costs</h3>
+<p>The training-run cost is the visible line. The hidden costs add up to 2-5x compute for most production fine-tuning programs:</p>
+<ul>
+<li><p>Data preparation: cleaning, deduplication, format normalization, sensitive-data scrubbing. For most teams this is the largest single cost line.</p></li>
+<li><p>Eval infrastructure: building production-representative test sets, automated grading, regression tracking across fine-tune iterations.</p></li>
+<li><p>Drift maintenance: a fine-tune trained on Q1 traffic may degrade on Q3 traffic if the workload shifts. Plan for quarterly retraining on most production fine-tunes.</p></li>
+<li><p>Base-model refresh: when the provider releases a new base model (Llama 3.1 to Llama 4, GLM-5 to GLM-5.1), the adapter often needs retraining. Weight distributions shift; the LoRA does not transfer cleanly across model versions. Budget retraining time when planning around base-model release calendars.</p></li>
+<li><p>Eval portability: if the fine-tune is hosted on a different provider than the closed-API baseline, the eval suite needs to be portable across both. Many teams have one-provider eval harnesses that break when they introduce a second.</p></li>
+</ul>
+<h3 id="failure-modes-ft">Failure modes when starting too early</h3>
+<p>The pattern that surfaces most often: a team fine-tunes before they have evals, sees a 4% improvement on a curated test set, ships it, and discovers two months later that the production failure mode they were targeting was actually a prompt issue. The fine-tune masked the real problem. The cure costs three months: rewrite the prompt, retrain the LoRA on cleaner data, repeat the evals.</p>
+<p>Other common failures: training on labels generated by the same model that will serve the adapter (the model learns its own biases); training a LoRA on a base model that the provider deprecates within six months (no transfer to the successor); under-budgeting data prep and producing a fine-tune that improves on the curated set but degrades on the long tail of production traffic; treating DPO as a stronger SFT (preference pairs from non-expert raters can encode style noise rather than the intended quality dimension).</p>
+<h3 id="decision-rule-ft">Decision rule</h3>
+<p>Use fine-tuning when the workload has named failure modes the team can measure, an eval suite that catches them, enough volume that operating-cost reductions amortize the iteration cost (above roughly 1K requests/day on the target workload as a rough floor), and a deployment story (managed dedicated with multi-LoRA, or a self-managed fleet) that does not double the cost line the fine-tune is supposed to reduce. Default to SFT first; reach for DPO only when stylistic or judgment dimensions need it; reach for GRPO only when SFT/DPO have hit a ceiling and a reliable verifier exists.</p>
+<p>Do not fine-tune as a substitute for the funnel from Chapter 15. A fine-tune is a refinement of a model that already passed feasibility, capability, and economic evaluation. Tuning a wrong-fit base model produces a tuned wrong-fit model.</p>
+<h3 id="what-to-measure-ft">What to measure</h3>
+<ul>
+<li><p>Cost per accepted output, before and after fine-tune, on production-representative traffic (not the curated training set)</p></li>
+<li><p>Quality gate pass rate, repair rate, and escalation rate delta</p></li>
+<li><p>Training cost amortization period at current volume</p></li>
+<li><p>Data preparation hours and ongoing curation cost</p></li>
+<li><p>Eval suite coverage on the fine-tuned model's failure modes</p></li>
+<li><p>Drift indicators (eval pass rate over time on a held-out monthly slice)</p></li>
+</ul>
+<h3 id="where-this-breaks-ft">Where this breaks</h3>
+<ul>
+<li><p>The provider deprecates the base model and the LoRA does not transfer to the successor. Plan for retraining; keep the training data portable.</p></li>
+<li><p>The fine-tune improves on the eval set but degrades on the long tail. Symptoms: escalation rate stays flat, quality complaints rise on edge cases. Treatment: expand the eval set, retrain.</p></li>
+<li><p>Multi-LoRA scheduling under load. Adapter swapping has overhead; at high QPS with many adapters in rotation, latency variance increases. Measure under realistic adapter-mix conditions before committing to multi-LoRA at scale.</p></li>
+<li><p>The base model improves faster than the fine-tune retrains. By the time the team has shipped a polished SFT on the v1 base, the provider has shipped v2 that matches the tuned-v1 model unfine-tuned. The fine-tune was right at training time and wrong at deployment time.</p></li>
+</ul>
+<p>Use fine-tuning when: evals exist, the failure mode is named, the volume justifies it, and the deployment story is multi-LoRA on managed dedicated or a self-managed fleet that already pays its operational tax for other reasons. Skip it when: the team is still arguing about what "good" looks like, evals are aspirational, or the workload is below a few thousand requests per day on the target task.</p>
+<h3 id="calculator-hook-ft">Calculator hook</h3>
+<p>The fine-tune amortization analysis takes: base-model serving cost, fine-tune training cost, expected cost-per-accepted-output reduction, monthly volume on the target workload, and ongoing iteration cost. It outputs payback period, sensitivity to volume changes, and the break-even monthly volume below which the fine-tune does not earn its keep.</p>
+<hr />
+<h2 id="chapter-20-self-manage-gpus">Chapter 20: Self-Manage GPUs</h2>
 <h3 id="the-field-problem-9">The field problem</h3>
 <p>Eight H100 GPUs, leased from a cloud provider at $25,500/month on a
 3-month reservation. vLLM deployed, fine-tuned 70B model loaded, traffic
@@ -1296,13 +1391,7 @@ response, or the quality regression detection.</p>
 <h3 id="the-better-model-10">The better model</h3>
 <p>Self-managed GPUs are a valid choice when three conditions are
 met:</p>
-<p><strong>1. Volume justifies the fixed cost.</strong> The engineering
-team to operate self-managed inference is a fixed cost. On-call,
-deployment, monitoring, capacity planning—these scale slowly with
-volume. At 10 GPUs, the engineering overhead may be $15,000-25,000/month
-(0.5-1.0 FTE loaded). At 100 GPUs, the same team can manage the fleet
-with modest additions. Self-managed GPU economics improve with scale
-because the engineering cost is amortized over more capacity.</p>
+<p>Volume has to justify the fixed cost. An engineering team capable of operating self-managed inference at production quality is a fixed cost that scales sub-linearly with fleet size. The realistic floor is 2-3 loaded FTE: an on-call rotation needs at least two engineers (one alone burns out in a quarter), the deployment pipeline needs an owner through serving-engine upgrades, KV / scheduler / quantization tuning is its own specialization, and quality-regression detection (continuous log review) is a recurring process. At FAANG-comparable rates that is roughly $60,000-$90,000/month of loaded engineering cost regardless of whether the fleet is 8 GPUs or 80. At 10 GPUs that is a 30-50% operational tax on GPU spend, which usually erases the cost advantage over managed dedicated. At 100 GPUs the same team can still cover it and the tax falls to 5-10%. <strong>The fleet scale at which self-managed economics work is around 50 GPUs sustained, not 10.</strong> Below 50, managed dedicated almost always wins on total cost.</p>
 <p><strong>2. The team has the operational capability.</strong> Running
 inference at production quality requires: a serving engine (vLLM,
 SGLang, TensorRT-LLM, or equivalent), a deployment pipeline, model
@@ -1358,13 +1447,50 @@ serverless is easier than the forward path. Keep the eval suite and
 prompt configurations portable. If self-management becomes more
 expensive than the alternatives—because the team is too small, the
 workload shrinks, or managed offerings improve—revert.</p>
+<h3 id="when-self-managed-stops-earning-its-keep">When self-managed stops earning its keep</h3>
+<p>Self-management is not a permanent state. The conditions that made it
+economic in one quarter can erode in the next. Treat the following as
+devolution signals—evidence that the fleet should move back to managed
+dedicated (or, for the bursty slice, to serverless):</p>
+<ul>
+<li><p><strong>Sustained fleet below ~50 GPUs.</strong> The engineering
+floor of 2-3 loaded FTE does not shrink when the fleet does. If the
+workload contracts and the fleet runs below ~50 GPUs for two
+consecutive quarters, the operational tax climbs back above 30% of GPU
+spend and managed dedicated wins on total cost.</p></li>
+<li><p><strong>On-call burnout or attrition.</strong> If the on-call
+rotation drops below two engineers, or page volume drives sustained
+attrition, the team is no longer running infrastructure—it is being run
+by it. This is a leading indicator of incidents, not a cost
+problem.</p></li>
+<li><p><strong>Specialist headcount cannot be filled.</strong> If a
+serving-engine, scheduler, or quantization specialist seat sits open for
+more than a quarter, the team is accumulating tuning debt. Managed
+dedicated absorbs that specialization for you.</p></li>
+<li><p><strong>Serving-engine drift two majors behind.</strong> If the
+deployed vLLM, SGLang, or TensorRT-LLM version falls two major releases
+behind upstream, the gap between your performance and what a managed
+provider can offer on the same hardware widens every quarter. At
+two-majors-behind, the migration cost back to managed is usually less
+than the goodput delta.</p></li>
+<li><p><strong>Quality-regression detection stops keeping up.</strong>
+If continuous log review or eval-on-production drifts to weekly (or
+monthly) cadence because the team is firefighting, you have lost the
+quality monitoring that justified self-management in the first
+place.</p></li>
+</ul>
+<p>When two or more of these fire, run the dedicated utilization gate
+from Chapter 18 against managed dedicated pricing on the same fleet.
+Devolution is not failure—it is the same evidence-based decision that
+justified self-management in the first place, applied in the other
+direction.</p>
 <h3 id="calculator-hook-18">Calculator hook</h3>
 <p>self-managed variant: GPU fleet cost, engineering overhead
 allocation, measured goodput, incident cost. Sensitivity: engineering
 FTE cost, GPU utilization, goodput per GPU.</p>
 <hr />
-<h2 id="chapter-20-multi-source-and-background-agent-routing">Chapter
-20: Multi-Source And Background Agent Routing</h2>
+<h2 id="chapter-21-multi-source-and-background-agent-routing">Chapter
+21: Multi-Source And Background Agent Routing</h2>
 <h3 id="the-field-problem-10">The field problem</h3>
 <p>Two providers serve the same open model. The routing layer sends 70%
 of traffic to the cheaper provider and 30% to the faster provider. The
@@ -1412,7 +1538,7 @@ optimization. The secondary provider may cost more per token. That is
 acceptable if the alternative is zero availability. Measure: failover
 activation rate, failover quality delta, failover latency delta.</p>
 <p><strong>2. Workload-level routing.</strong> Different workloads go to
-different providers based on the RouteFit Matrix. Support chat goes to
+different providers based on the routefit matrix. Support chat goes to
 Provider A. Batch extraction goes to Provider B. Each workload stays on
 one provider, preserving cache locality and eval consistency. Measure:
 per-workload LCPR on the assigned provider.</p>
@@ -1443,7 +1569,7 @@ frontier than interactive chat:</p>
 <p><strong>1. Cheaper compute tier.</strong> Background agents can use
 batch APIs, off-peak scheduling, or lower-priority processing tiers.
 Google’s Flex tier, Anthropic’s Batch API, and similar surfaces offer
-50% discounts for async processing [PUBLIC]. The agent does not need
+50% discounts for async processing (see vendor pricing pages, May 2026). The agent does not need
 real-time response.</p>
 <p><strong>2. Memory-hierarchy optimization.</strong> Agent state—KV
 cache, conversation history, tool outputs, intermediate results—can be
@@ -1511,7 +1637,7 @@ because the user is not watching each intermediate step.</p>
 <h3 id="decision-rule-19">Decision rule</h3>
 <p>Multi-source for failover is straightforward and recommended for
 critical workloads. Multi-source for workload-level routing follows
-naturally from the RouteFit Matrix. Multi-source for cost arbitrage
+naturally from the routefit matrix. Multi-source for cost arbitrage
 within a single workload requires per-provider LCPR measurement
 including error rates, cache hit rates, quality gates, and operational
 overhead. If you cannot measure per-provider LCPR, you cannot prove the
@@ -1554,7 +1680,7 @@ step-level routing: per-step latency tier, batch discount eligibility,
 checkpoint cost, queue economics. Sensitivity: provider split ratio,
 batch-eligible share of model calls, latency tolerance by step.</p>
 <hr />
-<h2 id="chapter-21-migration-gates-and-reversion-signals">Chapter 21:
+<h2 id="chapter-22-migration-gates-and-reversion-signals">Chapter 22:
 Migration Gates And Reversion Signals</h2>
 <h3 id="the-field-problem-11">The field problem</h3>
 <p>Four months to migrate from a closed API to self-managed GPUs. Six
@@ -1632,22 +1758,39 @@ monitoring compensates.</p>
 <h3 id="reversion-signals">Reversion signals</h3>
 <p>Define these before migration. When any signal fires, evaluate
 whether to revert:</p>
-<p><strong>Quality signals:</strong> - Eval pass rate drops below the
-quality floor for 2 consecutive measurement windows - Human escalation
-rate increases by more than 5 percentage points - New failure modes
-appear that the eval suite does not cover (catch through continuous log
-review)</p>
-<p><strong>Cost signals:</strong> - LCPR on the new route exceeds LCPR
-on the old route for 2 consecutive weeks - Cache hit rate drops below
-the break-even threshold (from Part 2 Chapter 7) - Utilization falls
-below for dedicated endpoints (from Chapter 18)</p>
-<p><strong>Operational signals:</strong> - Incident frequency on the new
-route exceeds the old route by 2x - Mean time to resolve incidents
-exceeds the team’s SLO - On-call burden increases to the point of team
-attrition risk</p>
-<p><strong>Latency signals:</strong> - p99 TTFT or TPOT exceeds SLO for
-more than 1% of measurement windows - Latency variance (p99/p50 ratio)
-increases by more than 50%</p>
+<p><strong>Quality signals:</strong></p>
+<ul>
+<li><p>Eval pass rate drops below the quality floor for 2 consecutive
+measurement windows</p></li>
+<li><p>Human escalation rate increases by more than 5 percentage
+points</p></li>
+<li><p>New failure modes appear that the eval suite does not cover
+(catch through continuous log review)</p></li>
+</ul>
+<p><strong>Cost signals:</strong></p>
+<ul>
+<li><p>LCPR on the new route exceeds LCPR on the old route for 2
+consecutive weeks</p></li>
+<li><p>Cache hit rate drops below the break-even threshold (from Part 2
+Chapter 7)</p></li>
+<li><p>Utilization falls below <code>u_required</code> for dedicated
+endpoints (from Chapter 18)</p></li>
+</ul>
+<p><strong>Operational signals:</strong></p>
+<ul>
+<li><p>Incident frequency on the new route exceeds the old route by
+2x</p></li>
+<li><p>Mean time to resolve incidents exceeds the team’s SLO</p></li>
+<li><p>On-call burden increases to the point of team attrition
+risk</p></li>
+</ul>
+<p><strong>Latency signals:</strong></p>
+<ul>
+<li><p>p99 TTFT or TPOT exceeds SLO for more than 1% of measurement
+windows</p></li>
+<li><p>Latency variance (p99/p50 ratio) increases by more than
+50%</p></li>
+</ul>
 <h3 id="the-naive-answer-12">The naive answer</h3>
 <blockquote>
 <p>“We migrated. It’s done. Why would we go back?”</p>
@@ -1708,6 +1851,16 @@ of a switch.</p></li>
 alarms cause signal fatigue. Too few miss real regressions. Calibrate
 thresholds against the old route’s baseline variance.</p></li>
 </ul>
+<h3 id="involuntary-migration">Involuntary migration: when the provider moves first</h3>
+<p>Most of this part has treated migration as a decision the team initiates. The other category — the one teams underprepare for — is when the provider deprecates a model mid-contract. The deprecation notice can be 90 days, 180 days, or in two specific cases observed in 2025, less than 30 days for a model the team had treated as production-stable for two years. Reverting to a prior version is not always available; sometimes the prior version is also being deprecated on the same notice.</p>
+<p>Three things to negotiate before a deprecation hits, not after:</p>
+<ul>
+<li><p>Minimum deprecation notice period. Industry baseline is 90 days; some enterprise contracts negotiate 180 or 365. Without this clause, the provider can default to whatever their public terms say, which is usually the shortest interval the provider can defend.</p></li>
+<li><p>ABI stability for the immediate successor. A successor model with a different output distribution is functionally a migration even when the API surface is identical. Contractually, "successor" should mean a model that passes the team's eval suite at a threshold the team specifies, not whatever the provider names next.</p></li>
+<li><p>Right to test the successor on real traffic for a stated window before the deprecation date. Three weeks is the minimum to catch quality regressions; six weeks lets the team run an eval on a representative production sample and tune prompts if needed.</p></li>
+</ul>
+<p>Operational preparation matters as much as the contract. The most expensive part of an unplanned migration is the prompt rewrite, which is not paid for by the provider and is not budgeted by the team. Keep a portable prompt format that can target two providers without translation. Keep a recent eval baseline (less than 60 days old) on every production workload, so the successor can be tested against the same bar the incumbent passes. Keep a rollback path that does not depend on the deprecated model continuing to be available — a route that has not been tested in six months is functionally not a route.</p>
+<p>An anonymized case: a Series-B SaaS team running answer-drafting on a frontier model received a 70-day deprecation notice for the model version that anchored their fine-tuned prompts. The successor existed but produced 14% lower accept-rate on the team's eval suite. The team had two options: rewrite 28 prompt templates to recover the accuracy gap (estimated 6 engineer-weeks; risk of new regressions); or switch to a competing provider whose model passed the eval at a similar accept rate (estimated 4 engineer-weeks for the integration plus a one-time eval cost of ~$11K). They picked the competitor. The side-finding: the team had been planning to add a second provider for resilience for six months and never prioritized it. The forced migration converted a deferred infrastructure project into a delivered one, and the prompt portability work paid for itself within the next quarter on a separate workload.</p>
 <h3 id="calculator-hook-20">Calculator hook</h3>
 <p>The migration gate checklist is a prerequisite to the calculator’s
 route comparison. The calculator should flag when inputs lack evidence
@@ -1737,7 +1890,7 @@ failure modes, and reversion paths.</p>
 <td><p>Eliminates infeasible options before comparing cost</p></td>
 </tr>
 <tr>
-<td><p>RouteFit Matrix</p></td>
+<td><p>routefit matrix</p></td>
 <td><p>Chapter 15</p></td>
 <td><p>Maps workload identity to feasible routes with measured
 LCPR</p></td>
@@ -1761,20 +1914,26 @@ ownership</p></td>
 above this utilization</p></td>
 </tr>
 <tr>
-<td><p>Self-managed operating model</p></td>
+<td><p>Fine-tuning and post-training as cost levers</p></td>
 <td><p>Chapter 19</p></td>
+<td><p>Smaller fine-tuned models can clear the quality floor at lower
+LCPR; treat fine-tuning as a route option, not a model upgrade</p></td>
+</tr>
+<tr>
+<td><p>Self-managed operating model</p></td>
+<td><p>Chapter 20</p></td>
 <td><p>GPU ownership requires engineering team, on-call,
 tooling</p></td>
 </tr>
 <tr>
 <td><p>Multi-source and agent routing</p></td>
-<td><p>Chapter 20</p></td>
+<td><p>Chapter 21</p></td>
 <td><p>Per-provider LCPR, cache fragmentation, step-level latency-tier
 routing</p></td>
 </tr>
 <tr>
 <td><p>Migration gates and reversion</p></td>
-<td><p>Chapter 21</p></td>
+<td><p>Chapter 22</p></td>
 <td><p>Preconditions before migration; signals that trigger
 rollback</p></td>
 </tr>
@@ -1790,7 +1949,7 @@ capability. Multi-source requires per-provider measurement. Skipping a
 step does not skip its requirements.</p>
 <p>Part 5 takes these deployed workloads and asks the operating
 question: how do you know the decision is still correct? Baselines,
-evals, benchmarks, observability, trace-to-margin reconciliation,
+evals, benchmarks, observability, trace-to-loaded-cost reconciliation,
 incidents, review packs, and forecasting.</p>
 <hr />
 <h2 id="evidence-notes-for-part-4">Evidence Notes for Part 4</h2>
@@ -1813,7 +1972,7 @@ incidents, review packs, and forecasting.</p>
 $9.95/hr</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>Together AI pricing page, accessed 2026-05-12</p></td>
-<td><p>18, 19</p></td>
+<td><p>18, 20</p></td>
 </tr>
 <tr>
 <td><p>2</p></td>
@@ -1836,7 +1995,7 @@ requires custom negotiation</p></td>
 <td><p>Fireworks H100 $7/hr, H200 $7/hr, B200 $10/hr</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>Fireworks AI pricing page, accessed 2026-05-12</p></td>
-<td><p>19</p></td>
+<td><p>20</p></td>
 </tr>
 <tr>
 <td><p>5</p></td>
@@ -1852,20 +2011,20 @@ billing</p></td>
 Fireworks, Groq</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>Official pricing pages, accessed 2026-05-12</p></td>
-<td><p>20</p></td>
+<td><p>21</p></td>
 </tr>
 <tr>
 <td><p>7</p></td>
 <td><p>Google Flex/Batch tiers offer discounted processing</p></td>
 <td><p>PUBLIC</p></td>
 <td><p>Google Gemini pricing page, accessed 2026-05-12</p></td>
-<td><p>20</p></td>
+<td><p>21</p></td>
 </tr>
 <tr>
 <td><p>8</p></td>
 <td><p>Dedicated utilization gate formula</p></td>
 <td><p>DERIVED</p></td>
-<td><p>From LCPR-2026 normalized to capacity economics</p></td>
+<td><p>From LCPR normalized to capacity economics</p></td>
 <td><p>18</p></td>
 </tr>
 <tr>
@@ -1873,14 +2032,14 @@ Fireworks, Groq</p></td>
 <td><p>Migration gate checklist</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author synthesis from production migration patterns</p></td>
-<td><p>21</p></td>
+<td><p>22</p></td>
 </tr>
 <tr>
 <td><p>10</p></td>
 <td><p>Reversion signal categories</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author synthesis from production incident patterns</p></td>
-<td><p>21</p></td>
+<td><p>22</p></td>
 </tr>
 <tr>
 <td><p>11</p></td>
@@ -1895,7 +2054,7 @@ Fireworks, Groq</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From Chapter 12 answer-vs-agentic distinction applied to serving
 surfaces</p></td>
-<td><p>20</p></td>
+<td><p>21</p></td>
 </tr>
 <tr>
 <td><p>13</p></td>
@@ -1903,14 +2062,14 @@ surfaces</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From Part 2 cache-locality analysis applied to multi-provider
 routing</p></td>
-<td><p>20</p></td>
+<td><p>21</p></td>
 </tr>
 <tr>
 <td><p>14</p></td>
 <td><p>Self-managed operational overhead categories</p></td>
 <td><p>OPINION</p></td>
 <td><p>Author synthesis from infrastructure operations</p></td>
-<td><p>19</p></td>
+<td><p>20</p></td>
 </tr>
 <tr>
 <td><p>15</p></td>
@@ -1922,7 +2081,7 @@ selection</p></td>
 </tr>
 <tr>
 <td><p>16</p></td>
-<td><p>RouteFit Matrix design</p></td>
+<td><p>routefit matrix design</p></td>
 <td><p>DERIVED</p></td>
 <td><p>From workload identity fields mapped to serving surfaces</p></td>
 <td><p>15</p></td>
@@ -1947,9 +2106,6 @@ C/R</p></td>
 </table>
 </div>
 </figure>
-<p><strong>Slop check:</strong> No instances of seamless, robust,
-leverage, holistic, unlock, game-changing, cutting-edge, best-in-class,
-or synergy.</p>
 
         </div>
 

@@ -1,5 +1,5 @@
 Title: The Denominator Problem
-Date: 2026-05-13 10:00
+Date: 2026-04-15
 Category: Writings
 Slug: denominator-problem
 Summary: The most common mistake in inference economics is dividing by the wrong number. LCPR --- loaded cost per accepted result --- reveals a 12x gap between naive token cost and actual production cost.
@@ -286,6 +286,6 @@ The trace autopsy is where LCPR stops being a formula and starts being a measure
 
 *Production Inference Economics --- Part 1 of 5: **1. The Denominator Problem** | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
-*Sohail Mohammad --- May 2026*
+*Sohail Mohammad --- April 2026*
 
 *This is Part 1 of 5 in the Production Inference Economics series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MEASURED_PRIVATE] for production observations, [MODELED] for calculations with methodology shown. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

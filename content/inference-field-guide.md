@@ -1,5 +1,5 @@
 Title: The Honest Field Guide to Production Inference
-Date: 2026-05-11 14:00
+Date: 2026-04-08
 Category: Writings
 Slug: inference-field-guide
 Summary: TCO frameworks, vendor evaluation, and architecture patterns for teams adopting open-model inference. Includes the LCPR calculator, Migration Gate Framework, and a staged playbook from API to dedicated GPU.
@@ -7,7 +7,7 @@ Featured: true
 Template: longform_article
 Status: published
 
-*I work at Together AI. This essay uses Together alongside every other major provider in worked examples, evaluated by the same LCPR math. Evidence tags are there so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
+*I work at Together AI. Evidence tags mark every claim so you can check my work. This essay uses Together alongside every other major provider in worked examples, evaluated by the same LCPR math. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
 ---
 
@@ -57,7 +57,7 @@ Where:
 - **Engineering cost** = monthly hours maintaining the inference stack × hourly rate. This is the most volatile LCPR input. ML engineer turnover (median tenure 18-24 months at AI-native companies) resets institutional knowledge: the replacement re-learns your prompt pipelines, eval harnesses, and provider quirks over 2-4 months, during which effective engineering hours double. A single departure on a 2-person inference team can spike LCPR 15-25% for a quarter. Budget for it by cross-training and documenting runbooks; the LCPR impact of attrition is a hidden tax that no vendor model captures.
 - **Successful requests** = total requests × quality gate pass rate
 
-This formula is deliberately simplified. It omits cold start costs (relevant for scale-to-zero serverless), KV cache memory overhead (implicit in token cost for serverless, explicit for dedicated), and observability costs (covered separately in "The Observability Tax" below). A full-stack TCO model would include those. But even this simplified version produces materially different rankings than raw token pricing, which is the point.
+This formula is deliberately simplified. It omits cold start costs (relevant for scale-to-zero serverless), KV cache memory overhead (implicit in token cost for serverless, explicit for dedicated), and observability costs (covered separately in "The Observability Tax" below). A full-stack TCO model would include those. But even this simplified version produces materially different rankings than raw token pricing, which is the point. The full decomposition --- splitting `engineering_cost` into eval grader cost, human escalation, operational overhead, and a reconciliation delta term --- is developed in the [Production Inference Economics series]({filename}/denominator-problem.md), starting with [The Denominator Problem]({filename}/denominator-problem.md).
 
 **Before you calculate, align on definitions.** LCPR only produces meaningful comparisons when every team member agrees on what the terms mean:
 
@@ -173,6 +173,9 @@ Each framework includes worked calculations, named real-world examples with dire
 > - **[INDEPENDENT_BENCHMARK]** — third-party benchmark with published methodology
 > - **[ANALYST_ESTIMATE]** — paywalled or estimated third-party data
 > - **[MODELED]** — produced by LCPR calculator from listed inputs; reproducible
+> - **[DERIVED]** — calculated from other labeled inputs
+> - **[REPORTED]** — claims attributed to specific engineering teams
+> - **[OPINION]** — author judgment
 > - **[UNVERIFIED]** — useful claim that still needs a primary source
 
 ---
@@ -902,3 +905,10 @@ The companion [LCPR calculator](https://inference-field-guide.streamlit.app) let
 
 The best time to calculate your LCPR was six months ago. The second best time is now.
 
+---
+
+*This essay is the overview. The [Production Inference Economics series]({filename}/denominator-problem.md) develops the measurement methodology in depth: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+
+*Sohail Mohammad --- April 2026*
+
+*Evidence labels: [PUBLIC_PRICING] for vendor pricing pages, [PUBLIC_DOC] for vendor documentation, [MEASURED_PRIVATE] for production observations, [CUSTOMER_STORY] for vendor-published case studies, [INDEPENDENT_BENCHMARK] for third-party benchmarks, [ANALYST_ESTIMATE] for paywalled or estimated data, [MODELED] for calculator-produced numbers, [DERIVED] for numbers calculated from other labeled inputs, [REPORTED] for claims attributed to specific engineering teams, [OPINION] for author judgment, [UNVERIFIED] for claims needing a primary source. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

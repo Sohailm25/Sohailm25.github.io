@@ -1,5 +1,5 @@
 Title: Trace Autopsy: Following One Day's Inference Bill
-Date: 2026-05-13 11:00
+Date: 2026-04-22
 Category: Writings
 Slug: trace-autopsy
 Summary: A repeatable diagnostic for going from raw trace events to loaded cost per accepted result. Twelve requests, four data sources, five cost mechanisms, and the reconciliation protocol.
@@ -407,6 +407,6 @@ That's how you go from "inference costs $0.014 per ticket" to "inference costs $
 
 *Production Inference Economics --- Part 2 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | **2. Trace Autopsy** | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
-*Sohail Mohammad --- May 2026*
+*Sohail Mohammad --- April 2026*
 
 *Part 2 of 5 in the Production Inference Economics series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MEASURED_PRIVATE] for production observations, [MODELED] for calculations with methodology shown, [DERIVED] for numbers calculated from other labeled inputs. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

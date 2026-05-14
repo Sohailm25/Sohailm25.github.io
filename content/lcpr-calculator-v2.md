@@ -1,5 +1,5 @@
 Title: LCPR Calculator v2: What Your Inference Bill Is Actually Measuring
-Date: 2026-05-13 18:00
+Date: 2026-04-29
 Category: Writings
 Slug: lcpr-calculator-v2
 Summary: Open-source calculator for loaded cost per result. Three worked examples, cache break-even analysis, KV memory sizing, and the LCPR-2026 framework from Production Inference Economics.
@@ -213,7 +213,7 @@ Contributions welcome: pricing updates as providers change rates, new workload p
 
 *Production Inference Economics --- Part 3 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | **3. LCPR Calculator** | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
-*Sohail Mohammad --- May 2026*
+*Sohail Mohammad --- April 2026*
 
 ---
 

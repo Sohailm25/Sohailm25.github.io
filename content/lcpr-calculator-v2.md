@@ -183,7 +183,7 @@ pytest
 streamlit run calculator/app.py
 ```
 
-Or use the hosted Streamlit app: [inference-field-guide.streamlit.app](https://inference-field-guide.streamlit.app).
+Or use the hosted Streamlit app: [inference-econ.streamlit.app](https://inference-econ.streamlit.app).
 
 Bring your own numbers. Edit `calculator/provider_pricing.yaml` with your actual contracted rates (not the pricing page --- your rates). Create a workload profile from your production traces: actual retry rate, actual eval pass rate, actual cache hit rate, actual human escalation volume. Run the sensitivity analysis.
 

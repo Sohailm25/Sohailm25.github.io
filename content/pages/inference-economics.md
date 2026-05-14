@@ -24,7 +24,7 @@ The series develops the measurement methodology in depth. Each article stands al
 
 ## Tools
 
-**[LCPR Calculator](https://inference-field-guide.streamlit.app)** --- Interactive Streamlit app for LCPR comparison, sensitivity analysis, break-even analysis, migration readiness, and goodput frontier testing. [Source code on GitHub.](https://github.com/Sohailm25/inference-field-guide)
+**[LCPR Calculator](https://inference-econ.streamlit.app)** --- Interactive Streamlit app for LCPR comparison, sensitivity analysis, break-even analysis, migration readiness, and goodput frontier testing. [Source code on GitHub.](https://github.com/Sohailm25/inference-field-guide)
 
 ## Book
 

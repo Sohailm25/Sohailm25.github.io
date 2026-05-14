@@ -23,4 +23,4 @@ i think the open-weights cost advantage over closed apis is structural, not temp
 
 on post-training: fine-tuning is underused because the feedback loop is slow and evaluation is hard. teams default to prompt engineering past the point of diminishing returns. the unlock is tighter eval → faster iteration → models that actually fit the task.
 
-i wrote a longer version of this: [the honest field guide to production inference](/inference-field-guide/). there's also an [interactive lcpr calculator](https://inference-field-guide.streamlit.app/) if you want to run the math on your own workloads.
+i wrote a longer version of this: [the honest field guide to production inference](/inference-field-guide/). there's also an [interactive lcpr calculator](https://inference-econ.streamlit.app/) if you want to run the math on your own workloads.

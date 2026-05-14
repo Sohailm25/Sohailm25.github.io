@@ -162,7 +162,7 @@ The rest of this guide provides frameworks for the four decisions every team mig
 4. **How to evaluate vendors honestly** — the Seven-Gate Scorecard (Part 4)
 5. **What to do at each scale** — the Staged Playbook (Part 5)
 
-Each framework includes worked calculations, named real-world examples with direct quotes, and a companion [LCPR calculator](https://inference-field-guide.streamlit.app) you can run against your own workload.
+Each framework includes worked calculations, named real-world examples with direct quotes, and a companion [LCPR calculator](https://inference-econ.streamlit.app) you can run against your own workload.
 
 ---
 
@@ -197,7 +197,7 @@ Switching from GPT-5.5 to Together DeepSeek V3 saves $15,582 per month, or $186,
 
 But notice what happens at lower volume. In the Part 0 worked example (500K requests/month, simpler workload profile), GPT-5.5's monthly cost was $9,090. Against Together at $1,447, the savings are $7,643/month. Still a 6.3-month payback, which is acceptable, but you're now sensitive to migration overruns. If the migration takes 12 weeks instead of 8, or if the quality gate drops from 95% to 88% during the transition and you spend two months tuning prompts, the payback stretches past a year.
 
-**The Volume Gate threshold**: if your monthly closed-API spend is below $10,000, the migration economics are marginal. Between $10,000 and $50,000, the economics work but execution risk matters; you need a team that's done this before. Above $50,000, the savings are large enough to absorb migration friction. These boundaries are rough; run the [LCPR calculator](https://inference-field-guide.streamlit.app) against your actual workload to get precise numbers.
+**The Volume Gate threshold**: if your monthly closed-API spend is below $10,000, the migration economics are marginal. Between $10,000 and $50,000, the economics work but execution risk matters; you need a team that's done this before. Above $50,000, the savings are large enough to absorb migration friction. These boundaries are rough; run the [LCPR calculator](https://inference-econ.streamlit.app) against your actual workload to get precise numbers.
 
 ### Gate 2: The Specialization Gate
 
@@ -369,7 +369,7 @@ Sum your scores. The total determines your tier:
 
 At a fully loaded engineer cost of $100-$200/hr (the calculator defaults to $100/hr; adjust in the sidebar), self-managed dedicated adds $3,000-$12,000/month in engineering overhead alone. That overhead is invisible in token pricing comparisons but dominates the LCPR calculation. A budget holder comparing "$3.99/hr GPU" to "$1.76/hr managed dedicated" is comparing the wrong numbers. The full picture requires engineering hours.
 
-Use the [Migration Readiness tab](https://inference-field-guide.streamlit.app) in the LCPR calculator to score your factors interactively and see the payback calculation for your specific workload profile.
+Use the [Migration Readiness tab](https://inference-econ.streamlit.app) in the LCPR calculator to score your factors interactively and see the payback calculation for your specific workload profile.
 
 ---
 
@@ -630,7 +630,7 @@ Vendor-published latency numbers are measured on unloaded endpoints with optimal
 
 This is the LCPR calculation from Part 0. Input the vendor's published rates, your workload profile (tokens, retry rate, quality gate, engineering hours), and compute the loaded cost. Compare across vendors at the LCPR level, not the token level.
 
-**Verification method**: use the [LCPR calculator](https://inference-field-guide.streamlit.app) with your actual workload numbers. The vendor's pricing page is an input to the calculation, not the answer.
+**Verification method**: use the [LCPR calculator](https://inference-econ.streamlit.app) with your actual workload numbers. The vendor's pricing page is an input to the calculation, not the answer.
 
 ### Gate 4: Reliability and Failover
 
@@ -875,7 +875,7 @@ Check: quality gate pass rate on Provider B. If lower → model quality gap. You
 
 ## Resources
 
-- **[Interactive LCPR Calculator](https://inference-field-guide.streamlit.app)** ([run locally](https://github.com/Sohailm25/inference-field-guide#running-locally)) — Run LCPR, sensitivity, and break-even analysis against your own workload profile. Built with the same calculation engine that generated every number in this essay.
+- **[Interactive LCPR Calculator](https://inference-econ.streamlit.app)** ([run locally](https://github.com/Sohailm25/inference-field-guide#running-locally)) — Run LCPR, sensitivity, and break-even analysis against your own workload profile. Built with the same calculation engine that generated every number in this essay.
 - **[GitHub Repository](https://github.com/Sohailm25/inference-field-guide)** — Source code for the calculator, provider pricing data (YAML), decision tree diagrams, and 191 tests verifying every claim.
 - **[Downloadable Templates](https://github.com/Sohailm25/inference-field-guide/tree/main/templates)** — Vendor Evaluation Scorecard, Migration Readiness Checklist, LCPR Worksheet, and Migration Readiness Assessment (polynomial complexity scoring template).
 
@@ -885,7 +885,7 @@ Check: quality gate pass rate on Provider B. If lower → model quality gap. You
 
 The frameworks in this guide (LCPR, Migration Gates, Inference Sourcing Patterns, the Stack Map, the Seven-Gate Scorecard, and the Staged Playbook) are tools for making decisions with math instead of vibes. They're opinionated, because frameworks that try to accommodate every edge case end up accommodating none.
 
-The companion [LCPR calculator](https://inference-field-guide.streamlit.app) lets you run these calculations against your actual workload. Every number in this essay was generated by that calculator and verified against May 2026 public pricing. When prices change, update the YAML and re-run.
+The companion [LCPR calculator](https://inference-econ.streamlit.app) lets you run these calculations against your actual workload. Every number in this essay was generated by that calculator and verified against May 2026 public pricing. When prices change, update the YAML and re-run.
 
 The best time to calculate your LCPR was six months ago. The second best time is now.
 

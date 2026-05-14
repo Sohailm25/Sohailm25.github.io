@@ -385,7 +385,7 @@ I've run this exercise six times across different organizations. The exercise su
 
 This article showed the method. The next article ships the tool.
 
-[The LCPR Calculator v2]({filename}/lcpr-calculator-v2.md) takes the four sources as input and produces the numbers I just calculated by hand. Trace data goes in. Invoice goes in. Eval results go in. Contract terms go in. LCPR, margin, and the reconciliation delta come out.
+[The LCPR Calculator]({filename}/lcpr-calculator-v2.md) takes the four sources as input and produces the numbers I just calculated by hand. Trace data goes in. Invoice goes in. Eval results go in. Contract terms go in. LCPR, margin, and the reconciliation delta come out.
 
 The full complexity of multi-workload, multi-provider systems is real. [What Your Workload Actually Costs]({filename}/workload-costs.md) addresses workload economics --- how to attribute shared costs when five workloads share one inference endpoint. [Goodput or It Didn't Happen]({filename}/goodput.md) addresses the serving-side measurement that feeds the LCPR denominator.
 

@@ -1,8 +1,8 @@
-Title: LCPR Calculator v2: What Your Inference Bill Is Actually Measuring
+Title: The LCPR Calculator
 Date: 2026-04-29
 Category: Writings
 Slug: lcpr-calculator-v2
-Summary: Open-source calculator for loaded cost per result. Three worked examples, cache break-even analysis, KV memory sizing, and the LCPR-2026 framework from Production Inference Economics.
+Summary: Open-source calculator for loaded cost per result. Three worked examples, cache break-even analysis, KV memory sizing, and the LCPR-2026 framework.
 Featured: true
 Template: longform_article
 Status: published
@@ -55,7 +55,7 @@ The correct capacity metric. Peak throughput is a hardware spec. Goodput is an e
 
 **5. Trace-to-Margin Reconciliation.** From raw traces to account margin via the four-source join (see [The Trace Autopsy]({filename}/trace-autopsy.md)): Trace + Invoice + Eval + Contract. `delta = invoice - trace_derived_cost`. If delta exceeds 5%, investigate. Your traces are either missing calls, miscounting tokens, or the provider is billing something your instrumentation does not capture.
 
-**6. Cache Break-Even.** New in v2.
+**6. Cache Break-Even.**
 
 ```
 N_break_even = (p_write - p_read) / (p_in - p_read)
@@ -65,7 +65,7 @@ Where `p_write` is the cache write cost per token, `p_read` is the cache read (h
 
 The formula is portable. The numbers are provider-specific. Do not trust the pricing page discount percentage --- trust the break-even count against your measured reuse rate. A 90% cache discount means nothing if your reuse pattern hits the same prefix 1.3 times within the TTL window.
 
-**7. KV Memory Sizing.** New in v2.
+**7. KV Memory Sizing.**
 
 ```
 kv_bytes_per_token = 2 * layers * KV_heads * head_dim * element_bytes
@@ -138,15 +138,15 @@ The benchmark that selected Route A contained eight methodology errors:
 
 The seed file documents exactly which gaps created the false winner. The missing metadata checklist in the YAML specifies what a production-grade benchmark must capture. Run the seed through the calculator and it produces the goodput-adjusted comparison that reverses the ranking.
 
-## What Changed From v1 to v2
+## What Changed From the Field Guide
 
-The field guide calculator (v1) used a simpler formula:
+The field guide calculator used a simpler formula:
 
 ```
 LCPR = (token_cost + repair_cost + engineering_cost) / successful_requests
 ```
 
-v2 aligns with the LCPR-2026 framework from Production Inference Economics:
+The current calculator aligns with the LCPR-2026 framework from Production Inference Economics:
 
 ```
 LCPR = (C_inference + C_eval + C_human + C_ops + delta) / A

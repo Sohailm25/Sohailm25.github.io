@@ -19,8 +19,6 @@ Status: published
 
 ---
 
-## The Problem With Token Prices
-
 A team I advised ran a support answer pipeline on two routes. Route A: a frontier closed API at $3.00/M input tokens. Route B: a serverless open-weights endpoint at $1.80/M input tokens. The spreadsheet said Route B was 40% cheaper. They switched. Thirty days later, the invoice was higher.
 
 The naive cost per ticket was $0.014. The loaded cost per accepted answer was $0.172. That is a 12x gap between the number the spreadsheet optimized and the number the finance team actually paid.

@@ -17,8 +17,6 @@ Status: published
 4. [Workload Costs]({filename}/workload-costs.md)
 5. [Goodput]({filename}/goodput.md)
 
-*I wrote [The Denominator Problem]({filename}/denominator-problem.md) because teams keep comparing token prices and calling it cost analysis. This post is the tool that makes the actual measurement repeatable.*
-
 ---
 
 ## The Problem With Token Prices

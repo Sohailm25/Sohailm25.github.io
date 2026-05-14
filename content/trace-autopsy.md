@@ -7,13 +7,13 @@ Featured: true
 Template: longform_article
 Status: published
 
-*I work at Together AI. Evidence tags mark every claim so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
+*I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
 *Production Inference Economics --- Part 2 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | **2. Trace Autopsy** | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
 ---
 
-[The Denominator Problem]({filename}/denominator-problem.md) named the problem. A team running inference in production discovers a 12x gap between what they thought inference cost ($0.014 per ticket) and what it actually cost ($0.172 per accepted answer) [DERIVED]. The gap has a name --- the denominator problem --- and a metric that captures it: Loaded Cost Per Result. But naming a problem and solving it are different things.
+[The Denominator Problem]({filename}/denominator-problem.md) named the problem. A team running inference in production discovers a 12x gap between what they thought inference cost ($0.014 per ticket) and what it actually cost ($0.172 per accepted answer). The gap has a name --- the denominator problem --- and a metric that captures it: Loaded Cost Per Result. But naming a problem and solving it are different things.
 
 This article teaches the diagnostic.
 
@@ -23,7 +23,7 @@ You have an inference bill. You suspect it's wrong --- not because the arithmeti
 
 The pricing page told you what a token costs. It didn't tell you how many tokens a result costs. That's what you need to measure.
 
-The Trace Autopsy is a repeatable protocol for going from raw trace events to loaded cost per accepted result. I'm going to walk through every step using a single day's trace data. The trace is synthetic [SYNTHETIC] --- I constructed it --- but the field shapes, the billing grammar, and the failure modes come from real provider documentation and real production patterns [MEASURED_PRIVATE]. The numbers are designed to be realistic, not real. The method is real.
+The Trace Autopsy is a repeatable protocol for going from raw trace events to loaded cost per accepted result. I'm going to walk through every step using a single day's trace data. The trace is synthetic --- I constructed it --- but the field shapes, the billing grammar, and the failure modes come from real provider documentation and real production patterns. The numbers are designed to be realistic, not real. The method is real.
 
 ## What Twelve Requests Actually Look Like
 
@@ -45,9 +45,6 @@ Those four extra requests are the entire story. They're the gap between the pric
 | 10 | Retry of #8 | 3,200 | 0 | 310 | 720 | 3,100 | Pass | Retry succeeded |
 | 11 | Eval grader | 1,200 | 0 | 80 | 200 | 800 | --- | Grading requests 3 and 8 |
 | 12 | Repair of #3 | 3,800 | 0 | 350 | 650 | 3,200 | Pass | Regenerated with corrected context |
-
-[SYNTHETIC]
-
 Each row is a clinical event. The pattern across rows tells the story.
 
 **Requests 1 through 8** are first attempts --- one per customer ticket. This is the work the team planned for. Eight tickets come in, eight inference calls go out. If you're estimating inference cost from a spreadsheet, these eight rows are all you modeled.
@@ -56,9 +53,9 @@ Five of the eight pass (requests 1, 2, 5, 6, 7). Three fail. But they fail for d
 
 **Request 3** fails quality. The LLM-as-judge eval says the answer missed a key constraint. This isn't a latency problem --- the response came back in 2,400ms, well within SLO. The content was wrong. Wrong content means the system needs to try again with better context, which is a repair, not a retry.
 
-**Request 4** fails latency. TTFT hit 1,100ms against an 800ms SLO [SYNTHETIC]. The output might have been fine --- we'll never know, because the system timed out the first-token wait. This is a retry candidate: same input, same prompt, hope for better luck on the next scheduling pass.
+**Request 4** fails latency. TTFT hit 1,100ms against an 800ms SLO. The output might have been fine --- we'll never know, because the system timed out the first-token wait. This is a retry candidate: same input, same prompt, hope for better luck on the next scheduling pass.
 
-**Request 8** fails on end-to-end latency. The output was 620 tokens --- nearly 2.5x the median --- and the total call took 6,100ms. The E2E SLO was probably around 5,000ms [SYNTHETIC]. Again, the output quality might have been acceptable, but the user experience wasn't. Another retry.
+**Request 8** fails on end-to-end latency. The output was 620 tokens --- nearly 2.5x the median --- and the total call took 6,100ms. The E2E SLO was probably around 5,000ms. Again, the output quality might have been acceptable, but the user experience wasn't. Another retry.
 
 Now the recovery machinery kicks in.
 
@@ -66,7 +63,7 @@ Now the recovery machinery kicks in.
 
 **Request 10** retries request 8. Same 3,200 input tokens, again zero cached. This time the output was 310 tokens instead of 620 --- the model's stochastic nature worked in the team's favor. E2E dropped to 3,100ms. Pass.
 
-**Request 11** is the one most teams forget to account for. It's the eval grader --- an LLM-as-judge call that evaluates the failed outputs from requests 3 and 8. It consumed 1,200 input tokens and 80 output tokens [SYNTHETIC]. It produced zero customer-facing value. Its entire purpose was to classify the failures so the system could decide between retry, repair, and escalation. But it's real token spend on a real provider bill.
+**Request 11** is the one most teams forget to account for. It's the eval grader --- an LLM-as-judge call that evaluates the failed outputs from requests 3 and 8. It consumed 1,200 input tokens and 80 output tokens. It produced zero customer-facing value. Its entire purpose was to classify the failures so the system could decide between retry, repair, and escalation. But it's real token spend on a real provider bill.
 
 **Request 12** repairs request 3. This isn't a retry --- it's a new prompt. The system took the failure signal from the eval grader, fetched corrected retrieval context, and rebuilt the prompt. That's why the input is 3,800 tokens instead of the original 2,600. The repair succeeded.
 
@@ -78,7 +75,7 @@ The spreadsheet said one thing. The trace said another. Five mechanisms explain 
 
 ### 1. Cache hit rate dropped from 60% to 35%
 
-The spreadsheet assumed a 60% prompt cache hit rate [SYNTHETIC]. This was reasonable --- the team measured it during a pilot with a single replica and a generous TTL. Production was different.
+The spreadsheet assumed a 60% prompt cache hit rate. This was reasonable --- the team measured it during a pilot with a single replica and a generous TTL. Production was different.
 
 Three things broke the cache assumption:
 
@@ -88,17 +85,17 @@ Three things broke the cache assumption:
 
 **More replicas fragmenting the cache.** The team scaled from two to four replicas. Each replica has its own KV cache. Same prompt hitting different replicas means a cache miss. Without sticky routing, the effective hit rate drops roughly proportional to replica count, minus whatever overlap the load balancer provides.
 
-The financial impact: at 60% cache hit rate, the effective input cost per token was roughly 0.6 * (discounted cached price) + 0.4 * (full price). At 35%, that ratio shifts hard toward full price. On a provider charging $2.50/M input tokens with cached tokens at $1.25/M [PUBLIC_PRICING], the effective input cost per token went from $1.75/M to $2.06/M --- an 18% increase on the input side [DERIVED]. Not catastrophic on its own. But it compounds with everything else.
+The financial impact: at 60% cache hit rate, the effective input cost per token was roughly 0.6 * (discounted cached price) + 0.4 * (full price). At 35%, that ratio shifts hard toward full price. On a provider charging $2.50/M input tokens with cached tokens at $1.25/M, the effective input cost per token went from $1.75/M to $2.06/M --- an 18% increase on the input side. Not catastrophic on its own. But it compounds with everything else.
 
 ### 2. Output token length was longer than planned
 
-The spreadsheet assumed 250 output tokens per request --- the median from the pilot [SYNTHETIC]. Look at what the trace delivered: 220, 340, 280, 510, 190, 380, 250, 620, 290, 310, 80, 350.
+The spreadsheet assumed 250 output tokens per request --- the median from the pilot. Look at what the trace delivered: 220, 340, 280, 510, 190, 380, 250, 620, 290, 310, 80, 350.
 
-Average across first attempts (requests 1-8): 349 tokens. That's 40% above the 250-token median [DERIVED].
+Average across first attempts (requests 1-8): 349 tokens. That's 40% above the 250-token median.
 
-This matters more than it looks. Output tokens cost 2-6x more than input tokens per token across major providers [PUBLIC_PRICING]. On a model where input is $2.50/M and output is $10.00/M, a 40% increase in average output length doesn't move the bill by 40%. It moves the output portion of the bill by 40%, and output is already the dominant cost component.
+This matters more than it looks. Output tokens cost 2-6x more than input tokens per token across major providers. On a model where input is $2.50/M and output is $10.00/M, a 40% increase in average output length doesn't move the bill by 40%. It moves the output portion of the bill by 40%, and output is already the dominant cost component.
 
-For this trace, where output tokens are 4x the price of input tokens, a 40% increase in average output length erases a 47% per-token discount you might have negotiated on the input side [DERIVED].
+For this trace, where output tokens are 4x the price of input tokens, a 40% increase in average output length erases a 47% per-token discount you might have negotiated on the input side.
 
 The long-tail requests are the killers. Request 8 at 620 tokens and request 4 at 510 tokens aren't outliers --- they're the heavy hitters that pull the average up. And both of them failed, so their tokens produced zero accepted output. Cost incurred, value zero.
 
@@ -106,7 +103,7 @@ The long-tail requests are the killers. Request 8 at 620 tokens and request 4 at
 
 Four requests out of twelve were not first attempts. Requests 9 and 10 were retries. Request 11 was an eval grader. Request 12 was a repair. None of them appear in the spreadsheet model.
 
-Let me tally the extra token cost. Using a blended rate of $2.50/M input and $10.00/M output [PUBLIC_PRICING]:
+Let me tally the extra token cost. Using a blended rate of $2.50/M input and $10.00/M output:
 
 | Request | Input cost | Output cost | Total |
 |---------|-----------|-------------|-------|
@@ -115,26 +112,23 @@ Let me tally the extra token cost. Using a blended rate of $2.50/M input and $10
 | 11 (eval) | $0.0030 | $0.0008 | $0.0038 |
 | 12 (repair) | $0.0095 | $0.0035 | $0.0130 |
 | **Total extra** | **$0.0275** | **$0.0103** | **$0.0378** |
-
-[DERIVED]
-
-The first-attempt cost for requests 1-8 was approximately $0.126 [DERIVED]. The four extra requests added $0.038, a 30% increase [DERIVED]. And this was a relatively clean day --- only three of eight first attempts failed, and all recoveries succeeded on the first try. On a bad day, with cascading retries or multiple repair attempts, this multiplier grows.
+The first-attempt cost for requests 1-8 was approximately $0.126. The four extra requests added $0.038, a 30% increase. And this was a relatively clean day --- only three of eight first attempts failed, and all recoveries succeeded on the first try. On a bad day, with cascading retries or multiple repair attempts, this multiplier grows.
 
 ### 4. Quality failure created downstream cost
 
 Request 3 failed quality. The eval grader (request 11) confirmed it. The repair (request 12) succeeded. That's the happy path for quality failures.
 
-But not every repair succeeds. When repairs fail, the ticket escalates to a human reviewer. Human review costs $2 per case [SYNTHETIC]. At a 5% escalation rate --- roughly 50 escalations per day on a 1,000-ticket workload --- that's $100/day in human cost [DERIVED]. Scale to a month and it's real money.
+But not every repair succeeds. When repairs fail, the ticket escalates to a human reviewer. Human review costs $2 per case. At a 5% escalation rate --- roughly 50 escalations per day on a 1,000-ticket workload --- that's $100/day in human cost. Scale to a month and it's real money.
 
-Here's the ratio that should bother you: at $100/day in human escalation cost and roughly $14/day in inference cost [DERIVED], the human cost is 7x the inference bill [DERIVED]. You can negotiate a 20% discount on your inference pricing and it won't matter if your escalation rate moves by two percentage points.
+Here's the ratio that should bother you: at $100/day in human escalation cost and roughly $14/day in inference cost, the human cost is 7x the inference bill. You can negotiate a 20% discount on your inference pricing and it won't matter if your escalation rate moves by two percentage points.
 
 This is why quality gates belong in the cost model. They're not a quality concern --- they're a financial mechanism. Every percentage point of quality improvement that prevents escalation saves more than a percentage point of inference cost reduction.
 
 ### 5. The denominator shrank
 
-One thousand tickets came in. Eight hundred twenty accepted answers went out [SYNTHETIC]. The 18% that failed quality gates, latency SLOs, or compliance checks never reached the customer. But the inference cost for those failures was already incurred.
+One thousand tickets came in. Eight hundred twenty accepted answers went out. The 18% that failed quality gates, latency SLOs, or compliance checks never reached the customer. But the inference cost for those failures was already incurred.
 
-The denominator shift inflates per-unit cost by 22% [DERIVED]. If you spent $140.65 producing 1,000 attempts and 820 of them were accepted, your cost per accepted answer is $140.65 / 820 = $0.172, not $140.65 / 1,000 = $0.141 [DERIVED]. That 22% increase comes purely from dividing by the right number.
+The denominator shift inflates per-unit cost by 22%. If you spent $140.65 producing 1,000 attempts and 820 of them were accepted, your cost per accepted answer is $140.65 / 820 = $0.172, not $140.65 / 1,000 = $0.141. That 22% increase comes purely from dividing by the right number.
 
 This is the denominator problem from the first article. The five mechanisms above --- cache, output length, retries, quality failures, denominator shrinkage --- compound. They don't add linearly. Cache misses make retries more expensive. Long outputs make quality failures more costly. Quality failures shrink the denominator. The 12x gap between $0.014 and $0.172 is the product of all five mechanisms interacting.
 
@@ -196,7 +190,7 @@ The join is hard for practical reasons, and each pair of sources has its own fri
 
 The correlation matters for routing decisions: if long outputs (high cost) have a higher failure rate, you might cap output length or use a cheaper model for high-variance workloads. The join key is usually a request ID or ticket ID, but you need your eval pipeline to record which request it evaluated --- not just "this output passed" but "this output from request ID abc123 passed."
 
-**Eval-to-Contract** connects quality to revenue. The contract specifies revenue per accepted work unit. The eval says 82% of answers were accepted --- 82,000 out of 100,000. The join gives you realized revenue: $45,000 for the month [SYNTHETIC]. Without the eval, you'd either assume 100% acceptance (overstating revenue) or use a placeholder acceptance rate that might be months out of date.
+**Eval-to-Contract** connects quality to revenue. The contract specifies revenue per accepted work unit. The eval says 82% of answers were accepted --- 82,000 out of 100,000. The join gives you realized revenue: $45,000 for the month. Without the eval, you'd either assume 100% acceptance (overstating revenue) or use a placeholder acceptance rate that might be months out of date.
 
 **Contract-to-Trace** closes the loop. The contract's data residency requirement says "EU customer data stays in EU." This constraint forces certain requests to EU-region endpoints, which may have different pricing, different cache behavior, and different latency characteristics. The trace shows the actual cost of serving those requests in EU. Without linking the contract constraint back to trace data, you can't measure the cost premium of compliance.
 
@@ -212,13 +206,13 @@ The four-source join is the measurement protocol behind LCPR. The formula is sim
 
 ## Trace-to-Margin Reconciliation, Step by Step
 
-I'll walk through the full reconciliation using monthly numbers [SYNTHETIC]. This is the procedure I run --- or want teams to run --- at the end of every month.
+I'll walk through the full reconciliation using monthly numbers. This is the procedure I run --- or want teams to run --- at the end of every month.
 
 ### Step 1: Pull trace-derived cost
 
 Sum every inference call for the month: first attempts, retries, repairs, eval graders. Price each call at the current pricing snapshot --- the per-token rates for the model and tier you're using.
 
-Result: **$14,200** [SYNTHETIC].
+Result: **$14,200**.
 
 This number is your best estimate of what inference should have cost, based on what your application observed. It's not what the provider charged. It's what your traces say happened, priced at the rates you expect to pay.
 
@@ -226,9 +220,9 @@ A detail that matters: which pricing snapshot are you using? If the provider cha
 
 ### Step 2: Pull the invoice
 
-The provider says: **$14,850** [SYNTHETIC].
+The provider says: **$14,850**.
 
-Delta: $650. That's 4.4% [DERIVED].
+Delta: $650. That's 4.4%.
 
 Is 4.4% acceptable? I use a 5% threshold. Under 5%, the trace is trustworthy for daily cost monitoring --- the gap is noise from rounding, timing, and minor token count discrepancies. Over 5%, something is wrong and you need to investigate before trusting trace-based cost reporting.
 
@@ -236,7 +230,7 @@ At 4.4%, we proceed. I'll come back to what to do when the delta is large.
 
 ### Step 3: Add eval grader cost
 
-The LLM-as-judge calls that evaluate output quality: **$800/month** [SYNTHETIC].
+The LLM-as-judge calls that evaluate output quality: **$800/month**.
 
 This is real inference spend. It hits the same provider bill. But it produces zero customer-facing output. Every token the eval grader consumes is overhead --- necessary overhead, because without it you don't have a quality signal and you don't have a denominator, but overhead nonetheless.
 
@@ -244,15 +238,15 @@ Some teams bury eval grader cost inside the inference line item. I break it out 
 
 ### Step 4: Add human escalation cost
 
-Tickets that failed quality, failed repair, and escalated to a human reviewer: **500 cases x $2 = $1,000/month** [SYNTHETIC].
+Tickets that failed quality, failed repair, and escalated to a human reviewer: **500 cases x $2 = $1,000/month**.
 
 In the daily trace I showed earlier, I cited $100/day from 50 escalations. The monthly number is 500, not 1,500, because escalation volume varies by day. Weekends are lighter. Some failure modes cluster --- a bad retrieval index causes a burst of quality failures that clears once the index rebuilds.
 
-The $2/case number is a loaded cost for human review time [SYNTHETIC]. In practice, this ranges from $1 to $15 depending on the domain, the complexity of review, and whether the reviewer is internal or outsourced. For customer support automation, $2 is realistic. For medical or legal domains, multiply by 5x.
+The $2/case number is a loaded cost for human review time. In practice, this ranges from $1 to $15 depending on the domain, the complexity of review, and whether the reviewer is internal or outsourced. For customer support automation, $2 is realistic. For medical or legal domains, multiply by 5x.
 
 ### Step 5: Add ops overhead
 
-On-call, monitoring, prompt maintenance, eval set curation: **$2,500/month** [SYNTHETIC].
+On-call, monitoring, prompt maintenance, eval set curation: **$2,500/month**.
 
 This is the hardest number to pin down and the easiest to argue about. I allocate it as a proportion of the team's time spent on inference operations. If a team of four spends 25% of their time on prompt tuning, eval maintenance, incident response for inference quality, and provider relationship management, and the team costs $40,000/month loaded, that's $10,000/month across all workloads. If this workload is 25% of the total inference volume, it gets $2,500.
 
@@ -260,9 +254,9 @@ The allocation is imperfect. But zero is more wrong than $2,500. Teams that excl
 
 ### Step 6: Count accepted outputs
 
-Total requests: **100,000** [SYNTHETIC].
+Total requests: **100,000**.
 
-Accepted outputs: **82,000** [SYNTHETIC].
+Accepted outputs: **82,000**.
 
 The 82% acceptance rate comes from the eval pipeline. Of 100,000 outputs generated, 82,000 passed quality gates, latency SLOs, and compliance checks. The remaining 18,000 were retried, repaired, escalated, or dropped.
 
@@ -282,9 +276,6 @@ This is the denominator. Not 100,000. Not the number of inference calls (which i
 | Total requests | 100,000 |
 | Accepted outputs | 82,000 |
 | **LCPR** | **$0.234** |
-
-[DERIVED]
-
 $19,150 / 82,000 = $0.234 per accepted answer.
 
 ### Step 8: Calculate margin
@@ -295,10 +286,7 @@ $19,150 / 82,000 = $0.234 per accepted answer.
 | Cost | $19,150 | $14,200 |
 | Margin | $25,850 | $30,800 |
 | Margin % | **57.4%** | **68.4%** |
-
-[DERIVED]
-
-The naive calculation --- revenue minus trace-derived inference cost, ignoring eval graders, human escalation, ops overhead, and the denominator --- overstates margin by 11 percentage points [DERIVED]. On $45,000 in revenue, that's a $4,950 difference in profit [DERIVED]. Not enough to kill the business. Enough to make a bad routing decision, underestimate the cost of a new workload, or promise a customer a price you can't sustain.
+The naive calculation --- revenue minus trace-derived inference cost, ignoring eval graders, human escalation, ops overhead, and the denominator --- overstates margin by 11 percentage points. On $45,000 in revenue, that's a $4,950 difference in profit. Not enough to kill the business. Enough to make a bad routing decision, underestimate the cost of a new workload, or promise a customer a price you can't sustain.
 
 Here's what the 11-point gap looks like in a planning conversation. The CEO asks: "Can we offer this workload to the next customer at $40,000/year instead of $45,000?" At naive margin (68.4%), the answer looks like yes --- you'd still make 64.5% margin at $40,000. At loaded margin (57.4%), the answer is more cautious --- margin drops to 52.1%, and you're only one bad month away from a workload that costs more to run than it earns. The naive number says take the deal. The loaded number says negotiate harder.
 
@@ -318,7 +306,7 @@ But I've seen deltas of 15%, 30%, even 2x. When that happens, the trace is lying
 
 **Model name aliases.** Your trace says `gpt-4.1`. The invoice says `gpt-4.1-2025-04-14`. Are they the same model at the same price? Usually yes. But during model transitions, the dated version might be priced differently, or your pricing snapshot might reference the alias while the provider bills the canonical name. I've watched a team spend a week debugging a cost discrepancy that turned out to be a model name string mismatch between their trace attribution logic and the provider's billing export.
 
-**Batch vs real-time pricing splits.** If you use batch inference for some workloads, the batch calls are typically priced at 50% of real-time [PUBLIC_PRICING]. Your trace might not distinguish batch from real-time, or might price both at the real-time rate.
+**Batch vs real-time pricing splits.** If you use batch inference for some workloads, the batch calls are typically priced at 50% of real-time. Your trace might not distinguish batch from real-time, or might price both at the real-time rate.
 
 **Token count discrepancy.** Your tokenizer is a local approximation. The provider's tokenizer is authoritative. For most models, they agree to within 1-2%. But if you're using a third-party tokenizer library that hasn't been updated for the latest model's vocabulary changes, the gap can be larger.
 
@@ -409,4 +397,4 @@ That's how you go from "inference costs $0.014 per ticket" to "inference costs $
 
 *Sohail Mohammad --- April 2026*
 
-*Part 2 of 5 in the Production Inference Economics series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MEASURED_PRIVATE] for production observations, [MODELED] for calculations with methodology shown, [DERIVED] for numbers calculated from other labeled inputs. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*
+*Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

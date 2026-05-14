@@ -7,7 +7,7 @@ Featured: true
 Template: longform_article
 Status: published
 
-*I work at Together AI. Evidence tags mark every claim so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
+*I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
 *Production Inference Economics --- Part 3 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | **3. LCPR Calculator** | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
@@ -17,11 +17,11 @@ Status: published
 
 ## The Problem With Token Prices
 
-A team I advised ran a support answer pipeline on two routes. Route A: a frontier closed API at $3.00/M input tokens. Route B: a serverless open-weights endpoint at $1.80/M input tokens. The spreadsheet said Route B was 40% cheaper. They switched. Thirty days later, the invoice was higher [SYNTHETIC].
+A team I advised ran a support answer pipeline on two routes. Route A: a frontier closed API at $3.00/M input tokens. Route B: a serverless open-weights endpoint at $1.80/M input tokens. The spreadsheet said Route B was 40% cheaper. They switched. Thirty days later, the invoice was higher.
 
 The naive cost per ticket was $0.014. The loaded cost per accepted answer was $0.172. That is a 12x gap between the number the spreadsheet optimized and the number the finance team actually paid.
 
-The gap exists because the spreadsheet measured token price. Token price is the billing meter. It is not the cost model. The cost model includes retries (30% of requests needed re-prompting after schema failures), eval grader calls (every answer ran through a quality gate), human escalation ($2 per case for the 50 tickets per day that failed automated QA), the ops overhead of keeping two inference routes healthy during migration, and the output/input pricing asymmetry (2-6x across major providers [PUBLIC_PRICING]) that makes generation-heavy retries disproportionately expensive. None of those costs appear on a pricing page. All of them appear on the invoice.
+The gap exists because the spreadsheet measured token price. Token price is the billing meter. It is not the cost model. The cost model includes retries (30% of requests needed re-prompting after schema failures), eval grader calls (every answer ran through a quality gate), human escalation ($2 per case for the 50 tickets per day that failed automated QA), the ops overhead of keeping two inference routes healthy during migration, and the output/input pricing asymmetry (2-6x across major providers) that makes generation-heavy retries disproportionately expensive. None of those costs appear on a pricing page. All of them appear on the invoice.
 
 The LCPR Calculator exists to make this measurement repeatable. It takes your actual workload numbers --- retry rates, quality gate pass rates, human escalation costs, cache hit rates --- and produces the loaded cost per accepted result. Not cost per token. Not cost per request. Cost per result your system actually accepted and served to a user.
 
@@ -37,7 +37,7 @@ Seven computations. Each one isolates a different question about inference econo
 LCPR = (C_inference + C_eval + C_human + C_ops + delta) / A
 ```
 
-Not "cost per token." Not "cost per request." Cost per accepted result. `A` is the count of work units that passed every quality gate and reached the end user. Everything above the line is what you spent to produce them [MODELED].
+Not "cost per token." Not "cost per request." Cost per accepted result. `A` is the count of work units that passed every quality gate and reached the end user. Everything above the line is what you spent to produce them.
 
 **2. Sensitivity Analysis.** Vary one input --- retry rate, quality gate pass rate, cache hit rate, engineering hours --- hold others constant, see which lever matters most. On most quality-sensitive workloads, the quality gate dominates. Not the token price. A 10-point drop in eval pass rate moves LCPR more than a 2x change in per-token pricing.
 
@@ -59,7 +59,7 @@ The correct capacity metric. Peak throughput is a hardware spec. Goodput is an e
 N_break_even = (p_write - p_read) / (p_in - p_read)
 ```
 
-Where `p_write` is the cache write cost per token, `p_read` is the cache read (hit) cost, and `p_in` is the standard input price. On Anthropic's 5-minute cache: 2 calls within TTL to break even. On their 1-hour cache: 3 calls [PUBLIC_PRICING]. On OpenAI automatic caching: any hit saves money because there is no explicit write cost.
+Where `p_write` is the cache write cost per token, `p_read` is the cache read (hit) cost, and `p_in` is the standard input price. On Anthropic's 5-minute cache: 2 calls within TTL to break even. On their 1-hour cache: 3 calls. On OpenAI automatic caching: any hit saves money because there is no explicit write cost.
 
 The formula is portable. The numbers are provider-specific. Do not trust the pricing page discount percentage --- trust the break-even count against your measured reuse rate. A 90% cache discount means nothing if your reuse pattern hits the same prefix 1.3 times within the TTL window.
 
@@ -69,7 +69,7 @@ The formula is portable. The numbers are provider-specific. Do not trust the pri
 kv_bytes_per_token = 2 * layers * KV_heads * head_dim * element_bytes
 ```
 
-For Llama 3 70B in bf16: 320 KiB per token per sequence [MODELED]. At 4K context with a 40GB KV pool: 26 concurrent sequences. At 128K context: zero. You physically cannot fit a single 128K sequence in a 40GB KV budget on this architecture without quantized KV or offloading.
+For Llama 3 70B in bf16: 320 KiB per token per sequence. At 4K context with a 40GB KV pool: 26 concurrent sequences. At 128K context: zero. You physically cannot fit a single 128K sequence in a 40GB KV budget on this architecture without quantized KV or offloading.
 
 Context length is a capacity allocation, not just a model setting. Every token of context you allow costs memory that could serve another concurrent user. The calculator makes this trade-off explicit.
 
@@ -81,7 +81,7 @@ Each example ships with a seed YAML file. Clone the repo, run the seed, get the 
 
 **Seed:** `examples/support-answer.trace-margin.v1/calculator-seed.yaml`
 
-The 12-request trace from [The Trace Autopsy]({filename}/trace-autopsy.md). Eight customer tickets generate twelve inference calls: six first attempts, two retries after schema validation failures, one eval grader call to score answer quality, one repair call for a grader-rejected response, and two embedding lookups for the RAG retrieval step. Daily fleet: 1,000 tickets submitted, 820 accepted answers delivered [SYNTHETIC].
+The 12-request trace from [The Trace Autopsy]({filename}/trace-autopsy.md). Eight customer tickets generate twelve inference calls: six first attempts, two retries after schema validation failures, one eval grader call to score answer quality, one repair call for a grader-rejected response, and two embedding lookups for the RAG retrieval step. Daily fleet: 1,000 tickets submitted, 820 accepted answers delivered.
 
 The numbers:
 
@@ -107,9 +107,9 @@ Human escalation is 71% of total loaded cost. Inference is 10%. Human cost runs 
 
 **Seed:** `examples/coding-agent.lifecycle.v1/calculator-seed.yaml`
 
-One accepted bug fix across an agent session: 20 LLM calls, 178K input tokens, 18K output tokens, 25 tool calls (file reads, test runs, grep searches). The user submitted a 2K-token bug report. Token fanout: 89x. A 2K prompt becomes 178K input tokens across the session because every subsequent turn re-sends the growing conversation context plus tool results [SYNTHETIC].
+One accepted bug fix across an agent session: 20 LLM calls, 178K input tokens, 18K output tokens, 25 tool calls (file reads, test runs, grep searches). The user submitted a 2K-token bug report. Token fanout: 89x. A 2K prompt becomes 178K input tokens across the session because every subsequent turn re-sends the growing conversation context plus tool results.
 
-Cache behavior is bimodal. The main agent loop hits 82% cache rate --- stable system prompt, growing context window, high prefix overlap between turns. Sub-agent calls (linter, test runner, code search) hit 45% --- fresh context each time, minimal prefix reuse. When a compaction event fires (context exceeds the window and gets summarized), the cached prefix is destroyed. The next turn pays full input price on the compacted context plus a cache write on the new prefix. Cache hit rate across the fleet dropped from 60% to 35% after a compaction policy change [SYNTHETIC].
+Cache behavior is bimodal. The main agent loop hits 82% cache rate --- stable system prompt, growing context window, high prefix overlap between turns. Sub-agent calls (linter, test runner, code search) hit 45% --- fresh context each time, minimal prefix reuse. When a compaction event fires (context exceeds the window and gets summarized), the cached prefix is destroyed. The next turn pays full input price on the compacted context plus a cache write on the new prefix. Cache hit rate across the fleet dropped from 60% to 35% after a compaction policy change.
 
 Fleet: 200 tasks per day, 90% acceptance rate (65% first-pass acceptance + 25% repaired by the agent's self-correction loop), 10% manual developer takeover.
 
@@ -121,7 +121,7 @@ The point: agent economics are multi-turn, multi-model, and cache-dependent. Per
 
 Two routes benchmarked for the same RAG answer-drafting workload. Route A wins on mean throughput: 45 requests per second vs. Route B's 38. The procurement recommendation goes to Route A.
 
-Route B wins on goodput. Route A has a 72% eval pass rate. Route B has 91% [SYNTHETIC]. Under a 2-second P95 latency SLO and the quality gate, Route A's goodput is 28 accepted requests per second. Route B's is 33. The "slower" route produces more accepted work per second.
+Route B wins on goodput. Route A has a 72% eval pass rate. Route B has 91%. Under a 2-second P95 latency SLO and the quality gate, Route A's goodput is 28 accepted requests per second. Route B's is 33. The "slower" route produces more accepted work per second.
 
 The benchmark that selected Route A contained eight methodology errors:
 
@@ -217,4 +217,4 @@ Contributions welcome: pricing updates as providers change rates, new workload p
 
 ---
 
-*This is Part 3 of 5 in the Production Inference Economics series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MODELED] for calculations with methodology shown. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*
+*Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

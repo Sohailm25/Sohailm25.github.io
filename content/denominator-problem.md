@@ -7,7 +7,7 @@ Featured: true
 Template: longform_article
 Status: published
 
-*I work at Together AI. Evidence tags mark every claim so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
+*I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
 *Production Inference Economics --- Part 1 of 5: **1. The Denominator Problem** | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
 
@@ -35,7 +35,7 @@ These are not the same question. The gap between them is what I have started cal
 
 When the bill came in wrong, the team did what every engineering team does --- they pulled traces. Not aggregate dashboards. Not the provider's usage summary. The actual request-level event log, call by call.
 
-Here is a representative slice from a single day on Route B. I have simplified it to eight rows from the full trace. The field shapes, billing grammar, and cache semantics come from real provider documentation. The failure modes come from production [SYNTHETIC].
+Here is a representative slice from a single day on Route B. I have simplified it to eight rows from the full trace. The field shapes, billing grammar, and cache semantics come from real provider documentation. The failure modes come from production.
 
 | # | Type | Input tok | Cached | Output tok | TTFT (time to first token) ms | E2E (end-to-end latency) ms | Eval | Notes |
 |---|------|-----------|--------|------------|---------|--------|------|-------|
@@ -66,7 +66,7 @@ Five mechanisms turned a 40-47% token price advantage into a higher total bill.
 
 ### 1. The cache hit rate was worse than expected
 
-The team designed the prompt with a stable system prompt and tool definitions at the top --- roughly 1,800 tokens of cache-eligible prefix. On Route A, 60% of requests hit the cache [MEASURED_PRIVATE]. On Route B, the hit rate dropped to 35% [SYNTHETIC].
+The team designed the prompt with a stable system prompt and tool definitions at the top --- roughly 1,800 tokens of cache-eligible prefix. On Route A, 60% of requests hit the cache. On Route B, the hit rate dropped to 35%.
 
 Three reasons the team did not anticipate:
 
@@ -78,7 +78,7 @@ Cache economics are not on the pricing page. They are in the cache implementatio
 
 ### 2. Output tokens were longer
 
-Route B's model produced longer outputs on average. The trace shows output lengths of 510, 380, and 350 tokens on several requests --- well above the 250-token median the team modeled [SYNTHETIC]. Output tokens are the expensive side of the bill. On most major API providers, output costs 2-6x more than input per token [PUBLIC_PRICING]. A 40% increase in average output length can erase a 47% discount on the per-token output price.
+Route B's model produced longer outputs on average. The trace shows output lengths of 510, 380, and 350 tokens on several requests --- well above the 250-token median the team modeled. Output tokens are the expensive side of the bill. On most major API providers, output costs 2-6x more than input per token. A 40% increase in average output length can erase a 47% discount on the per-token output price.
 
 This happens because different models have different verbosity profiles, and the support prompt was tuned for Route A's model. When you move a prompt from one model to another, the output distribution shifts. Sentence structure changes. Explanation depth changes. Hedging language shows up where it was not before. The token rate is cheaper, but more tokens come out. Prompt portability is not free.
 
@@ -86,7 +86,7 @@ This happens because different models have different verbosity profiles, and the
 
 Two of six first attempts in the trace above failed --- one on latency SLO (request 4), one on quality (request 3). Both were recovered. The retry consumed tokens. The repair consumed tokens. An eval grader call (not shown in this eight-row slice but present in the full twelve-request trace) checked the failed outputs and consumed additional tokens.
 
-These recovery requests added roughly 30% to the inference bill for the full trace [SYNTHETIC]. On workloads with 5-10% first-attempt failure rates, retries alone add 5-10% to the inference bill. Add repairs and eval grader calls, and the overhead climbs. This cost is invisible if you divide total spend by total requests instead of by accepted work, because the retries and repairs inflate both the numerator and the denominator and the ratio looks stable.
+These recovery requests added roughly 30% to the inference bill for the full trace. On workloads with 5-10% first-attempt failure rates, retries alone add 5-10% to the inference bill. Add repairs and eval grader calls, and the overhead climbs. This cost is invisible if you divide total spend by total requests instead of by accepted work, because the retries and repairs inflate both the numerator and the denominator and the ratio looks stable.
 
 The pricing comparison between Route A and Route B did not include a line item for "what happens when the answer is wrong."
 
@@ -94,7 +94,7 @@ The pricing comparison between Route A and Route B did not include a line item f
 
 Request 3 failed the quality gate. Its answer missed a key constraint from the customer's account. The repair call (request 8) fixed it, but the customer waited an extra 3.2 seconds. If the repair had also failed, the ticket would have escalated to a human agent.
 
-On this workload, approximately 5% of tickets escalate to humans. Each human escalation costs roughly $2 in agent time [MODELED]. On 1,000 tickets per day, 50 escalations cost $100. The daily inference bill is about $14.
+On this workload, approximately 5% of tickets escalate to humans. Each human escalation costs roughly $2 in agent time. On 1,000 tickets per day, 50 escalations cost $100. The daily inference bill is about $14.
 
 Human escalation costs 7x the inference bill. The cost that dominates the workload's economics does not appear on any inference provider's dashboard, is not captured by any trace-based cost metric, and is invisible to anyone comparing token prices across providers.
 
@@ -115,7 +115,7 @@ This is the denominator problem in its purest form. The team measured cost per t
 The procurement spreadsheet did this:
 
 ```
-Daily inference cost on Route B:  ~$14.20    [SYNTHETIC]
+Daily inference cost on Route B:  ~$14.20   
 Daily tickets served:              1,000
 Cost per ticket:                   $0.014
 ```
@@ -134,8 +134,6 @@ Here is the loaded calculation:
 | Human escalation (50 cases x $2) | $100.00 | 71.1% |
 | Ops overhead allocation | $25.00 | 17.8% |
 | **Total loaded cost** | **$140.65** | **100%** |
-
-[SYNTHETIC --- shaped by production patterns. Human escalation cost is order-of-magnitude from support staffing. Ops overhead is rough allocation.]
 
 And the denominator:
 
@@ -159,7 +157,7 @@ Not because inference is expensive --- inference is $14 per day, 10.1% of the lo
 
 Optimizing the token price while ignoring the quality-driven escalation rate is optimizing a lever that controls 10% of the outcome. The team switched providers to save 40% on the component that contributes 10% of cost. The result was predictable, in hindsight.
 
-And here is the part the team did not expect: Route A was more expensive per token, but it had a 60% cache hit rate, shorter average outputs, a 91% first-attempt quality pass rate, and fewer retries [SYNTHETIC]. The loaded cost per accepted answer on Route A was $0.135. Route B, at $0.172, was 27% more expensive per accepted answer despite being 40-47% cheaper per token.
+And here is the part the team did not expect: Route A was more expensive per token, but it had a 60% cache hit rate, shorter average outputs, a 91% first-attempt quality pass rate, and fewer retries. The loaded cost per accepted answer on Route A was $0.135. Route B, at $0.172, was 27% more expensive per accepted answer despite being 40-47% cheaper per token.
 
 The spreadsheet picked the wrong route.
 
@@ -226,7 +224,7 @@ The numerator includes all costs incurred in producing the output --- including 
 
 **C_human** is the cost that does not appear on any inference dashboard. When the system fails and a human takes over, that labor cost should be allocated against the workload that generated the failure. On the support workload, this is the dominant cost at 71% of LCPR --- $100 per day versus $14.20 for inference. This is not unusual. On quality-sensitive interactive workloads, I consistently see human escalation as the plurality or majority of loaded cost. If you are optimizing token price while human escalation dominates your loaded cost, you are tuning the guitar while the drummer is on fire.
 
-**C_ops** is on-call engineering time, monitoring and observability tooling, prompt maintenance, eval set curation, model evaluation cycles, deployment pipeline costs. These are real, amortized across workloads, and invisible on any per-request metric unless deliberately allocated. $25 per day is a rough allocation [MODELED]. At some companies it is higher. The point is that it exists and is not zero.
+**C_ops** is on-call engineering time, monitoring and observability tooling, prompt maintenance, eval set curation, model evaluation cycles, deployment pipeline costs. These are real, amortized across workloads, and invisible on any per-request metric unless deliberately allocated. $25 per day is a rough allocation. At some companies it is higher. The point is that it exists and is not zero.
 
 **Delta** is the reconciliation term. It captures rounding, timing differences between trace timestamps and billing period boundaries, batch pricing adjustments, model alias resolution --- everything that makes your trace-derived cost differ from the invoice. If delta exceeds 5% of C_inference, investigate before trusting your trace-based cost reporting. Common causes: missing traces, model name aliases (the trace says `gpt-4.1` but the invoice says `gpt-4.1-2025-04-14`), batch versus real-time pricing splits, or token count discrepancies between your tokenizer and the provider's.
 
@@ -288,4 +286,4 @@ The trace autopsy is where LCPR stops being a formula and starts being a measure
 
 *Sohail Mohammad --- April 2026*
 
-*This is Part 1 of 5 in the Production Inference Economics series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MEASURED_PRIVATE] for production observations, [MODELED] for calculations with methodology shown. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*
+*Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

@@ -7,7 +7,7 @@ Featured: true
 Template: longform_article
 Status: published
 
-*I work at Together AI. Evidence tags mark every claim so you can check my work. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
+*I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
 *Production Inference Economics --- Part 5 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | **5. Goodput***
 
@@ -17,15 +17,15 @@ A capacity planning team reports 78% GPU utilization and calls the cluster "well
 
 These three facts are not contradictory. They are the same fact, seen from three angles.
 
-78% GPU utilization measures how often the GPU is doing *something*. It does not measure how much of that work produced accepted output at target latency. The GPU can be busy recomputing evicted KV cache (the per-request memory that stores attention state). It can be running speculative decode drafts that get rejected. It can be processing retries of requests that already failed once. It can be serving outputs that will fail the quality gate and never reach a customer. All of that counts as utilization. None of it counts as productive work [SYNTHETIC].
+78% GPU utilization measures how often the GPU is doing *something*. It does not measure how much of that work produced accepted output at target latency. The GPU can be busy recomputing evicted KV cache (the per-request memory that stores attention state). It can be running speculative decode drafts that get rejected. It can be processing retries of requests that already failed once. It can be serving outputs that will fail the quality gate and never reach a customer. All of that counts as utilization. None of it counts as productive work.
 
 I watched this pattern play out over six weeks. The team had provisioned a dedicated cluster for a RAG workload --- document analysis, roughly 2,000 requests per day. Utilization dashboards were green. Token throughput was healthy. The GPU-hours-per-dollar number looked competitive. But the LCPR --- loaded cost per accepted result --- was climbing. Not because inference got more expensive per token, but because an increasing fraction of the GPU's work was producing nothing the customer would accept.
 
-The root causes were mundane. A KV cache eviction cascade under long-context traffic meant the system was recomputing prefill for requests whose KV state had been preempted. A retry storm from a downstream timeout meant the same prompt was being processed two or three times before one attempt succeeded. And a quantization change intended to improve throughput had introduced quality degradation in the long tail --- rare entities, numeric precision, multi-turn coherence after turn five --- that the standard A/B test hadn't caught [MEASURED_PRIVATE].
+The root causes were mundane. A KV cache eviction cascade under long-context traffic meant the system was recomputing prefill for requests whose KV state had been preempted. A retry storm from a downstream timeout meant the same prompt was being processed two or three times before one attempt succeeded. And a quantization change intended to improve throughput had introduced quality degradation in the long tail --- rare entities, numeric precision, multi-turn coherence after turn five --- that the standard A/B test hadn't caught.
 
 Each of these individually was a normal operational event. Together, they meant the GPU was 78% utilized and 30% unproductive. The metric that would have caught this is not utilization. It is goodput.
 
-The gap between allocated and productive GPU capacity is not an edge case. A 2024 industry survey found the majority of organizations achieve less than 70% GPU allocation utilization at peak demand, with common figures closer to 10-20% [REPORTED]. That is allocation utilization --- how much of provisioned capacity is even assigned to work. Productive utilization --- how much of that assigned work produces accepted output --- is lower still. The gap has two layers: hardware sitting idle, and hardware that is busy but unproductive. Both are costs. Only productive work is revenue.
+The gap between allocated and productive GPU capacity is not an edge case. A 2024 industry survey found the majority of organizations achieve less than 70% GPU allocation utilization at peak demand, with common figures closer to 10-20%. That is allocation utilization --- how much of provisioned capacity is even assigned to work. Productive utilization --- how much of that assigned work produces accepted output --- is lower still. The gap has two layers: hardware sitting idle, and hardware that is busy but unproductive. Both are costs. Only productive work is revenue.
 
 ---
 
@@ -49,7 +49,7 @@ goodput = count(requests where
 ) / D
 ```
 
-Where `S_ttft` and `S_tpot` are your service-level thresholds and `D` is the measurement window in seconds [DERIVED].
+Where `S_ttft` and `S_tpot` are your service-level thresholds and `D` is the measurement window in seconds.
 
 The formula is not complicated. The discipline of applying it is. Because applying it means you need three things most teams don't have wired together: latency measurements per request, quality labels per request, and cost attribution per request. Without all three, goodput degrades to "latency-constrained throughput" --- still useful, but incomplete. The full definition --- latency, quality, reliability, and cost --- is what connects serving infrastructure to the [LCPR-2026 formula]({filename}/denominator-problem.md).
 
@@ -67,7 +67,7 @@ The numerator includes *all* costs --- including failed attempts, retries, quali
 
 The gap between utilization and productive capacity has five mechanisms. Each is measurable, and each has a specific lever.
 
-**KV cache preemption and recomputation** happens when a serving engine runs out of KV memory. It preempts --- evicts the KV state of lower-priority sequences to make room for new ones. When the evicted sequence needs to continue, the engine recomputes the KV from scratch. That recomputation consumes GPU cycles that produce no new output. It is pure overhead. In a production deployment mixing short-context support chat and long-context document analysis on the same GPU pool, KV cache eviction cascades caused running requests to drop and preemptions to spike simultaneously. The monitoring signal was cache usage near 100% with preemption counts climbing. The fix was workload-aware routing: short context to one pool, long context to another. Same hardware, different routing, different economics [MEASURED_PRIVATE].
+**KV cache preemption and recomputation** happens when a serving engine runs out of KV memory. It preempts --- evicts the KV state of lower-priority sequences to make room for new ones. When the evicted sequence needs to continue, the engine recomputes the KV from scratch. That recomputation consumes GPU cycles that produce no new output. It is pure overhead. In a production deployment mixing short-context support chat and long-context document analysis on the same GPU pool, KV cache eviction cascades caused running requests to drop and preemptions to spike simultaneously. The monitoring signal was cache usage near 100% with preemption counts climbing. The fix was workload-aware routing: short context to one pool, long context to another. Same hardware, different routing, different economics.
 
 **Retries and repair loops** are a second source of waste. A request times out. The client retries. The retry consumes a fresh prefill, fresh KV allocation, and fresh decode cycles --- all for work that the first attempt already partially completed. On quality-sensitive workloads, a failed quality gate triggers a repair: the system regenerates with corrected context, burning a second full inference pass. [The Trace Autopsy]({filename}/trace-autopsy.md) showed the twelve-request trace where eight tickets generated twelve inference calls --- two retries, one eval grader, and one repair. Those four extra calls are GPU work that doesn't count as goodput but absolutely counts as utilization.
 
@@ -85,21 +85,21 @@ Two common optimizations --- speculative decoding and quantization --- deserve s
 
 ### Speculative decoding at production batch sizes
 
-In a high-concurrency voice workload, speculative decoding with a domain fine-tuned 1B draft model produced 0.92x throughput --- slower, not faster. The acceptance rate improved from 48% to 58% after fine-tuning the draft, but under production batch sizes of 12-16, the extra compute from running the draft model exceeded the savings from accepted drafts. Two weeks of engineering time was the additional real cost [MEASURED_PRIVATE].
+In a high-concurrency voice workload, speculative decoding with a domain fine-tuned 1B draft model produced 0.92x throughput --- slower, not faster. The acceptance rate improved from 48% to 58% after fine-tuning the draft, but under production batch sizes of 12-16, the extra compute from running the draft model exceeded the savings from accepted drafts. Two weeks of engineering time was the additional real cost.
 
 The mechanism is straightforward. Speculative decoding works best at low concurrency with high acceptance rates. The draft model adds compute at every step. At batch size 1-2, the GPU has spare compute cycles, so the draft is nearly free. At batch size 12-16, the GPU's compute budget is already committed to serving the decode batch, and adding a draft model means either slowing down all sequences or increasing memory pressure.
 
-A search infrastructure provider reports positive production results with multi-token prediction draft layers for the same technique, likely because the search workload's constrained output distribution yields higher draft acceptance rates than voice's open-ended generation [REPORTED]. The technique is not universally good or bad. The decision variable is whether your workload's output distribution produces an acceptance rate high enough to offset the draft model's compute at your production batch size.
+A search infrastructure provider reports positive production results with multi-token prediction draft layers for the same technique, likely because the search workload's constrained output distribution yields higher draft acceptance rates than voice's open-ended generation. The technique is not universally good or bad. The decision variable is whether your workload's output distribution produces an acceptance rate high enough to offset the draft model's compute at your production batch size.
 
 The wrong conclusion: "speculative decoding improves latency." The right question: "at our batch size and acceptance rate, does speculative decoding increase or decrease goodput?"
 
 ### Quantization and the quality tail
 
-After quantizing a production model, quality failures appeared in the long tail: rare entities, numeric precision errors, and multi-turn conversation degradation after five or six turns. Standard A/B tests did not catch these because A/B tests measure average quality on a general distribution. The tail failures affected 2-3% of requests --- below the noise floor of most A/B sample sizes --- but those requests were disproportionately high-value: complex customer queries, multi-step reasoning, and queries involving precise numerical data [MEASURED_PRIVATE].
+After quantizing a production model, quality failures appeared in the long tail: rare entities, numeric precision errors, and multi-turn conversation degradation after five or six turns. Standard A/B tests did not catch these because A/B tests measure average quality on a general distribution. The tail failures affected 2-3% of requests --- below the noise floor of most A/B sample sizes --- but those requests were disproportionately high-value: complex customer queries, multi-step reasoning, and queries involving precise numerical data.
 
 Quantization's throughput gains are real. FP8 quantization can improve throughput by 1.6x and cut memory consumption by 3-4x. But the quality risk is in the tail, not the average. Continuous log analysis --- reviewing real production outputs, not just aggregate quality scores --- was the only reliable detection method.
 
-The productive capacity impact: throughput went up by 60%. Quality failures in the tail increased by 1.5 percentage points. Retry rate for affected queries increased. Human escalation cost for affected queries increased. Net LCPR change: roughly break-even. The quantization "saved" GPU cost and then spent it on retries and human review [DERIVED].
+The productive capacity impact: throughput went up by 60%. Quality failures in the tail increased by 1.5 percentage points. Retry rate for affected queries increased. Human escalation cost for affected queries increased. Net LCPR change: roughly break-even. The quantization "saved" GPU cost and then spent it on retries and human review.
 
 The right approach is not to avoid quantization. It is to measure its effect on goodput, not just throughput. Run quantization experiments with tail-quality evaluation --- rare entities, long conversations, numerical tasks --- not just aggregate pass rates. If goodput under SLO improves, the optimization worked. If throughput improved but goodput didn't, the optimization is a wash dressed up as a win.
 
@@ -111,7 +111,7 @@ Eight replicas behind a round-robin load balancer. Cache hit rate drops from 85%
 
 Round-robin sends each request to a random replica. The system prompt is cached on replica 3, but the next turn goes to replica 7, where the cache is cold. Replica 7 runs a full prefill. The next request goes to replica 1. Another full prefill. The cache is populated on every replica, but each replica only serves one-eighth of the traffic, so reuse within the TTL window is too low to sustain hits.
 
-Traditional load balancing treats replicas as interchangeable. Inference replicas are not interchangeable --- each replica holds different KV state [DERIVED].
+Traditional load balancing treats replicas as interchangeable. Inference replicas are not interchangeable --- each replica holds different KV state.
 
 Here is what this looks like on real numbers for a support chatbot with a 6,000-token system prompt plus tool prefix, running on 8 replicas:
 
@@ -120,9 +120,6 @@ Here is what this looks like on real numbers for a support chatbot with a 6,000-
 | Round-robin | ~12% (1/8 chance) | 1,200ms | Baseline |
 | Prefix-aware | ~85% (routed to prefix holder) | 300ms | ~60% savings |
 | Sticky session | ~90% (conversation state preserved) | 250ms | ~65% savings |
-
-[SYNTHETIC]
-
 The difference between round-robin and prefix-aware routing is 4x TTFT and 60% cost reduction. Not from a better model. Not from cheaper hardware. From routing the request to the right replica.
 
 ### Why routing policy is an economic lever
@@ -151,20 +148,17 @@ Cache-local routing creates two tradeoffs:
 | KV-cache-aware | Route to replica with matching KV | Multi-turn, high cache benefit | Requires cache state visibility |
 | Sticky session | Route same session to same replica | Conversational workloads | Creates hotspots if sessions are uneven |
 | Fallback | Route to any when target is saturated | Burst handling | Cold start penalty on fallback |
-
-[DERIVED]
-
 The engineering community has converged on this hierarchy. SGLang's default router uses cache-aware routing. KServe and llm-d document KV-cache-aware scheduling with per-pod cache event routing. LMCache documents cross-instance KV reuse with multi-tier storage. The infrastructure exists. The question is whether your deployment uses it.
 
 If your workload has reusable prefixes and you use multi-replica serving, routing policy is an economic lever. Implement prefix-aware or KV-cache-aware routing before spending on more hardware. Measure cache hit rate by replica. If hit rates are low but prefix diversity is low --- most requests share a few system prompts --- routing is the problem, not cache configuration.
 
 ### The operations angle
 
-Cache locality is fragile under operations [DERIVED]. Rolling deployments cycle replicas, clearing their KV state. Autoscaling adds cold replicas that have no cache state --- the router spreads traffic to them, and their cache miss rate is 100% until they warm up. A cache salt rotation (sometimes triggered by security policy or tenant isolation requirements) invalidates all cached prefixes simultaneously.
+Cache locality is fragile under operations. Rolling deployments cycle replicas, clearing their KV state. Autoscaling adds cold replicas that have no cache state --- the router spreads traffic to them, and their cache miss rate is 100% until they warm up. A cache salt rotation (sometimes triggered by security policy or tenant isolation requirements) invalidates all cached prefixes simultaneously.
 
 Each of these events temporarily converts the system from warm-cache to cache-disrupted. If the team measures average cache hit rate across a day, the 15-minute disruption window looks small. But if that disruption window coincides with peak traffic --- and scaling events often do, because autoscaling triggers under load --- the cost impact is disproportionate. Peak traffic times cold cache means the most expensive requests hit the most expensive state.
 
-The mitigation is not to avoid operations. It is to measure TTFT and cache hit rate around operational events --- deployments, scale-outs, salt rotations --- and include disruption-window cost in the goodput calculation. A system that runs at $0.012 per accepted result in steady state but spikes to $0.035 during the 20 minutes after each deployment has a blended cost that depends on deployment frequency. Deploy twice a day and the disruption cost is material. Deploy weekly and it's noise. The goodput framework makes this tradeoff explicit [DERIVED].
+The mitigation is not to avoid operations. It is to measure TTFT and cache hit rate around operational events --- deployments, scale-outs, salt rotations --- and include disruption-window cost in the goodput calculation. A system that runs at $0.012 per accepted result in steady state but spikes to $0.035 during the 20 minutes after each deployment has a blended cost that depends on deployment frequency. Deploy twice a day and the disruption cost is material. Deploy weekly and it's noise. The goodput framework makes this tradeoff explicit.
 
 ---
 
@@ -201,7 +195,7 @@ Use your production prompt/output length distribution, not synthetic uniform inp
 
 **Step 3: State cache warmth explicitly.**
 
-A benchmark that does not state cache warmth is not reusable evidence for production economics [OPINION]. Five states matter:
+A benchmark that does not state cache warmth is not reusable evidence for production economics. Five states matter:
 
 | State | Meaning |
 |-------|---------|
@@ -227,9 +221,6 @@ Two routing configurations for the same RAG workload, 100 requests per point:
 | Goodput (accepted req/s) | 5.8 | 8.5 |
 | Total cost (100 req) | $1.10 | $1.45 |
 | Cost per accepted result | $0.019 | $0.017 |
-
-[SYNTHETIC]
-
 Route A wins on raw throughput and total cost. Route B wins on goodput and cost per accepted result. A token-price comparison picks Route A. A Goodput Frontier Test picks Route B.
 
 The difference is not subtle. Route A serves 58 accepted results per 100 attempts. Route B serves 85. Route A wastes 42% of its GPU work on requests that will fail SLO or quality gates. Route B wastes 15%. Route A looks cheaper in total spend. Route B is cheaper per unit of value delivered.
@@ -243,11 +234,11 @@ output_token_goodput =
   sum(output_tokens for passing requests) / D
 ```
 
-A system that produces 800 accepted output tokens per second and 200 rejected tokens per second has output-token goodput of 800 tok/s --- not 1,000. The rejected tokens consumed GPU decode cycles, KV bandwidth, and output-token billing. They produced nothing the customer accepted. Output-token goodput makes this visible in a way that raw token throughput does not [DERIVED].
+A system that produces 800 accepted output tokens per second and 200 rejected tokens per second has output-token goodput of 800 tok/s --- not 1,000. The rejected tokens consumed GPU decode cycles, KV bandwidth, and output-token billing. They produced nothing the customer accepted. Output-token goodput makes this visible in a way that raw token throughput does not.
 
 ### Benchmark claims to avoid
 
-Every claim on this list has appeared in a vendor blog, a comparison table, or a customer deck. Every one of them is incomplete or misleading without additional context [OPINION]:
+Every claim on this list has appeared in a vendor blog, a comparison table, or a customer deck. Every one of them is incomplete or misleading without additional context:
 
 - "X tokens/sec, therefore X is cheaper." Tokens/sec alone is not an economics claim --- it requires SLO constraints, length distribution, cache warmth, quality gates, and cost attribution to mean anything.
 - "p50 latency improved, so users will feel it." Interactive systems fail at p95/p99, TTFT spikes, cold starts, or retries --- not at p50.
@@ -334,4 +325,4 @@ Token price is the first number every team looks at. It is the last number that 
 
 *Sohail Mohammad --- May 2026*
 
-*This is the fifth and final article in the* Production Inference Economics *series. Evidence labels: [SYNTHETIC] for constructed examples shaped by production patterns, [PUBLIC_PRICING] for provider pricing pages, [MEASURED_PRIVATE] for production observations, [REPORTED] for claims attributed to specific engineering teams, [MODELED] for calculations with methodology shown, [DERIVED] for numbers calculated from other labeled inputs, [OPINION] for author judgment. Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*
+*Numbers are anonymized and should not be attributed to any specific employer, customer, or deployment.*

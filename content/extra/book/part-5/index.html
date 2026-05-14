@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Sohail Mohammad">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <title>Part 5: Operating The
+Decision — Production Inference Economics</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-bg: #faf9f6;
+      --c-surface: #ffffff;
+      --c-text: #1a1a1a;
+      --c-text-secondary: #5a5a5a;
+      --c-text-tertiary: #8a8a8a;
+      --c-heading: #0f0f0f;
+      --c-link: #5a8a60;
+      --c-link-hover: #4a7a50;
+      --c-border: #e0ddd6;
+      --c-border-light: #ebe9e3;
+      --c-code-bg: #f0eee8;
+      --c-table-header: #f4f3ef;
+      --c-table-stripe: #faf9f6;
+      --c-blockquote-border: #A7C080;
+      --c-blockquote-bg: #f4f3ef;
+      --c-accent: #83C092;
+      --c-accent-dark: #A7C080;
+      --c-accent-light: rgba(131, 192, 146, 0.1);
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      --content-max: 700px;
+    }
+
+    html {
+      font-size: 16.5px;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--c-text);
+      background: var(--c-bg);
+      line-height: 1.75;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Links ─────────────────────────────────────── */
+    a {
+      color: var(--c-link);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    a:hover { color: var(--c-link-hover); }
+
+    /* ── Typography ────────────────────────────────── */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    strong { font-weight: 600; }
+
+    /* ── Code ──────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.87em;
+      background: var(--c-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--c-code-bg);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.85rem;
+    }
+
+
+    /* ── Progress Bar ──────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--c-accent);
+      z-index: 1000;
+      transition: width 60ms linear;
+    }
+
+    /* ── Page Layout: Sidebar + Content ─────────────── */
+    .page-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ───────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--c-surface);
+      border-right: 1px solid var(--c-border);
+      overflow-y: auto;
+      padding: 1.75rem 0;
+      z-index: 100;
+      scrollbar-width: thin;
+      scrollbar-color: var(--c-border) transparent;
+    }
+
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+
+    .sidebar-header {
+      padding: 0 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--c-border);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-header .back-link {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+      transition: color 0.15s;
+    }
+
+    .sidebar-header .back-link:hover { color: var(--c-link); }
+
+    .sidebar-header .part-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-header .chapters-info {
+      font-size: 0.75rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.2rem;
+    }
+
+    /* ── Sidebar TOC ───────────────────────────────── */
+    .sidebar-toc {
+      list-style: none;
+      padding: 0.5rem 0;
+      margin: 0;
+    }
+
+    .sidebar-toc li {
+      margin: 0;
+    }
+
+    .sidebar-toc a {
+      display: block;
+      padding: 0.35rem 1.25rem;
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      text-decoration: none;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-toc a:hover {
+      color: var(--c-link);
+      background: var(--c-accent-light);
+    }
+
+    .sidebar-toc a.active {
+      color: var(--c-accent);
+      font-weight: 500;
+      border-left-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    /* ── Sidebar Nav Links ─────────────────────────── */
+    .sidebar-nav {
+      padding: 0.75rem 1.25rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .sidebar-nav a {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      padding: 0.3rem 0;
+      transition: color 0.15s;
+    }
+
+    .sidebar-nav a:hover { color: var(--c-link); }
+
+    /* ── Main Content Area ─────────────────────────── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .part-container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    /* ── Part Header ───────────────────────────────── */
+    .part-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--c-border);
+    }
+
+    .part-header .label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-header h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+      line-height: 1.2;
+    }
+
+    .part-header .chapters-label {
+      font-size: 0.85rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.5rem;
+    }
+
+    /* ── Content ───────────────────────────────────── */
+    .content h2 {
+      font-size: 1.4rem;
+      margin-top: 3rem;
+      margin-bottom: 0.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--c-border-light);
+    }
+
+    .content h2:first-child {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .content p {
+      margin-bottom: 1.1rem;
+    }
+
+    /* ── Lists ─────────────────────────────────────── */
+    .content ul, .content ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .content li {
+      margin-bottom: 0.3rem;
+    }
+
+    .content li > ul, .content li > ol {
+      margin-top: 0.3rem;
+      margin-bottom: 0;
+    }
+
+    .content dl { margin-bottom: 1.1rem; }
+    .content dt { font-weight: 600; margin-top: 0.75rem; }
+    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
+
+    /* ── Tables ────────────────────────────────────── */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .content thead { border-bottom: 2px solid var(--c-border); }
+
+    .content thead th {
+      background: var(--c-table-header);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .content tbody td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--c-border-light);
+      vertical-align: top;
+    }
+
+    .content tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .content tbody tr:nth-child(even) {
+      background: var(--c-table-stripe);
+    }
+
+    /* ── Figures ────────────────────────────────────── */
+    .content figure {
+      margin: 1.5rem 0 2rem;
+    }
+
+    .content figcaption, .content caption {
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      line-height: 1.45;
+      margin-top: 0.5rem;
+    }
+
+    .content caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 0.6rem;
+      font-weight: 600;
+      color: var(--c-heading);
+    }
+
+    /* ── Blockquotes ───────────────────────────────── */
+    .content blockquote {
+      border-left: 3px solid var(--c-blockquote-border);
+      background: var(--c-blockquote-bg);
+      padding: 0.85rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .content blockquote p { margin-bottom: 0.4rem; }
+    .content blockquote p:last-child { margin-bottom: 0; }
+
+    /* ── Horizontal Rules ──────────────────────────── */
+    .content hr {
+      border: none;
+      border-top: 1px solid var(--c-border);
+      margin: 2.5rem auto;
+      max-width: 40%;
+    }
+
+    /* ── Part Navigation ───────────────────────────── */
+    .part-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .nav-prev, .nav-next {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      background: var(--c-surface);
+      transition: border-color 0.15s, background 0.15s;
+      max-width: 48%;
+    }
+
+    .nav-prev:hover, .nav-next:hover {
+      border-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    .nav-next { text-align: right; margin-left: auto; }
+
+    .nav-dir {
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      font-weight: 500;
+    }
+
+    .nav-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--c-heading);
+      line-height: 1.3;
+    }
+
+    /* ── Mobile Menu Toggle ────────────────────────── */
+    #menu-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 12px;
+      z-index: 200;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: var(--font-body);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      color: var(--c-text-secondary);
+    }
+
+    #menu-toggle:hover { background: var(--c-table-header); }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: 90;
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @media (max-width: 960px) {
+      #menu-toggle { display: block; }
+
+      #sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+      }
+
+      #sidebar.open { transform: translateX(0); }
+      #sidebar-overlay.open { display: block; }
+
+      .main-content { margin-left: 0; }
+
+      .part-container {
+        padding: 3rem 1.25rem 4rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      html { font-size: 15.5px; }
+      .part-container { padding: 3rem 1rem 3rem; }
+      .part-header h1 { font-size: 1.5rem; }
+      .content h2 { font-size: 1.2rem; }
+      .content table { font-size: 0.78rem; }
+      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
+      .part-nav { flex-direction: column; }
+      .nav-prev, .nav-next { max-width: 100%; }
+    }
+
+    /* ── Print ─────────────────────────────────────── */
+    @media print {
+      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
+      .main-content { margin-left: 0; }
+      .part-container { max-width: 100%; padding: 0; }
+      .content h2 { page-break-after: avoid; }
+      .content table, .content figure { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
+  <div id="sidebar-overlay"></div>
+
+  <div class="page-layout">
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <a class="back-link" href="/book/">&larr; All Parts</a>
+        <div class="part-label">Part 5</div>
+        <h2>Operating The
+Decision</h2>
+        <div class="chapters-info">Chapters 22–25</div>
+      </div>
+      <ul class="sidebar-toc"><li><a href="#chapter-22-baselines-and-evals">Chapter 22: Baselines And
+Evals</a></li><li><a href="#chapter-23-benchmarks-and-goodput">Chapter 23: Benchmarks And
+Goodput</a></li><li><a href="#chapter-24-observability-and-trace-to-margin">Chapter 24:
+Observability And Trace-to-Margin</a></li><li><a href="#chapter-25-incidents-review-and-forecast">Chapter 25: Incidents,
+Review, And Forecast</a></li><li><a href="#part-5-summary">Part 5 Summary</a></li><li><a href="#evidence-notes-for-part-5">Evidence Notes for Part 5</a></li></ul>
+      <div class="sidebar-nav">
+        <a href="/book/part-4/">&larr; Part 4: Migration Gates</a>
+        <a href="/book/appendix/">Appendix:
+Calculator Manual And Living Reference &rarr;</a>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="part-container">
+        <div class="part-header">
+          <div class="label">Part 5</div>
+          <h1>Operating The
+Decision</h1>
+          <div class="chapters-label">Chapters 22–25</div>
+        </div>
+
+        <div class="content">
+          
+<p>Parts 1 through 4 chose a route. Part 5 keeps it honest. The
+migration happened, the endpoint is live, traffic is flowing. How do you
+know the decision is still correct? How do you detect when it stops
+being correct? How do you present the evidence to an engineer, a product
+manager, and a finance partner in the same meeting?</p>
+<p>Operating inference is measurement, not faith. The workload changes
+shape. The provider changes pricing. The model changes behavior after an
+update. The quality floor drifts when nobody is looking. The eval suite
+covers last quarter’s failure modes, not this quarter’s. The finance
+team sees the invoice and asks why it moved, and the engineering team
+cannot explain the movement because they measure tokens while finance
+measures dollars.</p>
+<p>Part 5 supplies the operating cadence: what to measure, how to
+evaluate, how to benchmark honestly, how to connect traces to invoices
+to margins, how to handle incidents, how to package it for review, and
+how to forecast what comes next.</p>
+<hr />
+<h2 id="chapter-22-baselines-and-evals">Chapter 22: Baselines And
+Evals</h2>
+<h3 id="the-field-problem-12">The field problem</h3>
+<p>Two weeks after migrating a support chat workload to a new model, the
+product manager asks: “Is it better?” The engineer shows a chart of p99
+latency. The product manager asks about quality. The engineer shows the
+eval pass rate. The finance partner asks about cost per resolution. The
+engineer shows the inference bill.</p>
+<p>Nobody can answer the question because the team did not establish a
+baseline before the migration. They have measurements on the new route
+but nothing rigorous on the old route to compare against. Every
+comparison is against memory: “it felt faster,” “the old model was
+better at edge cases,” “the bill was about $30K.”</p>
+<h3 id="the-mechanism-12">The mechanism</h3>
+<p>A baseline is a measured snapshot of LCPR, quality, latency, and
+operational health for a workload at a specific point in time, on a
+specific route, under specific traffic. It is not a benchmark. It is a
+photograph.</p>
+<p>The minimum viable baseline:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Dimension</p></th>
+<th><p>Metric</p></th>
+<th><p>How to capture</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Cost</p></td>
+<td><p>LCPR per accepted output</p></td>
+<td><p>Trace-derived, joined to invoice</p></td>
+</tr>
+<tr>
+<td><p>Quality</p></td>
+<td><p>Eval pass rate on production-representative set</p></td>
+<td><p>Run evals against production traffic sample</p></td>
+</tr>
+<tr>
+<td><p>Latency</p></td>
+<td><p>p50, p95, p99 TTFT and TPOT</p></td>
+<td><p>From serving traces</p></td>
+</tr>
+<tr>
+<td><p>Reliability</p></td>
+<td><p>Error rate, retry rate, timeout rate</p></td>
+<td><p>From serving traces</p></td>
+</tr>
+<tr>
+<td><p>Cache</p></td>
+<td><p>Cache hit rate, cache-eligible prefix share</p></td>
+<td><p>From provider usage fields</p></td>
+</tr>
+<tr>
+<td><p>Acceptance</p></td>
+<td><p>Quality gate pass rate, human escalation rate</p></td>
+<td><p>From eval and support systems</p></td>
+</tr>
+<tr>
+<td><p>Volume</p></td>
+<td><p>Requests per day, accepted outputs per day</p></td>
+<td><p>From traces</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<h3 id="the-naive-answer-13">The naive answer</h3>
+<blockquote>
+<p>“We know how the system performs. We’ve been running it for
+months.”</p>
+</blockquote>
+<p>Knowing is not measuring. Informal knowledge decays, confabulates,
+and cannot be presented to a finance partner or used to evaluate a
+migration. The baseline must be written down, dated, and tied to the
+traffic shape and model version that produced it.</p>
+<h3 id="the-better-model-13">The better model</h3>
+<p>Capture the baseline before any change. The change can be a
+migration, a model update, a prompt revision, a cache configuration
+change, or a traffic shape shift. Without a pre-change baseline, every
+post-change measurement is against an imagined prior state.</p>
+<p>The baseline should include the traffic shape that produced it. A
+baseline captured during Black Friday traffic is not comparable to a
+baseline during normal traffic. Record the traffic volume, prompt length
+distribution, output length distribution, and cache hit rate alongside
+the cost and quality metrics.</p>
+<h3 id="evals-as-an-economic-instrument">Evals as an economic
+instrument</h3>
+<p>The baseline depends on the eval to determine the denominator. A team
+runs evals. Pass rate is 88%. But the eval set has 200 cases—150 from
+initial development, 30 from the first incident, 20 synthetic. The top
+failure mode in production is represented by 3 cases. The eval says 88%.
+The users say the system is getting worse.</p>
+<p>Evals are not a quality score. They are a measurement instrument. For
+economics, the eval serves two functions:</p>
+<p><strong>1. Denominator control.</strong> The accepted-output count in
+LCPR depends on the quality gate. If the eval is weak, the denominator
+is inflated—the system appears cheaper because it “accepts” outputs that
+should be rejected.</p>
+<p><strong>2. Cost-quality tradeoff measurement.</strong> When comparing
+routes or models, the eval determines whether a cheaper model meets the
+quality floor.</p>
+<p>A strong eval set has four properties: coverage (represents current
+production traffic), adversarial depth (includes known hard cases),
+grading accuracy (agrees with expert judgment), and refresh cadence
+(updated from production failures).</p>
+<p>Eval economics form a three-layer stack:</p>
+<p><strong>Layer 1: Deterministic checks.</strong> Schema validation,
+format compliance, policy filters. Cheap. Fast. Run on 100% of
+traffic.</p>
+<p><strong>Layer 2: Model-graded evaluation.</strong> An LLM grades the
+output against a rubric. Run on a sample or on all traffic. Requires
+human calibration.</p>
+<p><strong>Layer 3: Human review.</strong> Domain experts review
+outputs. Expensive. Essential for calibrating Layers 1 and 2 and
+discovering new failure modes.</p>
+<p>The cost of each layer is part of the LCPR numerator. The quality
+gate from evals determines the denominator.</p>
+<h3 id="decision-rule-21">Decision rule</h3>
+<p>Before any route change, model update, or significant prompt
+revision: capture a baseline. After the change, capture the same metrics
+and compare. Treat eval coverage as an operational metric—review it
+monthly.</p>
+<h3 id="what-to-measure-19">What to measure</h3>
+<ul>
+<li><p>Baseline metrics: LCPR, quality pass rate, latency percentiles,
+cache hit rate, volume</p></li>
+<li><p>Model version, prompt version, eval suite version, traffic shape
+at baseline time</p></li>
+<li><p>Eval coverage: share of production failure modes in the eval
+set</p></li>
+<li><p>Grader agreement: model-grader vs human-expert</p></li>
+<li><p>Eval cost per workload: grader calls, model tokens, human review
+minutes</p></li>
+<li><p>False positive and false negative rates</p></li>
+</ul>
+<h3 id="where-this-breaks-21">Where this breaks</h3>
+<p>Baselines break when captured during an atypical period without
+noting the anomaly, or when the eval suite changes between baseline and
+comparison. Evals become theater when the team optimizes the pass rate
+instead of quality—regularly adding production cases and rotating
+adversarial cases resists overfitting.</p>
+<h3 id="calculator-hook-21">Calculator hook</h3>
+<p>The baseline view stores a dated snapshot of all cost components. The
+comparison view shows delta between baseline and current state. The eval
+cost layer: deterministic check cost, model-grader cost, human review
+cost per sampled request.</p>
+<hr />
+<h2 id="chapter-23-benchmarks-and-goodput">Chapter 23: Benchmarks And
+Goodput</h2>
+<h3 id="the-field-problem-13">The field problem</h3>
+<p>“Model X achieves 2,500 tokens/sec on A100.” The published benchmark
+looks decisive. In production, the same model on the same hardware
+delivers 600 tokens/sec. The support ticket comes back with an
+explanation: the benchmark used batch 256, synthetic 128-token prompts,
+uniform 50-token outputs, no quality gate, and closed-loop arrivals.
+Production runs batch 8-16, variable prompts (500-8,000 tokens),
+variable outputs (50-2,000 tokens), a quality gate that rejects 15% of
+outputs, and Poisson arrivals. The benchmark result is not wrong. It is
+irrelevant.</p>
+<h3 id="the-mechanism-13">The mechanism</h3>
+<p>Benchmarks measure performance under controlled conditions. The
+conditions determine the result. The gap between benchmark conditions
+and production conditions is the benchmark-to-production transfer
+gap.</p>
+<p>Common benchmark conditions that do not transfer:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Benchmark condition</p></th>
+<th><p>Production reality</p></th>
+<th><p>Effect on gap</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Fixed batch size (256)</p></td>
+<td><p>Dynamic batch (4-32)</p></td>
+<td><p>Throughput 3-8x lower</p></td>
+</tr>
+<tr>
+<td><p>Uniform short prompts</p></td>
+<td><p>Variable-length prompts</p></td>
+<td><p>TTFT variance increases</p></td>
+</tr>
+<tr>
+<td><p>Uniform short outputs</p></td>
+<td><p>Variable-length outputs</p></td>
+<td><p>Cost per request varies widely</p></td>
+</tr>
+<tr>
+<td><p>No quality gate</p></td>
+<td><p>10-20% rejection rate</p></td>
+<td><p>Goodput is lower than throughput</p></td>
+</tr>
+<tr>
+<td><p>Closed-loop arrivals</p></td>
+<td><p>Poisson arrivals</p></td>
+<td><p>Queue effects at high load</p></td>
+</tr>
+<tr>
+<td><p>No prefix caching</p></td>
+<td><p>Mixed cache hit rates</p></td>
+<td><p>Cost per input token varies</p></td>
+</tr>
+<tr>
+<td><p>No concurrent workloads</p></td>
+<td><p>Shared infrastructure</p></td>
+<td><p>Interference effects</p></td>
+</tr>
+<tr>
+<td><p>No SLO constraints</p></td>
+<td><p>TTFT &lt; 500ms, TPOT &lt; 50ms</p></td>
+<td><p>Cannot operate at peak batch</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<h3 id="the-naive-answer-14">The naive answer</h3>
+<blockquote>
+<p>“The benchmark says it’s faster. Let’s switch.”</p>
+</blockquote>
+<p>The benchmark says it is faster under benchmark conditions. The
+correct question: is it faster, cheaper, and good enough under my
+conditions? That requires running the benchmark with your traffic shape,
+your SLO constraints, and your quality gate.</p>
+<h3 id="the-better-model-14">The better model</h3>
+<p>The is the book’s answer to benchmark hygiene. It replaces
+single-point throughput numbers with a multi-dimensional evaluation:</p>
+<p><strong>1. Define your SLO.</strong> TTFT threshold, TPOT threshold,
+E2E threshold, quality pass rate threshold. These are inputs, not
+outputs.</p>
+<p><strong>2. Run with your traffic.</strong> Use your prompt/output
+length distribution. Use Poisson arrivals at your expected request rate.
+Include your system prompt, tools, and retrieval context.</p>
+<p><strong>3. Sweep the load.</strong> Increase request rate until
+goodput stops improving. The point where goodput plateaus or drops is
+your capacity ceiling under SLO.</p>
+<p><strong>4. Measure goodput, not throughput.</strong> Count only
+requests that meet all SLO thresholds and pass the quality gate. Report
+cost per accepted result at the operating point, not cost per total
+request at peak throughput.</p>
+<p><strong>5. Compare routes.</strong> Run the same test on each
+candidate route. The route with the lowest cost per accepted result at
+your operating point wins. Not the route with the highest throughput or
+the lowest token price.</p>
+<h3 id="decision-rule-22">Decision rule</h3>
+<p>Never compare routes using vendor benchmarks alone. Run the with your
+traffic shape, SLO, and quality gate. The results will differ from
+vendor benchmarks. That difference is the benchmark-to-production
+transfer gap, and it determines whether the benchmark result is useful
+or misleading.</p>
+<h3 id="what-to-measure-20">What to measure</h3>
+<ul>
+<li><p>Goodput (accepted results/sec) at your target request
+rate</p></li>
+<li><p>Cost per accepted result at the operating point</p></li>
+<li><p>The request rate where goodput stops improving (capacity
+ceiling)</p></li>
+<li><p>Benchmark-to-production transfer gap (vendor claimed vs
+measured)</p></li>
+<li><p>Quality pass rate under load (does quality degrade at high
+throughput?)</p></li>
+</ul>
+<h3 id="where-this-breaks-22">Where this breaks</h3>
+<p>Goodput testing requires a quality gate, which requires evals. If the
+eval suite is weak (Chapter 22), the goodput number is inflated. Run
+goodput tests only with a calibrated eval suite.</p>
+<p>Goodput testing also requires representative traffic. If the test
+traffic does not match production (different prompt lengths, different
+output lengths, different tool call patterns), the results will not
+predict production performance.</p>
+<h3 id="calculator-hook-22">Calculator hook</h3>
+<p>The calculator view takes per-request latency, quality, and cost data
+from a load test. It outputs: goodput curve by request rate, cost per
+accepted result curve, capacity ceiling under SLO, and comparison across
+routes.</p>
+<hr />
+<h2 id="chapter-24-observability-and-trace-to-margin">Chapter 24:
+Observability And Trace-to-Margin</h2>
+<h3 id="the-field-problem-14">The field problem</h3>
+<p>The dashboards show p99 latency, error rate, GPU utilization, and
+request volume—all the standard signals. The finance partner asks: “Why
+did the inference bill increase 22% this month?” Latency: stable.
+Errors: stable. Utilization: stable. Volume: up 8%. An 8% volume
+increase does not explain a 22% cost increase.</p>
+<p>The missing signal: average output length increased 35% because a
+prompt change encouraged more detailed answers. Output tokens typically
+cost 2-6x input tokens on major API providers (see pricing snapshot
+2026-05-12). The volume increase plus the output length increase,
+compounded by lower cache hit rate on the new prompt, explains the bill
+movement. But the observability system did not track output length
+distribution or cache hit rate.</p>
+<h3 id="the-mechanism-14">The mechanism</h3>
+<p>Inference observability for economics requires different signals than
+inference observability for reliability. Reliability asks: “Is the
+system up and responsive?” Economics asks: “Why did the cost change, and
+is the spend producing accepted work?”</p>
+<p>The economic signal set:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Signal</p></th>
+<th><p>Why it matters for economics</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Input tokens per request (p50, p95)</p></td>
+<td><p>Input cost and prefill time driver</p></td>
+</tr>
+<tr>
+<td><p>Output tokens per request (p50, p95)</p></td>
+<td><p>Output cost (typically 2-6x input) and decode time
+driver</p></td>
+</tr>
+<tr>
+<td><p>Cache hit rate</p></td>
+<td><p>Input cost lever; regression = cost spike</p></td>
+</tr>
+<tr>
+<td><p>Cache-eligible prefix share</p></td>
+<td><p>Upper bound on cache savings</p></td>
+</tr>
+<tr>
+<td><p>Quality gate pass rate</p></td>
+<td><p>Denominator in LCPR</p></td>
+</tr>
+<tr>
+<td><p>Retry rate by cause</p></td>
+<td><p>Numerator inflation (retries cost money but don’t produce
+output)</p></td>
+</tr>
+<tr>
+<td><p>Human escalation rate</p></td>
+<td><p>Often the largest LCPR component</p></td>
+</tr>
+<tr>
+<td><p>Model version</p></td>
+<td><p>Model changes can change cost, quality, and latency
+simultaneously</p></td>
+</tr>
+<tr>
+<td><p>Prompt version</p></td>
+<td><p>Prompt changes affect output length, cache hit rate, and
+quality</p></td>
+</tr>
+<tr>
+<td><p>Provider/route</p></td>
+<td><p>Multi-source routing changes cost profile</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<h3 id="the-naive-answer-15">The naive answer</h3>
+<blockquote>
+<p>“We have Datadog / Grafana / CloudWatch. Observability is
+covered.”</p>
+</blockquote>
+<p>Standard APM covers latency and errors. It does not cover output
+length distribution, cache hit rate, quality gate pass rate, or cost per
+accepted output. These are inference-specific economic signals that
+require inference-specific instrumentation.</p>
+<h3 id="the-better-model-15">The better model</h3>
+<p>Layer economic signals on top of standard observability:</p>
+<p><strong>Layer 1: Per-request fields.</strong> Every request trace
+should include: input tokens, output tokens, cached input tokens, cache
+creation tokens, model version, prompt version, quality gate result,
+cost estimate. These come from the provider response and the eval
+system.</p>
+<p><strong>Layer 2: Aggregated dashboards.</strong> Daily and weekly
+views of: LCPR by workload, cost breakdown by component (inference,
+cache, quality, human, ops), output length distribution, cache hit rate
+trend, quality pass rate trend.</p>
+<p><strong>Layer 3: Anomaly detection.</strong> Alert when: LCPR
+increases by more than 10% week-over-week, cache hit rate drops by more
+than 15 percentage points, output length p95 increases by more than 25%,
+quality pass rate drops below the quality floor, or human escalation
+rate spikes.</p>
+<h3 id="trace-to-margin-reconciliation">Trace-to-margin
+reconciliation</h3>
+<p>Observability answers “why did cost change?” Trace-to-margin
+reconciliation answers the harder question: “what is the true
+margin?”</p>
+<p>An FDE presents an account review. The inference bill is
+$18,000/month. The account revenue is $45,000/month. The FDE reports 60%
+gross margin. But the $18,000 does not include eval grading ($4,200),
+human escalation ($2,800), engineering time ($1,200), and ops overhead
+($3,000). The loaded cost is $29,200. Margin is 35%, not 60%.</p>
+<p>Trace-to-margin reconciliation joins four data sources:</p>
+<p><strong>The trace</strong> provides per-request cost estimates (sum =
+). <strong>The invoice</strong> provides what the provider actually
+charged (delta reveals timing, credits, missing traces). <strong>The
+eval</strong> provides the quality gate that determines (accepted
+outputs). <strong>The contract</strong> provides account revenue .</p>
+<p>Derivation 6 defines the reconciliation in five steps:
+trace-to-invoice delta (investigate if &gt;5%), add non-inference costs,
+calculate accepted denominator, compute LCPR, calculate margin.</p>
+<h3 id="worked-example-11">Worked example</h3>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Component</p></th>
+<th><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Trace-derived inference cost</p></td>
+<td><p>$14,200</p></td>
+</tr>
+<tr>
+<td><p>Provider invoice</p></td>
+<td><p>$14,850</p></td>
+</tr>
+<tr>
+<td><p>Delta</p></td>
+<td><p>$650 (4.4% — within threshold)</p></td>
+</tr>
+<tr>
+<td><p>Eval grader cost</p></td>
+<td><p>$800</p></td>
+</tr>
+<tr>
+<td><p>Human escalation (500 cases at $2)</p></td>
+<td><p>$1,000</p></td>
+</tr>
+<tr>
+<td><p>Ops overhead allocation</p></td>
+<td><p>$2,500</p></td>
+</tr>
+<tr>
+<td><p>Total loaded cost</p></td>
+<td><p>$19,150</p></td>
+</tr>
+<tr>
+<td><p>Total requests</p></td>
+<td><p>100,000</p></td>
+</tr>
+<tr>
+<td><p>Accepted outputs</p></td>
+<td><p>82,000</p></td>
+</tr>
+<tr>
+<td><p>LCPR</p></td>
+<td><p>$0.234</p></td>
+</tr>
+<tr>
+<td><p>Account revenue</p></td>
+<td><p>$45,000</p></td>
+</tr>
+<tr>
+<td><p>Account margin</p></td>
+<td><p>$45,000 - $19,150 = $25,850</p></td>
+</tr>
+<tr>
+<td><p>Margin %</p></td>
+<td><p>57.4%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>Compare to naive: $45,000 - $14,200 = $30,800, or 68.4%. The naive
+calculation overstates margin by 11 percentage points.</p>
+<h3 id="decision-rule-23">Decision rule</h3>
+<p>If you cannot explain a cost change from your observability system,
+you are missing economic signals. The minimum viable economic
+observability is: per-request token counts (input, output, cached),
+cache hit rate, quality gate result, and cost estimate.</p>
+<p>Present LCPR and margin to engineering, product, and finance. The
+trace-to-margin reconciliation is the artifact that connects all three
+teams” views. Run it monthly. Investigate deltas above 5%.</p>
+<h3 id="what-to-measure-21">What to measure</h3>
+<ul>
+<li><p>Economic signal set: input/output tokens, cache hit rate, quality
+gate pass rate, retry rate, model/prompt version</p></li>
+<li><p>Cost attribution by workload (not just total)</p></li>
+<li><p>Cache hit rate by prefix and by prompt version</p></li>
+<li><p>Trace-to-invoice delta by workload</p></li>
+<li><p>Cost breakdown: inference, cache, eval, human, ops</p></li>
+<li><p>LCPR by workload and by account</p></li>
+<li><p>Margin by account</p></li>
+</ul>
+<h3 id="where-this-breaks-23">Where this breaks</h3>
+<p>Economic observability requires joining data from multiple systems:
+the serving engine, the provider, the eval system, and the business
+system. If these cannot be joined on a common request ID, the economic
+picture is incomplete.</p>
+<p>Reconciliation breaks when traces are incomplete (sampling, dropped
+events), the invoice covers a different period, credits distort the
+invoice, human costs are not attributed to workloads, or the revenue
+model is bundled.</p>
+<h3 id="calculator-hook-23">Calculator hook</h3>
+<p>The observability signals feed the calculator. The calculator view
+takes traces, invoice, eval results, human costs, ops overhead, and
+account revenue. It outputs: LCPR by workload, margin by account, delta
+analysis, and variance waterfall.</p>
+<hr />
+<h2 id="chapter-25-incidents-review-and-forecast">Chapter 25: Incidents,
+Review, And Forecast</h2>
+<h3 id="the-field-problem-15">The field problem</h3>
+<p>A model provider ships an update. The model version changes silently.
+Output format shifts subtly—JSON keys that were lowercase are now
+camelCase. The parsing layer handles most of it, but 8% of outputs fail
+validation. The quality gate catches it. The repair loop kicks in: each
+failed output is retried with an explicit format instruction, doubling
+the token cost for those requests. Human escalation rate rises because
+some repaired outputs are still wrong.</p>
+<p>The incident lasts 6 hours before the team identifies the root cause.
+During those 6 hours, LCPR increases 40%. The total incident cost:
+$2,400 in additional inference, $800 in human escalation, and 12
+engineer-hours in investigation and mitigation.</p>
+<h3 id="the-mechanism-15">The mechanism</h3>
+<p>Inference incidents differ from traditional software incidents. The
+system is often technically “up”—requests are served, latency is normal,
+error rate is low. But quality degrades. The degradation is silent until
+the quality gate catches it (if the quality gate covers the failure
+mode) or until users report it (if it does not).</p>
+<p>Common inference incident categories:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Category</p></th>
+<th><p>Trigger</p></th>
+<th><p>Detection method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Model behavior change</p></td>
+<td><p>Provider update, version change, weight refresh</p></td>
+<td><p>Quality gate regression, output distribution shift</p></td>
+</tr>
+<tr>
+<td><p>Prompt regression</p></td>
+<td><p>Prompt edit, tool schema change, context mutation</p></td>
+<td><p>Cache hit rate drop, quality gate regression</p></td>
+</tr>
+<tr>
+<td><p>Cache regression</p></td>
+<td><p>TTL change, routing change, prefix mutation</p></td>
+<td><p>Cache hit rate drop, TTFT increase, cost spike</p></td>
+</tr>
+<tr>
+<td><p>Capacity incident</p></td>
+<td><p>Traffic spike, GPU failure, provider outage</p></td>
+<td><p>Latency spike, error rate increase, queue depth</p></td>
+</tr>
+<tr>
+<td><p>Quality drift</p></td>
+<td><p>Gradual model degradation, eval set staleness</p></td>
+<td><p>Slow quality decline over weeks, user complaint trend</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<h3 id="the-fallback-tax">The fallback tax</h3>
+<p>Fallback paths have their own economics. When the primary route
+fails, the fallback may be: a different model, a rule-based response, a
+cached answer, or human escalation. Each has a cost:</p>
+<ul>
+<li><p><strong>Model fallback:</strong> Different model may be more
+expensive (larger model as safety net) or cheaper (smaller model with
+lower quality).</p></li>
+<li><p><strong>Rule-based fallback:</strong> No inference cost, but
+lower quality and higher escalation risk.</p></li>
+<li><p><strong>Human fallback:</strong> Highest cost per resolution, but
+guaranteed quality for the cases that reach it.</p></li>
+</ul>
+<p>The fallback tax is the additional cost of operating the fallback
+path, including the detection time, the switching cost, and the quality
+delta during the incident.</p>
+<h3 id="the-naive-answer-16">The naive answer</h3>
+<blockquote>
+<p>“We have auto-rollback. Incidents resolve themselves.”</p>
+</blockquote>
+<p>Auto-rollback helps for capacity and availability incidents. It does
+not help for quality incidents where the system is technically up.
+Quality degradation requires quality detection, which requires evals
+that cover the failure mode. If the eval suite does not cover the
+failure mode, detection depends on user complaints—which are slow,
+noisy, and incomplete.</p>
+<h3 id="the-better-model-16">The better model</h3>
+<p>Inference incident response has three phases:</p>
+<p><strong>1. Detection.</strong> Quality gate catches the regression
+(fast) or users report it (slow). The detection time determines how much
+damage accumulates.</p>
+<p><strong>2. Mitigation.</strong> Roll back the change, switch to
+fallback route, or apply a workaround. The mitigation time determines
+the blast radius.</p>
+<p><strong>3. Resolution.</strong> Fix the root cause: update the
+prompt, pin the model version, fix the parsing, expand the eval suite.
+The resolution time determines whether the incident recurs.</p>
+<p>For economics, track: incident cost (additional inference + human +
+engineering time), blast radius (requests affected during detection +
+mitigation window), and root cause category (model, prompt, cache,
+capacity, quality drift).</p>
+<h3 id="the-inference-review-pack">The Inference Review Pack</h3>
+<p>The operational response to incidents and ongoing cost management
+needs a structured cadence. The is a monthly operating artifact that
+connects engineering metrics to business decisions—a curated package
+designed for a 30-minute review with engineering, product, and
+finance.</p>
+<p><strong>Section 1: LCPR summary.</strong> LCPR by workload, this
+month vs last month, with delta explanation. The delta explanation is
+the most important part: it answers “why did cost change?” not just “how
+much did it change?”</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Workload</p></th>
+<th><p>LCPR (this month)</p></th>
+<th><p>LCPR (last month)</p></th>
+<th><p>Delta</p></th>
+<th><p>Primary driver</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Support chat</p></td>
+<td><p>$0.172</p></td>
+<td><p>$0.168</p></td>
+<td><p>+2.4%</p></td>
+<td><p>Output length +12% from prompt change</p></td>
+</tr>
+<tr>
+<td><p>RAG extraction</p></td>
+<td><p>$0.045</p></td>
+<td><p>$0.051</p></td>
+<td><p>-11.8%</p></td>
+<td><p>Cache hit rate improved after prefix reorder</p></td>
+</tr>
+<tr>
+<td><p>Coding agent</p></td>
+<td><p>$1.24</p></td>
+<td><p>$1.18</p></td>
+<td><p>+5.1%</p></td>
+<td><p>Repair rate +3pp from model version change</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p><strong>Section 2: Quality summary.</strong> Eval pass rate by
+workload, trending, and notable failure modes.</p>
+<p><strong>Section 3: Cost breakdown.</strong> Inference, cache, eval,
+human, ops by workload. Month-over-month waterfall showing which
+component drove the cost movement.</p>
+<p><strong>Section 4: Capacity and utilization.</strong> For dedicated
+workloads: utilization vs , headroom assessment. For serverless: volume
+trend and rate-limit proximity.</p>
+<p><strong>Section 5: Incidents.</strong> Incident count, total incident
+cost, root causes, and preventive actions.</p>
+<p><strong>Section 6: Recommendations.</strong> Two to three specific
+actions with expected impact.</p>
+<p>The review pack forces three disciplines: explanation over
+observation (every delta needs a proposed cause), multi-audience
+communication (LCPR is the shared language between engineering, product,
+and finance), and action orientation (every review produces 2-3 actions
+with owners).</p>
+<h3 id="forecasting-and-planning">Forecasting and planning</h3>
+<p>A finance partner asks: “What will inference cost next quarter?” The
+answer is scenario modeling, not trend extrapolation. The cost is a
+function of multiple variables that change independently: volume, token
+mix, cache hit rate, model, route, quality gate strictness, and
+operational overhead.</p>
+<p>Build forecasts from the LCPR components, not from the total:</p>
+<p>Each component gets its own forecast:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Component</p></th>
+<th><p>What drives it</p></th>
+<th><p>How to forecast</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Volume</p></td>
+<td><p>Product roadmap, seasonal patterns, user growth</p></td>
+<td><p>Product team input + historical seasonality</p></td>
+</tr>
+<tr>
+<td><p>Inference cost per request</p></td>
+<td><p>Model, token mix, cache hit rate, provider pricing</p></td>
+<td><p>Current LCPR × expected changes</p></td>
+</tr>
+<tr>
+<td><p>Eval cost per request</p></td>
+<td><p>Eval sample rate, grader model, grader complexity</p></td>
+<td><p>Current rate × planned eval changes</p></td>
+</tr>
+<tr>
+<td><p>Human cost per request</p></td>
+<td><p>Escalation rate, labor rate, automation improvements</p></td>
+<td><p>Current rate × quality improvement trajectory</p></td>
+</tr>
+<tr>
+<td><p>Acceptance rate</p></td>
+<td><p>Quality gate, model quality, prompt quality</p></td>
+<td><p>Current rate × expected quality changes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<h3 id="scenario-table">Scenario table</h3>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Scenario</p></th>
+<th><p>Volume change</p></th>
+<th><p>Model change</p></th>
+<th><p>Cache change</p></th>
+<th><p>LCPR impact</p></th>
+<th><p>Quarterly cost</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Base case</p></td>
+<td><p>+5%</p></td>
+<td><p>None</p></td>
+<td><p>Stable</p></td>
+<td><p>+5%</p></td>
+<td><p>$127,500</p></td>
+</tr>
+<tr>
+<td><p>New workload</p></td>
+<td><p>+5% existing + 20K new</p></td>
+<td><p>None</p></td>
+<td><p>New workload cold</p></td>
+<td><p>+12%</p></td>
+<td><p>$136,000</p></td>
+</tr>
+<tr>
+<td><p>Model migration</p></td>
+<td><p>+5%</p></td>
+<td><p>Cheaper model, -30% token cost</p></td>
+<td><p>Rebuild cache</p></td>
+<td><p>-18% (after ramp)</p></td>
+<td><p>$106,000</p></td>
+</tr>
+<tr>
+<td><p>Prompt change</p></td>
+<td><p>+5%</p></td>
+<td><p>None</p></td>
+<td><p>Hit rate drops 20pp</p></td>
+<td><p>+22%</p></td>
+<td><p>$148,000</p></td>
+</tr>
+<tr>
+<td><p>All planned changes</p></td>
+<td><p>+5% + 20K new</p></td>
+<td><p>Migration</p></td>
+<td><p>Rebuild + new workload</p></td>
+<td><p>Range: -5% to +15%</p></td>
+<td><p>$115,000 - $140,000</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The forecast is a range, not a point. Present the range with the
+assumptions that drive each scenario. Let finance choose the scenario
+for budget planning.</p>
+<h3 id="decision-rule-24">Decision rule</h3>
+<p>Treat quality incidents with the same severity as availability
+incidents. Invest in quality detection proportionally to the cost of
+undetected quality degradation. Produce the Inference Review Pack
+monthly. Forecast by component and by scenario—present ranges, not
+points.</p>
+<h3 id="what-to-measure-22">What to measure</h3>
+<ul>
+<li><p>Mean time to detect quality incidents</p></li>
+<li><p>Incident cost by category (inference, human,
+engineering)</p></li>
+<li><p>Blast radius (requests affected before mitigation)</p></li>
+<li><p>Fallback activation rate and fallback cost</p></li>
+<li><p>Root cause distribution (model, prompt, cache, capacity,
+drift)</p></li>
+<li><p>LCPR by workload, month-over-month</p></li>
+<li><p>Cost breakdown by component, month-over-month</p></li>
+<li><p>Action completion rate from previous reviews</p></li>
+<li><p>Forecast accuracy: predicted vs actual by component</p></li>
+<li><p>Assumption tracking: which assumptions were wrong, by how
+much</p></li>
+</ul>
+<h3 id="where-this-breaks-24">Where this breaks</h3>
+<p>Quality incident detection requires evals that cover the failure
+mode. If the failure mode is new, the eval suite will not catch it until
+the cases are added—continuous log review of actual production outputs
+is essential as a complement to automated evals.</p>
+<p>The review pack requires data from traces, invoices, evals, and
+support systems. Start with what you have. A review pack with LCPR from
+traces and invoice total (without full reconciliation) is better than no
+review pack.</p>
+<p>Forecasting breaks when the team does not know about planned changes,
+model pricing changes without notice, or the forecast model is not
+updated with actuals. The biggest forecasting failure is presenting a
+single number without assumptions.</p>
+<h3 id="calculator-hook-24">Calculator hook</h3>
+<p>The incident cost view in : additional inference cost during
+incident, human escalation cost, engineering time, blast radius. The is
+a calculator output template with the six sections above. The forecast
+view takes current LCPR by workload, planned changes, and outputs
+quarterly cost by scenario with an assumption register tagging each
+input as MEASURED, ESTIMATED, or ASSUMED.</p>
+<hr />
+<h2 id="part-5-summary">Part 5 Summary</h2>
+<p>Part 5 established the operating cadence for inference economics:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Concept</p></th>
+<th><p>Where defined</p></th>
+<th><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Baseline and eval instrument</p></td>
+<td><p>Chapter 22</p></td>
+<td><p>Snapshot before change; three-layer eval stack controls LCPR
+denominator</p></td>
+</tr>
+<tr>
+<td><p>Benchmark hygiene and goodput</p></td>
+<td><p>Chapter 23</p></td>
+<td><p>Goodput Frontier Test replaces vendor throughput numbers</p></td>
+</tr>
+<tr>
+<td><p>Observability and trace-to-margin</p></td>
+<td><p>Chapter 24</p></td>
+<td><p>Economic signals explaining cost movement; joins trace, invoice,
+eval, contract into margin</p></td>
+</tr>
+<tr>
+<td><p>Incidents, review, and forecast</p></td>
+<td><p>Chapter 25</p></td>
+<td><p>Quality incidents, review pack cadence, scenario-based LCPR
+forecasting</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The operating cadence forms a loop:</p>
+<p>Each step feeds the next. The baseline enables measurement.
+Measurement feeds evaluation. Evaluation enables reconciliation.
+Reconciliation informs the review. The review drives actions. Actions
+change the system. The forecast predicts the impact of changes. And the
+cycle starts again with a new baseline.</p>
+<p>The book began with a $12 mystery in the opener. It ends here with
+the operating system that prevents the mystery from recurring: measure
+LCPR, evaluate quality, reconcile traces to invoices, review monthly,
+forecast by scenario, and act on evidence.</p>
+<hr />
+<h2 id="evidence-notes-for-part-5">Evidence Notes for Part 5</h2>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>#</p></th>
+<th><p>Claim</p></th>
+<th><p>Label</p></th>
+<th><p>Source</p></th>
+<th><p>Chapter</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>1</p></td>
+<td><p>Goodput under SLO formula and worked example</p></td>
+<td><p>DERIVED</p></td>
+<td><p>Derivation 5, from SLO definition and standard metrics</p></td>
+<td><p>23</p></td>
+</tr>
+<tr>
+<td><p>2</p></td>
+<td><p>Trace-to-margin reconciliation formula</p></td>
+<td><p>DERIVED</p></td>
+<td><p>Derivation 6, from LCPR-2026 extended to invoice and
+revenue</p></td>
+<td><p>24</p></td>
+</tr>
+<tr>
+<td><p>3</p></td>
+<td><p>Benchmark-to-production transfer gap exists</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From roofline analysis (Part 2) applied to benchmark
+conditions</p></td>
+<td><p>23</p></td>
+</tr>
+<tr>
+<td><p>4</p></td>
+<td><p>Output tokens typically cost 2-6x input tokens on major API
+providers</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Provider pricing pages, accessed 2026-05-12</p></td>
+<td><p>24</p></td>
+</tr>
+<tr>
+<td><p>5</p></td>
+<td><p>Eval design needs task, trial, grader, assertions,
+transcript</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Anthropic agent eval guidance, OpenAI eval docs</p></td>
+<td><p>22</p></td>
+</tr>
+<tr>
+<td><p>6</p></td>
+<td><p>SWE-bench Verified flawed tests and contamination</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>OpenAI benchmark analysis post, 2026-03</p></td>
+<td><p>23</p></td>
+</tr>
+<tr>
+<td><p>7</p></td>
+<td><p>Cost optimization can reduce quality (Claude Code
+postmortem)</p></td>
+<td><p>REPORTED</p></td>
+<td><p>Anthropic engineering postmortem, 2026-04-23</p></td>
+<td><p>25</p></td>
+</tr>
+<tr>
+<td><p>8</p></td>
+<td><p>Three-layer eval stack (deterministic, model-graded,
+human)</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From Anthropic, OpenAI, and Google eval guidance
+synthesized</p></td>
+<td><p>22</p></td>
+</tr>
+<tr>
+<td><p>9</p></td>
+<td><p>Inference Review Pack structure</p></td>
+<td><p>OPINION</p></td>
+<td><p>Author synthesis of operating review practices</p></td>
+<td><p>25</p></td>
+</tr>
+<tr>
+<td><p>10</p></td>
+<td><p>Scenario-based forecasting with LCPR components</p></td>
+<td><p>OPINION</p></td>
+<td><p>Author synthesis of financial planning applied to
+inference</p></td>
+<td><p>25</p></td>
+</tr>
+<tr>
+<td><p>11</p></td>
+<td><p>Quality incidents differ from availability incidents</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From inference serving characteristics vs traditional
+services</p></td>
+<td><p>25</p></td>
+</tr>
+<tr>
+<td><p>12</p></td>
+<td><p>Cache hit rate drop causes cost spike (prompt change
+example)</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From cache break-even analysis (Part 2) applied to
+operations</p></td>
+<td><p>24, 25</p></td>
+</tr>
+<tr>
+<td><p>13</p></td>
+<td><p>Minimum viable baseline metrics</p></td>
+<td><p>OPINION</p></td>
+<td><p>Author synthesis from production observability</p></td>
+<td><p>22</p></td>
+</tr>
+<tr>
+<td><p>14</p></td>
+<td><p>Delta investigation threshold 5%</p></td>
+<td><p>OPINION</p></td>
+<td><p>Author recommendation, calibrated from Part 1</p></td>
+<td><p>24</p></td>
+</tr>
+<tr>
+<td><p>15</p></td>
+<td><p>All worked example numbers</p></td>
+<td><p>SYNTHETIC</p></td>
+<td><p>Illustrative, shaped by real billing semantics</p></td>
+<td><p>24, 25</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p><strong>Slop check:</strong> No instances of seamless, robust,
+leverage, holistic, unlock, game-changing, cutting-edge, best-in-class,
+or synergy.</p>
+
+        </div>
+
+        <nav class="part-nav"><a href="/book/part-4/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 4: Migration Gates</span></a><a href="/book/appendix/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Appendix:
+Calculator Manual And Living Reference</span></a></nav>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Reading progress ──
+    window.addEventListener('scroll', function() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Active TOC highlighting ──
+    var tocLinks = document.querySelectorAll('.sidebar-toc a');
+    var headings = [];
+    tocLinks.forEach(function(link) {
+      var id = link.getAttribute('href');
+      if (id && id.startsWith('#')) {
+        var el = document.getElementById(id.slice(1));
+        if (el) headings.push({ el: el, link: link });
+      }
+    });
+
+    function updateActiveTOC() {
+      var scrollPos = window.scrollY + 140;
+      var current = null;
+      for (var i = 0; i < headings.length; i++) {
+        if (headings[i].el.offsetTop <= scrollPos) current = headings[i];
+      }
+      tocLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (current) {
+        current.link.classList.add('active');
+        var sidebar = document.getElementById('sidebar');
+        var linkTop = current.link.offsetTop;
+        var sh = sidebar.clientHeight;
+        if (linkTop < sidebar.scrollTop + 120 || linkTop > sidebar.scrollTop + sh - 120) {
+          sidebar.scrollTo({ top: linkTop - sh / 3, behavior: 'smooth' });
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateActiveTOC, { passive: true });
+    updateActiveTOC();
+
+    // ── Mobile menu ──
+    var toggle = document.getElementById('menu-toggle');
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    tocLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 960) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+      });
+    });
+
+    // ── Wrap tables for horizontal scroll ──
+    document.querySelectorAll('.content table').forEach(function(t) {
+      if (!t.parentElement.classList.contains('table-wrapper')) {
+        var w = document.createElement('div');
+        w.className = 'table-wrapper';
+        t.parentNode.insertBefore(w, t);
+        w.appendChild(t);
+      }
+    });
+  </script>
+</body>
+</html>

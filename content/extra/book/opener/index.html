@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Sohail Mohammad">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <title>Opener: The Twelve-Dollar
+Mystery — Production Inference Economics</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-bg: #faf9f6;
+      --c-surface: #ffffff;
+      --c-text: #1a1a1a;
+      --c-text-secondary: #5a5a5a;
+      --c-text-tertiary: #8a8a8a;
+      --c-heading: #0f0f0f;
+      --c-link: #5a8a60;
+      --c-link-hover: #4a7a50;
+      --c-border: #e0ddd6;
+      --c-border-light: #ebe9e3;
+      --c-code-bg: #f0eee8;
+      --c-table-header: #f4f3ef;
+      --c-table-stripe: #faf9f6;
+      --c-blockquote-border: #A7C080;
+      --c-blockquote-bg: #f4f3ef;
+      --c-accent: #83C092;
+      --c-accent-dark: #A7C080;
+      --c-accent-light: rgba(131, 192, 146, 0.1);
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      --content-max: 700px;
+    }
+
+    html {
+      font-size: 16.5px;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--c-text);
+      background: var(--c-bg);
+      line-height: 1.75;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Links ─────────────────────────────────────── */
+    a {
+      color: var(--c-link);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    a:hover { color: var(--c-link-hover); }
+
+    /* ── Typography ────────────────────────────────── */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    strong { font-weight: 600; }
+
+    /* ── Code ──────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.87em;
+      background: var(--c-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--c-code-bg);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.85rem;
+    }
+
+
+    /* ── Progress Bar ──────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--c-accent);
+      z-index: 1000;
+      transition: width 60ms linear;
+    }
+
+    /* ── Page Layout: Sidebar + Content ─────────────── */
+    .page-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ───────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--c-surface);
+      border-right: 1px solid var(--c-border);
+      overflow-y: auto;
+      padding: 1.75rem 0;
+      z-index: 100;
+      scrollbar-width: thin;
+      scrollbar-color: var(--c-border) transparent;
+    }
+
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+
+    .sidebar-header {
+      padding: 0 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--c-border);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-header .back-link {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+      transition: color 0.15s;
+    }
+
+    .sidebar-header .back-link:hover { color: var(--c-link); }
+
+    .sidebar-header .part-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-header .chapters-info {
+      font-size: 0.75rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.2rem;
+    }
+
+    /* ── Sidebar TOC ───────────────────────────────── */
+    .sidebar-toc {
+      list-style: none;
+      padding: 0.5rem 0;
+      margin: 0;
+    }
+
+    .sidebar-toc li {
+      margin: 0;
+    }
+
+    .sidebar-toc a {
+      display: block;
+      padding: 0.35rem 1.25rem;
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      text-decoration: none;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-toc a:hover {
+      color: var(--c-link);
+      background: var(--c-accent-light);
+    }
+
+    .sidebar-toc a.active {
+      color: var(--c-accent);
+      font-weight: 500;
+      border-left-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    /* ── Sidebar Nav Links ─────────────────────────── */
+    .sidebar-nav {
+      padding: 0.75rem 1.25rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .sidebar-nav a {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      padding: 0.3rem 0;
+      transition: color 0.15s;
+    }
+
+    .sidebar-nav a:hover { color: var(--c-link); }
+
+    /* ── Main Content Area ─────────────────────────── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .part-container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    /* ── Part Header ───────────────────────────────── */
+    .part-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--c-border);
+    }
+
+    .part-header .label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-header h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+      line-height: 1.2;
+    }
+
+    .part-header .chapters-label {
+      font-size: 0.85rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.5rem;
+    }
+
+    /* ── Content ───────────────────────────────────── */
+    .content h2 {
+      font-size: 1.4rem;
+      margin-top: 3rem;
+      margin-bottom: 0.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--c-border-light);
+    }
+
+    .content h2:first-child {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .content p {
+      margin-bottom: 1.1rem;
+    }
+
+    /* ── Lists ─────────────────────────────────────── */
+    .content ul, .content ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .content li {
+      margin-bottom: 0.3rem;
+    }
+
+    .content li > ul, .content li > ol {
+      margin-top: 0.3rem;
+      margin-bottom: 0;
+    }
+
+    .content dl { margin-bottom: 1.1rem; }
+    .content dt { font-weight: 600; margin-top: 0.75rem; }
+    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
+
+    /* ── Tables ────────────────────────────────────── */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .content thead { border-bottom: 2px solid var(--c-border); }
+
+    .content thead th {
+      background: var(--c-table-header);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .content tbody td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--c-border-light);
+      vertical-align: top;
+    }
+
+    .content tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .content tbody tr:nth-child(even) {
+      background: var(--c-table-stripe);
+    }
+
+    /* ── Figures ────────────────────────────────────── */
+    .content figure {
+      margin: 1.5rem 0 2rem;
+    }
+
+    .content figcaption, .content caption {
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      line-height: 1.45;
+      margin-top: 0.5rem;
+    }
+
+    .content caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 0.6rem;
+      font-weight: 600;
+      color: var(--c-heading);
+    }
+
+    /* ── Blockquotes ───────────────────────────────── */
+    .content blockquote {
+      border-left: 3px solid var(--c-blockquote-border);
+      background: var(--c-blockquote-bg);
+      padding: 0.85rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .content blockquote p { margin-bottom: 0.4rem; }
+    .content blockquote p:last-child { margin-bottom: 0; }
+
+    /* ── Horizontal Rules ──────────────────────────── */
+    .content hr {
+      border: none;
+      border-top: 1px solid var(--c-border);
+      margin: 2.5rem auto;
+      max-width: 40%;
+    }
+
+    /* ── Part Navigation ───────────────────────────── */
+    .part-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .nav-prev, .nav-next {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      background: var(--c-surface);
+      transition: border-color 0.15s, background 0.15s;
+      max-width: 48%;
+    }
+
+    .nav-prev:hover, .nav-next:hover {
+      border-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    .nav-next { text-align: right; margin-left: auto; }
+
+    .nav-dir {
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      font-weight: 500;
+    }
+
+    .nav-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--c-heading);
+      line-height: 1.3;
+    }
+
+    /* ── Mobile Menu Toggle ────────────────────────── */
+    #menu-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 12px;
+      z-index: 200;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: var(--font-body);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      color: var(--c-text-secondary);
+    }
+
+    #menu-toggle:hover { background: var(--c-table-header); }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: 90;
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @media (max-width: 960px) {
+      #menu-toggle { display: block; }
+
+      #sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+      }
+
+      #sidebar.open { transform: translateX(0); }
+      #sidebar-overlay.open { display: block; }
+
+      .main-content { margin-left: 0; }
+
+      .part-container {
+        padding: 3rem 1.25rem 4rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      html { font-size: 15.5px; }
+      .part-container { padding: 3rem 1rem 3rem; }
+      .part-header h1 { font-size: 1.5rem; }
+      .content h2 { font-size: 1.2rem; }
+      .content table { font-size: 0.78rem; }
+      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
+      .part-nav { flex-direction: column; }
+      .nav-prev, .nav-next { max-width: 100%; }
+    }
+
+    /* ── Print ─────────────────────────────────────── */
+    @media print {
+      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
+      .main-content { margin-left: 0; }
+      .part-container { max-width: 100%; padding: 0; }
+      .content h2 { page-break-after: avoid; }
+      .content table, .content figure { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
+  <div id="sidebar-overlay"></div>
+
+  <div class="page-layout">
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <a class="back-link" href="/book/">&larr; All Parts</a>
+        <div class="part-label">Opener</div>
+        <h2>The Twelve-Dollar
+Mystery</h2>
+        
+      </div>
+      <ul class="sidebar-toc"><li><a href="#the-trace">The Trace</a></li><li><a href="#what-the-token-price-missed">What The Token Price Missed</a></li><li><a href="#the-naive-calculation">The Naive Calculation</a></li><li><a href="#the-correct-calculation">The Correct Calculation</a></li><li><a href="#what-route-a-was-hiding">What Route A Was Hiding</a></li><li><a href="#why-this-happens">Why This Happens</a></li><li><a href="#the-books-promise">The Book’s Promise</a></li><li><a href="#evidence-notes">Evidence Notes</a></li></ul>
+      <div class="sidebar-nav">
+        
+        <a href="/book/part-0/">Part 0: How To Use This Book &rarr;</a>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="part-container">
+        <div class="part-header">
+          <div class="label">Opener</div>
+          <h1>The Twelve-Dollar
+Mystery</h1>
+          
+        </div>
+
+        <div class="content">
+          
+<p>A support team runs an answer-drafting workload. Each customer ticket
+triggers a RAG retrieval, an LLM generation pass, and a quality check.
+The system handles roughly 1,000 tickets per day, and the team is
+evaluating whether to stay on their current provider or switch to a
+cheaper alternative.</p>
+<p>The comparison looks straightforward. Route A charges $3.00 per
+million input tokens and $15.00 per million output tokens. Route B
+charges $1.80 per million input tokens and $8.00 per million output
+tokens. Route B is 40% cheaper on input and 47% cheaper on output. The
+procurement spreadsheet says: switch to Route B, save $4,200 per
+month.</p>
+<p>The team switches. Thirty days later, the inference bill is higher
+than before. The support burden has increased. The product manager is
+asking what happened.</p>
+<p>This chapter is an autopsy of a single day on the new route. It will
+show what the token-price comparison missed, and why.</p>
+<hr />
+<h2 id="the-trace">The Trace</h2>
+<p>Here are twelve requests from a single day on Route B. This is a
+synthetic trace, but the field shapes, billing grammar, and cache
+semantics come from real provider documentation. The failure modes come
+from production.</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>#</p></th>
+<th><p>Type</p></th>
+<th><p>Input tok</p></th>
+<th><p>Cached</p></th>
+<th><p>Output tok</p></th>
+<th><p>TTFT ms</p></th>
+<th><p>E2E ms</p></th>
+<th><p>Eval</p></th>
+<th><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>1</p></td>
+<td><p>First attempt</p></td>
+<td><p>2,400</p></td>
+<td><p>1,800</p></td>
+<td><p>220</p></td>
+<td><p>380</p></td>
+<td><p>2,100</p></td>
+<td><p>Pass</p></td>
+<td><p>Cache hit on system prompt</p></td>
+</tr>
+<tr>
+<td><p>2</p></td>
+<td><p>First attempt</p></td>
+<td><p>3,100</p></td>
+<td><p>0</p></td>
+<td><p>340</p></td>
+<td><p>920</p></td>
+<td><p>3,800</p></td>
+<td><p>Pass</p></td>
+<td><p>Cache miss—new retrieval context</p></td>
+</tr>
+<tr>
+<td><p>3</p></td>
+<td><p>First attempt</p></td>
+<td><p>2,600</p></td>
+<td><p>2,100</p></td>
+<td><p>280</p></td>
+<td><p>350</p></td>
+<td><p>2,400</p></td>
+<td><p>Fail</p></td>
+<td><p>Answer missed key constraint</p></td>
+</tr>
+<tr>
+<td><p>4</p></td>
+<td><p>First attempt</p></td>
+<td><p>2,800</p></td>
+<td><p>0</p></td>
+<td><p>510</p></td>
+<td><p>1,100</p></td>
+<td><p>5,200</p></td>
+<td><p>Fail</p></td>
+<td><p>TTFT exceeded 800ms SLO</p></td>
+</tr>
+<tr>
+<td><p>5</p></td>
+<td><p>First attempt</p></td>
+<td><p>2,200</p></td>
+<td><p>1,600</p></td>
+<td><p>190</p></td>
+<td><p>410</p></td>
+<td><p>1,900</p></td>
+<td><p>Pass</p></td>
+<td><p>—</p></td>
+</tr>
+<tr>
+<td><p>6</p></td>
+<td><p>First attempt</p></td>
+<td><p>4,500</p></td>
+<td><p>0</p></td>
+<td><p>380</p></td>
+<td><p>1,400</p></td>
+<td><p>4,800</p></td>
+<td><p>Pass</p></td>
+<td><p>Long retrieval context, cache miss</p></td>
+</tr>
+<tr>
+<td><p>7</p></td>
+<td><p>First attempt</p></td>
+<td><p>2,500</p></td>
+<td><p>2,000</p></td>
+<td><p>250</p></td>
+<td><p>360</p></td>
+<td><p>2,200</p></td>
+<td><p>Pass</p></td>
+<td><p>—</p></td>
+</tr>
+<tr>
+<td><p>8</p></td>
+<td><p>First attempt</p></td>
+<td><p>3,200</p></td>
+<td><p>0</p></td>
+<td><p>620</p></td>
+<td><p>980</p></td>
+<td><p>6,100</p></td>
+<td><p>Fail</p></td>
+<td><p>Output too long, E2E violated SLO</p></td>
+</tr>
+<tr>
+<td><p>9</p></td>
+<td><p>Retry of #4</p></td>
+<td><p>2,800</p></td>
+<td><p>0</p></td>
+<td><p>290</p></td>
+<td><p>850</p></td>
+<td><p>3,400</p></td>
+<td><p>Pass</p></td>
+<td><p>Same input, no cache (TTL expired)</p></td>
+</tr>
+<tr>
+<td><p>10</p></td>
+<td><p>Retry of #8</p></td>
+<td><p>3,200</p></td>
+<td><p>0</p></td>
+<td><p>310</p></td>
+<td><p>720</p></td>
+<td><p>3,100</p></td>
+<td><p>Pass</p></td>
+<td><p>Retry succeeded</p></td>
+</tr>
+<tr>
+<td><p>11</p></td>
+<td><p>Eval grader</p></td>
+<td><p>1,200</p></td>
+<td><p>0</p></td>
+<td><p>80</p></td>
+<td><p>200</p></td>
+<td><p>800</p></td>
+<td><p>—</p></td>
+<td><p>Grading requests 3 and 8</p></td>
+</tr>
+<tr>
+<td><p>12</p></td>
+<td><p>Repair of #3</p></td>
+<td><p>3,800</p></td>
+<td><p>0</p></td>
+<td><p>350</p></td>
+<td><p>650</p></td>
+<td><p>3,200</p></td>
+<td><p>Pass</p></td>
+<td><p>Regenerated with corrected context</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>Twelve requests. Eight first attempts, two retries, one eval grader
+call, one repair. The team expected eight requests to serve eight
+tickets. The system generated twelve.</p>
+<hr />
+<h2 id="what-the-token-price-missed">What The Token Price Missed</h2>
+<h3 id="cache-hit-rate-was-worse-than-expected">1. Cache hit rate was
+worse than expected</h3>
+<p>The team designed the prompt with a stable system prompt and tool
+definitions at the top—roughly 1,800 tokens of cache-eligible prefix. On
+Route A, 60% of requests hit the cache. On Route B, the hit rate dropped
+to 35%.</p>
+<p>Why? Three reasons the team did not anticipate:</p>
+<ul>
+<li><p>Route B uses a different cache implementation with a shorter
+effective TTL. Requests arriving more than a few minutes apart saw cold
+cache.</p></li>
+<li><p>The retrieval context changes per ticket. When retrieval context
+sits inside the cache-eligible prefix, every new document set breaks the
+prefix match.</p></li>
+<li><p>Route B’s load balancer distributes across more replicas. Cache
+is per-replica. Fewer requests land on the same replica within the TTL
+window.</p></li>
+</ul>
+<p>The pricing page said cache reads were 50% cheaper than uncached
+input. That discount matters only when cache hits actually happen. At
+35% hit rate instead of 60%, the effective input cost is higher than the
+spreadsheet assumed.</p>
+<h3 id="output-tokens-were-longer">2. Output tokens were longer</h3>
+<p>Route B’s model produced longer outputs on average. Requests 4, 6,
+and 8 show output lengths of 510, 380, and 620 tokens—well above the
+250-token median the team modeled. Output tokens are the expensive side
+of the bill. On many major API providers, output costs 2-6x more than
+input per token. A 40% increase in average output length can erase a 47%
+discount on the per-token output price.</p>
+<p>This is not a bug. Different models have different verbosity
+profiles, and the support prompt was tuned for Route A’s model. Prompt
+portability is not free.</p>
+<h3 id="retries-and-repairs-are-invisible-on-the-pricing-page">3.
+Retries and repairs are invisible on the pricing page</h3>
+<p>Two of eight first attempts failed their SLO (requests 4 and 8). Both
+were retried. One first attempt failed its quality gate (request 3) and
+was repaired with a corrected retrieval context. The eval grader call
+(request 11) checked the failed outputs.</p>
+<p>These four additional requests—retries, eval, repair—are not in the
+pricing comparison. They are in the trace. Each one consumed input
+tokens, output tokens, compute time, and latency budget. The inference
+cost of the four recovery requests was roughly 30% of the total
+inference bill for those twelve requests.</p>
+<h3 id="quality-failures-have-downstream-costs">4. Quality failures have
+downstream costs</h3>
+<p>Request 3 failed the quality gate. Its answer missed a key constraint
+from the customer’s account. The repair call (request 12) fixed it, but
+the customer waited an extra 3.2 seconds. If the repair had also failed,
+the ticket would have escalated to a human agent.</p>
+<p>On this workload, 5% of tickets escalate to humans. Each human
+escalation costs roughly $2 in agent time. On 1,000 tickets per day, 50
+escalations cost $100. The daily inference bill is about $14. Human
+escalation costs 7x the inference bill.</p>
+<p>The pricing page does not have a column for human escalation cost per
+failed answer.</p>
+<h3 id="the-slo-gate-changes-the-denominator">5. The SLO gate changes
+the denominator</h3>
+<p>The team’s SLO says: TTFT under 800ms, E2E under 5 seconds, eval
+score above 0.85. Of the eight first attempts, five passed all three
+gates. Three failed at least one gate. Two were recovered by retries;
+one was recovered by repair.</p>
+<p>The denominator is not “requests sent to the provider.” It is
+“accepted answers that passed quality, latency, and compliance gates.”
+Eight requests produced eight answers. Five were accepted on the first
+try. Three needed recovery. The inference cost per accepted answer is
+higher than the cost per request.</p>
+<hr />
+<h2 id="the-naive-calculation">The Naive Calculation</h2>
+<p>The procurement spreadsheet did this:</p>
+<p>This calculation divides total inference spend by total tickets. It
+treats every request as equally valuable. It ignores retries, repairs,
+eval grader calls, human escalation, and operational overhead.</p>
+<hr />
+<h2 id="the-correct-calculation">The Correct Calculation</h2>
+<p>The trace-to-margin reconciliation does this:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Cost component</p></th>
+<th><p>Daily amount</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Trace-derived inference cost</p></td>
+<td><p>$14.20</p></td>
+</tr>
+<tr>
+<td><p>Invoice delta (rounding, timing, batch pricing)</p></td>
+<td><p>$0.65</p></td>
+</tr>
+<tr>
+<td><p>Eval grader cost</p></td>
+<td><p>$0.80</p></td>
+</tr>
+<tr>
+<td><p>Human escalation (50 cases x $2)</p></td>
+<td><p>$100.00</p></td>
+</tr>
+<tr>
+<td><p>Ops overhead allocation</p></td>
+<td><p>$25.00</p></td>
+</tr>
+<tr>
+<td><p><strong>Total loaded cost</strong></p></td>
+<td><p><strong>$140.65</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p><em>(Provider invoice for the same period: $14.85. The delta of $0.65
+reconciles trace-derived cost to invoice. See Part 1, Chapter 3 for the
+reconciliation method.)</em></p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Denominator</p></th>
+<th><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Total tickets attempted</p></td>
+<td><p>1,000</p></td>
+</tr>
+<tr>
+<td><p>First-attempt pass</p></td>
+<td><p>750</p></td>
+</tr>
+<tr>
+<td><p>Recovered by retry/repair</p></td>
+<td><p>70</p></td>
+</tr>
+<tr>
+<td><p><strong>Accepted answers</strong></p></td>
+<td><p><strong>820</strong></p></td>
+</tr>
+<tr>
+<td><p>Escalated to human</p></td>
+<td><p>50</p></td>
+</tr>
+<tr>
+<td><p>Unrecovered failures</p></td>
+<td><p>130</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The loaded cost is 12x the naive cost. Not because inference is
+expensive— inference is $14 per day. Because the denominator changed
+(1,000 to 820), the numerator changed ($14 to $141), and the
+non-inference costs dominate.</p>
+<p>This is the twelve-dollar mystery. The inference bill is $14. The
+loaded cost of producing accepted work is $141. The gap is retries,
+repairs, quality gates, human escalation, and operational overhead. The
+token price comparison captured 10% of the actual cost structure.</p>
+<hr />
+<h2 id="what-route-a-was-hiding">What Route A Was Hiding</h2>
+<p>Here is the part the team did not expect. Route A was more expensive
+per token— but it had a 60% cache hit rate, shorter average outputs, a
+91% first-attempt quality pass rate, and fewer retries. The loaded cost
+per accepted answer on Route A was $0.135. Route B, at $0.172, was 27%
+more expensive per accepted answer despite being 40% cheaper per input
+token.</p>
+<p>The spreadsheet picked the wrong route.</p>
+<hr />
+<h2 id="why-this-happens">Why This Happens</h2>
+<p>This is not a story about one bad migration. It is a pattern. It
+happens whenever a team compares inference options using token price
+alone:</p>
+<p><strong>The numerator problem.</strong> Token price captures only the
+inference provider bill. It misses eval cost, retry cost, repair cost,
+human escalation, operational overhead, and engineering time. On
+workloads where quality is variable, the non-token costs can
+dominate.</p>
+<p><strong>The denominator problem.</strong> Dividing by total requests,
+total tokens, or total tickets conflates attempted work with accepted
+work. If 18% of attempts fail quality, latency, or compliance gates, the
+cost per accepted unit is 22% higher than the cost per attempt.</p>
+<p><strong>The cache problem.</strong> Prompt caching economics depend
+on prefix stability, TTL, inter-request timing, and routing topology. A
+cache discount on the pricing page is not a cache discount in production
+unless the cache hits.</p>
+<p><strong>The output-length problem.</strong> Different models produce
+different output distributions for the same prompt. Output tokens are
+more expensive than input tokens. A model that produces 40% more output
+can cost more despite a lower per-token price.</p>
+<p><strong>The quality problem.</strong> A model with a lower
+first-attempt pass rate generates more retries, repairs, and human
+escalations. Each retry is an inference call that does not appear in the
+pricing comparison. Each escalation is a cost that does not appear on
+the inference bill at all.</p>
+<hr />
+<h2 id="the-books-promise">The Book’s Promise</h2>
+<p>This manual teaches one skill: how to measure, model, and operate
+production inference decisions so you can choose the cheapest reliable
+architecture that still meets quality, latency, reliability, and
+customer requirements.</p>
+<p>The economic unit is not the token. It is not the request. It is not
+the GPU-hour. It is the <strong>accepted work unit</strong>: one
+successful task completion that passes your quality gate, meets your
+latency SLO, complies with your data constraints, and is worth paying
+for.</p>
+<p>Every chapter in this book follows the same rhythm:</p>
+<ol>
+<li><p>A wrong conclusion that a competent team might reach from a naive
+view.</p></li>
+<li><p>The mechanism that makes the conclusion wrong.</p></li>
+<li><p>A trace or worked example that shows the gap.</p></li>
+<li><p>A formula with units.</p></li>
+<li><p>A decision rule with caveats.</p></li>
+<li><p>A calculator view or artifact the reader can use in a
+meeting.</p></li>
+<li><p>The conditions under which the rule breaks.</p></li>
+</ol>
+<p>If you already have clean traces, good evals, and invoice
+reconciliation, start at Part 2 (Serving Physics) or Part 3 (Workload
+Economics). If you do not yet have these, start with Part 1 (The
+Economic Unit) and build them.</p>
+<p>The next chapter defines the loaded cost per result—LCPR-2026—and
+explains why every number in this book is normalized to accepted output,
+not raw tokens.</p>
+<hr />
+<h2 id="evidence-notes">Evidence Notes</h2>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Claim</p></th>
+<th><p>Type</p></th>
+<th><p>Source</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Provider pricing grammar (input, output, cached, cache
+write)</p></td>
+<td><p>Public</p></td>
+<td><p>Provider pricing pages, snapshot 2026-05-12</p></td>
+</tr>
+<tr>
+<td><p>Cache semantics (TTL, prefix match, per-replica)</p></td>
+<td><p>Public</p></td>
+<td><p>Provider documentation,
+<code>source-snapshots/2026-05-12/cache-semantics.yaml</code></p></td>
+</tr>
+<tr>
+<td><p>Trace field shapes</p></td>
+<td><p>Public</p></td>
+<td><p>Provider API response schemas</p></td>
+</tr>
+<tr>
+<td><p>Numeric row set (12 requests)</p></td>
+<td><p>Synthetic</p></td>
+<td><p>Constructed to illustrate failure modes</p></td>
+</tr>
+<tr>
+<td><p>Human escalation cost ($2/case)</p></td>
+<td><p>Illustrative</p></td>
+<td><p>Order of magnitude from support staffing</p></td>
+</tr>
+<tr>
+<td><p>Cache hit rate degradation (60% to 35%)</p></td>
+<td><p>Illustrative</p></td>
+<td><p>Shaped by production cache miss patterns</p></td>
+</tr>
+<tr>
+<td><p>LCPR calculation ($0.172)</p></td>
+<td><p>Derived</p></td>
+<td><p>From synthetic trace with public pricing grammar</p></td>
+</tr>
+<tr>
+<td><p>“Inference is 10% of loaded cost” ratio</p></td>
+<td><p>Illustrative</p></td>
+<td><p>Direction supported by production experience; exact ratio is
+workload-dependent</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The twelve requests in this trace are synthetic. They are shaped by
+real provider billing semantics, real cache implementation differences,
+and real failure modes observed in production answer-drafting systems.
+No numbers in this chapter should be attributed to any specific
+employer, customer, or deployment.</p>
+<p>Pricing rows: see . Cache mechanics: see . Workload identity: see
+.</p>
+
+        </div>
+
+        <nav class="part-nav"><div></div><a href="/book/part-0/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 0: How To Use This Book</span></a></nav>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Reading progress ──
+    window.addEventListener('scroll', function() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Active TOC highlighting ──
+    var tocLinks = document.querySelectorAll('.sidebar-toc a');
+    var headings = [];
+    tocLinks.forEach(function(link) {
+      var id = link.getAttribute('href');
+      if (id && id.startsWith('#')) {
+        var el = document.getElementById(id.slice(1));
+        if (el) headings.push({ el: el, link: link });
+      }
+    });
+
+    function updateActiveTOC() {
+      var scrollPos = window.scrollY + 140;
+      var current = null;
+      for (var i = 0; i < headings.length; i++) {
+        if (headings[i].el.offsetTop <= scrollPos) current = headings[i];
+      }
+      tocLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (current) {
+        current.link.classList.add('active');
+        var sidebar = document.getElementById('sidebar');
+        var linkTop = current.link.offsetTop;
+        var sh = sidebar.clientHeight;
+        if (linkTop < sidebar.scrollTop + 120 || linkTop > sidebar.scrollTop + sh - 120) {
+          sidebar.scrollTo({ top: linkTop - sh / 3, behavior: 'smooth' });
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateActiveTOC, { passive: true });
+    updateActiveTOC();
+
+    // ── Mobile menu ──
+    var toggle = document.getElementById('menu-toggle');
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    tocLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 960) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+      });
+    });
+
+    // ── Wrap tables for horizontal scroll ──
+    document.querySelectorAll('.content table').forEach(function(t) {
+      if (!t.parentElement.classList.contains('table-wrapper')) {
+        var w = document.createElement('div');
+        w.className = 'table-wrapper';
+        t.parentNode.insertBefore(w, t);
+        w.appendChild(t);
+      }
+    });
+  </script>
+</body>
+</html>

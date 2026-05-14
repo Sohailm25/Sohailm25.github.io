@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Sohail Mohammad">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <title>Part 3: Workload Economics — Production Inference Economics</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-bg: #faf9f6;
+      --c-surface: #ffffff;
+      --c-text: #1a1a1a;
+      --c-text-secondary: #5a5a5a;
+      --c-text-tertiary: #8a8a8a;
+      --c-heading: #0f0f0f;
+      --c-link: #5a8a60;
+      --c-link-hover: #4a7a50;
+      --c-border: #e0ddd6;
+      --c-border-light: #ebe9e3;
+      --c-code-bg: #f0eee8;
+      --c-table-header: #f4f3ef;
+      --c-table-stripe: #faf9f6;
+      --c-blockquote-border: #A7C080;
+      --c-blockquote-bg: #f4f3ef;
+      --c-accent: #83C092;
+      --c-accent-dark: #A7C080;
+      --c-accent-light: rgba(131, 192, 146, 0.1);
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      --content-max: 700px;
+    }
+
+    html {
+      font-size: 16.5px;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--c-text);
+      background: var(--c-bg);
+      line-height: 1.75;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Links ─────────────────────────────────────── */
+    a {
+      color: var(--c-link);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    a:hover { color: var(--c-link-hover); }
+
+    /* ── Typography ────────────────────────────────── */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    strong { font-weight: 600; }
+
+    /* ── Code ──────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.87em;
+      background: var(--c-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--c-code-bg);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.85rem;
+    }
+
+
+    /* ── Progress Bar ──────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--c-accent);
+      z-index: 1000;
+      transition: width 60ms linear;
+    }
+
+    /* ── Page Layout: Sidebar + Content ─────────────── */
+    .page-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ───────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--c-surface);
+      border-right: 1px solid var(--c-border);
+      overflow-y: auto;
+      padding: 1.75rem 0;
+      z-index: 100;
+      scrollbar-width: thin;
+      scrollbar-color: var(--c-border) transparent;
+    }
+
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+
+    .sidebar-header {
+      padding: 0 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--c-border);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-header .back-link {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+      transition: color 0.15s;
+    }
+
+    .sidebar-header .back-link:hover { color: var(--c-link); }
+
+    .sidebar-header .part-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-header .chapters-info {
+      font-size: 0.75rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.2rem;
+    }
+
+    /* ── Sidebar TOC ───────────────────────────────── */
+    .sidebar-toc {
+      list-style: none;
+      padding: 0.5rem 0;
+      margin: 0;
+    }
+
+    .sidebar-toc li {
+      margin: 0;
+    }
+
+    .sidebar-toc a {
+      display: block;
+      padding: 0.35rem 1.25rem;
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      text-decoration: none;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-toc a:hover {
+      color: var(--c-link);
+      background: var(--c-accent-light);
+    }
+
+    .sidebar-toc a.active {
+      color: var(--c-accent);
+      font-weight: 500;
+      border-left-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    /* ── Sidebar Nav Links ─────────────────────────── */
+    .sidebar-nav {
+      padding: 0.75rem 1.25rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .sidebar-nav a {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      padding: 0.3rem 0;
+      transition: color 0.15s;
+    }
+
+    .sidebar-nav a:hover { color: var(--c-link); }
+
+    /* ── Main Content Area ─────────────────────────── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .part-container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    /* ── Part Header ───────────────────────────────── */
+    .part-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--c-border);
+    }
+
+    .part-header .label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-header h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+      line-height: 1.2;
+    }
+
+    .part-header .chapters-label {
+      font-size: 0.85rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.5rem;
+    }
+
+    /* ── Content ───────────────────────────────────── */
+    .content h2 {
+      font-size: 1.4rem;
+      margin-top: 3rem;
+      margin-bottom: 0.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--c-border-light);
+    }
+
+    .content h2:first-child {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .content p {
+      margin-bottom: 1.1rem;
+    }
+
+    /* ── Lists ─────────────────────────────────────── */
+    .content ul, .content ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .content li {
+      margin-bottom: 0.3rem;
+    }
+
+    .content li > ul, .content li > ol {
+      margin-top: 0.3rem;
+      margin-bottom: 0;
+    }
+
+    .content dl { margin-bottom: 1.1rem; }
+    .content dt { font-weight: 600; margin-top: 0.75rem; }
+    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
+
+    /* ── Tables ────────────────────────────────────── */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .content thead { border-bottom: 2px solid var(--c-border); }
+
+    .content thead th {
+      background: var(--c-table-header);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .content tbody td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--c-border-light);
+      vertical-align: top;
+    }
+
+    .content tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .content tbody tr:nth-child(even) {
+      background: var(--c-table-stripe);
+    }
+
+    /* ── Figures ────────────────────────────────────── */
+    .content figure {
+      margin: 1.5rem 0 2rem;
+    }
+
+    .content figcaption, .content caption {
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      line-height: 1.45;
+      margin-top: 0.5rem;
+    }
+
+    .content caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 0.6rem;
+      font-weight: 600;
+      color: var(--c-heading);
+    }
+
+    /* ── Blockquotes ───────────────────────────────── */
+    .content blockquote {
+      border-left: 3px solid var(--c-blockquote-border);
+      background: var(--c-blockquote-bg);
+      padding: 0.85rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .content blockquote p { margin-bottom: 0.4rem; }
+    .content blockquote p:last-child { margin-bottom: 0; }
+
+    /* ── Horizontal Rules ──────────────────────────── */
+    .content hr {
+      border: none;
+      border-top: 1px solid var(--c-border);
+      margin: 2.5rem auto;
+      max-width: 40%;
+    }
+
+    /* ── Part Navigation ───────────────────────────── */
+    .part-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .nav-prev, .nav-next {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      background: var(--c-surface);
+      transition: border-color 0.15s, background 0.15s;
+      max-width: 48%;
+    }
+
+    .nav-prev:hover, .nav-next:hover {
+      border-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    .nav-next { text-align: right; margin-left: auto; }
+
+    .nav-dir {
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      font-weight: 500;
+    }
+
+    .nav-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--c-heading);
+      line-height: 1.3;
+    }
+
+    /* ── Mobile Menu Toggle ────────────────────────── */
+    #menu-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 12px;
+      z-index: 200;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: var(--font-body);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      color: var(--c-text-secondary);
+    }
+
+    #menu-toggle:hover { background: var(--c-table-header); }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: 90;
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @media (max-width: 960px) {
+      #menu-toggle { display: block; }
+
+      #sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+      }
+
+      #sidebar.open { transform: translateX(0); }
+      #sidebar-overlay.open { display: block; }
+
+      .main-content { margin-left: 0; }
+
+      .part-container {
+        padding: 3rem 1.25rem 4rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      html { font-size: 15.5px; }
+      .part-container { padding: 3rem 1rem 3rem; }
+      .part-header h1 { font-size: 1.5rem; }
+      .content h2 { font-size: 1.2rem; }
+      .content table { font-size: 0.78rem; }
+      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
+      .part-nav { flex-direction: column; }
+      .nav-prev, .nav-next { max-width: 100%; }
+    }
+
+    /* ── Print ─────────────────────────────────────── */
+    @media print {
+      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
+      .main-content { margin-left: 0; }
+      .part-container { max-width: 100%; padding: 0; }
+      .content h2 { page-break-after: avoid; }
+      .content table, .content figure { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
+  <div id="sidebar-overlay"></div>
+
+  <div class="page-layout">
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <a class="back-link" href="/book/">&larr; All Parts</a>
+        <div class="part-label">Part 3</div>
+        <h2>Workload Economics</h2>
+        <div class="chapters-info">Chapters 10–14</div>
+      </div>
+      <ul class="sidebar-toc"><li><a href="#chapter-10-workload-classes-that-change-treatment">Chapter 10:
+Workload Classes That Change Treatment</a></li><li><a href="#chapter-11-conversational-workloads">Chapter 11: Conversational
+Workloads</a></li><li><a href="#chapter-12-agentic-workloads">Chapter 12: Agentic Workloads</a></li><li><a href="#chapter-13-rag-and-document-extraction">Chapter 13: RAG And
+Document Extraction</a></li><li><a href="#chapter-14-offline-voice-and-specialized-workloads">Chapter 14:
+Offline, Voice, and Specialized Workloads</a></li><li><a href="#part-3-summary">Part 3 Summary</a></li><li><a href="#evidence-notes-for-part-3">Evidence Notes for Part 3</a></li></ul>
+      <div class="sidebar-nav">
+        <a href="/book/part-2/">&larr; Part 2: Serving Physics</a>
+        <a href="/book/part-4/">Part 4: Migration Gates &rarr;</a>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="part-container">
+        <div class="part-header">
+          <div class="label">Part 3</div>
+          <h1>Workload Economics</h1>
+          <div class="chapters-label">Chapters 10–14</div>
+        </div>
+
+        <div class="content">
+          
+<p>Part 2 gave you a vocabulary: roofline, batch frontier, KV capacity,
+cache break-even, goodput, productive capacity. Those concepts describe
+what the hardware and software can do. Part 3 asks the question that
+comes next: what does your workload actually need?</p>
+<p>The answer determines everything downstream. A chat workload with
+human-waiting latency SLOs needs different routing, caching, and
+capacity from a batch extraction pipeline that runs overnight. A coding
+agent whose cost hides in sub-agent fanout and repair loops needs
+different measurement from a single-turn embedding job. A voice system
+with a 300ms inference budget needs different physics from a document
+summarization pipeline with a 30-second tolerance.</p>
+<p>Part 2 built the supply side. Part 3 builds the demand side. Together
+they produce a RouteFit Matrix: given this workload identity, which
+routes are feasible, which are wasteful, and which need measurement
+before committing.</p>
+<hr />
+<h2 id="chapter-10-workload-classes-that-change-treatment">Chapter 10:
+Workload Classes That Change Treatment</h2>
+<h3 id="the-field-problem">The field problem</h3>
+<p>Four inference workloads run through one API provider with one model:
+support chat, document extraction, nightly eval runs, and an
+experimental coding agent. They share the same billing surface, the same
+rate limits, and the same cost model. The monthly bill arrives. Total
+spend divided by total requests produces an average cost per request.
+That average describes none of the four workloads accurately.</p>
+<h3 id="the-mechanism">The mechanism</h3>
+<p>A workload class is a category that changes at least one of these:
+routing, fallback, latency SLO, quality gate, billing surface, caching
+strategy, monitoring threshold, or operational owner. If a distinction
+does not change any of those, it is not a workload class—it is a
+label.</p>
+<p>The minimum set of workload classes for most production inference
+operations:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Class</p></th>
+<th><p>Defining constraint</p></th>
+<th><p>What changes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Human-waiting synchronous</p></td>
+<td><p>p95 latency SLO under 5s</p></td>
+<td><p>Route, model size, batch config, fallback path</p></td>
+</tr>
+<tr>
+<td><p>Human-waiting streaming</p></td>
+<td><p>Time-to-first-token SLO</p></td>
+<td><p>Prefill priority, chunked transfer, backpressure</p></td>
+</tr>
+<tr>
+<td><p>Machine-waiting synchronous</p></td>
+<td><p>Latency SLO 1-30s</p></td>
+<td><p>Can tolerate larger batch, longer queue, cheaper route</p></td>
+</tr>
+<tr>
+<td><p>Batch/offline</p></td>
+<td><p>No per-request latency SLO</p></td>
+<td><p>Eligible for batch API, off-peak scheduling, retry
+tolerance</p></td>
+</tr>
+<tr>
+<td><p>Agentic/multi-turn</p></td>
+<td><p>Task-lifecycle SLO</p></td>
+<td><p>Fanout accounting, compaction, cache strategy, repair
+cost</p></td>
+</tr>
+<tr>
+<td><p>Real-time/voice</p></td>
+<td><p>Sub-second hard ceiling</p></td>
+<td><p>Dedicated capacity, streaming, thermal stability</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The binding constraint differs by who is waiting. When a human
+waits—a chatbot reply, a voice response, a code completion—token
+generation speed dominates. When a machine orchestrates a multi-step
+task on a queue or an overnight schedule, memory capacity and cost per
+accepted result dominate, and latency is secondary. This distinction
+shapes routing and hardware decisions in Parts 4 and 5, but it is not
+binary: an interactive coding agent has a human in the loop but still
+runs 20-step tool chains where per-step latency compounds. The useful
+question is not “answer or agent?” but “what fraction of this workload’s
+cost is latency-sensitive?” [OPINION: Thompson, “The Inference Shift,”
+Stratechery, 2026-05-11]</p>
+<h3 id="the-naive-answer">The naive answer</h3>
+<blockquote>
+<p>“We have one workload—inference.”</p>
+</blockquote>
+<p>This collapses the supply-demand fit. A 50ms TTFT SLO and a next-day
+batch job cannot share a cost model without one of them getting wrong
+treatment: the batch job subsidizes the latency premium, or the
+real-time workload gets routed to a batch-optimized endpoint and
+violates SLOs.</p>
+<h3 id="the-better-model">The better model</h3>
+<p>Each workload class gets its own row in the Workload Identity
+Schema:</p>
+<p>The schema forces the team to state what the workload needs. Not what
+the average workload needs. What this workload needs. The fields come
+from Part 2: token counts determine KV pressure, cache prefix tokens
+determine caching economics, latency SLOs determine batch feasibility,
+quality gates determine the accepted-work denominator.</p>
+<h3 id="decision-rule-9">Decision rule</h3>
+<p>If two workloads share the same routing, latency SLO, quality gate,
+billing surface, caching strategy, and owner, merge them into one class.
+If any of those differ, they are separate classes. The test is not “do
+they call the same model?” The test is “would changing the route for one
+break the other?”</p>
+<h3 id="what-to-measure-7">What to measure</h3>
+<ul>
+<li><p>Cost per accepted output token by workload class, not
+blended</p></li>
+<li><p>Latency percentiles by workload class</p></li>
+<li><p>Cache hit rate by workload class</p></li>
+<li><p>Quality gate pass rate by workload class</p></li>
+<li><p>Retry and repair rate by workload class</p></li>
+</ul>
+<h3 id="where-this-breaks-9">Where this breaks</h3>
+<p>The classification breaks when workload classes drift. A support chat
+workload gets extended to handle complex multi-step troubleshooting. The
+token profile changes, the latency profile changes, the cache hit rate
+drops, and the quality gate needs updating. The workload identity says
+“support-chat” but the traffic looks like an agent. Review workload
+identities quarterly or when failure rates change.</p>
+<h3 id="calculator-hook-9">Calculator hook</h3>
+<p>input template. One row per workload class. The calculator uses
+workload identity fields to select the LCPR-2026 formula variant, route
+candidates, and sensitivity parameters.</p>
+<hr />
+<h2 id="chapter-11-conversational-workloads">Chapter 11: Conversational
+Workloads</h2>
+<h3 id="the-field-problem-1">The field problem</h3>
+<p>A customer support system answers policy questions, looks up account
+state, and takes actions like issuing refunds or escalating tickets. The
+average request is 3,000 input tokens and 400 output tokens. But the p95
+request is 9,000 input tokens and 1,200 output tokens—a customer with a
+long conversation history, multiple tool calls, and a complex resolution
+path. The average LCPR says the model is affordable. The p95 LCPR says
+the fallback path is activating on the most expensive customers.</p>
+<h3 id="the-mechanism-1">The mechanism</h3>
+<p>Chat and support workloads have three economic properties that
+distinguish them from other classes:</p>
+<p><strong>1. Context accumulates within a session.</strong> Each turn
+adds the prior conversation to the input. By turn 8, the input can be
+4-6x the initial prompt. Without caching, every turn re-pays for the
+full history. With caching, the economics depend on session duration,
+cache TTL, and whether the cached prefix is stable.</p>
+<p><strong>2. Tool calls add hidden cost.</strong> A support agent that
+looks up an account, checks order status, and issues a refund makes
+three tool calls. Each tool response enters the context for the next
+turn. Tool output tokens are free to generate (the tool produces them,
+not the model) but expensive to consume (they become input tokens on the
+next turn).</p>
+<p><strong>3. Quality failures cost more than inference.</strong> A
+wrong refund, a privacy breach, or a policy violation costs orders of
+magnitude more than the model call. The quality gate is not optional,
+and the quality gate has a cost: deterministic state checks, policy
+rubric evaluation, human review for high-risk actions.</p>
+<h3 id="the-naive-answer-1">The naive answer</h3>
+<blockquote>
+<p>“Output tokens are expensive, so use a smaller model.”</p>
+</blockquote>
+<p>The smaller model may produce more tool calls, longer chains of
+reasoning, more repairs, and more human escalations. The LCPR per
+accepted resolution can increase even when the per-token price
+decreases.</p>
+<h3 id="the-better-model-1">The better model</h3>
+<p>Model the session, not the request.</p>
+<p>Cache economics dominate sessions longer than 3-4 turns. The cache
+break-even from Part 2 Chapter 7 applies: if the system prompt and tool
+definitions are stable across turns, the cached prefix saves
+re-processing on every turn. The savings compound because the cached
+portion grows as the conversation grows.</p>
+<h3 id="worked-example-7">Worked example</h3>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Metric</p></th>
+<th><p>Model A (Sonnet-class)</p></th>
+<th><p>Model B (Haiku-class)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Avg turns/session</p></td>
+<td><p>4.2</p></td>
+<td><p>5.8</p></td>
+</tr>
+<tr>
+<td><p>Avg input tokens/turn</p></td>
+<td><p>3,200</p></td>
+<td><p>3,800</p></td>
+</tr>
+<tr>
+<td><p>Avg output tokens/turn</p></td>
+<td><p>380</p></td>
+<td><p>520</p></td>
+</tr>
+<tr>
+<td><p>Cache hit rate</p></td>
+<td><p>0.72</p></td>
+<td><p>0.68</p></td>
+</tr>
+<tr>
+<td><p>Raw resolution rate</p></td>
+<td><p>91%</p></td>
+<td><p>78%</p></td>
+</tr>
+<tr>
+<td><p>Repair rate</p></td>
+<td><p>6%</p></td>
+<td><p>15%</p></td>
+</tr>
+<tr>
+<td><p>Human escalation rate</p></td>
+<td><p>3%</p></td>
+<td><p>12%</p></td>
+</tr>
+<tr>
+<td><p>LCPR per accepted resolution</p></td>
+<td><p>$0.038</p></td>
+<td><p>$0.052</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>Model B is 5-7x cheaper per million tokens. Model B is 37% more
+expensive per accepted resolution because it generates more turns, more
+repairs, and more human escalations.</p>
+<h3 id="decision-rule-10">Decision rule</h3>
+<p>For support workloads, optimize for cost per accepted resolution, not
+cost per token. Measure session length, repair rate, and human
+escalation rate alongside token cost. If a cheaper model increases
+repairs enough to offset the token savings, the optimization failed.</p>
+<h3 id="what-to-measure-8">What to measure</h3>
+<ul>
+<li><p>Session length distribution (turns and tokens)</p></li>
+<li><p>Cache hit rate by session length</p></li>
+<li><p>Resolution rate (first-pass, after repair, after human
+review)</p></li>
+<li><p>Human escalation rate and review minutes</p></li>
+<li><p>Tool call count and tool output token volume</p></li>
+<li><p>Policy violation rate</p></li>
+</ul>
+<h3 id="where-this-breaks-10">Where this breaks</h3>
+<p>This model breaks when the support workload mixes simple lookups and
+complex resolutions. A “what is your return policy?” question should not
+carry the cost model of a multi-step account recovery. Split the
+workload class if the bimodal distribution is large enough to distort
+routing.</p>
+<h3 id="calculator-hook-10">Calculator hook</h3>
+<p>with session accumulation: turn count, context growth curve, cache
+hit rate by turn, tool calls per turn, quality gate cost, repair rate,
+escalation rate.</p>
+<hr />
+<h2 id="chapter-12-agentic-workloads">Chapter 12: Agentic Workloads</h2>
+<h3 id="the-field-problem-2">The field problem</h3>
+<p>A product team builds two features. Feature A: a search-and-answer
+system that retrieves documents, generates a response, and returns it.
+Feature B: a coding assistant that reads files, plans changes, writes
+code, runs tests, reads errors, revises, and runs tests again. Both
+features call the same model API. The monthly bill is $40,000. The team
+blames the model price.</p>
+<p>The trace tells a different story. Feature A makes 1.1 model calls
+per user request. Feature B makes 23 model calls per user task, with a
+standard deviation of 40. Feature A’s cost is dominated by output
+tokens. Feature B’s cost is dominated by input token growth across
+turns, sub-agent calls, tool output ingestion, cache misses after tool
+mutations, and repair loops.</p>
+<h3 id="the-mechanism-2">The mechanism</h3>
+<p>Answer inference and agentic inference have different economic
+structures.</p>
+<p><strong>Answer inference</strong> is a function: input goes in,
+output comes out. The cost is predictable because the request count is 1
+(or 1 plus a retry). The economic levers are model selection, prompt
+engineering, caching, and output length control.</p>
+<p><strong>Agentic inference</strong> is a loop: the model observes,
+plans, acts, observes the result, and decides whether to continue. The
+cost is variable because the request count depends on task difficulty,
+tool availability, model capability, error handling, and termination
+policy. The economic levers are everything from answer inference plus:
+sub-agent architecture, tool output management, compaction strategy,
+cache-safe prompt design, termination conditions, and repair/eval
+cost.</p>
+<p>The key difference is the denominator. For answer inference, the
+denominator is requests. For agentic inference, the denominator is
+accepted tasks. A task may consume 5 or 500 model calls depending on the
+trajectory.</p>
+<h3 id="the-naive-answer-2">The naive answer</h3>
+<blockquote>
+<p>“Agentic is just more requests. Price per token still applies.”</p>
+</blockquote>
+<p>Price per token applies to each call. But the number of calls, the
+context growth per call, the cache hit rate across calls, and the
+acceptance rate of the final output are all variable. Optimizing
+per-token price without controlling fanout, context growth, and
+acceptance rate can increase total cost.</p>
+<h3 id="the-better-model-2">The better model</h3>
+<p>Use the task lifecycle cost from the agentic economics research:</p>
+<p>The fanout multiplier exposes how much hidden work a single user
+request creates:</p>
+<p>Anthropic reports agents using about 4x chat tokens and multi-agent
+systems about 15x chat tokens in its research system data [REPORTED].
+Independent measurement confirms the scale of the gap: a study of 8
+frontier LLMs on SWE-bench Verified found agentic tasks consume roughly
+1,000x more tokens than single-turn code chat, with input tokens—not
+output—driving cost [MEASURED: arXiv 2604.22750, “How Do AI Agents Spend
+Your Money?”, 2026]. These are observations from specific systems, not
+universal constants. Your fanout depends on your agent architecture,
+tool set, and task distribution.</p>
+<p><strong>Sub-agent specialization.</strong> Not every step in an agent
+loop needs a frontier model. One pattern is to identify a frequently
+repeated, objectively scorable subtask and route it to a smaller,
+cheaper model. A fintech company measured that 17.8 percent of all tool
+calls in their spreadsheet agent were spent on data retrieval—opening
+tabs, reading ranges, filtering irrelevant sheets—and 75 percent of
+those calls were immediately followed by another read, indicating the
+model often failed to retrieve the right data on the first attempt.
+Rather than prompt-engineering the main model, they post-trained a
+3-billion-active-parameter specialist that runs at roughly Haiku-class
+latency. On their held-out eval, the specialist matched or exceeded
+frontier-model accuracy on exact-match retrieval tasks. [PUBLIC: Ramp
+Labs, “Building Fast &amp; Accurate Agents with Prime-RL Post Training,”
+2026]</p>
+<p>The decision rule for sub-agent specialization is narrow: the subtask
+must be (1) repeated frequently within the agent loop, (2) objectively
+scorable so you can measure whether the specialist actually works, and
+(3) large enough in token volume that the cost difference between
+frontier and specialist pricing compounds meaningfully. If the subtask
+is open-ended, subjective, or rare, the specialist will not pay back its
+development cost.</p>
+<h3 id="worked-example-8">Worked example</h3>
+<p>A coding assistant task: “Fix the authentication bug in the login
+flow.”</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Phase</p></th>
+<th><p>LLM calls</p></th>
+<th><p>Input tokens</p></th>
+<th><p>Output tokens</p></th>
+<th><p>Cache read tokens</p></th>
+<th><p>Tool calls</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Planning</p></td>
+<td><p>2</p></td>
+<td><p>12,000</p></td>
+<td><p>2,400</p></td>
+<td><p>8,000</p></td>
+<td><p>0</p></td>
+</tr>
+<tr>
+<td><p>File reading</p></td>
+<td><p>4</p></td>
+<td><p>34,000</p></td>
+<td><p>1,600</p></td>
+<td><p>24,000</p></td>
+<td><p>6</p></td>
+</tr>
+<tr>
+<td><p>Implementation</p></td>
+<td><p>3</p></td>
+<td><p>42,000</p></td>
+<td><p>4,800</p></td>
+<td><p>32,000</p></td>
+<td><p>4</p></td>
+</tr>
+<tr>
+<td><p>Test + revise</p></td>
+<td><p>8</p></td>
+<td><p>68,000</p></td>
+<td><p>6,200</p></td>
+<td><p>48,000</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>Compaction</p></td>
+<td><p>1</p></td>
+<td><p>4,000</p></td>
+<td><p>1,800</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr>
+<td><p>Final verify</p></td>
+<td><p>2</p></td>
+<td><p>18,000</p></td>
+<td><p>1,200</p></td>
+<td><p>14,000</p></td>
+<td><p>3</p></td>
+</tr>
+<tr>
+<td><p><strong>Total</strong></p></td>
+<td><p><strong>20</strong></p></td>
+<td><p><strong>178,000</strong></p></td>
+<td><p><strong>18,000</strong></p></td>
+<td><p><strong>126,000</strong></p></td>
+<td><p><strong>25</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>Fanout multiplier: 20 LLM calls per 1 user request. Token fanout:
+178K input tokens from a 2K user prompt (89x). Cache hit rate: 71% of
+input tokens served from cache. Without caching, the input token bill
+would be ~3.4x higher.</p>
+<h3 id="code-generation-and-coding-agents">Code generation and coding
+agents</h3>
+<p>Code generation is the most visible agentic workload, and it
+illustrates all the economic pressures above in concentrated form.</p>
+<p>A coding agent processes 200 tasks per day. Each task is a GitHub
+issue. The agent reads the issue, explores the codebase, plans a fix,
+implements changes, runs tests, and submits a pull request. The average
+task takes 23 model calls. But the distribution is bimodal: simple tasks
+average 8 calls; complex tasks average 65 calls. The team reports a 72%
+acceptance rate. The cost per accepted task varies by 40x between the
+simplest and most complex quartile.</p>
+<p>Code generation and coding agents combine three economic pressures
+from Part 2:</p>
+<p><strong>1. Large context, growing context.</strong> Coding agents
+need file contents, test outputs, error messages, and prior conversation
+in context. A session can grow from 15K tokens at the start to 150K
+tokens before compaction. Compaction resets context but may lose
+information that causes repair failures downstream.</p>
+<p><strong>2. High cache opportunity, fragile cache.</strong> System
+prompts, tool definitions, and project-level context are stable across
+turns—ideal for prefix caching. But tool outputs (file contents, test
+results, error traces) mutate the conversation, and any change that
+breaks the cached prefix forces a full re-prefill of the subsequent
+content. Cache-safe prompt design means placing stable content before
+dynamic content and making tool outputs append-only where possible.</p>
+<p><strong>3. Variable fanout.</strong> Sub-agent calls (for file
+search, test execution, linting) multiply model calls. A simple rename
+task might use one sub-agent. A complex refactor might spawn 8
+sub-agents, each making 5-15 model calls with their own context
+windows.</p>
+<p>A turn cap controls worst-case cost but not accepted-task rate. If
+the cap is too aggressive, complex tasks fail, repair rate increases,
+and cost per accepted task rises because the successes do not amortize
+the failures. The better control is a cost budget per task with an
+escalation path: if the agent exceeds the budget, it surfaces the
+partial result for human decision rather than continuing to spend.</p>
+<p>Track the full agent trace:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Component</p></th>
+<th><p>What to track</p></th>
+<th><p>Why it matters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Main agent turns</p></td>
+<td><p>Count and context length per turn</p></td>
+<td><p>Context growth drives input cost</p></td>
+</tr>
+<tr>
+<td><p>Sub-agent launches</p></td>
+<td><p>Count, model, token volume</p></td>
+<td><p>Sub-agents can dominate total cost</p></td>
+</tr>
+<tr>
+<td><p>Tool calls</p></td>
+<td><p>Count, class, output size</p></td>
+<td><p>Tool output enters context</p></td>
+</tr>
+<tr>
+<td><p>Compaction events</p></td>
+<td><p>Before/after tokens, cache impact</p></td>
+<td><p>Compaction is a cost/quality tradeoff</p></td>
+</tr>
+<tr>
+<td><p>Test execution</p></td>
+<td><p>Count, pass/fail, token cost of error parsing</p></td>
+<td><p>Failed tests trigger repair loops</p></td>
+</tr>
+<tr>
+<td><p>Repair loops</p></td>
+<td><p>Count, additional tokens, success rate</p></td>
+<td><p>Repair cost often exceeds initial attempt</p></td>
+</tr>
+<tr>
+<td><p>Final outcome</p></td>
+<td><p>Accepted, repaired-accepted, rejected, abandoned</p></td>
+<td><p>The denominator</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The cost per accepted task for coding agents can be modeled as:</p>
+<h3 id="decision-rule-11">Decision rule</h3>
+<p>For agentic workloads, the economic unit is the accepted task, not
+the request. Measure and report: fanout multiplier, token fanout
+multiplier, cache hit rate across the trajectory, compaction frequency,
+repair rate, and cost per accepted task. If the fanout multiplier
+exceeds your budget model, the problem is architecture (sub-agent
+design, tool output management, termination conditions), not token
+price.</p>
+<p>For coding agents specifically, measure fanout multiplier, context
+growth curve, cache hit rate, and accepted-task rate. The cheapest model
+is the one that minimizes cost per accepted task, not cost per token. If
+two models have the same per-token price but different acceptance rates,
+the one with higher acceptance wins every time.</p>
+<h3 id="what-to-measure-9">What to measure</h3>
+<ul>
+<li><p>Fanout multiplier distribution (calls per task)</p></li>
+<li><p>Token fanout multiplier distribution</p></li>
+<li><p>Context growth curve per task (input tokens by call
+index)</p></li>
+<li><p>Cache hit rate by call index within a task</p></li>
+<li><p>Compaction events and post-compaction context size</p></li>
+<li><p>Tool output tokens added to context per call</p></li>
+<li><p>Repair rate and repair cost</p></li>
+<li><p>Accepted task rate</p></li>
+<li><p>Cost per accepted task</p></li>
+<li><p>Task complexity distribution (simple, medium, complex)</p></li>
+<li><p>Fanout multiplier by complexity tier</p></li>
+<li><p>Test pass rate on first attempt</p></li>
+<li><p>Repair loop count and repair success rate</p></li>
+<li><p>Accepted task rate by complexity tier</p></li>
+<li><p>Cost per accepted task by complexity tier</p></li>
+</ul>
+<h3 id="where-this-breaks-11">Where this breaks</h3>
+<p>This model breaks when agent tasks vary by three orders of magnitude
+in difficulty. A “rename this variable” task and a “refactor the
+authentication system” task are both coding-agent work, but their
+fanout, context growth, and failure modes are different enough to need
+separate workload identity rows. Split agentic workloads by task
+complexity tier if the variance is too high for a single cost model.</p>
+<p>For coding agents, the model also breaks when tasks have no clear
+acceptance criterion. “Improve the codebase” is not a measurable task.
+Without a defined acceptance criterion (tests pass, linter clean, PR
+approved, issue closed), the denominator is undefined and cost per
+accepted task is meaningless. Define the acceptance criterion before
+optimizing.</p>
+<p>For background agents with no human in the loop, the speed premium on
+sub-agent routing largely disappears. If the orchestrating agent runs
+overnight, the latency difference between a frontier model and a
+specialist matters less than the cost difference. The relevant metric
+shifts from time-to-first-token to cost per accepted result.</p>
+<p>Sub-agent specialization requires the subtask to be deterministically
+verifiable. Most agent subtasks—planning, reasoning, ambiguous tool
+selection—are not. Treating this pattern as general-purpose will produce
+models that are confidently wrong on tasks outside the training
+distribution.</p>
+<h3 id="calculator-hook-11">Calculator hook</h3>
+<p>agentic variant: task-level aggregation, fanout multiplier, cache hit
+rate by turn, compaction cost, repair rate, accepted task rate.
+Coding-specific fields: sub-agent count, tool output volume, test
+execution count, repair loop count, compaction events, acceptance rate
+by complexity tier. Sensitivity: fanout multiplier, cache hit rate,
+repair rate.</p>
+<hr />
+<h2 id="chapter-13-rag-and-document-extraction">Chapter 13: RAG And
+Document Extraction</h2>
+<h3 id="the-field-problem-3">The field problem</h3>
+<p>A retrieval-augmented generation pipeline retrieves 8-12 document
+chunks, constructs a prompt with the retrieved context, and generates an
+answer with citations. The pipeline works. Then the team adds longer
+documents, increases the chunk count for better recall, and extends the
+context window to 32K tokens. The latency increases. The cost increases.
+The quality does not improve proportionally because more retrieved
+context means more noise, more distractor passages, and more
+opportunities for the model to hallucinate a plausible-sounding answer
+from an irrelevant chunk.</p>
+<h3 id="the-mechanism-3">The mechanism</h3>
+<p>RAG economics have three layers that interact:</p>
+<p><strong>1. Retrieval cost.</strong> Embedding the query, searching
+the vector store, reranking candidates. This is usually cheap per query
+but scales with corpus size, index freshness, and reranking depth.
+Cohere’s rerank pricing uses search units (one query with up to 100
+documents), not tokens—a different billing grammar entirely
+[PUBLIC].</p>
+<p><strong>2. Generation cost.</strong> The retrieved chunks become
+input tokens. More chunks mean more input tokens. The relationship is
+direct: double the retrieved context, roughly double the input cost. But
+the generation quality curve is not linear. Past a saturation point,
+additional retrieved context adds noise without improving answer
+quality.</p>
+<p><strong>3. Acceptance cost.</strong> RAG answers need grounding
+checks. Did the answer use the retrieved passages? Did it hallucinate
+facts not in the retrieved set? Did it cite the correct passages? Schema
+validation, field-level matching, and grounding audits have their own
+cost.</p>
+<blockquote>
+<p>In an enterprise RAG system, data residency and multi-tenancy
+requirements eliminated the cheapest and fastest vector database options
+before any performance comparison. The latency target was 10-15 seconds
+end-to-end, not because the team was slow, but because retrieval,
+generation, and compliance checks compound. Security constraints shrink
+the feasible set before optimization begins. [REPORTED, Operator Proof
+Box 7]</p>
+</blockquote>
+<h3 id="the-naive-answer-3">The naive answer</h3>
+<blockquote>
+<p>“Use a bigger context window and retrieve more chunks.”</p>
+</blockquote>
+<p>More chunks cost more tokens. More tokens do not guarantee better
+answers. And the latency penalty of longer prefill grows quadratically
+with sequence length for dense attention models, though many modern
+architectures use approximations that soften this. The economics of
+context length were covered in Part 2 Chapter 6.</p>
+<h3 id="the-better-model-3">The better model</h3>
+<p>Optimize the retrieval-generation boundary, not just the model.</p>
+<p>The retrieval quality gate matters more than the generation cost. A
+pipeline that retrieves the right 4 chunks and generates from 4K context
+tokens outperforms a pipeline that retrieves 12 chunks with 3 irrelevant
+distractors and generates from 16K context tokens—at lower cost and
+lower latency.</p>
+<blockquote>
+<p>In an enterprise RAG deployment, framework orchestration abstractions
+accounted for 60% of agent response latency. Replacing the hot path
+dropped response time from 8 seconds to 3 seconds. Framework overhead is
+not free, and it compounds across every request. Measure it before
+assuming it is negligible. [REPORTED, Operator Proof Box 11]</p>
+</blockquote>
+<h3 id="document-extraction-variant">Document extraction variant</h3>
+<p>Document extraction is RAG’s sibling with different economics.
+Instead of retrieving from a corpus and generating an answer, extraction
+takes a single document (or document set) and produces structured
+output: fields, tables, classifications, summaries.</p>
+<p>The economics differ because:</p>
+<ul>
+<li><p>Input is one document, not retrieved chunks. The document length
+is the input length.</p></li>
+<li><p>Output is structured. Schema validation is cheap and
+deterministic.</p></li>
+<li><p>Batch processing is usually feasible. No human is
+waiting.</p></li>
+<li><p>Quality is measured by field-level accuracy, not answer
+groundedness.</p></li>
+</ul>
+<p>Extraction workloads are often batch-eligible. The ~50% batch
+discount available from OpenAI, Anthropic, Google, and several
+serverless open-model providers (see pricing snapshot 2026-05-12)
+[PUBLIC] is real savings when latency is not a constraint. Eligibility,
+stacking with other discounts, and supported models vary by
+provider.</p>
+<h3 id="decision-rule-12">Decision rule</h3>
+<p>For RAG: optimize retrieval precision before increasing context
+length. Measure cost per grounded answer, not cost per generation. For
+extraction: test batch eligibility first—if the workload tolerates async
+processing, the batch discount is the largest single cost lever.</p>
+<h3 id="what-to-measure-10">What to measure</h3>
+<ul>
+<li><p>Retrieval precision and recall at the chunk level</p></li>
+<li><p>Retrieved context token volume vs generation quality</p></li>
+<li><p>Grounding check pass rate</p></li>
+<li><p>End-to-end latency decomposition (retrieval, generation,
+validation)</p></li>
+<li><p>Framework overhead as a share of end-to-end latency</p></li>
+<li><p>Batch-eligible share of extraction volume</p></li>
+<li><p>Cost per grounded answer (RAG) or per validated extraction
+(extraction)</p></li>
+</ul>
+<h3 id="where-this-breaks-12">Where this breaks</h3>
+<p>RAG economics change when the pipeline becomes agentic. A multi-hop
+RAG system that retrieves, reasons, retrieves again, and synthesizes is
+an agent, not a single-turn RAG pipeline. Apply the agentic economics
+model from Chapter 12 once the retrieval loop exceeds one round
+trip.</p>
+<h3 id="calculator-hook-12">Calculator hook</h3>
+<p>RAG variant: retrieval cost (embedding + search + rerank), generation
+cost (retrieved tokens as input), grounding check cost, batch discount
+for extraction. Sensitivity: chunk count, retrieval precision, batch
+eligibility.</p>
+<hr />
+<h2 id="chapter-14-offline-voice-and-specialized-workloads">Chapter 14:
+Offline, Voice, and Specialized Workloads</h2>
+<h3 id="the-field-problem-4">The field problem</h3>
+<p>A voice assistant serves drive-thru orders. The total latency budget
+is 1,500 milliseconds from the moment the customer stops speaking. ASR
+takes 200-400ms. Intent classification takes 50ms. LLM generation takes
+300-800ms. Text-to-speech takes 200-400ms. Network and orchestration
+take 100-200ms. The budget is consumed. There is no room for retry,
+fallback, or queue delay.</p>
+<h3 id="the-mechanism-4">The mechanism</h3>
+<p>Voice and real-time workloads have economics that differ from text in
+three ways:</p>
+<p><strong>1. Billing units change.</strong> Some voice APIs bill by
+audio minute, not by token. OpenAI’s Realtime API bills audio input at
+$32/MTok and audio output at $64/MTok, while their Whisper model bills
+at $0.017/minute [PUBLIC]. Google’s TTS bills audio output at $20/MTok
+and states 25 tokens per second for audio [PUBLIC]. Together’s Whisper
+billing is $0.0015/audio minute for standard and $0.27/minute for
+streaming [PUBLIC]. The billing grammar from the provider pricing
+research applies: know whether you are paying per token, per minute, or
+per session.</p>
+<p><strong>2. Latency is a hard constraint, not a target.</strong> In
+text chat, a slow response is annoying. In voice, a slow response breaks
+the conversation. Users abandon or talk over the system. The latency SLO
+is a ceiling, and the inference budget is whatever is left after ASR,
+TTS, network, and orchestration consume their share.</p>
+<p><strong>3. Fallback changes the economic structure.</strong> When the
+LLM path fails or exceeds the latency budget, the system falls back to
+rule-based responses for common intents.</p>
+<blockquote>
+<p>In a production voice system, fallback rate was below 1% under normal
+load and reached 15-20% during incidents. The fallback path—rule-based
+responses instead of LLM generation—had lower inference cost but higher
+customer escalation risk. Fallback is an economic mechanism: it shifts
+cost from inference to support burden. The trace must capture both
+paths. [REPORTED, Operator Proof Box 12]</p>
+</blockquote>
+<h3 id="the-naive-answer-4">The naive answer</h3>
+<blockquote>
+<p>“Use a faster model.”</p>
+</blockquote>
+<p>A faster model helps if the model is the bottleneck. If the
+bottleneck is ASR, TTS, network, or orchestration, a faster model does
+not recover the latency budget. Decompose the end-to-end latency before
+optimizing any single component.</p>
+<h3 id="the-better-model-4">The better model</h3>
+<p>Model the latency budget as a waterfall:</p>
+<p>The LLM budget is the residual. It determines which models are
+feasible, which quantization levels are required, and whether dedicated
+capacity is needed to guarantee TTFT.</p>
+<p>The cost model for voice includes both paths:</p>
+<h3 id="embeddings-batch-evals-and-offline-workloads">Embeddings, Batch,
+Evals, and Offline Workloads</h3>
+<p>Three offline inference workloads share the same standard API:
+embedding generation for a RAG corpus (2M documents), nightly evaluation
+of model quality (5,000 test cases), and weekly batch extraction from
+customer support transcripts (50,000 documents). All three pay real-time
+prices with real-time latency guarantees they do not need.</p>
+<p>Offline workloads are defined by one property: no human is waiting
+for the response. This changes everything about the economics:</p>
+<p><strong>1. Batch APIs offer ~50% discounts.</strong> OpenAI,
+Anthropic, and Google offer batch processing at approximately 50% of
+standard rates for select models [PUBLIC]. Fireworks and Groq offer
+similar batch discounts on supported models [PUBLIC]. The trade is
+latency for cost: batch jobs complete within hours to days rather than
+in real time. Completion windows, eligible models, and discount stacking
+rules vary by provider—check the current pricing page before assuming
+50% applies to your model.</p>
+<p><strong>2. Embedding billing is different from generation
+billing.</strong> Embedding models bill per input token with no output
+token charge (the output is a vector, not text). Fireworks prices
+embedding by base model parameter count: up to 150M parameters at
+$0.008/MTok, 150-350M at $0.016/MTok [PUBLIC]. Together prices at
+$0.02/MTok [PUBLIC]. The billing unit is input-only.</p>
+<p><strong>3. Eval workloads have compounding cost.</strong> A quality
+eval that runs 5,000 test cases through a model-based grader is itself
+an inference workload. If the grader is the same model being evaluated,
+the eval cost can approach the production cost. Deterministic checks
+(schema validation, exact match, regex) cost nothing at the model API
+level. Use them first.</p>
+<p><strong>4. Rate limits may not bind.</strong> Some batch APIs do not
+count against standard rate limits [PUBLIC for Groq]. This means offline
+workloads may coexist with production traffic without competing for
+quota. Check provider documentation—not all batch surfaces have separate
+rate limits.</p>
+<h3 id="the-naive-answer-5">The naive answer</h3>
+<blockquote>
+<p>“Offline work is cheap—just run it.”</p>
+</blockquote>
+<p>Offline work is cheaper per token, but volume can dominate. Embedding
+2M documents at 500 tokens per document is 1 billion input tokens. At
+$0.02/MTok, that is $20. At $2/MTok on a frontier generation model, that
+would be $2,000. The billing unit and model choice matter more than the
+batch discount for high-volume offline work.</p>
+<h3 id="the-better-model-5">The better model</h3>
+<p>Separate offline workloads by billing grammar:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Workload</p></th>
+<th><p>Billing unit</p></th>
+<th><p>Batch eligible</p></th>
+<th><p>Volume driver</p></th>
+<th><p>Cost lever</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Embedding generation</p></td>
+<td><p>Input tokens only</p></td>
+<td><p>Yes</p></td>
+<td><p>Corpus size × avg doc tokens</p></td>
+<td><p>Model size, quantization</p></td>
+</tr>
+<tr>
+<td><p>Eval grading</p></td>
+<td><p>Input + output tokens</p></td>
+<td><p>Yes</p></td>
+<td><p>Test cases × (input + grader output)</p></td>
+<td><p>Deterministic checks first</p></td>
+</tr>
+<tr>
+<td><p>Batch extraction</p></td>
+<td><p>Input + output tokens</p></td>
+<td><p>Yes</p></td>
+<td><p>Document count × avg doc tokens</p></td>
+<td><p>Batch discount, output control</p></td>
+</tr>
+<tr>
+<td><p>Backfill/migration</p></td>
+<td><p>Input + output tokens</p></td>
+<td><p>Yes</p></td>
+<td><p>Historical records × schema</p></td>
+<td><p>Batch discount, parallelism</p></td>
+</tr>
+<tr>
+<td><p>Reranking</p></td>
+<td><p>Search units (query + docs)</p></td>
+<td><p>Depends on provider</p></td>
+<td><p>Query count × docs per query</p></td>
+<td><p>Rerank depth, doc chunking</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>For eval workloads specifically, the cost model should separate:</p>
+<p>Run deterministic checks first. Only send to model grading what
+passes deterministic gates. Only send to human review what the model
+grader flags as ambiguous or low-confidence.</p>
+<h3 id="decision-rule-13">Decision rule</h3>
+<p>For voice workloads, the serving physics constraint (Part 2) is
+primary. Decompose end-to-end latency into component budgets. The model
+choice is constrained by the residual LLM budget, not by token price
+alone. Include fallback rate and escalation cost in the economic
+model.</p>
+<p>For offline workloads, use batch APIs when available and the
+completion window is acceptable. Use embedding-specific models for
+embedding work—do not generate embeddings with frontier generation
+models. Run deterministic eval checks before model-based grading.
+Separate offline workload cost from production workload cost in
+reporting.</p>
+<h3 id="what-to-measure-11">What to measure</h3>
+<ul>
+<li><p>End-to-end latency waterfall (ASR, intent, LLM, TTS, network,
+orchestration)</p></li>
+<li><p>LLM budget utilization (actual vs allocated)</p></li>
+<li><p>TTFT and TPS under production concurrency</p></li>
+<li><p>Fallback activation rate and escalation rate from fallback
+path</p></li>
+<li><p>Cost per completed interaction (both LLM and fallback
+paths)</p></li>
+<li><p>Thermal throttling events (if edge-deployed)</p></li>
+<li><p>Batch vs real-time share of total inference spend</p></li>
+<li><p>Batch completion time distribution</p></li>
+<li><p>Embedding corpus size and refresh frequency</p></li>
+<li><p>Eval cost as a percentage of production inference cost</p></li>
+<li><p>Deterministic check coverage (share of evals that do not need
+model grading)</p></li>
+</ul>
+<h3 id="where-this-breaks-13">Where this breaks</h3>
+<ul>
+<li><p>Voice economics change when the system becomes multi-modal. An
+agent that handles voice input, visual menus, receipt images, and audio
+responses has billing units across text, audio, and image tokens
+simultaneously.</p></li>
+<li><p>Batch economics break when “offline” becomes “near-real-time.” A
+system that needs extraction results within 15 minutes is not
+batch-eligible for a 24-hour batch API. Check the provider’s batch
+completion window against your actual latency requirement.</p></li>
+<li><p>Batch and cache discounts may not stack. Groq explicitly states
+that prompt caching does not stack with batch discount [PUBLIC]. Check
+per-provider stacking rules.</p></li>
+</ul>
+<h3 id="calculator-hook-13">Calculator hook</h3>
+<p>voice variant: latency budget waterfall, LLM residual budget,
+fallback rate, escalation cost, multi-modal billing lines. Batch
+variant: batch multiplier, embedding-only billing, eval cost model
+(deterministic + model + human), volume-based costing. Sensitivity:
+fallback rate, LLM budget, batch eligibility share, corpus size.</p>
+<hr />
+<h2 id="part-3-summary">Part 3 Summary</h2>
+<p>Part 3 established that workload shape determines inference
+economics. The same model, provider, and hardware can produce wildly
+different LCPR depending on whether the workload is a single-turn
+support chat, a multi-turn coding agent, a RAG pipeline, a voice system,
+an embedding job, or a batch extraction task.</p>
+<p>The core vocabulary from Part 3:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Concept</p></th>
+<th><p>Where defined</p></th>
+<th><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Workload class</p></td>
+<td><p>Chapter 10</p></td>
+<td><p>Separates workloads that need different treatment</p></td>
+</tr>
+<tr>
+<td><p>Workload Identity Schema</p></td>
+<td><p>Chapter 10</p></td>
+<td><p>Canonical fields that describe a workload’s needs</p></td>
+</tr>
+<tr>
+<td><p>Session cost</p></td>
+<td><p>Chapter 11</p></td>
+<td><p>Models context accumulation and quality gate cost</p></td>
+</tr>
+<tr>
+<td><p>Task lifecycle cost</p></td>
+<td><p>Chapter 12</p></td>
+<td><p>Models agentic fanout, repair, and acceptance</p></td>
+</tr>
+<tr>
+<td><p>Fanout multiplier</p></td>
+<td><p>Chapter 12</p></td>
+<td><p>Exposes hidden model calls per user task</p></td>
+</tr>
+<tr>
+<td><p>Retrieval-generation boundary</p></td>
+<td><p>Chapter 13</p></td>
+<td><p>Optimizes RAG cost at the right layer</p></td>
+</tr>
+<tr>
+<td><p>Latency budget waterfall</p></td>
+<td><p>Chapter 14</p></td>
+<td><p>Decomposes real-time constraints by component</p></td>
+</tr>
+<tr>
+<td><p>Billing grammar</p></td>
+<td><p>Chapter 14</p></td>
+<td><p>Matches billing unit to workload type</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>Part 4 takes the workload identities from Part 3 and subjects them to
+migration gates: what does it actually take to move from one serving
+surface to another, what can go wrong, and when should you revert?</p>
+<hr />
+<h2 id="evidence-notes-for-part-3">Evidence Notes for Part 3</h2>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>#</p></th>
+<th><p>Claim</p></th>
+<th><p>Label</p></th>
+<th><p>Source</p></th>
+<th><p>Chapter</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>1</p></td>
+<td><p>Provider batch discounts are approximately 50%</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>OpenAI, Anthropic, Google, Fireworks, Groq official pricing
+pages, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>2</p></td>
+<td><p>Cohere rerank uses search units, not tokens</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Cohere pricing page, accessed 2026-05-12</p></td>
+<td><p>13</p></td>
+</tr>
+<tr>
+<td><p>3</p></td>
+<td><p>Enterprise RAG data residency eliminates vector DB
+options</p></td>
+<td><p>REPORTED</p></td>
+<td><p>Operator Proof Box 7,
+sohailmo.ai/rag-infrastructure-pgvector/</p></td>
+<td><p>13</p></td>
+</tr>
+<tr>
+<td><p>4</p></td>
+<td><p>Framework orchestration was 60% of RAG latency</p></td>
+<td><p>REPORTED</p></td>
+<td><p>Operator Proof Box 11,
+sohailmo.ai/ray-production-lessons/</p></td>
+<td><p>13</p></td>
+</tr>
+<tr>
+<td><p>5</p></td>
+<td><p>Voice fallback rate 1% normal, 15-20% incidents</p></td>
+<td><p>REPORTED</p></td>
+<td><p>Operator Proof Box 12,
+sohailmo.ai/vllm-production-scale-lessons/</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>6</p></td>
+<td><p>Agents use ~4x chat tokens, multi-agent ~15x</p></td>
+<td><p>REPORTED</p></td>
+<td><p>Anthropic engineering post on multi-agent research system,
+2025-06-13</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>7</p></td>
+<td><p>Token usage explained 80% of BrowseComp performance
+variance</p></td>
+<td><p>REPORTED</p></td>
+<td><p>Anthropic engineering post on multi-agent research system,
+2025-06-13</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>8</p></td>
+<td><p>Claude Code built around prompt caching, prefix stability
+matters</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Anthropic engineering post, 2026-04-30</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>9</p></td>
+<td><p>OpenAI Realtime audio pricing: $32/MTok input, $64/MTok
+output</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>OpenAI pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>10</p></td>
+<td><p>OpenAI Whisper: $0.017/audio minute</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>OpenAI pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>11</p></td>
+<td><p>Google TTS: $20/MTok audio output, 25 tokens/sec</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Google Gemini pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>12</p></td>
+<td><p>Together Whisper: $0.0015/min standard, $0.27/min
+streaming</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Together AI pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>13</p></td>
+<td><p>Fireworks embedding pricing by parameter tier</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Fireworks pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>14</p></td>
+<td><p>Together embedding pricing: $0.02/MTok</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Together AI pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>15</p></td>
+<td><p>Groq: prompt caching does not stack with batch discount</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Groq prompt caching docs, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>16</p></td>
+<td><p>Groq batch: no impact to standard rate limits</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Groq pricing page, accessed 2026-05-12</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>17</p></td>
+<td><p>Workload class definitions and splits</p></td>
+<td><p>DERIVED</p></td>
+<td><p>Standard workload classification applied to inference
+economics</p></td>
+<td><p>10</p></td>
+</tr>
+<tr>
+<td><p>18</p></td>
+<td><p>Session cost model for support</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From Part 1 LCPR-2026, Part 2 cache break-even</p></td>
+<td><p>11</p></td>
+</tr>
+<tr>
+<td><p>19</p></td>
+<td><p>Task lifecycle cost formula</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From agentic economics research, report 04</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>20</p></td>
+<td><p>Fanout multiplier definition</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From agentic economics research, report 04</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>21</p></td>
+<td><p>RAG cost decomposition</p></td>
+<td><p>DERIVED</p></td>
+<td><p>From Parts 1-2 concepts applied to retrieval-generation
+pipeline</p></td>
+<td><p>13</p></td>
+</tr>
+<tr>
+<td><p>22</p></td>
+<td><p>Latency budget waterfall</p></td>
+<td><p>DERIVED</p></td>
+<td><p>Standard latency decomposition applied to voice systems</p></td>
+<td><p>14</p></td>
+</tr>
+<tr>
+<td><p>23</p></td>
+<td><p>All worked example numbers</p></td>
+<td><p>SYNTHETIC</p></td>
+<td><p>Illustrative, shaped by real billing semantics</p></td>
+<td><p>11, 12</p></td>
+</tr>
+<tr>
+<td><p>24</p></td>
+<td><p>Agentic tasks consume ~1,000x more tokens than single-turn
+chat</p></td>
+<td><p>MEASURED</p></td>
+<td><p>arXiv 2604.22750, “How Do AI Agents Spend Your Money?”,
+2026-04</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>25</p></td>
+<td><p>Ramp Fast Ask: 17.8% of tool calls on retrieval, 75% redundant
+reads</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Ramp Labs blog, “Building Fast &amp; Accurate Agents with
+Prime-RL Post Training,” 2026</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>26</p></td>
+<td><p>Ramp 3B-active-param specialist matches frontier accuracy at
+Haiku latency</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Ramp Labs blog, 2026</p></td>
+<td><p>12</p></td>
+</tr>
+<tr>
+<td><p>27</p></td>
+<td><p>Answer-vs-agentic inference constraint framing</p></td>
+<td><p>OPINION</p></td>
+<td><p>Thompson, “The Inference Shift,” Stratechery, 2026-05-11</p></td>
+<td><p>10</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p><strong>Slop check:</strong> No instances of seamless, robust,
+leverage, holistic, unlock, game-changing, cutting-edge, best-in-class,
+or synergy.</p>
+
+        </div>
+
+        <nav class="part-nav"><a href="/book/part-2/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 2: Serving Physics</span></a><a href="/book/part-4/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 4: Migration Gates</span></a></nav>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Reading progress ──
+    window.addEventListener('scroll', function() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Active TOC highlighting ──
+    var tocLinks = document.querySelectorAll('.sidebar-toc a');
+    var headings = [];
+    tocLinks.forEach(function(link) {
+      var id = link.getAttribute('href');
+      if (id && id.startsWith('#')) {
+        var el = document.getElementById(id.slice(1));
+        if (el) headings.push({ el: el, link: link });
+      }
+    });
+
+    function updateActiveTOC() {
+      var scrollPos = window.scrollY + 140;
+      var current = null;
+      for (var i = 0; i < headings.length; i++) {
+        if (headings[i].el.offsetTop <= scrollPos) current = headings[i];
+      }
+      tocLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (current) {
+        current.link.classList.add('active');
+        var sidebar = document.getElementById('sidebar');
+        var linkTop = current.link.offsetTop;
+        var sh = sidebar.clientHeight;
+        if (linkTop < sidebar.scrollTop + 120 || linkTop > sidebar.scrollTop + sh - 120) {
+          sidebar.scrollTo({ top: linkTop - sh / 3, behavior: 'smooth' });
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateActiveTOC, { passive: true });
+    updateActiveTOC();
+
+    // ── Mobile menu ──
+    var toggle = document.getElementById('menu-toggle');
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    tocLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 960) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+      });
+    });
+
+    // ── Wrap tables for horizontal scroll ──
+    document.querySelectorAll('.content table').forEach(function(t) {
+      if (!t.parentElement.classList.contains('table-wrapper')) {
+        var w = document.createElement('div');
+        w.className = 'table-wrapper';
+        t.parentNode.insertBefore(w, t);
+        w.appendChild(t);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -28,4 +28,4 @@ The series develops the measurement methodology in depth. Each article stands al
 
 ## Book
 
-The full book will be available as a free PDF and EPUB. Sign up for [The Forge](mailto:sohailmo.ai@gmail.com) to be notified when it ships.
+**[Production Inference Economics](/book/)** --- The full book: 25 chapters covering the economic unit (LCPR), serving physics, workload economics, migration gates, and operating the decision. How to measure, model, and operate production inference so you pick the cheapest reliable architecture that still meets quality, latency, and reliability requirements. [Read online.](/book/)

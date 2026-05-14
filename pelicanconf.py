@@ -32,13 +32,14 @@ STATIC_PATHS = ["images", "extra", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
 }
-# Map research directory to root /research/
+# Map research and book directories to root-level paths
 import os
-for root, dirs, files in os.walk("content/extra/research"):
-    for file in files:
-        filepath = os.path.join(root, file)
-        relpath = os.path.relpath(filepath, "content/extra")
-        EXTRA_PATH_METADATA[os.path.relpath(filepath, "content")] = {"path": relpath}
+for static_dir in ["content/extra/research", "content/extra/book"]:
+    for root, dirs, files in os.walk(static_dir):
+        for file in files:
+            filepath = os.path.join(root, file)
+            relpath = os.path.relpath(filepath, "content/extra")
+            EXTRA_PATH_METADATA[os.path.relpath(filepath, "content")] = {"path": relpath}
 
 PAGE_URL = "pages/{slug}/"
 PAGE_SAVE_AS = "pages/{slug}/index.html"

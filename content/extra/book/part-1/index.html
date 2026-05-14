@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Sohail Mohammad">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <title>Part 1: The Economic Unit — Production Inference Economics</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-bg: #faf9f6;
+      --c-surface: #ffffff;
+      --c-text: #1a1a1a;
+      --c-text-secondary: #5a5a5a;
+      --c-text-tertiary: #8a8a8a;
+      --c-heading: #0f0f0f;
+      --c-link: #5a8a60;
+      --c-link-hover: #4a7a50;
+      --c-border: #e0ddd6;
+      --c-border-light: #ebe9e3;
+      --c-code-bg: #f0eee8;
+      --c-table-header: #f4f3ef;
+      --c-table-stripe: #faf9f6;
+      --c-blockquote-border: #A7C080;
+      --c-blockquote-bg: #f4f3ef;
+      --c-accent: #83C092;
+      --c-accent-dark: #A7C080;
+      --c-accent-light: rgba(131, 192, 146, 0.1);
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      --content-max: 700px;
+    }
+
+    html {
+      font-size: 16.5px;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--c-text);
+      background: var(--c-bg);
+      line-height: 1.75;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Links ─────────────────────────────────────── */
+    a {
+      color: var(--c-link);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    a:hover { color: var(--c-link-hover); }
+
+    /* ── Typography ────────────────────────────────── */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    strong { font-weight: 600; }
+
+    /* ── Code ──────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.87em;
+      background: var(--c-code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--c-code-bg);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.85rem;
+    }
+
+
+    /* ── Progress Bar ──────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--c-accent);
+      z-index: 1000;
+      transition: width 60ms linear;
+    }
+
+    /* ── Page Layout: Sidebar + Content ─────────────── */
+    .page-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ───────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--c-surface);
+      border-right: 1px solid var(--c-border);
+      overflow-y: auto;
+      padding: 1.75rem 0;
+      z-index: 100;
+      scrollbar-width: thin;
+      scrollbar-color: var(--c-border) transparent;
+    }
+
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+
+    .sidebar-header {
+      padding: 0 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--c-border);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-header .back-link {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+      transition: color 0.15s;
+    }
+
+    .sidebar-header .back-link:hover { color: var(--c-link); }
+
+    .sidebar-header .part-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-heading);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-header .chapters-info {
+      font-size: 0.75rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.2rem;
+    }
+
+    /* ── Sidebar TOC ───────────────────────────────── */
+    .sidebar-toc {
+      list-style: none;
+      padding: 0.5rem 0;
+      margin: 0;
+    }
+
+    .sidebar-toc li {
+      margin: 0;
+    }
+
+    .sidebar-toc a {
+      display: block;
+      padding: 0.35rem 1.25rem;
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      text-decoration: none;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-toc a:hover {
+      color: var(--c-link);
+      background: var(--c-accent-light);
+    }
+
+    .sidebar-toc a.active {
+      color: var(--c-accent);
+      font-weight: 500;
+      border-left-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    /* ── Sidebar Nav Links ─────────────────────────── */
+    .sidebar-nav {
+      padding: 0.75rem 1.25rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .sidebar-nav a {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      text-decoration: none;
+      padding: 0.3rem 0;
+      transition: color 0.15s;
+    }
+
+    .sidebar-nav a:hover { color: var(--c-link); }
+
+    /* ── Main Content Area ─────────────────────────── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .part-container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    /* ── Part Header ───────────────────────────────── */
+    .part-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--c-border);
+    }
+
+    .part-header .label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-header h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+      line-height: 1.2;
+    }
+
+    .part-header .chapters-label {
+      font-size: 0.85rem;
+      color: var(--c-text-tertiary);
+      margin-top: 0.5rem;
+    }
+
+    /* ── Content ───────────────────────────────────── */
+    .content h2 {
+      font-size: 1.4rem;
+      margin-top: 3rem;
+      margin-bottom: 0.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--c-border-light);
+    }
+
+    .content h2:first-child {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .content p {
+      margin-bottom: 1.1rem;
+    }
+
+    /* ── Lists ─────────────────────────────────────── */
+    .content ul, .content ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .content li {
+      margin-bottom: 0.3rem;
+    }
+
+    .content li > ul, .content li > ol {
+      margin-top: 0.3rem;
+      margin-bottom: 0;
+    }
+
+    .content dl { margin-bottom: 1.1rem; }
+    .content dt { font-weight: 600; margin-top: 0.75rem; }
+    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
+
+    /* ── Tables ────────────────────────────────────── */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .content thead { border-bottom: 2px solid var(--c-border); }
+
+    .content thead th {
+      background: var(--c-table-header);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .content tbody td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--c-border-light);
+      vertical-align: top;
+    }
+
+    .content tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .content tbody tr:nth-child(even) {
+      background: var(--c-table-stripe);
+    }
+
+    /* ── Figures ────────────────────────────────────── */
+    .content figure {
+      margin: 1.5rem 0 2rem;
+    }
+
+    .content figcaption, .content caption {
+      font-size: 0.82rem;
+      color: var(--c-text-secondary);
+      line-height: 1.45;
+      margin-top: 0.5rem;
+    }
+
+    .content caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 0.6rem;
+      font-weight: 600;
+      color: var(--c-heading);
+    }
+
+    /* ── Blockquotes ───────────────────────────────── */
+    .content blockquote {
+      border-left: 3px solid var(--c-blockquote-border);
+      background: var(--c-blockquote-bg);
+      padding: 0.85rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .content blockquote p { margin-bottom: 0.4rem; }
+    .content blockquote p:last-child { margin-bottom: 0; }
+
+    /* ── Horizontal Rules ──────────────────────────── */
+    .content hr {
+      border: none;
+      border-top: 1px solid var(--c-border);
+      margin: 2.5rem auto;
+      max-width: 40%;
+    }
+
+    /* ── Part Navigation ───────────────────────────── */
+    .part-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--c-border);
+    }
+
+    .nav-prev, .nav-next {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      background: var(--c-surface);
+      transition: border-color 0.15s, background 0.15s;
+      max-width: 48%;
+    }
+
+    .nav-prev:hover, .nav-next:hover {
+      border-color: var(--c-accent);
+      background: var(--c-accent-light);
+    }
+
+    .nav-next { text-align: right; margin-left: auto; }
+
+    .nav-dir {
+      font-size: 0.78rem;
+      color: var(--c-text-tertiary);
+      font-weight: 500;
+    }
+
+    .nav-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--c-heading);
+      line-height: 1.3;
+    }
+
+    /* ── Mobile Menu Toggle ────────────────────────── */
+    #menu-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 12px;
+      z-index: 200;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: var(--font-body);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      color: var(--c-text-secondary);
+    }
+
+    #menu-toggle:hover { background: var(--c-table-header); }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: 90;
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @media (max-width: 960px) {
+      #menu-toggle { display: block; }
+
+      #sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+      }
+
+      #sidebar.open { transform: translateX(0); }
+      #sidebar-overlay.open { display: block; }
+
+      .main-content { margin-left: 0; }
+
+      .part-container {
+        padding: 3rem 1.25rem 4rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      html { font-size: 15.5px; }
+      .part-container { padding: 3rem 1rem 3rem; }
+      .part-header h1 { font-size: 1.5rem; }
+      .content h2 { font-size: 1.2rem; }
+      .content table { font-size: 0.78rem; }
+      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
+      .part-nav { flex-direction: column; }
+      .nav-prev, .nav-next { max-width: 100%; }
+    }
+
+    /* ── Print ─────────────────────────────────────── */
+    @media print {
+      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
+      .main-content { margin-left: 0; }
+      .part-container { max-width: 100%; padding: 0; }
+      .content h2 { page-break-after: avoid; }
+      .content table, .content figure { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
+  <div id="sidebar-overlay"></div>
+
+  <div class="page-layout">
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <a class="back-link" href="/book/">&larr; All Parts</a>
+        <div class="part-label">Part 1</div>
+        <h2>The Economic Unit</h2>
+        <div class="chapters-info">Chapters 1–3</div>
+      </div>
+      <ul class="sidebar-toc"><li><a href="#chapter-1-token-price-is-not-cost">Chapter 1: Token Price Is Not
+Cost</a></li><li><a href="#chapter-2-lcpr-2026-loaded-cost-per-result">Chapter 2: LCPR-2026
+— Loaded Cost Per Result</a></li><li><a href="#chapter-3-trace-invoice-eval-and-contract">Chapter 3: Trace,
+Invoice, Eval, and Contract</a></li><li><a href="#part-1-summary">Part 1 Summary</a></li><li><a href="#evidence-notes-for-part-1">Evidence Notes for Part 1</a></li></ul>
+      <div class="sidebar-nav">
+        <a href="/book/part-0/">&larr; Part 0: How To Use This Book</a>
+        <a href="/book/part-2/">Part 2: Serving Physics &rarr;</a>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="part-container">
+        <div class="part-header">
+          <div class="label">Part 1</div>
+          <h1>The Economic Unit</h1>
+          <div class="chapters-label">Chapters 1–3</div>
+        </div>
+
+        <div class="content">
+          
+<hr />
+<h2 id="chapter-1-token-price-is-not-cost">Chapter 1: Token Price Is Not
+Cost</h2>
+<h3 id="field-problem">Field Problem</h3>
+<p>Three inference workloads share one provider account: support chat,
+document extraction, and a coding agent. The provider bills by input
+tokens, output tokens, cached input tokens, and cache write tokens.
+Finance reports cost per million tokens. Engineering reports cost per
+request. Product reports cost per feature.</p>
+<p>None of these numbers agree. None of them answer the question that
+matters: what does it cost to produce one unit of accepted work?</p>
+<h3 id="the-billing-grammar">The Billing Grammar</h3>
+<p>Every provider invoice speaks a billing grammar. The components vary,
+but the structure is consistent:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Component</p></th>
+<th><p>What it covers</p></th>
+<th><p>Who charges it</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Input tokens</p></td>
+<td><p>Tokens sent to the model (prompt, system, tools,
+context)</p></td>
+<td><p>All major API providers</p></td>
+</tr>
+<tr>
+<td><p>Output tokens</p></td>
+<td><p>Tokens generated by the model</p></td>
+<td><p>All major API providers</p></td>
+</tr>
+<tr>
+<td><p>Cached input tokens</p></td>
+<td><p>Input tokens served from prefix cache instead of
+recomputed</p></td>
+<td><p>Most providers (discount varies)</p></td>
+</tr>
+<tr>
+<td><p>Cache write tokens</p></td>
+<td><p>Input tokens written to cache (can cost more than uncached
+input)</p></td>
+<td><p>Anthropic, Google</p></td>
+</tr>
+<tr>
+<td><p>Cache storage</p></td>
+<td><p>Hourly/daily rent for cached state</p></td>
+<td><p>Google (explicit), others (implicit)</p></td>
+</tr>
+<tr>
+<td><p>Batch tokens</p></td>
+<td><p>Tokens processed in asynchronous batch mode (typically 50%
+discount)</p></td>
+<td><p>OpenAI, Anthropic, Google</p></td>
+</tr>
+<tr>
+<td><p>Tool use</p></td>
+<td><p>Additional tokens for tool definitions and results</p></td>
+<td><p>Some providers (implicit in token count)</p></td>
+</tr>
+<tr>
+<td><p>Image/audio tokens</p></td>
+<td><p>Tokens derived from non-text input</p></td>
+<td><p>Multimodal providers</p></td>
+</tr>
+<tr>
+<td><p>Fine-tuning</p></td>
+<td><p>Training cost for custom model weights</p></td>
+<td><p>Providers offering fine-tuning</p></td>
+</tr>
+<tr>
+<td><p>Dedicated capacity</p></td>
+<td><p>Hourly/monthly fee for reserved compute</p></td>
+<td><p>Together, Fireworks, AWS, Azure, Google</p></td>
+</tr>
+<tr>
+<td><p>Minimum billing</p></td>
+<td><p>Minimum input tokens per request (e.g., 128 or 1,024)</p></td>
+<td><p>Some providers</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The billing grammar is the first thing to understand because it
+defines what the provider measures. But what the provider measures is
+not what the product needs to measure.</p>
+<h3 id="what-the-provider-measures-vs-what-you-need">What The Provider
+Measures vs What You Need</h3>
+<p>The provider measures token throughput and bills accordingly. Your
+product measures task success. The gap between these two measurements is
+where cost models go wrong.</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Provider sees</p></th>
+<th><p>Product needs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Input tokens consumed</p></td>
+<td><p>Relevant input tokens (how much was retrieval waste?)</p></td>
+</tr>
+<tr>
+<td><p>Output tokens generated</p></td>
+<td><p>Accepted output tokens (did the answer pass quality?)</p></td>
+</tr>
+<tr>
+<td><p>Cache hits</p></td>
+<td><p>Cache hits on stable prefixes (were the hits
+meaningful?)</p></td>
+</tr>
+<tr>
+<td><p>Requests served</p></td>
+<td><p>Requests that completed within SLO</p></td>
+</tr>
+<tr>
+<td><p>Uptime</p></td>
+<td><p>Reliability at the tail (p99, not mean)</p></td>
+</tr>
+<tr>
+<td><p>Total usage</p></td>
+<td><p>Usage attributable to a workload, customer, or account</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>A provider can report 100% uptime while your workload experiences p99
+latency violations, cache miss storms, and quality regressions. The
+metrics live in different systems and answer different questions.</p>
+<h3 id="the-five-costs-that-are-not-on-the-invoice">The Five Costs That
+Are Not On The Invoice</h3>
+<p>Token price captures the inference provider bill. Five other costs
+affect the loaded economics of producing accepted work:</p>
+<p><strong>1. Retry cost.</strong> When a request fails—timeout, rate
+limit, quality failure, malformed output—the system retries. Each retry
+consumes tokens. On workloads with 5-10% first-attempt failure rates,
+retries add 5-10% to the inference bill. But the retry cost is invisible
+if you divide total spend by total requests instead of by accepted
+work.</p>
+<p><strong>2. Eval and grader cost.</strong> Quality-sensitive workloads
+run an eval pass on generated output. The eval might use a second LLM
+call (LLM-as-judge), a deterministic check, or a human review. LLM
+grader calls cost tokens. Human review costs labor. Neither appears on
+the inference provider invoice for the primary model.</p>
+<p><strong>3. Repair cost.</strong> When a first attempt fails quality
+but the task is worth retrying with corrected input (better retrieval
+context, adjusted prompt, longer context window), the repair attempt
+adds a second full inference cycle. Repair rates of 5-15% are common on
+RAG workloads where retrieval quality is uneven.</p>
+<p><strong>4. Human escalation cost.</strong> Some failures cannot be
+repaired by the system. A support answer that hallucinates a policy, a
+document extraction that misses a key field, a code generation that
+introduces a security flaw—these escalate to humans. The cost per human
+escalation is typically 50-200x the cost of the inference call that
+triggered it.</p>
+<p><strong>5. Operational overhead.</strong> On-call engineering time
+for inference incidents. Monitoring and observability tooling. Prompt
+engineering and eval maintenance. Model evaluation cycles. Deployment
+pipeline costs. These costs are real, amortized across workloads, and
+invisible on any per-request metric unless deliberately allocated.</p>
+<h3 id="the-unit-problem">The Unit Problem</h3>
+<p>The most common mistake in inference economics is choosing the wrong
+denominator.</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Denominator</p></th>
+<th><p>What it hides</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Per million tokens</p></td>
+<td><p>Whether those tokens produced useful work</p></td>
+</tr>
+<tr>
+<td><p>Per request</p></td>
+<td><p>Whether the request succeeded</p></td>
+</tr>
+<tr>
+<td><p>Per API call</p></td>
+<td><p>Retries, repairs, and multi-step workflows</p></td>
+</tr>
+<tr>
+<td><p>Per user</p></td>
+<td><p>Variance across user behavior and workload mix</p></td>
+</tr>
+<tr>
+<td><p>Per GPU-hour</p></td>
+<td><p>Whether the GPU produced accepted work or wasted cycles</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The correct denominator depends on the workload. For a support answer
+system, it is “one accepted answer that passed quality, latency, and
+compliance gates.” For a coding agent, it is “one merged fix that passes
+tests and review.” For a document extraction pipeline, it is “one
+correctly extracted record set.”</p>
+<p>The denominator must be defined before the cost model is built. If
+you cannot define what an accepted work unit is for your workload, your
+cost model is measuring activity, not value.</p>
+<h3 id="decision-rule">Decision Rule</h3>
+<p>Do not compare inference options by token price. Compare by loaded
+cost per accepted work unit.</p>
+<p>Token price is one input to the cost model. It is not the cost
+model.</p>
+<h3 id="where-this-breaks">Where This Breaks</h3>
+<ul>
+<li><p>Very simple workloads (single-turn, low-stakes, no quality gate)
+where token cost genuinely dominates and retries are rare. For these
+workloads, token price is a reasonable proxy.</p></li>
+<li><p>Batch workloads where the 50% batch discount is the dominant
+economic lever and quality is checked downstream.</p></li>
+<li><p>Workloads where the provider bill is a rounding error relative to
+the product’s overall cost structure. If inference is 0.1% of operating
+cost, the loaded-cost exercise is not the binding constraint.</p></li>
+</ul>
+<h3 id="calculator-hook">Calculator Hook</h3>
+<p>Every calculator view in this manual normalizes to accepted work
+units, not raw tokens. The view takes raw traces and produces loaded
+cost per accepted request. The sensitivity analysis shows which input
+dominates the result.</p>
+<hr />
+<h2 id="chapter-2-lcpr-2026-loaded-cost-per-result">Chapter 2: LCPR-2026
+— Loaded Cost Per Result</h2>
+<h3 id="field-problem-1">Field Problem</h3>
+<p>Two teams at the same company both report “inference cost per
+request.” Team A divides the monthly provider bill by total API calls.
+Team B divides total loaded cost (inference + eval + human review + ops)
+by accepted work units. Team A reports $0.014. Team B reports $0.172 for
+a similar workload. Finance asks which number is correct.</p>
+<p>Both are calculated correctly. They answer different questions. Team
+A’s number tells you the average inference spend per API call. Team B’s
+number tells you what it costs to produce one unit of accepted work.
+Only Team B’s number is useful for margin analysis, pricing decisions,
+migration comparisons, or capacity planning.</p>
+<h3 id="the-formula">The Formula</h3>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Symbol</p></th>
+<th><p>Unit</p></th>
+<th><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>C_inference</p></td>
+<td><p>USD</p></td>
+<td><p>Trace-derived inference cost (all calls: first attempt + retry +
+repair)</p></td>
+</tr>
+<tr>
+<td><p>C_eval</p></td>
+<td><p>USD</p></td>
+<td><p>Eval grader cost (LLM grader calls, rubric checks)</p></td>
+</tr>
+<tr>
+<td><p>C_human</p></td>
+<td><p>USD</p></td>
+<td><p>Human review, escalation, and repair labor</p></td>
+</tr>
+<tr>
+<td><p>C_ops</p></td>
+<td><p>USD</p></td>
+<td><p>Amortized operational overhead allocated to this
+workload</p></td>
+</tr>
+<tr>
+<td><p>delta</p></td>
+<td><p>USD</p></td>
+<td><p>Discrepancy between trace-derived cost and provider
+invoice</p></td>
+</tr>
+<tr>
+<td><p>A</p></td>
+<td><p>count</p></td>
+<td><p>Accepted work units (tasks passing quality, latency, and
+compliance gates)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The numerator includes all costs incurred in producing the
+output—including costs of failed attempts. The denominator includes only
+accepted output.</p>
+<p>This is not an approximation or a simplification. It is a definition.
+LCPR is what it costs to produce accepted work. The alternative—dividing
+inference spend by total requests—produces a number that is accurate but
+not useful.</p>
+<h3 id="why-2026">Why “2026”</h3>
+<p>The year tag marks the pricing, provider semantics, and cache
+behavior that shaped the formula’s inputs. Provider billing grammar
+changes. Cache semantics change. Token prices change. The formula
+structure is durable; the inputs need dated snapshots.</p>
+<p>When provider pricing shifts enough to change a routing decision,
+refresh the snapshot and recalculate. The formula does not change. The
+inputs do.</p>
+<h3 id="worked-example">Worked Example</h3>
+<p>This example uses the trace from the opener. One day, one workload,
+1,000 support tickets.</p>
+<p><strong>Step 1: Sum all inference costs from traces.</strong></p>
+<p>The trace contains every API call—first attempts, retries, repairs,
+eval grader calls. Each call has input tokens, cached tokens, output
+tokens, and the applicable price from the pricing snapshot.</p>
+<p><strong>Step 2: Add the invoice delta.</strong></p>
+<p>The provider invoice for the same period says $14.85. The gap is
+$0.65. This comes from rounding, timing differences between trace
+timestamps and billing period boundaries, batch pricing adjustments, and
+model alias resolution.</p>
+<p>If delta exceeds 5% of C_inference, investigate. Common causes:
+missing traces, model name aliases, batch vs real-time pricing splits,
+or token count discrepancies between your tokenizer and the
+provider’s.</p>
+<p><strong>Step 3: Add eval grader cost.</strong></p>
+<p>The system ran an LLM grader on outputs that fell below the
+auto-accept threshold. The grader cost $0.80 for the day.</p>
+<p><strong>Step 4: Add human escalation cost.</strong></p>
+<p>Fifty tickets escalated to human agents. At $2 per escalation (agent
+time, not fully loaded labor cost), this is $100.</p>
+<p><strong>Step 5: Add operational overhead.</strong></p>
+<p>Monitoring, on-call, prompt maintenance, and deployment costs
+amortized to this workload: $25 per day.</p>
+<p><strong>Step 6: Count accepted work.</strong></p>
+<p>Of 1,000 tickets: 750 passed on first attempt, 70 were recovered by
+retry or repair, 50 escalated to humans (counted as human-handled, not
+LLM-accepted), 130 were unrecovered failures.</p>
+<p><strong>Step 7: Calculate LCPR.</strong></p>
+<h3 id="what-each-component-contributes">What Each Component
+Contributes</h3>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Component</p></th>
+<th><p>Amount</p></th>
+<th><p>% of LCPR</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Inference (trace)</p></td>
+<td><p>$14.20</p></td>
+<td><p>10.1%</p></td>
+</tr>
+<tr>
+<td><p>Invoice delta</p></td>
+<td><p>$0.65</p></td>
+<td><p>0.5%</p></td>
+</tr>
+<tr>
+<td><p>Eval grader</p></td>
+<td><p>$0.80</p></td>
+<td><p>0.6%</p></td>
+</tr>
+<tr>
+<td><p>Human escalation</p></td>
+<td><p>$100.00</p></td>
+<td><p>71.1%</p></td>
+</tr>
+<tr>
+<td><p>Ops overhead</p></td>
+<td><p>$25.00</p></td>
+<td><p>17.8%</p></td>
+</tr>
+<tr>
+<td><p><strong>Total</strong></p></td>
+<td><p><strong>$140.65</strong></p></td>
+<td><p><strong>100%</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>Inference is 10% of the loaded cost. Human escalation is 71%.
+Optimizing the token price while ignoring the quality-driven escalation
+rate is optimizing the wrong lever.</p>
+<p>This is a general pattern: on quality-sensitive interactive
+workloads, the non-inference costs often dominate. On batch or
+low-stakes workloads, inference cost may genuinely be the majority. LCPR
+makes the distribution visible.</p>
+<h3 id="the-accepted-work-unit">The Accepted Work Unit</h3>
+<p>The denominator deserves its own definition. An accepted work unit
+is:</p>
+<blockquote>
+<p>One task completion that passes the workload’s quality gate, meets
+its latency SLO, complies with its data-handling constraints, and does
+not require human intervention.</p>
+</blockquote>
+<p>Defining the accepted work unit requires answers to four
+questions:</p>
+<ol>
+<li><p><strong>What is the task?</strong> Not “an API call” or “a
+request.” A task is the smallest unit of work that produces value: an
+accepted support answer, a correctly extracted record, a merged code
+fix, a graded exam response.</p></li>
+<li><p><strong>What is the quality gate?</strong> An eval score
+threshold, a deterministic check, a human review pass, or a downstream
+system acceptance. Without a quality gate, every completion counts as
+accepted, and the denominator is meaningless.</p></li>
+<li><p><strong>What is the latency SLO?</strong> Interactive workloads
+have TTFT and E2E constraints. Batch workloads have completion-window
+constraints. If a response is correct but arrives after the deadline, it
+may not count as accepted work.</p></li>
+<li><p><strong>What are the compliance constraints?</strong> Data
+residency, content logging restrictions, PII handling, retention policy.
+A response generated on the wrong infrastructure or stored in violation
+of policy is not accepted work regardless of quality.</p></li>
+</ol>
+<p>If any of these four questions cannot be answered for a workload, the
+LCPR calculation will produce a number, but the number will not be
+useful for decisions. Define the accepted work unit before building the
+cost model.</p>
+<h3 id="decision-rule-1">Decision Rule</h3>
+<p>Report inference economics as LCPR per accepted work unit. Show the
+component breakdown. Make the dominant cost lever visible.</p>
+<p>If inference dominates LCPR, optimize serving. If human escalation
+dominates, optimize quality. If ops overhead dominates, automate or
+consolidate. The lever depends on the breakdown, not on the token
+price.</p>
+<h3 id="where-this-breaks-1">Where This Breaks</h3>
+<ul>
+<li><p><strong>Shared infrastructure.</strong> When multiple workloads
+share a dedicated endpoint, allocating C_ops and the GPU cost to
+individual workloads requires an allocation model. Allocation models are
+always wrong; the question is whether they are useful.</p></li>
+<li><p><strong>Amortized costs.</strong> Prompt engineering,
+fine-tuning, eval set construction, and model evaluation are upfront
+investments. Amortizing them into LCPR requires a time horizon and
+volume assumption.</p></li>
+<li><p><strong>Revenue attribution.</strong> LCPR tells you cost per
+accepted unit. Margin requires revenue per accepted unit. Revenue
+attribution for AI features embedded in larger products is often
+ambiguous.</p></li>
+<li><p><strong>Very low volume.</strong> At 10 requests per day, the ops
+overhead per request is large and unstable. LCPR is most useful when
+volume is high enough for the per-unit allocation to be
+meaningful.</p></li>
+</ul>
+<h3 id="calculator-hook-1">Calculator Hook</h3>
+<p>The calculator view takes as input: trace data, invoice data, eval
+results, human review costs, and ops allocation. It produces: LCPR per
+accepted unit, component breakdown, sensitivity to each input, and trend
+over time.</p>
+<hr />
+<h2 id="chapter-3-trace-invoice-eval-and-contract">Chapter 3: Trace,
+Invoice, Eval, and Contract</h2>
+<h3 id="field-problem-2">Field Problem</h3>
+<p>An engineering lead asks: “What is our inference cost?” Four people
+give four answers:</p>
+<ul>
+<li><p>The engineer checks the provider dashboard: $14,200 per
+month.</p></li>
+<li><p>The finance team checks the invoice: $14,850 per month.</p></li>
+<li><p>The ML engineer checks the trace aggregator: $13,900 per
+month.</p></li>
+<li><p>The product manager checks the customer contract: revenue of
+$52,000 per month against that spend.</p></li>
+</ul>
+<p>Each person is looking at a different data source. Each source
+answers a different question. None of the four, alone, is sufficient for
+an inference economics decision.</p>
+<h3 id="the-four-data-sources">The Four Data Sources</h3>
+<p>Inference economics requires joining four data sources. Each provides
+information the others lack. Each has failure modes the others
+correct.</p>
+<h4 id="source-1-the-trace">Source 1: The Trace</h4>
+<p>The trace is the request-level event log. Each row represents one
+inference call: timestamps, token counts by type, latency percentiles,
+model, provider, route, cache state, retry count, tool calls, and
+outcome.</p>
+<p><strong>What the trace provides:</strong> - Request-level cost
+attribution (which workload, which customer, which route) - Latency
+breakdown (TTFT, TPOT, queue time, tool time) - Cache behavior
+(hit/miss, prefix length, TTL) - Failure classification (timeout, rate
+limit, quality fail, malformed output) - Retry and repair chains
+(linking retries to their original request)</p>
+<p><strong>What the trace misses:</strong> - Rounding and pricing
+adjustments applied by the provider - Credits, commitments, and contract
+terms - Costs outside the inference call (human review, ops overhead) -
+Whether the provider’s token count matches your tokenizer’s count</p>
+<p><strong>Common trace failure modes:</strong> - Missing traces
+(sampling, logging failures, async calls) - Stale pricing in the cost
+calculation (using last month’s prices) - Token count mismatch between
+trace and invoice - Model name aliases (the trace says but the invoice
+says )</p>
+<h4 id="source-2-the-invoice">Source 2: The Invoice</h4>
+<p>The invoice is the provider’s billing record. It is the ground truth
+for what was charged, but not for why.</p>
+<p><strong>What the invoice provides:</strong> - Actual charges after
+rounding, minimums, batch adjustments, and credits - Billing period
+boundaries - Committed spend tracking - Tax and compliance line
+items</p>
+<p><strong>What the invoice misses:</strong> - Request-level attribution
+(which workload, which customer) - Why costs moved (was it volume, model
+mix, cache miss rate, or output length?) - Latency, quality, or
+reliability information - Costs from other providers in a multi-source
+architecture</p>
+<p><strong>Common invoice failure modes:</strong> - Delayed posting
+(usage from the last day of the month appears on next month’s invoice) -
+Aggregate line items that combine workloads - Model aliases that do not
+match trace model names - Credits applied inconsistently across line
+items</p>
+<h4 id="source-3-the-eval">Source 3: The Eval</h4>
+<p>The eval is the quality measurement. It answers whether the inference
+output was accepted work or failed work.</p>
+<p><strong>What the eval provides:</strong> - Pass/fail determination
+per output - Quality score distribution - Failure clustering (which
+failure modes are common) - Repair rate and repair success rate - The
+denominator for LCPR</p>
+<p><strong>What the eval misses:</strong> - Cost information - Latency
+information (unless combined with trace) - Whether the eval itself is
+calibrated and reliable - Long-term quality drift vs point-in-time
+score</p>
+<p><strong>Common eval failure modes:</strong> - LLM grader disagrees
+with human judgment - Eval set does not represent production
+distribution - Quality threshold set too low (everything passes,
+failures are invisible) - Quality threshold set too high (unnecessary
+repairs and escalations) - Eval coverage is partial (only a sample of
+outputs is evaluated)</p>
+<h4 id="source-4-the-contract">Source 4: The Contract</h4>
+<p>The contract is the commercial agreement between your organization
+and the inference provider, or between your organization and your
+customer.</p>
+<p><strong>What the contract provides:</strong> - Revenue per unit of
+work (for margin calculation) - Committed spend and credit balances -
+SLA terms and penalty triggers - Data handling and residency
+requirements - Rate limits and burst allowances - Overage pricing</p>
+<p><strong>What the contract misses:</strong> - Actual usage patterns -
+Quality or latency performance - Whether committed spend is being
+utilized efficiently - Whether the customer is actually using the
+features that generate inference cost</p>
+<p><strong>Common contract failure modes:</strong> - Committed spend
+that does not match actual usage patterns - Credits that mask true
+run-rate cost - SLA terms that do not match the product’s actual
+reliability - Revenue recognition that does not align with inference
+cost timing</p>
+<h3 id="joining-the-four-sources">Joining The Four Sources</h3>
+<p>None of the four sources is sufficient alone. Inference economics
+requires joining them:</p>
+<p>The join is difficult because:</p>
+<ul>
+<li><p>Traces and invoices use different time boundaries.</p></li>
+<li><p>Traces have request-level granularity; invoices have aggregate
+line items.</p></li>
+<li><p>Evals may cover a sample, not the full population.</p></li>
+<li><p>Contracts define terms that change the economics but do not
+produce telemetry.</p></li>
+</ul>
+<p>The join produces a number. But every cost model depends on inputs,
+and not all inputs are equally trustworthy. A team builds a cost model,
+puts LCPR = $0.14 and margin = 45% into a quarterly review deck, and six
+months later margin has dropped to 28%—because three assumptions were
+wrong from the start: cache hit rate was 35-40% not 60%, output length
+p50 was 340 tokens not 250, and human escalation rate was 5.5% not 3%.
+Nobody tracked these assumptions. Nobody owned them. Nobody checked
+them.</p>
+<h3 id="the-assumption-register">The Assumption Register</h3>
+<p>Every LCPR calculation depends on inputs. Some inputs are measured.
+Some are assumed. The assumption register makes the distinction
+explicit.</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Input</p></th>
+<th><p>Value</p></th>
+<th><p>Confidence</p></th>
+<th><p>Source</p></th>
+<th><p>Owner</p></th>
+<th><p>Last verified</p></th>
+<th><p>Refresh trigger</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Input token price (Route A)</p></td>
+<td><p>$3.00/MTok</p></td>
+<td><p>PUBLIC</p></td>
+<td><p>Provider pricing page</p></td>
+<td><p>Infra</p></td>
+<td><p>2026-05-12</p></td>
+<td><p>Provider price change</p></td>
+</tr>
+<tr>
+<td><p>Cache hit rate</p></td>
+<td><p>60%</p></td>
+<td><p>ASSUMED</p></td>
+<td><p>Design target</p></td>
+<td><p>ML Eng</p></td>
+<td><p>Never measured</p></td>
+<td><p>Monthly trace review</p></td>
+</tr>
+<tr>
+<td><p>Output length p50</p></td>
+<td><p>250 tok</p></td>
+<td><p>ASSUMED</p></td>
+<td><p>Prompt test (n=50)</p></td>
+<td><p>ML Eng</p></td>
+<td><p>2026-04-01</p></td>
+<td><p>Monthly trace review</p></td>
+</tr>
+<tr>
+<td><p>Eval pass rate</p></td>
+<td><p>85%</p></td>
+<td><p>MEASURED</p></td>
+<td><p>Eval pipeline output</p></td>
+<td><p>ML Eng</p></td>
+<td><p>2026-05-10</p></td>
+<td><p>Weekly</p></td>
+</tr>
+<tr>
+<td><p>Human escalation rate</p></td>
+<td><p>3%</p></td>
+<td><p>ASSUMED</p></td>
+<td><p>Industry estimate</p></td>
+<td><p>Support</p></td>
+<td><p>Never measured</p></td>
+<td><p>Monthly</p></td>
+</tr>
+<tr>
+<td><p>Ops overhead/day</p></td>
+<td><p>$25</p></td>
+<td><p>ESTIMATED</p></td>
+<td><p>Eng time allocation</p></td>
+<td><p>Eng Mgr</p></td>
+<td><p>2026-03-15</p></td>
+<td><p>Quarterly</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>The columns that matter most:</p>
+<ul>
+<li><p><strong>Confidence</strong>: MEASURED (from production
+telemetry), PUBLIC (from official source), ESTIMATED (calculated from
+limited data), ASSUMED (no direct measurement), CONTRACTED (from legal
+agreement).</p></li>
+<li><p><strong>Last verified</strong>: The date someone checked this
+input against reality. “Never measured” is a valid and important
+entry.</p></li>
+<li><p><strong>Refresh trigger</strong>: What event should cause this
+input to be re-checked.</p></li>
+</ul>
+<h3 id="confidence-levels">Confidence Levels</h3>
+<p>Not all inputs are equally trustworthy. Confidence labels prevent a
+cost model from treating a pricing-page number and an industry-average
+guess with equal weight.</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Level</p></th>
+<th><p>Meaning</p></th>
+<th><p>Example</p></th>
+<th><p>Risk</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>MEASURED</p></td>
+<td><p>Observed from production telemetry, reproducible</p></td>
+<td><p>Cache hit rate from 30 days of traces</p></td>
+<td><p>Low—if measurement is correct</p></td>
+</tr>
+<tr>
+<td><p>PUBLIC</p></td>
+<td><p>Stated by provider in official documentation</p></td>
+<td><p>Token price from pricing page</p></td>
+<td><p>Low—until provider changes it</p></td>
+</tr>
+<tr>
+<td><p>CONTRACTED</p></td>
+<td><p>In a signed agreement</p></td>
+<td><p>Committed spend, SLA penalties</p></td>
+<td><p>Low—unless contract is renegotiated</p></td>
+</tr>
+<tr>
+<td><p>ESTIMATED</p></td>
+<td><p>Derived from partial data or short observation</p></td>
+<td><p>Output length from a 50-request sample</p></td>
+<td><p>Medium—sample may not represent production</p></td>
+</tr>
+<tr>
+<td><p>ASSUMED</p></td>
+<td><p>No direct measurement, based on belief or analogy</p></td>
+<td><p>Human escalation rate from industry report</p></td>
+<td><p>High—assumption may be wrong from day one</p></td>
+</tr>
+<tr>
+<td><p>UNKNOWN</p></td>
+<td><p>Not yet investigated</p></td>
+<td><p>Cache-breaking event rate</p></td>
+<td><p>Critical—the input could be anything</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>A cost model with three ASSUMED inputs and two UNKNOWN inputs is not
+wrong—it is incomplete. The assumption register makes the incompleteness
+visible so the team knows where to invest in measurement.</p>
+<h3 id="the-data-quality-gate">The Data Quality Gate</h3>
+<p>Before a cost model is used for a decision—migration, pricing change,
+capacity reservation, vendor negotiation—it should pass a data quality
+gate:</p>
+<p><strong>Gate 1: Coverage.</strong> What fraction of inference calls
+have complete traces? If trace coverage is below 95%, the cost model is
+working with a biased sample. Missing traces are not random; they
+correlate with timeouts, errors, and edge cases.</p>
+<p><strong>Gate 2: Freshness.</strong> When were the pricing snapshots
+last refreshed? When was the cache hit rate last measured? When was the
+eval pass rate last calculated? Any input older than its refresh trigger
+is stale.</p>
+<p><strong>Gate 3: Reconciliation.</strong> Does the trace-derived cost
+match the invoice within 5%? If not, the trace is not trustworthy for
+cost modeling until the gap is explained.</p>
+<p><strong>Gate 4: Denominator.</strong> Is the accepted work unit
+defined? Is the quality gate running? If there is no eval, the
+denominator is “requests” not “accepted work,” and the LCPR is
+understated.</p>
+<p><strong>Gate 5: Confidence floor.</strong> How many ASSUMED or
+UNKNOWN inputs feed the cost model? If more than two key inputs are
+ASSUMED, the model is a hypothesis, not a measurement. Label it as
+such.</p>
+<h3 id="the-unknown-bucket">The Unknown Bucket</h3>
+<p>Every workload has traffic that cannot be attributed, classified, or
+evaluated. Requests with missing workload IDs. Calls from deprecated
+integrations. Test traffic mixed into production. Retry chains where the
+original request trace was lost.</p>
+<p>The honest response is not to ignore this traffic. It is to create an
+<strong>unknown bucket</strong> and measure its size.</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Metric</p></th>
+<th><p>Value</p></th>
+<th><p>Action threshold</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Requests with missing workload_id</p></td>
+<td><p>4%</p></td>
+<td><p>Investigate if &gt; 5%</p></td>
+</tr>
+<tr>
+<td><p>Requests with missing eval result</p></td>
+<td><p>12%</p></td>
+<td><p>Investigate if &gt; 10%</p></td>
+</tr>
+<tr>
+<td><p>Unattributed cost (trace vs invoice gap)</p></td>
+<td><p>3%</p></td>
+<td><p>Investigate if &gt; 5%</p></td>
+</tr>
+<tr>
+<td><p>Traffic from deprecated routes</p></td>
+<td><p>1%</p></td>
+<td><p>Clean up</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>If the unknown bucket is small (under 5% of cost), it is noise. If it
+is large (over 10%), it is corrupting the cost model. Unknown traffic
+that correlates with high-cost or low-quality behavior is especially
+dangerous because it hides the workload’s real economics.</p>
+<h3 id="the-first-twenty-traces">The First Twenty Traces</h3>
+<p>When a team has no cost model, no eval, and no trace-to-invoice
+reconciliation, the starting point is not a dashboard or a calculator.
+It is twenty traces.</p>
+<p>Pull twenty real requests from production. For each request,
+answer:</p>
+<ol>
+<li><p>What workload is this? Can you name it?</p></li>
+<li><p>What was the input? How many tokens? Was any of it
+cached?</p></li>
+<li><p>What was the output? How many tokens? Did it pass
+quality?</p></li>
+<li><p>What did it cost? Can you calculate the cost from the pricing
+snapshot?</p></li>
+<li><p>Did it meet the latency SLO?</p></li>
+<li><p>If it failed, what happened next? Retry? Repair? Escalation?
+Nothing?</p></li>
+</ol>
+<p>Twenty traces will reveal:</p>
+<ul>
+<li><p>Whether you can attribute requests to workloads</p></li>
+<li><p>Whether your token counts match the provider’s</p></li>
+<li><p>Whether your cache is hitting</p></li>
+<li><p>Whether your quality gate is running</p></li>
+<li><p>Whether retries and repairs are visible in the trace</p></li>
+</ul>
+<p>If you cannot answer these questions for twenty requests, you cannot
+build a cost model. The twenty-trace exercise is the minimum viable data
+quality gate.</p>
+<h3 id="what-to-measure">What To Measure</h3>
+<p>For each workload, the minimum viable join requires:</p>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Field</p></th>
+<th><p>Source</p></th>
+<th><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>request_id</p></td>
+<td><p>Trace</p></td>
+<td><p>Link requests to outcomes</p></td>
+</tr>
+<tr>
+<td><p>workload_id</p></td>
+<td><p>Trace</p></td>
+<td><p>Attribute cost to workload</p></td>
+</tr>
+<tr>
+<td><p>model + provider</p></td>
+<td><p>Trace + Invoice</p></td>
+<td><p>Reconcile model aliases</p></td>
+</tr>
+<tr>
+<td><p>input_tokens, output_tokens, cached_tokens</p></td>
+<td><p>Trace</p></td>
+<td><p>Calculate trace-derived cost</p></td>
+</tr>
+<tr>
+<td><p>ttft_ms, e2e_ms</p></td>
+<td><p>Trace</p></td>
+<td><p>SLO compliance</p></td>
+</tr>
+<tr>
+<td><p>eval_result</p></td>
+<td><p>Eval</p></td>
+<td><p>Accepted vs failed</p></td>
+</tr>
+<tr>
+<td><p>invoice_line_item</p></td>
+<td><p>Invoice</p></td>
+<td><p>Actual charge</p></td>
+</tr>
+<tr>
+<td><p>revenue_per_unit</p></td>
+<td><p>Contract</p></td>
+<td><p>Margin calculation</p></td>
+</tr>
+<tr>
+<td><p>credit_balance</p></td>
+<td><p>Contract</p></td>
+<td><p>True cost after credits</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<h3 id="decision-rule-2">Decision Rule</h3>
+<p>Build the four-source join for one workload first. Pick the workload
+with the highest spend or the most quality variance. Join one day of
+traces to the corresponding invoice period. Calculate LCPR. Measure the
+delta between trace-derived cost and invoice. If the delta is under 5%,
+the trace is trustworthy for daily monitoring. If it exceeds 5%,
+investigate before relying on trace-based cost reporting.</p>
+<p>Before using the cost model for a decision—migration, pricing change,
+capacity reservation, vendor negotiation—check the assumption register.
+If more than two key inputs are ASSUMED or UNKNOWN, the model is
+directional, not reliable. Label it as such in the deck. Use it for
+scoping, not for commitments.</p>
+<p>Upgrade assumptions to measurements by investing in trace coverage,
+eval pipeline, and invoice reconciliation—in that order. Trace coverage
+is first because without traces, you cannot measure anything else.</p>
+<h3 id="where-this-breaks-2">Where This Breaks</h3>
+<ul>
+<li><p><strong>Multi-provider architectures</strong> where traces span
+multiple providers and invoices come from separate billing
+systems.</p></li>
+<li><p><strong>Real-time streaming</strong> where token counts are
+approximate until the stream completes.</p></li>
+<li><p><strong>Shared tenancy</strong> where one provider account serves
+multiple internal workloads and the invoice does not break down by
+workload.</p></li>
+<li><p><strong>Rapidly changing prices</strong> where the pricing
+snapshot used for trace-derived cost is stale by the time the invoice
+arrives.</p></li>
+<li><p><strong>Startup-stage teams</strong> that do not have enough
+volume for statistical confidence. At 50 requests per day, weekly
+metrics are noisy. Monthly aggregation may be the minimum useful
+window.</p></li>
+<li><p><strong>Multi-model workflows</strong> where a single task uses
+multiple models in sequence (retrieval, generation, grading, repair).
+The trace needs to link these into a single task lifecycle, which
+requires trace correlation.</p></li>
+<li><p><strong>Rapidly changing workloads</strong> where the
+distribution shifts faster than the refresh cycle. A cache hit rate
+measured last month may be wrong this week if the retrieval context or
+prompt structure changed.</p></li>
+<li><p><strong>Organizational silos</strong> where traces live in
+engineering, invoices live in finance, evals live in ML, and contracts
+live in legal. The join requires cross-functional access that many
+organizations do not have.</p></li>
+</ul>
+<h3 id="calculator-hook-2">Calculator Hook</h3>
+<p>The calculator view performs the four-source join. Input: trace
+export, invoice CSV, eval results, contract terms. Output: LCPR, margin,
+delta analysis, variance waterfall showing which input changed and how
+much it moved the result.</p>
+<p>The calculator includes an assumption register tab. Each input has a
+confidence field. The sensitivity analysis highlights which ASSUMED
+inputs would change the LCPR by more than 10% if the real value differs
+from the assumption. Those are the inputs worth measuring first.</p>
+<hr />
+<h2 id="part-1-summary">Part 1 Summary</h2>
+<p>Part 1 established three ideas:</p>
+<ol>
+<li><p><strong>Token price is not cost.</strong> The provider bill is
+one component. Retries, repairs, eval, human escalation, and operational
+overhead are the rest. On quality-sensitive workloads, non-token costs
+can dominate.</p></li>
+<li><p><strong>LCPR is the metric.</strong> Loaded cost per result,
+normalized to accepted work units. The formula is simple. The difficulty
+is in the inputs: trace coverage, eval calibration, invoice
+reconciliation, and overhead allocation.</p></li>
+<li><p><strong>Four sources, one join, and a confidence gate.</strong>
+Traces provide attribution. Invoices provide ground truth. Evals provide
+the denominator. Contracts provide the revenue and constraints. No
+single source is sufficient. Every input to the cost model has a
+confidence level. ASSUMED inputs are hypotheses, not measurements. The
+twenty-trace exercise is the minimum viable starting point.</p></li>
+</ol>
+<p>The next part—Serving Physics—explains the mechanisms behind the
+numbers. Why output tokens cost more than input tokens. Why batch size
+sets the cost-latency frontier. Why cache hit rate is an economic
+variable. Why context length is a memory product. The economics in Part
+1 depend on the physics in Part 2.</p>
+<hr />
+<h2 id="evidence-notes-for-part-1">Evidence Notes for Part 1</h2>
+<figure>
+<div data-align="center">
+<table>
+<thead>
+<tr>
+<th><p>Claim</p></th>
+<th><p>Type</p></th>
+<th><p>Source</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Provider billing grammar structure</p></td>
+<td><p>Public</p></td>
+<td><p>Provider pricing pages and API documentation</p></td>
+</tr>
+<tr>
+<td><p>LCPR formula and components</p></td>
+<td><p>Derived</p></td>
+<td><p>Constructed from standard cost accounting applied to
+inference</p></td>
+</tr>
+<tr>
+<td><p>Worked example (1,000 tickets, LCPR = $0.172)</p></td>
+<td><p>Synthetic</p></td>
+<td><p>Illustrative numbers shaped by public billing grammar</p></td>
+</tr>
+<tr>
+<td><p>Human escalation cost ($2/case)</p></td>
+<td><p>Illustrative</p></td>
+<td><p>Order of magnitude; actual cost depends on support staffing
+model</p></td>
+</tr>
+<tr>
+<td><p>Cache hit rate degradation pattern</p></td>
+<td><p>Reported</p></td>
+<td><p>Shaped by production observations; see operator proof boxes 4,
+6</p></td>
+</tr>
+<tr>
+<td><p>Invoice-trace delta patterns</p></td>
+<td><p>Reported</p></td>
+<td><p>Common reconciliation issues from production deployments</p></td>
+</tr>
+<tr>
+<td><p>Confidence level taxonomy</p></td>
+<td><p>Derived</p></td>
+<td><p>Standard data quality framework applied to inference
+inputs</p></td>
+</tr>
+<tr>
+<td><p>Output token length variance across models</p></td>
+<td><p>Public</p></td>
+<td><p>Observable from model documentation and evaluation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+<p>All worked examples in this chapter use synthetic numbers shaped by
+real provider semantics. No numbers should be attributed to any specific
+employer, customer, or deployment.</p>
+
+        </div>
+
+        <nav class="part-nav"><a href="/book/part-0/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 0: How To Use This Book</span></a><a href="/book/part-2/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 2: Serving Physics</span></a></nav>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Reading progress ──
+    window.addEventListener('scroll', function() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Active TOC highlighting ──
+    var tocLinks = document.querySelectorAll('.sidebar-toc a');
+    var headings = [];
+    tocLinks.forEach(function(link) {
+      var id = link.getAttribute('href');
+      if (id && id.startsWith('#')) {
+        var el = document.getElementById(id.slice(1));
+        if (el) headings.push({ el: el, link: link });
+      }
+    });
+
+    function updateActiveTOC() {
+      var scrollPos = window.scrollY + 140;
+      var current = null;
+      for (var i = 0; i < headings.length; i++) {
+        if (headings[i].el.offsetTop <= scrollPos) current = headings[i];
+      }
+      tocLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (current) {
+        current.link.classList.add('active');
+        var sidebar = document.getElementById('sidebar');
+        var linkTop = current.link.offsetTop;
+        var sh = sidebar.clientHeight;
+        if (linkTop < sidebar.scrollTop + 120 || linkTop > sidebar.scrollTop + sh - 120) {
+          sidebar.scrollTo({ top: linkTop - sh / 3, behavior: 'smooth' });
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateActiveTOC, { passive: true });
+    updateActiveTOC();
+
+    // ── Mobile menu ──
+    var toggle = document.getElementById('menu-toggle');
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    tocLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 960) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+      });
+    });
+
+    // ── Wrap tables for horizontal scroll ──
+    document.querySelectorAll('.content table').forEach(function(t) {
+      if (!t.parentElement.classList.contains('table-wrapper')) {
+        var w = document.createElement('div');
+        w.className = 'table-wrapper';
+        t.parentNode.insertBefore(w, t);
+        w.appendChild(t);
+      }
+    });
+  </script>
+</body>
+</html>

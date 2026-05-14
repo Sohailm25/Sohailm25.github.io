@@ -9,7 +9,13 @@ Status: published
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
-*Production Inference Economics --- Part 5 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | **5. Goodput***
+*Production Inference Economics --- Part 5 of 5*
+
+1. [The Denominator Problem]({filename}/denominator-problem.md)
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. [LCPR Calculator]({filename}/lcpr-calculator-v2.md)
+4. [Workload Costs]({filename}/workload-costs.md)
+5. **Goodput**
 
 ---
 
@@ -321,7 +327,13 @@ Token price is the first number every team looks at. It is the last number that 
 
 ---
 
-*Production Inference Economics --- Part 5 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | **5. Goodput***
+*Production Inference Economics --- Part 5 of 5*
+
+1. [The Denominator Problem]({filename}/denominator-problem.md)
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. [LCPR Calculator]({filename}/lcpr-calculator-v2.md)
+4. [Workload Costs]({filename}/workload-costs.md)
+5. **Goodput**
 
 *Sohail Mohammad --- May 2026*
 

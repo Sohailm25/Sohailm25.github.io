@@ -9,7 +9,13 @@ Status: published
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
-*Production Inference Economics --- Part 3 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | **3. LCPR Calculator** | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+*Production Inference Economics --- Part 3 of 5*
+
+1. [The Denominator Problem]({filename}/denominator-problem.md)
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. **LCPR Calculator**
+4. [Workload Costs]({filename}/workload-costs.md)
+5. [Goodput]({filename}/goodput.md)
 
 *I wrote [The Denominator Problem]({filename}/denominator-problem.md) because teams keep comparing token prices and calling it cost analysis. This post is the tool that makes the actual measurement repeatable.*
 
@@ -211,7 +217,13 @@ The full argument is in [The Denominator Problem]({filename}/denominator-problem
 
 Contributions welcome: pricing updates as providers change rates, new workload profiles from production deployments, bug reports when the calculator disagrees with the series derivations. File an issue or open a PR.
 
-*Production Inference Economics --- Part 3 of 5: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | **3. LCPR Calculator** | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+*Production Inference Economics --- Part 3 of 5*
+
+1. [The Denominator Problem]({filename}/denominator-problem.md)
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. **LCPR Calculator**
+4. [Workload Costs]({filename}/workload-costs.md)
+5. [Goodput]({filename}/goodput.md)
 
 *Sohail Mohammad --- April 2026*
 

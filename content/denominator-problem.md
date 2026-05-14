@@ -9,7 +9,13 @@ Status: published
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
-*Production Inference Economics --- Part 1 of 5: **1. The Denominator Problem** | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+*Production Inference Economics --- Part 1 of 5*
+
+1. **The Denominator Problem**
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. [LCPR Calculator]({filename}/lcpr-calculator-v2.md)
+4. [Workload Costs]({filename}/workload-costs.md)
+5. [Goodput]({filename}/goodput.md)
 
 ---
 
@@ -282,7 +288,13 @@ The trace autopsy is where LCPR stops being a formula and starts being a measure
 
 ---
 
-*Production Inference Economics --- Part 1 of 5: **1. The Denominator Problem** | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+*Production Inference Economics --- Part 1 of 5*
+
+1. **The Denominator Problem**
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. [LCPR Calculator]({filename}/lcpr-calculator-v2.md)
+4. [Workload Costs]({filename}/workload-costs.md)
+5. [Goodput]({filename}/goodput.md)
 
 *Sohail Mohammad --- April 2026*
 

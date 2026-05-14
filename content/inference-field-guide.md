@@ -891,7 +891,13 @@ The best time to calculate your LCPR was six months ago. The second best time is
 
 ---
 
-*This essay is the overview. The [Production Inference Economics series]({filename}/denominator-problem.md) develops the measurement methodology in depth: [1. The Denominator Problem]({filename}/denominator-problem.md) | [2. Trace Autopsy]({filename}/trace-autopsy.md) | [3. LCPR Calculator]({filename}/lcpr-calculator-v2.md) | [4. Workload Costs]({filename}/workload-costs.md) | [5. Goodput]({filename}/goodput.md)*
+*This essay is the overview. The Production Inference Economics series develops the measurement methodology in depth:*
+
+1. [The Denominator Problem]({filename}/denominator-problem.md)
+2. [Trace Autopsy]({filename}/trace-autopsy.md)
+3. [LCPR Calculator]({filename}/lcpr-calculator-v2.md)
+4. [Workload Costs]({filename}/workload-costs.md)
+5. [Goodput]({filename}/goodput.md)
 
 *Sohail Mohammad --- April 2026*
 

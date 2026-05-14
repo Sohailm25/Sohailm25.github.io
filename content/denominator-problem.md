@@ -205,7 +205,9 @@ If you cannot define what an accepted work unit is for your workload, your cost 
 
 ---
 
-## LCPR-2026: Loaded Cost Per Result
+## LCPR: Loaded Cost Per Result
+
+> **LCPR --- Loaded Cost Per Result.** The total cost of producing one accepted work unit, including all inference calls, eval grader costs, human escalation, and operational overhead. Not cost per token. Not cost per request. Cost per result your system accepted and served to a user.
 
 This is the formula I wish I had before writing the field guide.
 

@@ -562,8 +562,8 @@ the way, and when should you turn back?</p>
 decision from “move to dedicated endpoints,” which is a different
 decision from “self-manage GPUs,” which is a different decision from
 “run multi-source.” Each surface has its own economics, failure modes,
-operational costs, and reversion triggers. And the first option—staying
-where you are—is a decision too.</p>
+operational costs, and reversion triggers. And the first option, staying
+where you are, is a decision too.</p>
 <p>The chapters proceed roughly in order of operational commitment. The
 model candidate funnel and routefit matrix filter candidates before any
 migration begins. Do Nothing requires the least change. Serverless open
@@ -655,7 +655,7 @@ possible.</p>
 <p>The capability screen answers: does this model produce acceptable
 output for this workload at the minimum quality floor? Candidates that
 fall below the quality floor are eliminated regardless of price. A model
-that costs 80% less but fails 30% of production cases is not cheaper—it
+that costs 80% less but fails 30% of production cases is not cheaper. It
 is more expensive after repairs and escalations.</p>
 <p><strong>Stage 3: Economic evaluation.</strong> For surviving
 candidates, calculate LCPR per accepted output. Not token price. Not
@@ -733,8 +733,8 @@ Every migration decision in the chapters that follow uses the matrix as
 its input.</p>
 <h3 id="decision-rule-14">Decision rule</h3>
 <p>Do not compare economics until feasibility and capability are
-confirmed. The funnel order—constraints, capability, economics, route
-mapping—prevents wasted evaluation effort. Update the routefit matrix
+confirmed. The funnel order (constraints, capability, economics, route
+mapping) prevents wasted evaluation effort. Update the routefit matrix
 quarterly, or when models, pricing, or workload shapes change
 materially.</p>
 <h3 id="what-to-measure-12">What to measure</h3>
@@ -753,7 +753,7 @@ vs estimated)</p></li>
 <p>The funnel breaks when the eval set does not represent production
 traffic. A model that passes 200 curated test cases may fail on the long
 tail of real inputs. The funnel also breaks when Stage 1 constraints
-change after Stage 3 evaluation is complete—a new data residency
+change after Stage 3 evaluation is complete. A new data residency
 requirement can invalidate weeks of evaluation work. Run Stage 1 against
 current and anticipated constraints.</p>
 <h3 id="calculator-hook-14">Calculator hook</h3>
@@ -768,8 +768,8 @@ Decision</h2>
 <p>Monthly bill: $85,000 across three workloads on a closed API.
 Back-of-envelope calculation: open models on serverless endpoints would
 cost $35,000. The migration starts. Three months later, it is
-incomplete. Two workloads moved successfully. The third—a
-compliance-sensitive document extraction pipeline—failed the data
+incomplete. Two workloads moved successfully. The third, a
+compliance-sensitive document extraction pipeline, failed the data
 residency gate, the output format changed between model families, and
 the eval suite needed 400 new test cases. The migration consumed
 $120,000 in engineering time. Staying on the closed API for six more
@@ -777,9 +777,9 @@ months while building the eval suite and resolving the compliance
 requirement would have been cheaper.</p>
 <h3 id="the-mechanism-6">The mechanism</h3>
 <p>Staying on the current provider is a valid economic outcome if the
-total cost of migration—engineering time, eval development, prompt
+total cost of migration (engineering time, eval development, prompt
 rewriting, quality regression risk, operational learning curve, and
-opportunity cost—exceeds the savings over the planning horizon.</p>
+opportunity cost) exceeds the savings over the planning horizon.</p>
 <p>The naive calculation compares token prices. The correct calculation
 compares:</p>
 <p><strong>payback period = migration cost ÷ (current LCPR − target LCPR) × monthly accepted volume</strong></p>

@@ -668,8 +668,8 @@ failure modes production traffic actually produces. A typical
 development-era eval skews roughly three-quarters toward
 design-imagined cases, a fraction harvested from incident postmortems,
 and the remainder synthetic adversarial. The top production failure
-mode by frequency — often a tool-call output format the original
-prompt assumed but a newer model emits differently — appears in only a
+mode by frequency, often a tool-call output format the original
+prompt assumed but a newer model emits differently, appears in only a
 handful of eval cases. The eval pass rate stays comfortably high while
 the production complaint rate tells a different story. The fix is not
 to recalibrate the eval; it is to redistribute eval mass against
@@ -680,7 +680,7 @@ twenty points, which is what an honest denominator looks like.</p>
 economics, the eval serves two functions:</p>
 <p><strong>1. Denominator control.</strong> The accepted-output count in
 LCPR depends on the quality gate. If the eval is weak, the denominator
-is inflated—the system appears cheaper because it “accepts” outputs that
+is inflated. The system appears cheaper because it “accepts” outputs that
 should be rejected.</p>
 <p><strong>2. Cost-quality tradeoff measurement.</strong> When comparing
 routes or models, the eval determines whether a cheaper model meets the
@@ -704,7 +704,7 @@ gate from evals determines the denominator.</p>
 <h3 id="decision-rule-21">Decision rule</h3>
 <p>Before any route change, model update, or significant prompt
 revision: capture a baseline. After the change, capture the same metrics
-and compare. Treat eval coverage as an operational metric—review it
+and compare. Treat eval coverage as an operational metric. Review it
 monthly.</p>
 <h3 id="what-to-measure-19">What to measure</h3>
 <ul>
@@ -723,7 +723,7 @@ minutes</p></li>
 <p>Baselines break when captured during an atypical period without
 noting the anomaly, or when the eval suite changes between baseline and
 comparison. Evals become theater when the team optimizes the pass rate
-instead of quality—regularly adding production cases and rotating
+instead of quality. Regularly adding production cases and rotating
 adversarial cases resists overfitting.</p>
 <h3 id="calculator-hook-21">Calculator hook</h3>
 <p>The baseline view stores a dated snapshot of all cost components. The
@@ -869,7 +869,7 @@ routes.</p>
 Observability And Trace-to-Loaded-Cost</h2>
 <h3 id="the-field-problem-14">The field problem</h3>
 <p>The dashboards show p99 latency, error rate, GPU utilization, and
-request volume—all the standard signals. The finance partner asks: “Why
+request volume. All the standard signals. The finance partner asks: “Why
 did the inference bill increase 22% this month?” Latency: stable.
 Errors: stable. Utilization: stable. Volume: up 8%. An 8% volume
 increase does not explain a 22% cost increase.</p>
@@ -988,7 +988,7 @@ contracted unit rates.</p>
 <h3 id="worked-example-11">Worked example: mid-cap pharmacy,
 clinical-prior-auth drafting</h3>
 <p>A mid-cap pharmacy chain runs a clinical-prior-auth answer-drafting
-workload — the LLM drafts the medical-necessity narrative that gets
+workload. The LLM drafts the medical-necessity narrative that gets
 attached to payer prior-authorization submissions. Roughly 8,431 queries
 per day. The bill landed at $14,127 for May; the loaded cost when the
 ops lead reconciled came in at $19,283. The driver of the gap was
@@ -1071,7 +1071,7 @@ drafts)</p></td>
 <p>The 8.6% trace-to-invoice delta was the thread that unraveled
 everything. The ops lead pulled the contract rate card and matched it
 against the invoice line items. Two of the line items were billed at
-the wrong rate — a tier the pharmacy had never been moved off of after
+the wrong rate. A tier the pharmacy had never been moved off of after
 a contract amendment three months earlier. The overcharge worked out to
 $1,214 per month and had run for two billing cycles before anyone
 noticed. The reconciliation surfaced a contract-rate mistake on the
@@ -1092,14 +1092,14 @@ model-risk apparatus that wraps an LLM the moment its output becomes
 part of a decision a regulator can ask you to defend.</p>
 
 <p>When an LLM drafts an explanation that accompanies a regulated
-decision — a denied loan, a denied claim, a prior-auth narrative, an
-adverse-action notice — that explanation LLM is no longer just an
+decision (a denied loan, a denied claim, a prior-auth narrative, an
+adverse-action notice), that explanation LLM is no longer just an
 inference workload. Under the Federal Reserve's SR 11-7 guidance on
 model risk management, any quantitative method that informs a business
 decision is a "model" and falls under the bank or insurer's
 model-risk-management program. That means model inventory, independent
 validation, ongoing performance monitoring, change-control logs, and
-periodic re-validation — typically a two-to-six-month exercise per
+periodic re-validation, typically a two-to-six-month exercise per
 model version (Federal Reserve, SR Letter 11-7, "Guidance on Model Risk
 Management," April 2011). When the model is an LLM whose weights and
 prompt and tool-use scaffolding all sit on a third-party provider, the
@@ -1111,7 +1111,7 @@ top. Under ECOA and Regulation B, a creditor that takes an adverse
 action against an applicant must provide a statement of "specific
 reasons" for the action. The CFPB's 2023 circular (Consumer Financial
 Protection Circular 2023-03) clarifies that creditors using complex
-algorithms — explicitly including generative AI — cannot fall back on
+algorithms, explicitly including generative AI, cannot fall back on
 generic templated reasons and remain compliant. If the explanation LLM
 hallucinates a reason that did not factor into the underlying decision,
 the creditor has issued a non-compliant adverse-action notice. The
@@ -1120,7 +1120,7 @@ finding.</p>
 
 <p>OCC Bulletin 2026-13 is the gray-zone wrinkle. The bulletin
 explicitly excludes general-purpose generative AI tools from the OCC's
-formal model-risk-management scope — the intent was to avoid sweeping
+formal model-risk-management scope. The intent was to avoid sweeping
 every chat interface into a SR 11-7 review cycle. In practice, banks
 have read the carve-out conservatively and applied SR 11-7 anyway to
 any LLM whose output enters a regulated workflow. The legal posture is
@@ -1135,8 +1135,8 @@ for insurance claims; each request needs the prompt, the model version,
 the system-prompt version, the tool-call graph, the raw model output,
 the post-processing, the eval result, and the final downstream
 decision, all joined on a request ID and immutable. The audit-log
-infrastructure — the storage, the indexing, the access controls, the
-retrieval API for a regulator request — typically runs two to three
+infrastructure (the storage, the indexing, the access controls, the
+retrieval API for a regulator request) typically runs two to three
 times the pure inference cost in regulated workloads when ops teams
 honestly account for it. The pharmacy LCPR of $0.0882 per accepted
 draft would land closer to $0.21 to $0.26 with the regulated audit
@@ -1148,7 +1148,7 @@ denied claims, prior-auth narratives, clinical decision support,
 suitability assessments). The deterministic gate (Part 1) is not
 optional in these workloads; it is the only artifact that survives a
 model swap intact. Skip the framing when the workload is purely
-internal — engineering productivity, customer support that does not
+internal: engineering productivity, customer support that does not
 issue binding decisions, content drafting that a human always
 reviews.</p>
 <h3 id="decision-rule-23">Decision rule</h3>
@@ -1190,7 +1190,7 @@ roll-up by account, delta analysis, and variance waterfall.</p>
 Review, And Forecast</h2>
 <h3 id="the-field-problem-15">The field problem</h3>
 <p>A model provider ships an update. The model version changes silently.
-Output format shifts subtly—JSON keys that were lowercase are now
+Output format shifts subtly. JSON keys that were lowercase are now
 camelCase. The parsing layer handles most of it, but 8% of outputs fail
 validation. The quality gate catches it. The repair loop kicks in: each
 failed output is retried with an explicit format instruction, doubling
@@ -1202,7 +1202,7 @@ $2,400 in additional inference, $800 in human escalation, and 12
 engineer-hours in investigation and mitigation.</p>
 <h3 id="the-mechanism-15">The mechanism</h3>
 <p>Inference incidents differ from traditional software incidents. The
-system is often technically “up”—requests are served, latency is normal,
+system is often technically “up.” Requests are served, latency is normal,
 error rate is low. But quality degrades. The degradation is silent until
 the quality gate catches it (if the quality gate covers the failure
 mode) or until users report it (if it does not).</p>
@@ -1271,7 +1271,7 @@ delta during the incident.</p>
 not help for quality incidents where the system is technically up.
 Quality degradation requires quality detection, which requires evals
 that cover the failure mode. If the eval suite does not cover the
-failure mode, detection depends on user complaints—which are slow,
+failure mode, detection depends on user complaints, which are slow,
 noisy, and incomplete.</p>
 <h3 id="the-better-model-16">The better model</h3>
 <p>Inference incident response has three phases:</p>
@@ -1467,7 +1467,7 @@ for budget planning.</p>
 <p>Treat quality incidents with the same severity as availability
 incidents. Invest in quality detection proportionally to the cost of
 undetected quality degradation. Produce the inference review pack
-monthly. Forecast by component and by scenario—present ranges, not
+monthly. Forecast by component and by scenario. Present ranges, not
 points.</p>
 <h3 id="what-to-measure-22">What to measure</h3>
 <ul>
@@ -1488,7 +1488,7 @@ much</p></li>
 <h3 id="where-this-breaks-24">Where this breaks</h3>
 <p>Quality incident detection requires evals that cover the failure
 mode. If the failure mode is new, the eval suite will not catch it until
-the cases are added—continuous log review of actual production outputs
+the cases are added. Continuous log review of actual production outputs
 is essential as a complement to automated evals.</p>
 <p>The review pack requires data from traces, invoices, evals, and
 support systems. Start with what you have. A review pack with LCPR from
@@ -1519,7 +1519,7 @@ assumed.</p>
 <p><strong>Uniform.</strong> Total spend divided by team count, or by seat count, or by some other coarse denominator. Easiest to compute. Easiest to game. Defensible only when usage is genuinely similar across teams; almost never true once one team has a high-fanout agentic workload and another has a chat workload. The right default for the first 90 days of a platform when nobody has the data to argue with it.</p>
 <p><strong>Proportional.</strong> Each team's share of measured usage (tokens, requests, accepted outputs) multiplied by the invoice total. Reconciles to the invoice exactly. Loses the asymmetry: a team with bursty traffic that requires capacity additions pays the same per-token as a team with smooth traffic that fits in the gaps. Right when traffic shape is roughly uniform across teams or when capacity is genuinely elastic (serverless) and the invoice reflects only consumed work.</p>
 <p><strong>Weighted by SLA and shape.</strong> Proportional, but each team's share is multiplied by a factor that reflects how much capacity their workload requires beyond average use. A coefficient over 1 for high-burst or tight-SLA workloads; under 1 for batch-tolerant or off-peak workloads. The coefficients are usually inherited from the SLA tier the team purchased internally (tier-1 latency = 1.4x; tier-3 batch = 0.7x). Reconciles to the invoice if the weights sum correctly. Survives the negotiation because the coefficients are tied to a tier choice the team already made.</p>
-<p><strong>Hybrid.</strong> A floor (uniform or per-seat) covering the platform's fixed cost — engineering time, the eval system, monitoring, the on-call burden — plus a usage-weighted variable component for inference cost itself. The floor solves the "team one moved their workload off the platform and the platform still costs the same to run" problem. The variable component handles the usage asymmetry. This is what most mature internal platforms end up running.</p>
+<p><strong>Hybrid.</strong> A floor (uniform or per-seat) covering the platform's fixed cost (engineering time, the eval system, monitoring, the on-call burden) plus a usage-weighted variable component for inference cost itself. The floor solves the "team one moved their workload off the platform and the platform still costs the same to run" problem. The variable component handles the usage asymmetry. This is what most mature internal platforms end up running.</p>
 <h3 id="the-shared-cache-and-fine-tune-problem">The shared cache and fine-tune problem</h3>
 <p>Two specific allocation cases break naive proportional models.</p>
 <p>The first is prompt caching. A shared system prompt across teams pays for itself the first time it loads, then runs at a 50-90% discount for every subsequent team that hits it. The team that warmed the cache subsidizes the teams that benefit. Three options: pretend the discount does not exist and bill each team the un-cached rate (the platform pockets the discount, teams underconsume the cache); pass the cache discount through evenly by measured token (the warming team subsidizes the followers); attribute the cache to the first team that used it in each TTL window (penalizes the warming team in proportion to the cache TTL). The third is fairest in principle and impossible to audit in practice. Most platforms settle on the second.</p>
@@ -1532,15 +1532,15 @@ assumed.</p>
 <li><p>Variance versus prior month and versus quarterly forecast, with the largest three deltas explained.</p></li>
 <li><p>Cache and fine-tune transfers (which team warmed which cache; which team's fine-tune is callable by which other team).</p></li>
 <li><p>Capacity attribution: how much of the dedicated capacity each team's workload pinned, and what fraction of that capacity went unused.</p></li>
-<li><p>One paragraph of trend analysis — not "team X is up 12%" but "team X moved from chat to agentic and the per-accepted-output cost reflects the fanout."</p></li>
+<li><p>One paragraph of trend analysis. Not "team X is up 12%" but "team X moved from chat to agentic and the per-accepted-output cost reflects the fanout."</p></li>
 </ul>
 <p>The report is for the budget conversation, not the operational one. Treat it as a quarterly negotiation artifact rather than a real-time dashboard.</p>
 <h3 id="anonymized-case-public-sector-platform">An anonymized case: a mid-size public-sector platform</h3>
 <p>A consolidated state-agency platform served seven program offices on one inference contract. The initial chargeback model was proportional by token. After two quarters, three offices stopped using the platform and stood up their own contracts; the remaining four absorbed the fixed cost and complained loudly. The platform owner switched to a hybrid model: a $14K monthly floor split by seat count covering the contract minimum and the platform engineering team, plus a per-token usage charge above the floor at the rate that reconciled to the invoice. Two of the three departed offices came back within a quarter when their standalone contracts ran into minimum commits they could not fill. The fourth never returned. The lesson the owner reported: the proportional model was technically accurate and politically dead. The hybrid model was technically inferior on margin attribution and survived three renewal cycles.</p>
-<p>The side-finding: the floor exposed how much of the platform cost was actually platform overhead rather than inference. The seven offices, taken together, were paying about $42K/month in inference and $14K/month in fixed costs. The first reaction inside finance was to drive the fixed cost down. The second reaction, after the platform team explained what the floor covered, was to consolidate two adjacent platforms onto the same floor — the marginal cost of supporting an eighth office was small, and the existing four were happy to dilute their floor share with new entrants.</p>
+<p>The side-finding: the floor exposed how much of the platform cost was actually platform overhead rather than inference. The seven offices, taken together, were paying about $42K/month in inference and $14K/month in fixed costs. The first reaction inside finance was to drive the fixed cost down. The second reaction, after the platform team explained what the floor covered, was to consolidate two adjacent platforms onto the same floor. The marginal cost of supporting an eighth office was small, and the existing four were happy to dilute their floor share with new entrants.</p>
 <h3 id="where-cost-attribution-breaks">Where this breaks</h3>
 <p>Attribution fails when teams share a single LLM call across two product surfaces (the call cannot be split without re-running it), when the eval system is centralized and the cost of running evals is not allocated by which team's outputs were graded, or when a fine-tune fails in production and the cost of the rollback (re-running on the previous model) is borne by the team that requested the fine-tune rather than the team that approved it.</p>
-<p>Attribution also breaks during incidents. A two-hour outage costs the platform's dedicated capacity the same as a normal two-hour window, but no team accepts being billed for capacity that produced no accepted outputs. The usual remedy is to credit incident windows against the affected teams' usage, paid out of the platform's reserve. The reserve has to be funded by something — usually a small percentage of every team's usage charge — which is itself an attribution decision that teams will eventually challenge.</p>
+<p>Attribution also breaks during incidents. A two-hour outage costs the platform's dedicated capacity the same as a normal two-hour window, but no team accepts being billed for capacity that produced no accepted outputs. The usual remedy is to credit incident windows against the affected teams' usage, paid out of the platform's reserve. The reserve has to be funded by something, usually a small percentage of every team's usage charge, which is itself an attribution decision that teams will eventually challenge.</p>
 <h3 id="calculator-hook-25">Calculator hook</h3>
 <p>The cost-attribution view takes per-team trace volume, per-team accepted output counts, the team's SLA tier coefficient, the cache and fine-tune transfer table, and the platform fixed cost. It outputs allocated spend by team under each of the four allocation modes, along with the variance between modes so the platform owner can see how much of the negotiation is mode-driven rather than usage-driven.</p>
 <p>Use the hybrid mode when the platform has more than two teams, runs a dedicated capacity floor, or has fixed engineering overhead that does not vary with usage. Use proportional when the platform is serverless and every dollar of cost is directly traceable to a team's request. Use weighted when teams have explicit SLA tiers. Use uniform only for the first quarter of a platform, before there is enough data to argue.</p>

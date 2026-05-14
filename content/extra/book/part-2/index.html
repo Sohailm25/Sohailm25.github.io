@@ -553,9 +553,9 @@ Capacity and Routing</a></li><li><a href="#part-2-summary">Part 2 Summary</a></l
           
 <p>Part 1 defined the economic unit: loaded cost per accepted result,
 not token price. Part 2 explains why the numbers come out the way they
-do. The mechanisms here—roofline reasoning, batch amortization, KV cache
+do. The mechanisms here (roofline reasoning, batch amortization, KV cache
 pressure, prefill/decode asymmetry, prompt caching, and productive
-capacity—are the vocabulary that Parts 3 through 5 depend on.</p>
+capacity) are the vocabulary that Parts 3 through 5 depend on.</p>
 <p>A reader who skips Part 2 can still use LCPR and the calculator.
 But they will not know <em>why</em> cache hit rate changes cost, why
 output tokens cost more than input tokens, why batch size sets the
@@ -768,7 +768,7 @@ prefix caching.</em></p>
 </blockquote>
 <h3 id="the-batch-size-frontier">The Batch Size Frontier</h3>
 <p>The roofline sets the physics. The batch policy determines the
-economics—and it is often invisible in the token price.</p>
+economics, and it is often invisible in the token price.</p>
 <p>A platform engineer pitches a switch: "this serverless endpoint is 3x cheaper per token." The team migrates and the bill drops. p99 latency doubles. Support tickets about "slow AI" rise. The mistake was comparing token prices without understanding that the cheap endpoint achieves low cost by running large batches, trading latency for throughput.</p>
 <p>This is not fraud. This is the batch size frontier: every serving
 system makes a choice about where on the cost-latency curve to operate,
@@ -853,7 +853,7 @@ requirements.</p>
 model, scheduler, and SLO.</em></p>
 <p>The cost difference between Zone 1 and Zone 3 is ~27x. That gap
 explains why “same model, different provider, different price” is not
-necessarily unfair—it may reflect different batch policy choices.</p>
+necessarily unfair. It may reflect different batch policy choices.</p>
 <h3 id="decision-rule-3">Decision Rule</h3>
 <p>The roofline determines where your workload sits on the cost-latency
 frontier. Do not plan capacity from peak throughput. Plan from the batch
@@ -862,7 +862,7 @@ that operating point.</p>
 <p>When comparing providers or deployment modes, ask: at what batch size
 does this system operate under my traffic load, and does the resulting
 latency meet my SLO? The cheapest provider that violates your latency
-SLO is not cheaper—it is more expensive, because the latency failures
+SLO is not cheaper. It is more expensive, because the latency failures
 create retries, timeouts, or customer dissatisfaction that increase
 LCPR.</p>
 <h3 id="what-to-measure-1">What To Measure</h3>
@@ -911,8 +911,8 @@ points.</p>
 id="chapter-5-prefill-decode-and-why-output-tokens-cost-more">Chapter 5:
 Prefill, Decode, and Why Output Tokens Cost More</h2>
 <h3 id="field-problem-4">Field Problem</h3>
-<p>The prompt is long—8,000 tokens of retrieved context plus a 500-token
-system prompt. The output is short—typically 150-300 tokens. This RAG
+<p>The prompt is long: 8,000 tokens of retrieved context plus a 500-token
+system prompt. The output is short, typically 150-300 tokens. This RAG
 pipeline’s team sees that output tokens cost 3-5x more than input tokens
 on most provider pricing pages. They assume this is provider markup. It
 is not markup. It is physics.</p>
@@ -941,8 +941,8 @@ through the structural cost difference between prefill and decode.</p>
 generation.”</p>
 </blockquote>
 <p>Providers do have pricing strategy. But the output/input price
-ratio—typically 2-6x on major API providers as of the May 2026 pricing
-snapshot—is broadly consistent across providers with very different
+ratio (typically 2-6x on major API providers as of the May 2026 pricing
+snapshot) is broadly consistent across providers with very different
 business models. The ratio varies: some providers price output at 3x
 input, others at 4x or 6x, and some serverless open-model endpoints use
 symmetric pricing. The ratio persists across most providers because it

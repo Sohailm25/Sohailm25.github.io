@@ -1,0 +1,25 @@
+[project]
+name = "sohailm25-github-io-tools"
+version = "0.1.0"
+description = "Build-time tools for the book + writings site."
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.setuptools]
+# Repo root contains many non-Python top-level dirs (content/, theme/,
+# output/, extra/, scratch/, history/) which confuse setuptools'
+# flat-layout auto-discovery. Declare the two real Python packages
+# explicitly.
+packages = ["scripts", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

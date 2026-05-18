@@ -1,558 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Sohail Mohammad">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-  <title>Part 5: Operating The Decision — Production Inference Economics</title>
-  <style>
-    /* ── Reset ─────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --c-bg: #faf9f6;
-      --c-surface: #ffffff;
-      --c-text: #1a1a1a;
-      --c-text-secondary: #5a5a5a;
-      --c-text-tertiary: #8a8a8a;
-      --c-heading: #0f0f0f;
-      --c-link: #5a8a60;
-      --c-link-hover: #4a7a50;
-      --c-border: #e0ddd6;
-      --c-border-light: #ebe9e3;
-      --c-code-bg: #f0eee8;
-      --c-table-header: #f4f3ef;
-      --c-table-stripe: #faf9f6;
-      --c-blockquote-border: #A7C080;
-      --c-blockquote-bg: #f4f3ef;
-      --c-accent: #83C092;
-      --c-accent-dark: #A7C080;
-      --c-accent-light: rgba(131, 192, 146, 0.1);
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-      --content-max: 700px;
-    }
-
-    html {
-      font-size: 16.5px;
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-      scrollbar-gutter: stable;
-    }
-
-    body {
-      font-family: var(--font-body);
-      color: var(--c-text);
-      background: var(--c-bg);
-      line-height: 1.75;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* ── Links ─────────────────────────────────────── */
-    a {
-      color: var(--c-link);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    a:hover { color: var(--c-link-hover); }
-
-    /* ── Typography ────────────────────────────────── */
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.02em;
-      font-weight: 700;
-    }
-
-    strong { font-weight: 600; }
-
-    /* ── Code ──────────────────────────────────────── */
-    code {
-      font-family: var(--font-mono);
-      font-size: 0.87em;
-      background: var(--c-code-bg);
-      padding: 0.15em 0.4em;
-      border-radius: 4px;
-    }
-
-    pre {
-      background: var(--c-code-bg);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      line-height: 1.55;
-    }
-
-    pre code {
-      background: none;
-      padding: 0;
-      font-size: 0.85rem;
-    }
-
-
-    /* ── Progress Bar ──────────────────────────────── */
-    #progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background: var(--c-accent);
-      z-index: 1000;
-      transition: width 60ms linear;
-    }
-
-    /* ── Page Layout: Sidebar + Content ─────────────── */
-    .page-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* ── Sidebar ───────────────────────────────────── */
-    #sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 260px;
-      height: 100vh;
-      background: var(--c-surface);
-      border-right: 1px solid var(--c-border);
-      overflow-y: auto;
-      padding: 1.75rem 0;
-      z-index: 100;
-      scrollbar-width: thin;
-      scrollbar-color: var(--c-border) transparent;
-    }
-
-    #sidebar::-webkit-scrollbar { width: 4px; }
-    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
-
-    .sidebar-header {
-      padding: 0 1.25rem 1.25rem;
-      border-bottom: 1px solid var(--c-border);
-      margin-bottom: 0.75rem;
-    }
-
-    .sidebar-header .back-link {
-      display: inline-block;
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      text-decoration: none;
-      margin-bottom: 0.6rem;
-      transition: color 0.15s;
-    }
-
-    .sidebar-header .back-link:hover { color: var(--c-link); }
-
-    .sidebar-header .part-label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-      margin-bottom: 0.25rem;
-    }
-
-    .sidebar-header h2 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.01em;
-    }
-
-    .sidebar-header .chapters-info {
-      font-size: 0.75rem;
-      color: var(--c-text-tertiary);
-      margin-top: 0.2rem;
-    }
-
-    /* ── Sidebar TOC ───────────────────────────────── */
-    .sidebar-toc {
-      list-style: none;
-      padding: 0.5rem 0;
-      margin: 0;
-    }
-
-    .sidebar-toc li {
-      margin: 0;
-    }
-
-    .sidebar-toc a {
-      display: block;
-      padding: 0.35rem 1.25rem;
-      font-size: 0.82rem;
-      color: var(--c-text-secondary);
-      text-decoration: none;
-      line-height: 1.35;
-      border-left: 2px solid transparent;
-      transition: all 0.15s ease;
-    }
-
-    .sidebar-toc a:hover {
-      color: var(--c-link);
-      background: var(--c-accent-light);
-    }
-
-    .sidebar-toc a.active {
-      color: var(--c-accent);
-      font-weight: 500;
-      border-left-color: var(--c-accent);
-      background: var(--c-accent-light);
-    }
-
-    /* ── Sidebar Nav Links ─────────────────────────── */
-    .sidebar-nav {
-      padding: 0.75rem 1.25rem 0;
-      margin-top: 0.5rem;
-      border-top: 1px solid var(--c-border);
-    }
-
-    .sidebar-nav a {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      text-decoration: none;
-      padding: 0.3rem 0;
-      transition: color 0.15s;
-    }
-
-    .sidebar-nav a:hover { color: var(--c-link); }
-
-    /* ── Main Content Area ─────────────────────────── */
-    .main-content {
-      margin-left: 260px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .part-container {
-      max-width: var(--content-max);
-      margin: 0 auto;
-      padding: 2.5rem 2rem 5rem;
-    }
-
-    /* ── Part Header ───────────────────────────────── */
-    .part-header {
-      margin-bottom: 2.5rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid var(--c-border);
-    }
-
-    .part-header .label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .part-header h1 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 0;
-      line-height: 1.2;
-    }
-
-    .part-header .chapters-label {
-      font-size: 0.85rem;
-      color: var(--c-text-tertiary);
-      margin-top: 0.5rem;
-    }
-
-    /* ── Content ───────────────────────────────────── */
-    .content h2 {
-      font-size: 1.4rem;
-      margin-top: 3rem;
-      margin-bottom: 0.75rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--c-border-light);
-    }
-
-    .content h2:first-child {
-      border-top: none;
-      padding-top: 0;
-      margin-top: 0;
-    }
-
-    .content h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 2rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .content h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .content p {
-      margin-bottom: 1.1rem;
-    }
-
-    /* ── Lists ─────────────────────────────────────── */
-    .content ul, .content ol {
-      padding-left: 1.4rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .content li {
-      margin-bottom: 0.3rem;
-    }
-
-    .content li > ul, .content li > ol {
-      margin-top: 0.3rem;
-      margin-bottom: 0;
-    }
-
-    .content dl { margin-bottom: 1.1rem; }
-    .content dt { font-weight: 600; margin-top: 0.75rem; }
-    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
-
-    /* ── Tables ────────────────────────────────────── */
-    .table-wrapper {
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .content table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    .content thead { border-bottom: 2px solid var(--c-border); }
-
-    .content thead th {
-      background: var(--c-table-header);
-      font-weight: 600;
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      white-space: nowrap;
-    }
-
-    .content tbody td {
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid var(--c-border-light);
-      vertical-align: top;
-    }
-
-    .content tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .content tbody tr:nth-child(even) {
-      background: var(--c-table-stripe);
-    }
-
-    /* ── Figures ────────────────────────────────────── */
-    .content figure {
-      margin: 1.5rem 0 2rem;
-    }
-
-    .content figcaption, .content caption {
-      font-size: 0.82rem;
-      color: var(--c-text-secondary);
-      line-height: 1.45;
-      margin-top: 0.5rem;
-    }
-
-    .content caption {
-      caption-side: top;
-      text-align: left;
-      padding-bottom: 0.6rem;
-      font-weight: 600;
-      color: var(--c-heading);
-    }
-
-    /* ── Blockquotes ───────────────────────────────── */
-    .content blockquote {
-      border-left: 3px solid var(--c-blockquote-border);
-      background: var(--c-blockquote-bg);
-      padding: 0.85rem 1.25rem;
-      margin: 1.25rem 0;
-      border-radius: 0 8px 8px 0;
-    }
-
-    .content blockquote p { margin-bottom: 0.4rem; }
-    .content blockquote p:last-child { margin-bottom: 0; }
-
-    /* ── Horizontal Rules ──────────────────────────── */
-    .content hr {
-      border: none;
-      border-top: 1px solid var(--c-border);
-      margin: 2.5rem auto;
-      max-width: 40%;
-    }
-
-    /* ── Part Navigation ───────────────────────────── */
-    .part-nav {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--c-border);
-    }
-
-    .nav-prev, .nav-next {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-      text-decoration: none;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--c-border);
-      border-radius: 10px;
-      background: var(--c-surface);
-      transition: border-color 0.15s, background 0.15s;
-      max-width: 48%;
-    }
-
-    .nav-prev:hover, .nav-next:hover {
-      border-color: var(--c-accent);
-      background: var(--c-accent-light);
-    }
-
-    .nav-next { text-align: right; margin-left: auto; }
-
-    .nav-dir {
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      font-weight: 500;
-    }
-
-    .nav-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--c-heading);
-      line-height: 1.3;
-    }
-
-    /* ── Mobile Menu Toggle ────────────────────────── */
-    #menu-toggle {
-      display: none;
-      position: fixed;
-      top: 10px;
-      left: 12px;
-      z-index: 200;
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      font-family: var(--font-body);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      color: var(--c-text-secondary);
-    }
-
-    #menu-toggle:hover { background: var(--c-table-header); }
-
-    #sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.25);
-      z-index: 90;
-    }
-
-    /* ── Responsive ────────────────────────────────── */
-    @media (max-width: 960px) {
-      #menu-toggle { display: block; }
-
-      #sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.25s ease;
-        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
-      }
-
-      #sidebar.open { transform: translateX(0); }
-      #sidebar-overlay.open { display: block; }
-
-      .main-content { margin-left: 0; }
-
-      .part-container {
-        padding: 3rem 1.25rem 4rem;
-      }
-    }
-
-    @media (max-width: 600px) {
-      html { font-size: 15.5px; }
-      .part-container { padding: 3rem 1rem 3rem; }
-      .part-header h1 { font-size: 1.5rem; }
-      .content h2 { font-size: 1.2rem; }
-      .content table { font-size: 0.78rem; }
-      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
-      .part-nav { flex-direction: column; }
-      .nav-prev, .nav-next { max-width: 100%; }
-    }
-
-    /* ── Print ─────────────────────────────────────── */
-    @media print {
-      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
-      .main-content { margin-left: 0; }
-      .part-container { max-width: 100%; padding: 0; }
-      .content h2 { page-break-after: avoid; }
-      .content table, .content figure { page-break-inside: avoid; }
-    }
-  </style>
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Sohail Mohammad" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<title>Part 5: Operating The Decision — Production Inference Economics</title>
+<link href="/theme/css/book-tokens.css" rel="stylesheet"/><link href="/theme/css/book.css" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/></head>
 <body>
-  <div id="progress-bar"></div>
-  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
-  <div id="sidebar-overlay"></div>
-
-  <div class="page-layout">
-    <nav id="sidebar">
-      <div class="sidebar-header">
-        <a class="back-link" href="/book/">&larr; All Parts</a>
-        <div class="part-label">Part 5</div>
-        <h2>Operating The Decision</h2>
-        <div class="chapters-info">Chapters 23–27</div>
-      </div>
-      <ul class="sidebar-toc"><li><a href="#chapter-23-baselines-and-evals">Chapter 23: Baselines And
+<div id="progress-bar"></div>
+<button aria-label="Toggle table of contents" id="menu-toggle">Contents</button>
+<div id="sidebar-overlay"></div>
+<div class="page-layout">
+<nav id="sidebar">
+<div class="sidebar-header">
+<a class="back-link" href="/book/">← All Parts</a>
+<div class="part-label"><a href="/book/part-5/">Part 5</a></div>
+<h2>Operating The Decision</h2>
+<div class="chapters-info">Chapters 23–27</div>
+</div>
+<ul class="sidebar-toc"><li><a href="#chapter-23-baselines-and-evals">Chapter 23: Baselines And
 Evals</a></li><li><a href="#chapter-24-benchmarks-and-goodput">Chapter 24: Benchmarks And
 Goodput</a></li><li><a href="#chapter-25-observability-and-trace-to-loaded-cost">Chapter 25:
 Observability And Trace-to-Loaded-Cost</a></li><li><a href="#chapter-26-incidents-review-and-forecast">Chapter 26: Incidents,
 Review, And Forecast</a></li><li><a href="#chapter-27-cost-attribution-and-chargeback">Chapter 27: Cost
 Attribution And Chargeback</a></li><li><a href="#part-5-summary">Part 5 Summary</a></li><li><a href="#evidence-notes-for-part-5">Evidence Notes for Part 5</a></li></ul>
-      <div class="sidebar-nav">
-        <a href="/book/part-4/">&larr; Part 4: Migration Gates</a>
-        <a href="/book/appendix/">Appendix:
-Calculator Manual And Living Reference &rarr;</a>
-      </div>
-    </nav>
-
-    <div class="main-content">
-      <div class="part-container">
-        <div class="part-header">
-          <div class="label">Part 5</div>
-          <h1>Operating The Decision</h1>
-          <div class="chapters-label">Chapters 23–27</div>
-        </div>
-
-        <div class="content">
-          
-<p>Parts 1 through 4 chose a route. Part 5 keeps it honest. The
+<div class="sidebar-nav">
+<a href="/book/part-4/">← Part 4: Migration Gates</a>
+<a href="/book/appendix/">Appendix:
+Calculator Manual And Living Reference →</a>
+</div>
+</nav>
+<article class="book-part"><div class="main-content">
+<div class="part-container">
+<div class="part-header">
+<div class="label"><a href="/book/part-5/">Part 5</a></div>
+<h1>Operating The Decision</h1>
+<div class="chapters-label">Chapters 23–27</div>
+</div>
+<div class="content">
+<p class="has-dropcap">Parts 1 through 4 chose a route. <a href="/book/part-5/">Part 5</a> keeps it honest. The
 migration happened, the endpoint is live, traffic is flowing. The
 decision can drift in three ways: it can stop being correct, you can
 fail to detect that it stopped, or you can detect it but be unable to
@@ -564,10 +52,10 @@ moves, and the quality floor drifts in the background. The eval suite
 covers last quarter's failure modes; this quarter has new ones. Finance
 sees an invoice moving and asks why, and the engineering team, which
 measures tokens, cannot answer in dollars.</p>
-<p>Part 5 supplies the operating cadence: measurement, evaluation,
+<p><a href="/book/part-5/">Part 5</a> supplies the operating cadence: measurement, evaluation,
 honest benchmarking, trace-to-invoice reconciliation, incident response,
 review discipline, and forecasting.</p>
-<hr />
+<hr/>
 <h2 id="chapter-23-baselines-and-evals">Chapter 23: Baselines And Evals</h2>
 <h3 id="the-field-problem-12">The field problem</h3>
 <p>Two weeks after migrating a support chat workload to a new model, the
@@ -696,11 +184,10 @@ outputs. Expensive. Essential for calibrating Layers 1 and 2 and
 discovering new failure modes.</p>
 <p>The cost of each layer is part of the LCPR numerator. The quality
 gate from evals determines the denominator.</p>
-<h3 id="decision-rule-21">Decision rule</h3>
-<p>Before any route change, model update, or significant prompt
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Before any route change, model update, or significant prompt
 revision: capture a baseline. After the change, capture the same metrics
 and compare. Treat eval coverage as an operational metric. Review it
-monthly.</p>
+monthly.</p></div>
 <h3 id="what-to-measure-19">What to measure</h3>
 <ul>
 <li><p>Baseline metrics: LCPR, quality pass rate, latency percentiles,
@@ -714,18 +201,17 @@ set</p></li>
 minutes</p></li>
 <li><p>False positive and false negative rates</p></li>
 </ul>
-<h3 id="where-this-breaks-21">Where this breaks</h3>
-<p>Baselines break when captured during an atypical period without
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Baselines break when captured during an atypical period without
 noting the anomaly, or when the eval suite changes between baseline and
 comparison. Evals become theater when the team optimizes the pass rate
 instead of quality. Regularly adding production cases and rotating
-adversarial cases resists overfitting.</p>
+adversarial cases resists overfitting.</p></div>
 <h3 id="calculator-hook-21">Calculator hook</h3>
 <p>The baseline view stores a dated snapshot of all cost components. The
 comparison view shows delta between baseline and current state. The eval
 cost layer: deterministic check cost, model-grader cost, human review
 cost per sampled request.</p>
-<hr />
+<hr/>
 <h2 id="chapter-24-benchmarks-and-goodput">Chapter 24: Benchmarks And Goodput</h2>
 <h3 id="the-field-problem-13">The field problem</h3>
 <p>“Model X achieves 2,500 tokens/sec on A100.” The published benchmark
@@ -827,12 +313,11 @@ request at peak throughput.</p>
 candidate route. The route with the lowest cost per accepted result at
 your operating point wins. Not the route with the highest throughput or
 the lowest token price.</p>
-<h3 id="decision-rule-22">Decision rule</h3>
-<p>Never compare routes using vendor benchmarks alone. Run a
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Never compare routes using vendor benchmarks alone. Run a
 goodput-bounded load test with your traffic shape, SLO, and quality
 gate. The results will differ from the vendor numbers; that difference
 is the benchmark-to-production transfer gap, and it determines whether
-the vendor result is useful or misleading.</p>
+the vendor result is useful or misleading.</p></div>
 <h3 id="what-to-measure-20">What to measure</h3>
 <ul>
 <li><p>Goodput (accepted results/sec) at your target request
@@ -845,20 +330,18 @@ measured)</p></li>
 <li><p>Quality pass rate under load (does quality degrade at high
 throughput?)</p></li>
 </ul>
-<h3 id="where-this-breaks-22">Where this breaks</h3>
-<p>Goodput testing requires a quality gate, which requires evals. If the
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Goodput testing requires a quality gate, which requires evals. If the
 eval suite is weak (Chapter 23), the goodput number is inflated. Run
-goodput tests only with a calibrated eval suite.</p>
-<p>Goodput testing also requires representative traffic. If the test
+goodput tests only with a calibrated eval suite.</p><p>Goodput testing also requires representative traffic. If the test
 traffic does not match production (different prompt lengths, different
 output lengths, different tool call patterns), the results will not
-predict production performance.</p>
+predict production performance.</p></div>
 <h3 id="calculator-hook-22">Calculator hook</h3>
 <p>The calculator view takes per-request latency, quality, and cost data
 from a load test. It outputs: goodput curve by request rate, cost per
 accepted result curve, capacity ceiling under SLO, and comparison across
 routes.</p>
-<hr />
+<hr/>
 <h2 id="chapter-25-observability-and-trace-to-loaded-cost">Chapter 25: Observability And Trace-to-Loaded-Cost</h2>
 <h3 id="the-field-problem-14">The field problem</h3>
 <p>The dashboards show p99 latency, error rate, GPU utilization, and
@@ -1073,14 +556,11 @@ without an obvious volume or model change, finance is questioning the
 unit economics of a workload, or a contract amendment has just gone
 into effect. Skip it when the invoice has been stable for three
 consecutive months and the workload shape has not shifted.</p>
-
 <h3 id="regulatory-observability">Regulatory observability for explanation LLMs</h3>
-
 <p>The pharmacy example sat in a regulated workload but stopped short
 of the deepest cost driver in regulated inference: the audit and
 model-risk apparatus that wraps an LLM the moment its output becomes
 part of a decision a regulator can ask you to defend.</p>
-
 <p>When an LLM drafts an explanation that accompanies a regulated
 decision (a denied loan, a denied claim, a prior-auth narrative, an
 adverse-action notice), that explanation LLM is no longer just an
@@ -1095,7 +575,6 @@ Management," April 2011). When the model is an LLM whose weights and
 prompt and tool-use scaffolding all sit on a third-party provider, the
 inventory entry has to capture each of those layers and the validation
 has to cover the joint behavior.</p>
-
 <p>The Equal Credit Opportunity Act (ECOA, 15 U.S.C. §1691) layers on
 top. Under ECOA and Regulation B, a creditor that takes an adverse
 action against an applicant must provide a statement of "specific
@@ -1107,7 +586,6 @@ hallucinates a reason that did not factor into the underlying decision,
 the creditor has issued a non-compliant adverse-action notice. The
 hallucination is not just a quality bug; it is a regulatory
 finding.</p>
-
 <p>OCC Bulletin 2026-13 is the gray-zone wrinkle. The bulletin
 explicitly excludes general-purpose generative AI tools from the OCC's
 formal model-risk-management scope. The intent was to avoid sweeping
@@ -1118,7 +596,6 @@ any LLM whose output enters a regulated workflow. The legal posture is
 skipping it either, and the cost of an examination finding exceeds the
 cost of validation." The result is that the gray zone collapses
 into the same operational burden as the in-scope case.</p>
-
 <p>What this does to inference observability is concrete. Audit-log
 retention runs seven years for most banking workloads and ten years
 for insurance claims; each request needs the prompt, the model version,
@@ -1131,25 +608,22 @@ times the pure inference cost in regulated workloads when ops teams
 honestly account for it. The pharmacy LCPR of $0.0882 per accepted
 draft would land closer to $0.21 to $0.26 with the regulated audit
 stack rolled in.</p>
-
 <p>Use the regulated-workload framing when: the LLM output enters a
 decision a regulator can ask you to defend (adverse-action notices,
 denied claims, prior-auth narratives, clinical decision support,
-suitability assessments). The deterministic gate (Part 1) is not
+suitability assessments). The deterministic gate (<a href="/book/part-1/">Part 1</a>) is not
 optional in these workloads; it is the only artifact that survives a
 model swap intact. Skip the framing when the workload is purely
 internal: engineering productivity, customer support that does not
 issue binding decisions, content drafting that a human always
 reviews.</p>
-<h3 id="decision-rule-23">Decision rule</h3>
-<p>If you cannot explain a cost change from your observability system,
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>If you cannot explain a cost change from your observability system,
 you are missing economic signals. The minimum viable economic
 observability is: per-request token counts (input, output, cached),
-cache hit rate, quality gate result, and cost estimate.</p>
-<p>Present LCPR and the loaded-cost roll-up to engineering, product, and
+cache hit rate, quality gate result, and cost estimate.</p><p>Present LCPR and the loaded-cost roll-up to engineering, product, and
 finance. The trace-to-loaded-cost reconciliation is the artifact that
 connects all three teams' views. Run it monthly. Investigate deltas
-above 5%.</p>
+above 5%.</p></div>
 <h3 id="what-to-measure-21">What to measure</h3>
 <ul>
 <li><p>Economic signal set: input/output tokens, cache hit rate, quality
@@ -1161,21 +635,19 @@ gate pass rate, retry rate, model/prompt version</p></li>
 <li><p>LCPR by workload and by account</p></li>
 <li><p>Loaded cost vs invoice by account</p></li>
 </ul>
-<h3 id="where-this-breaks-23">Where this breaks</h3>
-<p>Economic observability requires joining data from multiple systems:
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Economic observability requires joining data from multiple systems:
 the serving engine, the provider, the eval system, and the business
 system. If these cannot be joined on a common request ID, the economic
-picture is incomplete.</p>
-<p>Reconciliation breaks when traces are incomplete (sampling, dropped
+picture is incomplete.</p><p>Reconciliation breaks when traces are incomplete (sampling, dropped
 events), the invoice covers a different period, credits distort the
 invoice, human costs are not attributed to workloads, or the revenue
-model is bundled.</p>
+model is bundled.</p></div>
 <h3 id="calculator-hook-23">Calculator hook</h3>
 <p>The observability signals feed the calculator. The calculator view
 takes traces, invoice, eval results, human costs, ops overhead, and
 contracted unit rates. It outputs: LCPR by workload, loaded-cost
 roll-up by account, delta analysis, and variance waterfall.</p>
-<hr />
+<hr/>
 <h2 id="chapter-26-incidents-review-and-forecast">Chapter 26: Incidents, Review, And Forecast</h2>
 <h3 id="the-field-problem-15">The field problem</h3>
 <p>A model provider ships an update. The model version changes silently.
@@ -1452,12 +924,11 @@ operational overhead.</p>
 <p>The forecast is a range, not a point. Present the range with the
 assumptions that drive each scenario. Let finance choose the scenario
 for budget planning.</p>
-<h3 id="decision-rule-24">Decision rule</h3>
-<p>Treat quality incidents with the same severity as availability
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Treat quality incidents with the same severity as availability
 incidents. Invest in quality detection proportionally to the cost of
 undetected quality degradation. Produce the inference review pack
 monthly. Forecast by component and by scenario. Present ranges, not
-points.</p>
+points.</p></div>
 <h3 id="what-to-measure-22">What to measure</h3>
 <ul>
 <li><p>Mean time to detect quality incidents</p></li>
@@ -1474,19 +945,16 @@ drift)</p></li>
 <li><p>Assumption tracking: which assumptions were wrong, by how
 much</p></li>
 </ul>
-<h3 id="where-this-breaks-24">Where this breaks</h3>
-<p>Quality incident detection requires evals that cover the failure
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Quality incident detection requires evals that cover the failure
 mode. If the failure mode is new, the eval suite will not catch it until
 the cases are added. Continuous log review of actual production outputs
-is essential as a complement to automated evals.</p>
-<p>The review pack requires data from traces, invoices, evals, and
+is essential as a complement to automated evals.</p><p>The review pack requires data from traces, invoices, evals, and
 support systems. Start with what you have. A review pack with LCPR from
 traces and invoice total (without full reconciliation) is better than no
-review pack.</p>
-<p>Forecasting breaks when the team does not know about planned changes,
+review pack.</p><p>Forecasting breaks when the team does not know about planned changes,
 model pricing changes without notice, or the forecast model is not
 updated with actuals. The biggest forecasting failure is presenting a
-single number without assumptions.</p>
+single number without assumptions.</p></div>
 <h3 id="calculator-hook-24">Calculator hook</h3>
 <p>The incident cost view tracks additional inference cost during
 incident, human escalation cost, engineering time, and blast radius.
@@ -1495,7 +963,7 @@ sections above. The forecast view takes current LCPR by workload,
 planned changes, and outputs quarterly cost by scenario with an
 assumption register tagging each input as measured, estimated, or
 assumed.</p>
-<hr />
+<hr/>
 <h2 id="chapter-27-cost-attribution-and-chargeback">Chapter 27: Cost Attribution and Chargeback</h2>
 <h3 id="the-field-problem-16">The field problem</h3>
 <p>A single inference platform serves four product teams. The provider invoice arrives once a month as one line item. Finance asks engineering to allocate the spend. Engineering pulls usage from the platform logs and discovers the four teams cannot be reconciled to the invoice within 6%. Two of the teams insist their workloads are smaller than what the logs show. One team is using a fine-tuned LoRA that costs no more than the base model on the invoice but should be allocated differently for internal margin. The fourth team's traffic spikes are absorbed by spare capacity that exists only because team one's workload is bursty in the opposite direction.</p>
@@ -1527,15 +995,13 @@ assumed.</p>
 <h3 id="anonymized-case-public-sector-platform">An anonymized case: a mid-size public-sector platform</h3>
 <p>A consolidated state-agency platform served seven program offices on one inference contract. The initial chargeback model was proportional by token. After two quarters, three offices stopped using the platform and stood up their own contracts; the remaining four absorbed the fixed cost and complained loudly. The platform owner switched to a hybrid model: a $14K monthly floor split by seat count covering the contract minimum and the platform engineering team, plus a per-token usage charge above the floor at the rate that reconciled to the invoice. Two of the three departed offices came back within a quarter when their standalone contracts ran into minimum commits they could not fill. The fourth never returned. The lesson the owner reported: the proportional model was technically accurate and politically dead. The hybrid model was technically inferior on margin attribution and survived three renewal cycles.</p>
 <p>The side-finding: the floor exposed how much of the platform cost was actually platform overhead rather than inference. The seven offices, taken together, were paying about $42K/month in inference and $14K/month in fixed costs. The first reaction inside finance was to drive the fixed cost down. The second reaction, after the platform team explained what the floor covered, was to consolidate two adjacent platforms onto the same floor. The marginal cost of supporting an eighth office was small, and the existing four were happy to dilute their floor share with new entrants.</p>
-<h3 id="where-cost-attribution-breaks">Where this breaks</h3>
-<p>Attribution fails when teams share a single LLM call across two product surfaces (the call cannot be split without re-running it), when the eval system is centralized and the cost of running evals is not allocated by which team's outputs were graded, or when a fine-tune fails in production and the cost of the rollback (re-running on the previous model) is borne by the team that requested the fine-tune rather than the team that approved it.</p>
-<p>Attribution also breaks during incidents. A two-hour outage costs the platform's dedicated capacity the same as a normal two-hour window, but no team accepts being billed for capacity that produced no accepted outputs. The usual remedy is to credit incident windows against the affected teams' usage, paid out of the platform's reserve. The reserve has to be funded by something, usually a small percentage of every team's usage charge, which is itself an attribution decision that teams will eventually challenge.</p>
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Attribution fails when teams share a single LLM call across two product surfaces (the call cannot be split without re-running it), when the eval system is centralized and the cost of running evals is not allocated by which team's outputs were graded, or when a fine-tune fails in production and the cost of the rollback (re-running on the previous model) is borne by the team that requested the fine-tune rather than the team that approved it.</p><p>Attribution also breaks during incidents. A two-hour outage costs the platform's dedicated capacity the same as a normal two-hour window, but no team accepts being billed for capacity that produced no accepted outputs. The usual remedy is to credit incident windows against the affected teams' usage, paid out of the platform's reserve. The reserve has to be funded by something, usually a small percentage of every team's usage charge, which is itself an attribution decision that teams will eventually challenge.</p></div>
 <h3 id="calculator-hook-25">Calculator hook</h3>
 <p>The cost-attribution view takes per-team trace volume, per-team accepted output counts, the team's SLA tier coefficient, the cache and fine-tune transfer table, and the platform fixed cost. It outputs allocated spend by team under each of the four allocation modes, along with the variance between modes so the platform owner can see how much of the negotiation is mode-driven rather than usage-driven.</p>
 <p>Use the hybrid mode when the platform has more than two teams, runs a dedicated capacity floor, or has fixed engineering overhead that does not vary with usage. Use proportional when the platform is serverless and every dollar of cost is directly traceable to a team's request. Use weighted when teams have explicit SLA tiers. Use uniform only for the first quarter of a platform, before there is enough data to argue.</p>
-<hr />
+<hr/>
 <h2 id="part-5-summary">Part 5 Summary</h2>
-<p>Part 5 established the operating cadence for inference economics and
+<p><a href="/book/part-5/">Part 5</a> established the operating cadence for inference economics and
 the attribution mechanics that decide who pays for what:</p>
 <figure>
 <div data-align="center">
@@ -1588,11 +1054,11 @@ Reconciliation informs the review. The review drives actions. Actions
 change the system. The forecast predicts the impact of changes. And the
 cycle starts again with a new baseline.</p>
 <p>The book opened with the deterministic gate as the cheapest unit of
-inference economics. Part 5 closes the loop: measure LCPR, evaluate
+inference economics. <a href="/book/part-5/">Part 5</a> closes the loop: measure LCPR, evaluate
 quality, reconcile traces to invoices, review monthly, forecast by
 scenario, and act on evidence. The gate keeps the cheapest workloads
 cheap. The cadence keeps the rest honest.</p>
-<hr />
+<hr/>
 <h2 id="evidence-notes-for-part-5">Evidence Notes for Part 5</h2>
 <figure>
 <div data-align="center">
@@ -1626,7 +1092,7 @@ revenue</p></td>
 <td><p>3</p></td>
 <td><p>Benchmark-to-production transfer gap exists</p></td>
 <td><p>DERIVED</p></td>
-<td><p>From roofline analysis (Part 2) applied to benchmark
+<td><p>From roofline analysis (<a href="/book/part-2/">Part 2</a>) applied to benchmark
 conditions</p></td>
 <td><p>24</p></td>
 </tr>
@@ -1698,7 +1164,7 @@ services</p></td>
 <td><p>Cache hit rate drop causes cost spike (prompt change
 example)</p></td>
 <td><p>DERIVED</p></td>
-<td><p>From cache break-even analysis (Part 2) applied to
+<td><p>From cache break-even analysis (<a href="/book/part-2/">Part 2</a>) applied to
 operations</p></td>
 <td><p>25, 26</p></td>
 </tr>
@@ -1713,7 +1179,7 @@ operations</p></td>
 <td><p>14</p></td>
 <td><p>Delta investigation threshold 5%</p></td>
 <td><p>OPINION</p></td>
-<td><p>Author recommendation, calibrated from Part 1</p></td>
+<td><p>Author recommendation, calibrated from <a href="/book/part-1/">Part 1</a></p></td>
 <td><p>25</p></td>
 </tr>
 <tr>
@@ -1727,16 +1193,13 @@ operations</p></td>
 </table>
 </div>
 </figure>
-
-        </div>
-
-        <nav class="part-nav"><a href="/book/part-4/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 4: Migration Gates</span></a><a href="/book/appendix/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Appendix:
+</div>
+<nav class="part-nav"><a class="nav-prev" href="/book/part-4/"><span class="nav-dir">← Previous</span><span class="nav-title">Part 4: Migration Gates</span></a><a class="nav-next" href="/book/appendix/"><span class="nav-dir">Next →</span><span class="nav-title">Appendix:
 Calculator Manual And Living Reference</span></a></nav>
-      </div>
-    </div>
-  </div>
-
-  <script>
+</div>
+</div></article>
+</div>
+<script>
     // ── Reading progress ──
     window.addEventListener('scroll', function() {
       var h = document.documentElement.scrollHeight - window.innerHeight;

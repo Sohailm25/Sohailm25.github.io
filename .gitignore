@@ -7,3 +7,4 @@ cache/
 excalidraw.log
 .superpowers/
 scratch/
+*.egg-info/

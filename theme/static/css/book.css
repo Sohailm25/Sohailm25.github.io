@@ -1,0 +1,72 @@
+/* ABOUTME: Component styles for the Production Inference Economics book.
+   ABOUTME: Loads after book-tokens.css. Component vocabulary per spec §6. */
+
+/* ── Reset ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16.5px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--paper);
+  line-height: var(--lh-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Links ─────────────────────────────────────── */
+a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-soft);
+  text-underline-offset: 0.18em;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+a:hover {
+  color: var(--brown);
+  text-decoration-color: var(--brown);
+}
+
+/* ── Typography ────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-body);
+  color: var(--text);
+  line-height: var(--lh-display);
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+.book-h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-h1);
+  letter-spacing: -0.005em;
+  margin-bottom: var(--space-2);
+}
+
+.book-h1-display {
+  /* used on landing page only — see spec §7.2 display face usage rule */
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+h2 { font-size: var(--fs-h2); margin-top: var(--space-6); margin-bottom: var(--space-3); color: var(--ink); }
+h3 { font-size: var(--fs-h3); margin-top: var(--space-5); margin-bottom: var(--space-2); color: var(--ink); }
+h4 { font-size: var(--fs-h4); margin-top: var(--space-4); margin-bottom: var(--space-2); color: var(--ink); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono); }
+
+p { margin-bottom: var(--space-4); max-width: var(--measure); }
+strong { font-weight: 600; }
+
+/* Opsz axis for Newsreader */
+.book-prose p { font-variation-settings: "opsz" 16; }
+.book-sidenote { font-variation-settings: "opsz" 10; }
+.book-deck { font-variation-settings: "opsz" 24; font-style: italic; font-size: var(--fs-h1-deck); color: var(--text-deck); max-width: 50ch; margin-bottom: var(--space-5); }

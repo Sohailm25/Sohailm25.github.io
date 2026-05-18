@@ -1,0 +1,62 @@
+/* ABOUTME: Design tokens for the Production Inference Economics book.
+   ABOUTME: Palette, typography, spacing. Single source of truth — see spec §7. */
+
+:root {
+  /* Paper */
+  --paper:           #faf5e9;
+  --paper-tint:      #f7f1e2;
+
+  /* Primary ink — moss */
+  --ink:             #3A4F2A;
+  --ink-soft:        #a3ad8a;
+  --ink-on-paper:    #2a3a1c;
+
+  /* Secondary ink — oxblood */
+  --brown:           #5C2A1E;
+  --brown-soft:      #b39a90;
+  --brown-tint:      rgba(92, 42, 30, 0.08);
+
+  /* Text */
+  --text:            #1a1a1a;
+  --text-deck:       #4a4a4a;
+  --text-mute:       #8a8a8a;
+
+  /* Font stacks */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Charter', Georgia, serif;
+  --font-body:    'Newsreader',       'Iowan Old Style', 'Charter', Georgia, serif;
+  --font-mono:    'JetBrains Mono',   'SF Mono', 'Fira Code', monospace;
+
+  /* Type scale */
+  --fs-h1:           2.4rem;
+  --fs-h1-deck:      1.15rem;
+  --fs-h2:           1.55rem;
+  --fs-h3:           1.15rem;
+  --fs-h4:           0.95rem;
+  --fs-body:         1.0625rem;
+  --fs-prose-large:  1.15rem;
+  --fs-sidenote:     0.82rem;
+  --fs-mono-data:    0.85rem;
+  --fs-mono-label:   0.72rem;
+  --fs-mono-meta:    0.62rem;
+
+  /* Line heights */
+  --lh-body:         1.65;
+  --lh-display:      1.1;
+  --lh-mono:         1.5;
+
+  /* Spacing */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.5rem;
+  --space-6:  2rem;
+  --space-8:  3rem;
+  --space-10: 4rem;
+
+  /* Layout */
+  --measure:        44ch;
+  --measure-wide:   58ch;
+  --sidenote-col:   180px;
+  --gutter:         1.5rem;
+}

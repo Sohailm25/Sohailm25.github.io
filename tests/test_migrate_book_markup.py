@@ -244,3 +244,50 @@ def test_migrate_html_string_applies_all(canonical_part_html):
     assert soup.find("div", class_="book-break") is not None
     assert soup.find("div", class_="book-decision-rule") is not None
     assert soup.find("a", href="/book/part-2/") is not None
+
+
+def test_insert_stylesheet_links(canonical_part_html):
+    from scripts.migrate_book_markup import insert_stylesheet_links
+    out = insert_stylesheet_links(canonical_part_html)
+    soup = _soup(out)
+    hrefs = [link.get("href") for link in soup.find_all("link")]
+    assert "/theme/css/book-tokens.css" in hrefs
+    assert "/theme/css/book.css" in hrefs
+    # Google Fonts link present
+    assert any("fonts.googleapis.com" in (h or "") for h in hrefs)
+
+
+def test_insert_stylesheet_links_idempotent(canonical_part_html):
+    from scripts.migrate_book_markup import insert_stylesheet_links
+    once = insert_stylesheet_links(canonical_part_html)
+    twice = insert_stylesheet_links(once)
+    soup_once = _soup(once)
+    soup_twice = _soup(twice)
+    assert len(soup_once.find_all("link", href="/theme/css/book.css")) == 1
+    assert len(soup_twice.find_all("link", href="/theme/css/book.css")) == 1
+
+
+def test_remove_legacy_font_links_removes_inter():
+    from scripts.migrate_book_markup import remove_legacy_font_links
+    html = '<head><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet"></head>'
+    out = remove_legacy_font_links(html)
+    soup = _soup(out)
+    assert soup.find("link") is None
+
+
+def test_remove_legacy_font_links_preserves_new_fonts():
+    from scripts.migrate_book_markup import remove_legacy_font_links
+    html = '<head><link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400&display=swap" rel="stylesheet"></head>'
+    out = remove_legacy_font_links(html)
+    soup = _soup(out)
+    assert soup.find("link") is not None
+
+
+def test_remove_legacy_font_links_preserves_unrelated_inter_substrings():
+    """Don't accidentally strip fonts that happen to contain 'inter' (e.g. Interstate).
+    The regex must require the family= qualifier."""
+    from scripts.migrate_book_markup import remove_legacy_font_links
+    html = '<head><link href="https://fonts.googleapis.com/css2?family=Interstate:wght@400&display=swap" rel="stylesheet"></head>'
+    out = remove_legacy_font_links(html)
+    soup = _soup(out)
+    assert soup.find("link") is not None

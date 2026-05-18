@@ -199,9 +199,67 @@ def hyperlink_cross_references(html: str) -> str:
     return str(soup)
 
 
+STYLESHEET_LINKS = [
+    ("link", {"rel": "stylesheet", "href": "/theme/css/book-tokens.css"}),
+    ("link", {"rel": "stylesheet", "href": "/theme/css/book.css"}),
+    ("link", {"rel": "preconnect", "href": "https://fonts.googleapis.com"}),
+    ("link", {"rel": "preconnect", "href": "https://fonts.gstatic.com", "crossorigin": ""}),
+    ("link", {
+        "rel": "stylesheet",
+        "href": (
+            "https://fonts.googleapis.com/css2?"
+            "family=Instrument+Serif:ital@0;1"
+            "&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500"
+            "&family=JetBrains+Mono:wght@400;500;600;700"
+            "&display=swap"
+        ),
+    }),
+]
+
+
+# Conservative match: only legacy Inter font links. Requires the `family=`
+# qualifier so we don't strike unrelated fonts that contain "inter" in their
+# name (e.g. Interstate). Case-insensitive at the regex level.
+_LEGACY_INTER_FONT_RE = re.compile(r"[?&]family=Inter[:&]", re.IGNORECASE)
+
+
+def remove_legacy_font_links(html: str) -> str:
+    """Remove <link> tags whose href references the legacy Inter Google Font.
+
+    The book's old font stack used Inter + JetBrains Mono. The new stack uses
+    Instrument Serif + Newsreader + JetBrains Mono. This scrubs the Inter
+    link so pages migrated by `insert_stylesheet_links` don't end up with
+    both font stacks loading.
+    """
+    soup = _parse(html)
+    for link in soup.find_all("link"):
+        href = link.get("href") or ""
+        if _LEGACY_INTER_FONT_RE.search(href):
+            link.decompose()
+    return str(soup)
+
+
+def insert_stylesheet_links(html: str) -> str:
+    soup = _parse(html)
+    head = soup.find("head")
+    if head is None:
+        return html
+    existing_hrefs = {link.get("href") for link in head.find_all("link") if link.get("href")}
+    for tag_name, attrs in STYLESHEET_LINKS:
+        href = attrs.get("href")
+        if href in existing_hrefs:
+            continue
+        new_tag = soup.new_tag(tag_name, **attrs)
+        head.append(new_tag)
+        existing_hrefs.add(href)
+    return str(soup)
+
+
 def migrate_html_string(html: str) -> str:
     """Apply all structural migrations in order."""
     html = strip_inline_style(html)
+    html = remove_legacy_font_links(html)
+    html = insert_stylesheet_links(html)
     html = add_book_part_class_to_article(html)
     html = promote_first_paragraph_to_dropcap(html)
     html = convert_where_this_breaks_h3(html)

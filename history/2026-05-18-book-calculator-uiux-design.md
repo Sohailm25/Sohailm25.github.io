@@ -434,7 +434,7 @@ Current book CSS uses different variable names. Migration script must replace, p
 - A10. Print stylesheet still functions: sidenotes collapse to numbered footnotes at end of each section; ornaments and sidebar hidden.
 - A11. Colophon section present in appendix with palette hex + font names.
 
-## 9. Phase 2 — Calculator Marimo Migration
+## 9. Phase 2 — Calculator Marimo Migration (✅ AUTOMATED CRITERIA SHIPPED 2026-05-18 on calculator branch `wip/p2-marimo-migration`; B7+B8 await manual deploy by Sohail)
 
 ### 9.1 Scope
 

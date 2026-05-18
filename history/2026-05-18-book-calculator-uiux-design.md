@@ -379,7 +379,7 @@ Current book CSS uses different variable names. Migration script must replace, p
 | `--font-body: 'Inter', …` | `--font-body: 'Newsreader', …` | **Critical replacement** |
 | `--content-max: 700px` | `--measure: 44ch` | Slightly narrower, char-based |
 
-## 8. Phase 1 — Book Visual Rework (ships first)
+## 8. Phase 1 — Book Visual Rework (✅ SHIPPED 2026-05-18 on branch `wip/p1-book-visual-rework`)
 
 ### 8.1 Scope
 
@@ -425,7 +425,7 @@ Current book CSS uses different variable names. Migration script must replace, p
 - A1. All eight book pages render with identical typography, palette, and component vocabulary, sourced from one stylesheet.
 - A2. No inline `<style>` block remains in any of the eight part pages.
 - A3. No `font-family: 'Inter'` declaration remains in book CSS or HTML.
-- A4. Every inline cross-reference rendered with `<a href>` pointing to the correct slug.
+- A4. Every CROSS-PART inline reference (`Part N`, `Part N, Chapter M`, `Appendix X`) rendered with `<a href>` pointing to the correct slug. Within-part bare "Chapter N" mentions (e.g., "see Chapter 3" inside Part 1) are local navigation aids and remain unlinked until P4 polish adds `id="chapter-N"` anchors to h2 elements. See §4 decision 19 for the chapter-anchor defer.
 - A5. No `\n` literal in any `<title>` or h1.
 - A6. No `--` between word characters in body prose.
 - A7. All eight pages link to the same two stylesheets (`book-tokens.css`, `book.css`).

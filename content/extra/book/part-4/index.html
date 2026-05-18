@@ -1,561 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Sohail Mohammad">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-  <title>Part 4: Migration Gates — Production Inference Economics</title>
-  <style>
-    /* ── Reset ─────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --c-bg: #faf9f6;
-      --c-surface: #ffffff;
-      --c-text: #1a1a1a;
-      --c-text-secondary: #5a5a5a;
-      --c-text-tertiary: #8a8a8a;
-      --c-heading: #0f0f0f;
-      --c-link: #5a8a60;
-      --c-link-hover: #4a7a50;
-      --c-border: #e0ddd6;
-      --c-border-light: #ebe9e3;
-      --c-code-bg: #f0eee8;
-      --c-table-header: #f4f3ef;
-      --c-table-stripe: #faf9f6;
-      --c-blockquote-border: #A7C080;
-      --c-blockquote-bg: #f4f3ef;
-      --c-accent: #83C092;
-      --c-accent-dark: #A7C080;
-      --c-accent-light: rgba(131, 192, 146, 0.1);
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-      --content-max: 700px;
-    }
-
-    html {
-      font-size: 16.5px;
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-      scrollbar-gutter: stable;
-    }
-
-    body {
-      font-family: var(--font-body);
-      color: var(--c-text);
-      background: var(--c-bg);
-      line-height: 1.75;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* ── Links ─────────────────────────────────────── */
-    a {
-      color: var(--c-link);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    a:hover { color: var(--c-link-hover); }
-
-    /* ── Typography ────────────────────────────────── */
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.02em;
-      font-weight: 700;
-    }
-
-    strong { font-weight: 600; }
-
-    /* ── Code ──────────────────────────────────────── */
-    code {
-      font-family: var(--font-mono);
-      font-size: 0.87em;
-      background: var(--c-code-bg);
-      padding: 0.15em 0.4em;
-      border-radius: 4px;
-    }
-
-    pre {
-      background: var(--c-code-bg);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      line-height: 1.55;
-    }
-
-    pre code {
-      background: none;
-      padding: 0;
-      font-size: 0.85rem;
-    }
-
-
-    /* ── Progress Bar ──────────────────────────────── */
-    #progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background: var(--c-accent);
-      z-index: 1000;
-      transition: width 60ms linear;
-    }
-
-    /* ── Page Layout: Sidebar + Content ─────────────── */
-    .page-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* ── Sidebar ───────────────────────────────────── */
-    #sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 260px;
-      height: 100vh;
-      background: var(--c-surface);
-      border-right: 1px solid var(--c-border);
-      overflow-y: auto;
-      padding: 1.75rem 0;
-      z-index: 100;
-      scrollbar-width: thin;
-      scrollbar-color: var(--c-border) transparent;
-    }
-
-    #sidebar::-webkit-scrollbar { width: 4px; }
-    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
-
-    .sidebar-header {
-      padding: 0 1.25rem 1.25rem;
-      border-bottom: 1px solid var(--c-border);
-      margin-bottom: 0.75rem;
-    }
-
-    .sidebar-header .back-link {
-      display: inline-block;
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      text-decoration: none;
-      margin-bottom: 0.6rem;
-      transition: color 0.15s;
-    }
-
-    .sidebar-header .back-link:hover { color: var(--c-link); }
-
-    .sidebar-header .part-label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-      margin-bottom: 0.25rem;
-    }
-
-    .sidebar-header h2 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.01em;
-    }
-
-    .sidebar-header .chapters-info {
-      font-size: 0.75rem;
-      color: var(--c-text-tertiary);
-      margin-top: 0.2rem;
-    }
-
-    /* ── Sidebar TOC ───────────────────────────────── */
-    .sidebar-toc {
-      list-style: none;
-      padding: 0.5rem 0;
-      margin: 0;
-    }
-
-    .sidebar-toc li {
-      margin: 0;
-    }
-
-    .sidebar-toc a {
-      display: block;
-      padding: 0.35rem 1.25rem;
-      font-size: 0.82rem;
-      color: var(--c-text-secondary);
-      text-decoration: none;
-      line-height: 1.35;
-      border-left: 2px solid transparent;
-      transition: all 0.15s ease;
-    }
-
-    .sidebar-toc a:hover {
-      color: var(--c-link);
-      background: var(--c-accent-light);
-    }
-
-    .sidebar-toc a.active {
-      color: var(--c-accent);
-      font-weight: 500;
-      border-left-color: var(--c-accent);
-      background: var(--c-accent-light);
-    }
-
-    /* ── Sidebar Nav Links ─────────────────────────── */
-    .sidebar-nav {
-      padding: 0.75rem 1.25rem 0;
-      margin-top: 0.5rem;
-      border-top: 1px solid var(--c-border);
-    }
-
-    .sidebar-nav a {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      text-decoration: none;
-      padding: 0.3rem 0;
-      transition: color 0.15s;
-    }
-
-    .sidebar-nav a:hover { color: var(--c-link); }
-
-    /* ── Main Content Area ─────────────────────────── */
-    .main-content {
-      margin-left: 260px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .part-container {
-      max-width: var(--content-max);
-      margin: 0 auto;
-      padding: 2.5rem 2rem 5rem;
-    }
-
-    /* ── Part Header ───────────────────────────────── */
-    .part-header {
-      margin-bottom: 2.5rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid var(--c-border);
-    }
-
-    .part-header .label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .part-header h1 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 0;
-      line-height: 1.2;
-    }
-
-    .part-header .chapters-label {
-      font-size: 0.85rem;
-      color: var(--c-text-tertiary);
-      margin-top: 0.5rem;
-    }
-
-    /* ── Content ───────────────────────────────────── */
-    .content h2 {
-      font-size: 1.4rem;
-      margin-top: 3rem;
-      margin-bottom: 0.75rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--c-border-light);
-    }
-
-    .content h2:first-child {
-      border-top: none;
-      padding-top: 0;
-      margin-top: 0;
-    }
-
-    .content h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 2rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .content h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .content p {
-      margin-bottom: 1.1rem;
-    }
-
-    /* ── Lists ─────────────────────────────────────── */
-    .content ul, .content ol {
-      padding-left: 1.4rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .content li {
-      margin-bottom: 0.3rem;
-    }
-
-    .content li > ul, .content li > ol {
-      margin-top: 0.3rem;
-      margin-bottom: 0;
-    }
-
-    .content dl { margin-bottom: 1.1rem; }
-    .content dt { font-weight: 600; margin-top: 0.75rem; }
-    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
-
-    /* ── Tables ────────────────────────────────────── */
-    .table-wrapper {
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .content table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    .content thead { border-bottom: 2px solid var(--c-border); }
-
-    .content thead th {
-      background: var(--c-table-header);
-      font-weight: 600;
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      white-space: nowrap;
-    }
-
-    .content tbody td {
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid var(--c-border-light);
-      vertical-align: top;
-    }
-
-    .content tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .content tbody tr:nth-child(even) {
-      background: var(--c-table-stripe);
-    }
-
-    /* ── Figures ────────────────────────────────────── */
-    .content figure {
-      margin: 1.5rem 0 2rem;
-    }
-
-    .content figcaption, .content caption {
-      font-size: 0.82rem;
-      color: var(--c-text-secondary);
-      line-height: 1.45;
-      margin-top: 0.5rem;
-    }
-
-    .content caption {
-      caption-side: top;
-      text-align: left;
-      padding-bottom: 0.6rem;
-      font-weight: 600;
-      color: var(--c-heading);
-    }
-
-    /* ── Blockquotes ───────────────────────────────── */
-    .content blockquote {
-      border-left: 3px solid var(--c-blockquote-border);
-      background: var(--c-blockquote-bg);
-      padding: 0.85rem 1.25rem;
-      margin: 1.25rem 0;
-      border-radius: 0 8px 8px 0;
-    }
-
-    .content blockquote p { margin-bottom: 0.4rem; }
-    .content blockquote p:last-child { margin-bottom: 0; }
-
-    /* ── Horizontal Rules ──────────────────────────── */
-    .content hr {
-      border: none;
-      border-top: 1px solid var(--c-border);
-      margin: 2.5rem auto;
-      max-width: 40%;
-    }
-
-    /* ── Part Navigation ───────────────────────────── */
-    .part-nav {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--c-border);
-    }
-
-    .nav-prev, .nav-next {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-      text-decoration: none;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--c-border);
-      border-radius: 10px;
-      background: var(--c-surface);
-      transition: border-color 0.15s, background 0.15s;
-      max-width: 48%;
-    }
-
-    .nav-prev:hover, .nav-next:hover {
-      border-color: var(--c-accent);
-      background: var(--c-accent-light);
-    }
-
-    .nav-next { text-align: right; margin-left: auto; }
-
-    .nav-dir {
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      font-weight: 500;
-    }
-
-    .nav-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--c-heading);
-      line-height: 1.3;
-    }
-
-    /* ── Mobile Menu Toggle ────────────────────────── */
-    #menu-toggle {
-      display: none;
-      position: fixed;
-      top: 10px;
-      left: 12px;
-      z-index: 200;
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      font-family: var(--font-body);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      color: var(--c-text-secondary);
-    }
-
-    #menu-toggle:hover { background: var(--c-table-header); }
-
-    #sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.25);
-      z-index: 90;
-    }
-
-    /* ── Responsive ────────────────────────────────── */
-    @media (max-width: 960px) {
-      #menu-toggle { display: block; }
-
-      #sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.25s ease;
-        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
-      }
-
-      #sidebar.open { transform: translateX(0); }
-      #sidebar-overlay.open { display: block; }
-
-      .main-content { margin-left: 0; }
-
-      .part-container {
-        padding: 3rem 1.25rem 4rem;
-      }
-    }
-
-    @media (max-width: 600px) {
-      html { font-size: 15.5px; }
-      .part-container { padding: 3rem 1rem 3rem; }
-      .part-header h1 { font-size: 1.5rem; }
-      .content h2 { font-size: 1.2rem; }
-      .content table { font-size: 0.78rem; }
-      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
-      .part-nav { flex-direction: column; }
-      .nav-prev, .nav-next { max-width: 100%; }
-    }
-
-    /* ── Print ─────────────────────────────────────── */
-    @media print {
-      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
-      .main-content { margin-left: 0; }
-      .part-container { max-width: 100%; padding: 0; }
-      .content h2 { page-break-after: avoid; }
-      .content table, .content figure { page-break-inside: avoid; }
-    }
-  </style>
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Sohail Mohammad" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<title>Part 4: Migration Gates — Production Inference Economics</title>
+<link href="/theme/css/book-tokens.css" rel="stylesheet"/><link href="/theme/css/book.css" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/></head>
 <body>
-  <div id="progress-bar"></div>
-  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
-  <div id="sidebar-overlay"></div>
-
-  <div class="page-layout">
-    <nav id="sidebar">
-      <div class="sidebar-header">
-        <a class="back-link" href="/book/">&larr; All Parts</a>
-        <div class="part-label">Part 4</div>
-        <h2>Migration Gates</h2>
-        <div class="chapters-info">Chapters 15–22</div>
-      </div>
-      <ul class="sidebar-toc"><li><a href="#chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter
+<div id="progress-bar"></div>
+<button aria-label="Toggle table of contents" id="menu-toggle">Contents</button>
+<div id="sidebar-overlay"></div>
+<div class="page-layout">
+<nav id="sidebar">
+<div class="sidebar-header">
+<a class="back-link" href="/book/">← All Parts</a>
+<div class="part-label"><a href="/book/part-4/">Part 4</a></div>
+<h2>Migration Gates</h2>
+<div class="chapters-info">Chapters 15–22</div>
+</div>
+<ul class="sidebar-toc"><li><a href="#chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter
 15: The Model Candidate Funnel And routefit matrix</a></li><li><a href="#chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A
 Decision</a></li><li><a href="#chapter-17-move-workloads-to-serverless-open-models">Chapter 17:
 Move Workloads To Serverless Open Models</a></li><li><a href="#chapter-18-use-managed-dedicated">Chapter 18: Use Managed
 Dedicated</a></li><li><a href="#chapter-19-fine-tuning-and-post-training-as-cost-levers">Chapter 19: Fine-Tuning and Post-Training as Cost Levers</a></li><li><a href="#chapter-20-self-manage-gpus">Chapter 20: Self-Manage GPUs</a></li><li><a href="#chapter-21-multi-source-and-background-agent-routing">Chapter
 21: Multi-Source And Background Agent Routing</a></li><li><a href="#chapter-22-migration-gates-and-reversion-signals">Chapter 22:
 Migration Gates And Reversion Signals</a></li><li><a href="#part-4-summary">Part 4 Summary</a></li><li><a href="#evidence-notes-for-part-4">Evidence Notes for Part 4</a></li></ul>
-      <div class="sidebar-nav">
-        <a href="/book/part-3/">&larr; Part 3: Workload Economics</a>
-        <a href="/book/part-5/">Part 5: Operating The
-Decision &rarr;</a>
-      </div>
-    </nav>
-
-    <div class="main-content">
-      <div class="part-container">
-        <div class="part-header">
-          <div class="label">Part 4</div>
-          <h1>Migration Gates</h1>
-          <div class="chapters-label">Chapters 15–22</div>
-        </div>
-
-        <div class="content">
-          
-<p>Part 3 produced a routefit matrix: each workload identity mapped to
+<div class="sidebar-nav">
+<a href="/book/part-3/">← Part 3: Workload Economics</a>
+<a href="/book/part-5/">Part 5: Operating The
+Decision →</a>
+</div>
+</nav>
+<article class="book-part"><div class="main-content">
+<div class="part-container">
+<div class="part-header">
+<div class="label"><a href="/book/part-4/">Part 4</a></div>
+<h1>Migration Gates</h1>
+<div class="chapters-label">Chapters 15–22</div>
+</div>
+<div class="content">
+<p class="has-dropcap"><a href="/book/part-3/">Part 3</a> produced a routefit matrix: each workload identity mapped to
 candidate routes, with feasibility gates, estimated LCPR, and primary
-constraints. Part 4 takes each route column and subjects it to a harder
+constraints. <a href="/book/part-4/">Part 4</a> takes each route column and subjects it to a harder
 question: what does it actually take to get there, what goes wrong along
 the way, and when should you turn back?</p>
 <p>Migration is not one decision. “Move to open models” is a different
@@ -574,10 +62,8 @@ rotation, and hardware lifecycle management. Multi-source and background
 agent routing require measurement discipline across providers and
 latency tiers. The final chapter defines migration gates and reversion
 signals that apply to all transitions.</p>
-<hr />
-<h2
-id="chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter
-15: The Model Candidate Funnel And routefit matrix</h2>
+<hr/>
+<h2 id="chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter 15: The Model Candidate Funnel And routefit matrix</h2>
 <h3 id="the-field-problem-5">The field problem</h3>
 <p>Fourteen model-provider combinations. Three months of evaluation. At
 the end: a spreadsheet of benchmark scores, pricing tiers, and feature
@@ -664,7 +150,7 @@ cache hit rate, quality gate cost, retry rate, and the accepted-work
 denominator.</p>
 <p>This is where the calculator becomes essential. Run each candidate
 through the LCPR formula with workload-specific parameters from the
-workload identity schema (Part 3 Chapter 10).</p>
+workload identity schema (<a href="/book/part-3/">Part 3</a> Chapter 10).</p>
 <p><strong>Stage 4: Route mapping.</strong> The surviving candidates
 become columns in the routefit matrix.</p>
 <h3 id="the-routefit-matrix">The routefit matrix</h3>
@@ -731,12 +217,11 @@ takes hours (constraint checks), Stage 2 takes days (eval runs), Stage 3
 takes a week (instrumented traffic). The routefit matrix is the output.
 Every migration decision in the chapters that follow uses the matrix as
 its input.</p>
-<h3 id="decision-rule-14">Decision rule</h3>
-<p>Do not compare economics until feasibility and capability are
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Do not compare economics until feasibility and capability are
 confirmed. The funnel order (constraints, capability, economics, route
 mapping) prevents wasted evaluation effort. Update the routefit matrix
 quarterly, or when models, pricing, or workload shapes change
-materially.</p>
+materially.</p></div>
 <h3 id="what-to-measure-12">What to measure</h3>
 <ul>
 <li><p>Candidate count at each funnel stage (how many eliminated
@@ -749,21 +234,19 @@ pages)</p></li>
 <li><p>routefit matrix coverage (which workload-route cells are measured
 vs estimated)</p></li>
 </ul>
-<h3 id="where-this-breaks-14">Where this breaks</h3>
-<p>The funnel breaks when the eval set does not represent production
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>The funnel breaks when the eval set does not represent production
 traffic. A model that passes 200 curated test cases may fail on the long
 tail of real inputs. The funnel also breaks when Stage 1 constraints
 change after Stage 3 evaluation is complete. A new data residency
 requirement can invalidate weeks of evaluation work. Run Stage 1 against
-current and anticipated constraints.</p>
+current and anticipated constraints.</p></div>
 <h3 id="calculator-hook-14">Calculator hook</h3>
 <p>input template. One row per workload identity, one column per
 surviving route candidate. Each cell populates from LCPR with
 workload-specific parameters. The calculator flags cells with estimated
 rather than measured LCPR.</p>
-<hr />
-<h2 id="chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A
-Decision</h2>
+<hr/>
+<h2 id="chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A Decision</h2>
 <h3 id="the-field-problem-6">The field problem</h3>
 <p>Monthly bill: $85,000 across three workloads on a closed API.
 Back-of-envelope calculation: open models on serverless endpoints would
@@ -818,12 +301,11 @@ in migration work creates sunk cost against an uncertain future.</p>
 <p>The current provider is improving. Model quality, pricing, caching
 features, and latency improve continuously. The gap you measure today
 may narrow by the time migration completes.</p>
-<h3 id="decision-rule-15">Decision rule</h3>
-<p>Before starting a migration, calculate the payback period. If it
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Before starting a migration, calculate the payback period. If it
 exceeds 6 months with uncertain LCPR estimates, stay and invest in
 measurement instead: build the eval suite, instrument the traces,
 calculate current LCPR, and populate the routefit matrix. Those
-investments pay off regardless of the migration decision.</p>
+investments pay off regardless of the migration decision.</p></div>
 <h3 id="what-to-measure-13">What to measure</h3>
 <ul>
 <li><p>Current LCPR per accepted output by workload (not token
@@ -833,21 +315,19 @@ price)</p></li>
 <li><p>Compliance gates for candidate routes</p></li>
 <li><p>Planning horizon for the product and team</p></li>
 </ul>
-<h3 id="where-this-breaks-15">Where this breaks</h3>
-<p>Do Nothing becomes wrong when the current provider’s pricing,
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Do Nothing becomes wrong when the current provider’s pricing,
 reliability, or quality degrades and the team has the eval suite and
 operational capacity to migrate. The risk of Do Nothing is lock-in and
 complacency: staying because migration seems hard, not because it is
 uneconomic. Review the decision quarterly. If the routefit matrix shows
 a feasible, measured, cheaper route, the payback period has shortened,
-and the team has evals—migrate.</p>
+and the team has evals—migrate.</p></div>
 <h3 id="calculator-hook-15">Calculator hook</h3>
 <p>The do-nothing comparison takes current route vs candidate route, with migration cost
 amortized over the payback period. The sensitivity analysis shows how
 engineering cost assumptions change the payback period.</p>
-<hr />
-<h2 id="chapter-17-move-workloads-to-serverless-open-models">Chapter 17:
-Move Workloads To Serverless Open Models</h2>
+<hr/>
+<h2 id="chapter-17-move-workloads-to-serverless-open-models">Chapter 17: Move Workloads To Serverless Open Models</h2>
 <h3 id="the-field-problem-7">The field problem</h3>
 <p>Token price drops 60% after migrating a support chat workload from a
 closed API to a serverless open-model endpoint. Two weeks later,
@@ -879,7 +359,7 @@ set, not any single provider, is what pushes serverless open-model rates
 below what a sole-source provider would charge.</p>
 <p>Caching and batch availability. Open-model serverless endpoints
 usually support the same caching and batch features as closed APIs. The
-Part 2 chapters on caching and batch economics apply unchanged.</p>
+<a href="/book/part-2/">Part 2</a> chapters on caching and batch economics apply unchanged.</p>
 <p>The risks are:</p>
 <p>Prompt portability. Prompts engineered for one model family may not
 transfer to another. System prompts, tool definitions, output format
@@ -992,12 +472,11 @@ real. The headline savings landed at about 22%, not 78%. After payback
 the savings compound, but the lesson the deck buried was that two of
 the dimensions the team was sure would degrade actually got better,
 which is what real migrations look like.</p>
-<h3 id="decision-rule-16">Decision rule</h3>
-<p>Serverless open models are economic when the LCPR gap (not the token
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Serverless open models are economic when the LCPR gap (not the token
 price gap) exceeds migration cost within an acceptable payback period,
 and the quality floor is met. Always measure LCPR on the candidate route
 before committing. The model candidate funnel is the gate, not the
-pricing page.</p>
+pricing page.</p></div>
 <h3 id="what-to-measure-14">What to measure</h3>
 <ul>
 <li><p>LCPR per accepted output on both routes (before and after
@@ -1008,24 +487,21 @@ migration)</p></li>
 prefix handling)</p></li>
 <li><p>Repair rate and escalation rate delta</p></li>
 </ul>
-<h3 id="where-this-breaks-16">Where this breaks</h3>
-<p>Serverless open-model economics break when the workload needs
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Serverless open-model economics break when the workload needs
 capabilities the open model lacks: specific tool-call behavior, vision
 modalities not yet supported, output format adherence the model was not
 trained for, or compliance certifications the provider does not hold.
-Check the feasibility filter before the economics.</p>
-<p>Also: serverless pricing changes. The competitive pressure that makes
+Check the feasibility filter before the economics.</p><p>Also: serverless pricing changes. The competitive pressure that makes
 open-model serving cheap today may not persist if providers consolidate
 or if the model ecosystem shifts. Do not lock in a multi-year
-architecture assumption on today’s serverless prices.</p>
+architecture assumption on today’s serverless prices.</p></div>
 <h3 id="calculator-hook-16">Calculator hook</h3>
 <p>route comparison with migration cost amortization. Input: current
 route LCPR, candidate route LCPR, migration cost components. Output:
 payback period, monthly savings after payback, sensitivity to quality
 pass rate.</p>
-<hr />
-<h2 id="chapter-18-use-managed-dedicated">Chapter 18: Use Managed
-Dedicated</h2>
+<hr/>
+<h2 id="chapter-18-use-managed-dedicated">Chapter 18: Use Managed Dedicated</h2>
 <h3 id="the-field-problem-8">The field problem</h3>
 <p>Two million requests per day through a serverless open-model
 endpoint. Monthly bill: $42,000. An inference platform engineer's recommendation: price the same model on managed dedicated — same provider, same weights, but on reserved GPUs at a representative H100 reserved rate around $3.20/GPU-hour (mid-2026 reserved rates run roughly $2.95-$4.30 across CoreWeave, Lambda, RunPod, and Together). At 800 accepted requests per hour per GPU, the projection is $28,000/month. A 33% savings. Two GPUs are provisioned.</p>
@@ -1045,8 +521,7 @@ capacity rather than retail tokens.</p>
 <p>The economic risk: you pay for the GPU whether it is serving requests
 or sitting idle. Minimum replicas, warm-pool costs, and diurnal traffic
 patterns create utilization gaps that serverless does not have.</p>
-<h3 id="derivation-4-the-dedicated-utilization-gate">Derivation 4: The
-dedicated utilization gate</h3>
+<h3 id="derivation-4-the-dedicated-utilization-gate">Derivation 4: The dedicated utilization gate</h3>
 <p>The wrong conclusion this derivation kills:</p>
 <blockquote>
 <p>“Dedicated is cheaper because the hourly rate looks low.”</p>
@@ -1233,14 +708,13 @@ incident response. If the team does not have these capabilities,
 operational overhead is higher than the $0.50/hour used in the example.
 If the provider manages everything, ops overhead is lower but the
 GPU-hour price is higher.</p>
-<h3 id="decision-rule-17">Decision rule</h3>
-<p>Calculate <code>u_required</code> from your actual serverless LCPR and
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Calculate <code>u_required</code> from your actual serverless LCPR and
 your measured dedicated goodput. Plot your utilization by hour across a
 full week including nights and weekends. If trough utilization exceeds
 <code>u_required</code> with headroom for p99 latency, dedicated is
 economic. If trough utilization is below <code>u_required</code>, stay
 serverless or use a hybrid approach with a dedicated base and serverless
-overflow.</p>
+overflow.</p></div>
 <h3 id="what-to-measure-15">What to measure</h3>
 <ul>
 <li><p>Utilization by hour across a full week (not just business
@@ -1254,8 +728,7 @@ time</p></li>
 <li><p>p99 latency at different utilization levels (high utilization can
 degrade tail latency)</p></li>
 </ul>
-<h3 id="where-this-breaks-17">Where this breaks</h3>
-<ul>
+<div class="book-break"><span class="book-break-label">Where this breaks</span><ul>
 <li><p>Managed dedicated endpoints may have minimum billing windows (5
 minutes for some Bedrock custom model units). Short bursts that spin up
 and tear down frequently can accumulate billing-window waste.</p></li>
@@ -1276,14 +749,14 @@ expose the tuning controls (batch size, scheduler policy, KV cache
 configuration) needed to achieve the goodput measured in your
 benchmark.</p></li>
 <li><p>GPU-hour prices vary by provider and commitment duration. On H100 in May 2026, on-demand single-GPU rates run roughly $3.99/hr (Together), $4.29/hr (Lambda 1x), and $6-7/hr (Fireworks, CoreWeave), with reserved 91-180 day rates falling to roughly $2.95-3.50/hr at Together, CoreWeave, and several neo-clouds; Lambda and AWS require custom-negotiated reserved terms (provider pricing pages, accessed 2026-05-13). The utilization gate threshold moves with the rate: at the low end of the reserved range, dedicated wins on lower utilization; at the on-demand end, it requires sustained utilization above 50%. Plug in your contracted rate; do not run the calculation against any single posted price.</p></li>
-</ul>
+</ul></div>
 <h3 id="calculator-hook-17">Calculator hook</h3>
 <p>The dedicated capacity break-even analysis takes serverless LCPR,
 dedicated GPU-hour cost, measured goodput, operational overhead, and
 hourly utilization pattern. It outputs the break-even utilization, monthly
 cost comparison, and the hybrid split point where base dedicated plus
 burst serverless is cheapest.</p>
-<hr />
+<hr/>
 <h2 id="chapter-19-fine-tuning-and-post-training-as-cost-levers">Chapter 19: Fine-Tuning and Post-Training as Cost Levers</h2>
 <h3 id="the-field-problem-ft">The field problem</h3>
 <p>A support-automation team running a 70B Llama-class model on managed dedicated noticed that 38% of resolutions were going through a two-call repair loop: the first call produced an answer in the wrong tone, a second call rewrote it. The token-cost line was real. The deeper line was harder to see: every repair extended end-to-end latency by 1.8 seconds and added a quality-gate pass against the rewritten output, which itself failed 12% of the time. The team's first instinct was to switch to a larger model. The actual fix was a $4,200 LoRA adapter, trained on three months of approved-style production answers, that brought the first-call accept rate from 62% to 89%. Inference cost dropped 31%; latency dropped 1.4 seconds at p90.</p>
@@ -1329,9 +802,7 @@ burst serverless is cheapest.</p>
 <h3 id="failure-modes-ft">Failure modes when starting too early</h3>
 <p>The pattern that surfaces most often: a team fine-tunes before they have evals, sees a 4% improvement on a curated test set, ships it, and discovers two months later that the production failure mode they were targeting was actually a prompt issue. The fine-tune masked the real problem. The cure costs three months: rewrite the prompt, retrain the LoRA on cleaner data, repeat the evals.</p>
 <p>Other common failures: training on labels generated by the same model that will serve the adapter (the model learns its own biases); training a LoRA on a base model that the provider deprecates within six months (no transfer to the successor); under-budgeting data prep and producing a fine-tune that improves on the curated set but degrades on the long tail of production traffic; treating DPO as a stronger SFT (preference pairs from non-expert raters can encode style noise rather than the intended quality dimension).</p>
-<h3 id="decision-rule-ft">Decision rule</h3>
-<p>Use fine-tuning when the workload has named failure modes the team can measure, an eval suite that catches them, enough volume that operating-cost reductions amortize the iteration cost (above roughly 1K requests/day on the target workload as a rough floor), and a deployment story (managed dedicated with multi-LoRA, or a self-managed fleet) that does not double the cost line the fine-tune is supposed to reduce. Default to SFT first; reach for DPO only when stylistic or judgment dimensions need it; reach for GRPO only when SFT/DPO have hit a ceiling and a reliable verifier exists.</p>
-<p>Do not fine-tune as a substitute for the funnel from Chapter 15. A fine-tune is a refinement of a model that already passed feasibility, capability, and economic evaluation. Tuning a wrong-fit base model produces a tuned wrong-fit model.</p>
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Use fine-tuning when the workload has named failure modes the team can measure, an eval suite that catches them, enough volume that operating-cost reductions amortize the iteration cost (above roughly 1K requests/day on the target workload as a rough floor), and a deployment story (managed dedicated with multi-LoRA, or a self-managed fleet) that does not double the cost line the fine-tune is supposed to reduce. Default to SFT first; reach for DPO only when stylistic or judgment dimensions need it; reach for GRPO only when SFT/DPO have hit a ceiling and a reliable verifier exists.</p><p>Do not fine-tune as a substitute for the funnel from Chapter 15. A fine-tune is a refinement of a model that already passed feasibility, capability, and economic evaluation. Tuning a wrong-fit base model produces a tuned wrong-fit model.</p></div>
 <h3 id="what-to-measure-ft">What to measure</h3>
 <ul>
 <li><p>Cost per accepted output, before and after fine-tune, on production-representative traffic (not the curated training set)</p></li>
@@ -1341,17 +812,15 @@ burst serverless is cheapest.</p>
 <li><p>Eval suite coverage on the fine-tuned model's failure modes</p></li>
 <li><p>Drift indicators (eval pass rate over time on a held-out monthly slice)</p></li>
 </ul>
-<h3 id="where-this-breaks-ft">Where this breaks</h3>
-<ul>
+<div class="book-break"><span class="book-break-label">Where this breaks</span><ul>
 <li><p>The provider deprecates the base model and the LoRA does not transfer to the successor. Plan for retraining; keep the training data portable.</p></li>
 <li><p>The fine-tune improves on the eval set but degrades on the long tail. Symptoms: escalation rate stays flat, quality complaints rise on edge cases. Treatment: expand the eval set, retrain.</p></li>
 <li><p>Multi-LoRA scheduling under load. Adapter swapping has overhead; at high QPS with many adapters in rotation, latency variance increases. Measure under realistic adapter-mix conditions before committing to multi-LoRA at scale.</p></li>
 <li><p>The base model improves faster than the fine-tune retrains. By the time the team has shipped a polished SFT on the v1 base, the provider has shipped v2 that matches the tuned-v1 model unfine-tuned. The fine-tune was right at training time and wrong at deployment time.</p></li>
-</ul>
-<p>Use fine-tuning when: evals exist, the failure mode is named, the volume justifies it, and the deployment story is multi-LoRA on managed dedicated or a self-managed fleet that already pays its operational tax for other reasons. Skip it when: the team is still arguing about what "good" looks like, evals are aspirational, or the workload is below a few thousand requests per day on the target task.</p>
+</ul><p>Use fine-tuning when: evals exist, the failure mode is named, the volume justifies it, and the deployment story is multi-LoRA on managed dedicated or a self-managed fleet that already pays its operational tax for other reasons. Skip it when: the team is still arguing about what "good" looks like, evals are aspirational, or the workload is below a few thousand requests per day on the target task.</p></div>
 <h3 id="calculator-hook-ft">Calculator hook</h3>
 <p>The fine-tune amortization analysis takes: base-model serving cost, fine-tune training cost, expected cost-per-accepted-output reduction, monthly volume on the target workload, and ongoing iteration cost. It outputs payback period, sensitivity to volume changes, and the break-even monthly volume below which the fine-tune does not earn its keep.</p>
-<hr />
+<hr/>
 <h2 id="chapter-20-self-manage-gpus">Chapter 20: Self-Manage GPUs</h2>
 <h3 id="the-field-problem-9">The field problem</h3>
 <p>Eight H100 GPUs, leased from a cloud provider at $25,500/month on a
@@ -1406,8 +875,7 @@ tensor parallelism strategy, quantization settings, custom model merges,
 and hardware selection. If the workload needs this control to meet
 quality or latency targets, self-management is not just cheaper—it is
 necessary.</p>
-<h3 id="decision-rule-18">Decision rule</h3>
-<p>Do not self-manage GPUs to save money on a small workload.
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Do not self-manage GPUs to save money on a small workload.
 Self-manage when the workload is large enough to amortize the
 engineering overhead, the team has operational infrastructure
 experience, and the workload benefits from serving-stack control that
@@ -1415,7 +883,7 @@ managed endpoints do not provide. Use the dedicated utilization gate
 from Chapter 18 as a prerequisite: if the workload does not clear the
 managed dedicated break-even, it will not clear the self-managed
 break-even either (self-managed has higher operational overhead even if
-the GPU-hour price is lower).</p>
+the GPU-hour price is lower).</p></div>
 <h3 id="what-to-measure-16">What to measure</h3>
 <ul>
 <li><p>Total GPU fleet cost including networking, storage, and
@@ -1428,10 +896,8 @@ dedicated)</p></li>
 <li><p>Model update frequency and rollback rate</p></li>
 <li><p>Idle GPU hours and capacity utilization by hour</p></li>
 </ul>
-<h3 id="where-this-breaks-18">Where this breaks</h3>
-<p>Self-managed breaks when the team underestimates operational burden.
-Common failure modes:</p>
-<ul>
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Self-managed breaks when the team underestimates operational burden.
+Common failure modes:</p><ul>
 <li><p>Serving-engine upgrades that change behavior (scheduler, memory
 management, API surface)</p></li>
 <li><p>GPU hardware failures that require vendor coordination and spare
@@ -1441,12 +907,11 @@ scheduling</p></li>
 <li><p>Compliance requirements that need audit logs, access controls,
 and data handling documentation</p></li>
 <li><p>Scaling events that outpace the team’s capacity planning</p></li>
-</ul>
-<p>The reversion path from self-managed to managed dedicated or
+</ul><p>The reversion path from self-managed to managed dedicated or
 serverless is easier than the forward path. Keep the eval suite and
 prompt configurations portable. If self-management becomes more
 expensive than the alternatives—because the team is too small, the
-workload shrinks, or managed offerings improve—revert.</p>
+workload shrinks, or managed offerings improve—revert.</p></div>
 <h3 id="when-self-managed-stops-earning-its-keep">When self-managed stops earning its keep</h3>
 <p>Self-management is not a permanent state. The conditions that made it
 economic in one quarter can erode in the next. Treat the following as
@@ -1488,9 +953,8 @@ direction.</p>
 <p>self-managed variant: GPU fleet cost, engineering overhead
 allocation, measured goodput, incident cost. Sensitivity: engineering
 FTE cost, GPU utilization, goodput per GPU.</p>
-<hr />
-<h2 id="chapter-21-multi-source-and-background-agent-routing">Chapter
-21: Multi-Source And Background Agent Routing</h2>
+<hr/>
+<h2 id="chapter-21-multi-source-and-background-agent-routing">Chapter 21: Multi-Source And Background Agent Routing</h2>
 <h3 id="the-field-problem-10">The field problem</h3>
 <p>Two providers serve the same open model. The routing layer sends 70%
 of traffic to the cheaper provider and 30% to the faster provider. The
@@ -1548,8 +1012,7 @@ providers. Requires: identical model (or model family with validated
 quality parity), per-provider quality measurement, per-provider cache
 strategy, and per-provider incident response. Measure: LCPR by provider
 for the same workload, including all hidden costs.</p>
-<h3 id="background-agents-and-memory-hierarchy-routing">Background
-agents and memory-hierarchy routing</h3>
+<h3 id="background-agents-and-memory-hierarchy-routing">Background agents and memory-hierarchy routing</h3>
 <p>Multi-source routing has a specific variant that applies to agent
 workloads: routing different steps of the same agent trajectory to
 different serving surfaces based on latency tolerance.</p>
@@ -1562,7 +1025,7 @@ the same prefix cache. Chat latency degrades during peak agent activity.
 The agents are paying premium real-time prices for work that could
 tolerate 10x higher latency.</p>
 <p>The distinction between answer inference and agentic inference from
-Part 3 Chapter 12 has an architectural consequence. Background
+<a href="/book/part-3/">Part 3</a> Chapter 12 has an architectural consequence. Background
 agents—coding assistants, research pipelines, document processing
 workflows, data enrichment tasks—can operate on a different cost-latency
 frontier than interactive chat:</p>
@@ -1634,20 +1097,18 @@ execution, and code writing steps do not. The repair loop after a test
 failure does not. Routing these steps to cheaper compute surfaces can
 reduce task lifecycle cost by 30-50% without affecting user experience,
 because the user is not watching each intermediate step.</p>
-<h3 id="decision-rule-19">Decision rule</h3>
-<p>Multi-source for failover is straightforward and recommended for
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Multi-source for failover is straightforward and recommended for
 critical workloads. Multi-source for workload-level routing follows
 naturally from the routefit matrix. Multi-source for cost arbitrage
 within a single workload requires per-provider LCPR measurement
 including error rates, cache hit rates, quality gates, and operational
 overhead. If you cannot measure per-provider LCPR, you cannot prove the
-arbitrage works.</p>
-<p>For agent workloads specifically, decompose the task trajectory into
+arbitrage works.</p><p>For agent workloads specifically, decompose the task trajectory into
 steps. Route human-facing steps to real-time endpoints. Route
 machine-facing steps (tool execution, file operations, eval checks,
 repair loops) to batch or async endpoints where the latency tolerance
 allows. The savings come from using the right cost-latency tier for each
-step, not from making everything fast or everything cheap.</p>
+step, not from making everything fast or everything cheap.</p></div>
 <h3 id="what-to-measure-17">What to measure</h3>
 <ul>
 <li><p>LCPR by provider per workload (not blended)</p></li>
@@ -1663,25 +1124,22 @@ machine-facing)</p></li>
 <li><p>Queue depth and wait time for background tasks</p></li>
 <li><p>Checkpointing overhead vs restart cost</p></li>
 </ul>
-<h3 id="where-this-breaks-19">Where this breaks</h3>
-<p>Multi-source becomes harmful when providers run different
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Multi-source becomes harmful when providers run different
 quantizations or serving configurations of the “same” model, cache
 fragmentation costs more than the per-token savings, the routing layer
 adds latency that violates SLOs, or the team cannot maintain eval suites
-covering both providers” output distributions.</p>
-<p>Background agent architectures break when the user expects real-time
+covering both providers” output distributions.</p><p>Background agent architectures break when the user expects real-time
 visibility into every agent step, task state is too large to checkpoint
 efficiently, the latency tolerance assumption is wrong, or rate limits
-on batch APIs prevent the agent from making progress.</p>
+on batch APIs prevent the agent from making progress.</p></div>
 <h3 id="calculator-hook-19">Calculator hook</h3>
 <p>multi-source variant: per-provider cost, per-provider quality gates,
 cache fragmentation estimate, routing overhead. Agentic variant with
 step-level routing: per-step latency tier, batch discount eligibility,
 checkpoint cost, queue economics. Sensitivity: provider split ratio,
 batch-eligible share of model calls, latency tolerance by step.</p>
-<hr />
-<h2 id="chapter-22-migration-gates-and-reversion-signals">Chapter 22:
-Migration Gates And Reversion Signals</h2>
+<hr/>
+<h2 id="chapter-22-migration-gates-and-reversion-signals">Chapter 22: Migration Gates And Reversion Signals</h2>
 <h3 id="the-field-problem-11">The field problem</h3>
 <p>Four months to migrate from a closed API to self-managed GPUs. Six
 months after that, the serving engine vendor releases a breaking change,
@@ -1771,7 +1229,7 @@ points</p></li>
 <ul>
 <li><p>LCPR on the new route exceeds LCPR on the old route for 2
 consecutive weeks</p></li>
-<li><p>Cache hit rate drops below the break-even threshold (from Part 2
+<li><p>Cache hit rate drops below the break-even threshold (from <a href="/book/part-2/">Part 2</a>
 Chapter 7)</p></li>
 <li><p>Utilization falls below <code>u_required</code> for dedicated
 endpoints (from Chapter 18)</p></li>
@@ -1819,12 +1277,11 @@ more quarter.</p>
 <p>Each stage has stop criteria. If any reversion signal fires during a
 stage, hold the ramp. If the signal persists, revert to the previous
 stage. Document the reason. Revisit when the condition is resolved.</p>
-<h3 id="decision-rule-20">Decision rule</h3>
-<p>Define migration gates and reversion signals before starting the
+<div class="book-decision-rule"><span class="book-decision-rule-label">Decision rule</span><p>Define migration gates and reversion signals before starting the
 migration. Write them down. Assign owners to each signal. Review them at
 each stage transition. Reversion is not a political decision—it is a
 measurement outcome. The team should feel as comfortable reverting as
-advancing, because both are evidence-driven.</p>
+advancing, because both are evidence-driven.</p></div>
 <h3 id="what-to-measure-18">What to measure</h3>
 <ul>
 <li><p>All migration gate evidence (eval coverage, quality floor, LCPR,
@@ -1835,9 +1292,7 @@ defined measurement cadence</p></li>
 <li><p>Time at each stage</p></li>
 <li><p>Reversion events and root causes</p></li>
 </ul>
-<h3 id="where-this-breaks-20">Where this breaks</h3>
-<p>Migration gates and reversion signals break when:</p>
-<ul>
+<div class="book-break"><span class="book-break-label">Where this breaks</span><p>Migration gates and reversion signals break when:</p><ul>
 <li><p>The measurement infrastructure is not in place. You cannot
 monitor reversion signals you cannot measure. Invest in measurement
 before migration.</p></li>
@@ -1850,7 +1305,7 @@ of a switch.</p></li>
 <li><p>The signals are too sensitive or too insensitive. Too many false
 alarms cause signal fatigue. Too few miss real regressions. Calibrate
 thresholds against the old route’s baseline variance.</p></li>
-</ul>
+</ul></div>
 <h3 id="involuntary-migration">Involuntary migration: when the provider moves first</h3>
 <p>Most of this part has treated migration as a decision the team initiates. The other category — the one teams underprepare for — is when the provider deprecates a model mid-contract. The deprecation notice can be 90 days, 180 days, or in two specific cases observed in 2025, less than 30 days for a model the team had treated as production-stable for two years. Reverting to a prior version is not always available; sometimes the prior version is also being deprecated on the same notice.</p>
 <p>Three things to negotiate before a deprecation hits, not after:</p>
@@ -1868,9 +1323,9 @@ labels or when the LCPR estimate is based on pricing-page arithmetic
 rather than measured traces. The reversion signal dashboard tracks
 post-migration LCPR, quality, and operational metrics against the
 pre-migration baseline.</p>
-<hr />
+<hr/>
 <h2 id="part-4-summary">Part 4 Summary</h2>
-<p>Part 4 established that migration is not one decision—it is a
+<p><a href="/book/part-4/">Part 4</a> established that migration is not one decision—it is a
 sequence of increasingly committed choices, each with its own economics,
 failure modes, and reversion paths.</p>
 <figure>
@@ -1947,11 +1402,11 @@ Serverless open requires prompt portability and evals. Managed dedicated
 requires utilization discipline. Self-managed requires operational
 capability. Multi-source requires per-provider measurement. Skipping a
 step does not skip its requirements.</p>
-<p>Part 5 takes these deployed workloads and asks the operating
+<p><a href="/book/part-5/">Part 5</a> takes these deployed workloads and asks the operating
 question: how do you know the decision is still correct? Baselines,
 evals, benchmarks, observability, trace-to-loaded-cost reconciliation,
 incidents, review packs, and forecasting.</p>
-<hr />
+<hr/>
 <h2 id="evidence-notes-for-part-4">Evidence Notes for Part 4</h2>
 <figure>
 <div data-align="center">
@@ -2060,7 +1515,7 @@ surfaces</p></td>
 <td><p>13</p></td>
 <td><p>Multi-source cache fragmentation risk</p></td>
 <td><p>DERIVED</p></td>
-<td><p>From Part 2 cache-locality analysis applied to multi-provider
+<td><p>From <a href="/book/part-2/">Part 2</a> cache-locality analysis applied to multi-provider
 routing</p></td>
 <td><p>21</p></td>
 </tr>
@@ -2106,16 +1561,13 @@ C/R</p></td>
 </table>
 </div>
 </figure>
-
-        </div>
-
-        <nav class="part-nav"><a href="/book/part-3/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 3: Workload Economics</span></a><a href="/book/part-5/" class="nav-next"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Part 5: Operating The
+</div>
+<nav class="part-nav"><a class="nav-prev" href="/book/part-3/"><span class="nav-dir">← Previous</span><span class="nav-title">Part 3: Workload Economics</span></a><a class="nav-next" href="/book/part-5/"><span class="nav-dir">Next →</span><span class="nav-title">Part 5: Operating The
 Decision</span></a></nav>
-      </div>
-    </div>
-  </div>
-
-  <script>
+</div>
+</div></article>
+</div>
+<script>
     // ── Reading progress ──
     window.addEventListener('scroll', function() {
       var h = document.documentElement.scrollHeight - window.innerHeight;

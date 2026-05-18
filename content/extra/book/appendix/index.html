@@ -1,557 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Sohail Mohammad">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-  <title>Appendix:
-Calculator Manual And Living Reference — Production Inference Economics</title>
-  <style>
-    /* ── Reset ─────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --c-bg: #faf9f6;
-      --c-surface: #ffffff;
-      --c-text: #1a1a1a;
-      --c-text-secondary: #5a5a5a;
-      --c-text-tertiary: #8a8a8a;
-      --c-heading: #0f0f0f;
-      --c-link: #5a8a60;
-      --c-link-hover: #4a7a50;
-      --c-border: #e0ddd6;
-      --c-border-light: #ebe9e3;
-      --c-code-bg: #f0eee8;
-      --c-table-header: #f4f3ef;
-      --c-table-stripe: #faf9f6;
-      --c-blockquote-border: #A7C080;
-      --c-blockquote-bg: #f4f3ef;
-      --c-accent: #83C092;
-      --c-accent-dark: #A7C080;
-      --c-accent-light: rgba(131, 192, 146, 0.1);
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-      --content-max: 700px;
-    }
-
-    html {
-      font-size: 16.5px;
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-      scrollbar-gutter: stable;
-    }
-
-    body {
-      font-family: var(--font-body);
-      color: var(--c-text);
-      background: var(--c-bg);
-      line-height: 1.75;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* ── Links ─────────────────────────────────────── */
-    a {
-      color: var(--c-link);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    a:hover { color: var(--c-link-hover); }
-
-    /* ── Typography ────────────────────────────────── */
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.02em;
-      font-weight: 700;
-    }
-
-    strong { font-weight: 600; }
-
-    /* ── Code ──────────────────────────────────────── */
-    code {
-      font-family: var(--font-mono);
-      font-size: 0.87em;
-      background: var(--c-code-bg);
-      padding: 0.15em 0.4em;
-      border-radius: 4px;
-    }
-
-    pre {
-      background: var(--c-code-bg);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      line-height: 1.55;
-    }
-
-    pre code {
-      background: none;
-      padding: 0;
-      font-size: 0.85rem;
-    }
-
-
-    /* ── Progress Bar ──────────────────────────────── */
-    #progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background: var(--c-accent);
-      z-index: 1000;
-      transition: width 60ms linear;
-    }
-
-    /* ── Page Layout: Sidebar + Content ─────────────── */
-    .page-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* ── Sidebar ───────────────────────────────────── */
-    #sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 260px;
-      height: 100vh;
-      background: var(--c-surface);
-      border-right: 1px solid var(--c-border);
-      overflow-y: auto;
-      padding: 1.75rem 0;
-      z-index: 100;
-      scrollbar-width: thin;
-      scrollbar-color: var(--c-border) transparent;
-    }
-
-    #sidebar::-webkit-scrollbar { width: 4px; }
-    #sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
-
-    .sidebar-header {
-      padding: 0 1.25rem 1.25rem;
-      border-bottom: 1px solid var(--c-border);
-      margin-bottom: 0.75rem;
-    }
-
-    .sidebar-header .back-link {
-      display: inline-block;
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      text-decoration: none;
-      margin-bottom: 0.6rem;
-      transition: color 0.15s;
-    }
-
-    .sidebar-header .back-link:hover { color: var(--c-link); }
-
-    .sidebar-header .part-label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-      margin-bottom: 0.25rem;
-    }
-
-    .sidebar-header h2 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.01em;
-    }
-
-    .sidebar-header .chapters-info {
-      font-size: 0.75rem;
-      color: var(--c-text-tertiary);
-      margin-top: 0.2rem;
-    }
-
-    /* ── Sidebar TOC ───────────────────────────────── */
-    .sidebar-toc {
-      list-style: none;
-      padding: 0.5rem 0;
-      margin: 0;
-    }
-
-    .sidebar-toc li {
-      margin: 0;
-    }
-
-    .sidebar-toc a {
-      display: block;
-      padding: 0.35rem 1.25rem;
-      font-size: 0.82rem;
-      color: var(--c-text-secondary);
-      text-decoration: none;
-      line-height: 1.35;
-      border-left: 2px solid transparent;
-      transition: all 0.15s ease;
-    }
-
-    .sidebar-toc a:hover {
-      color: var(--c-link);
-      background: var(--c-accent-light);
-    }
-
-    .sidebar-toc a.active {
-      color: var(--c-accent);
-      font-weight: 500;
-      border-left-color: var(--c-accent);
-      background: var(--c-accent-light);
-    }
-
-    /* ── Sidebar Nav Links ─────────────────────────── */
-    .sidebar-nav {
-      padding: 0.75rem 1.25rem 0;
-      margin-top: 0.5rem;
-      border-top: 1px solid var(--c-border);
-    }
-
-    .sidebar-nav a {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      text-decoration: none;
-      padding: 0.3rem 0;
-      transition: color 0.15s;
-    }
-
-    .sidebar-nav a:hover { color: var(--c-link); }
-
-    /* ── Main Content Area ─────────────────────────── */
-    .main-content {
-      margin-left: 260px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .part-container {
-      max-width: var(--content-max);
-      margin: 0 auto;
-      padding: 2.5rem 2rem 5rem;
-    }
-
-    /* ── Part Header ───────────────────────────────── */
-    .part-header {
-      margin-bottom: 2.5rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid var(--c-border);
-    }
-
-    .part-header .label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .part-header h1 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 0;
-      line-height: 1.2;
-    }
-
-    .part-header .chapters-label {
-      font-size: 0.85rem;
-      color: var(--c-text-tertiary);
-      margin-top: 0.5rem;
-    }
-
-    /* ── Content ───────────────────────────────────── */
-    .content h2 {
-      font-size: 1.4rem;
-      margin-top: 3rem;
-      margin-bottom: 0.75rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--c-border-light);
-    }
-
-    .content h2:first-child {
-      border-top: none;
-      padding-top: 0;
-      margin-top: 0;
-    }
-
-    .content h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 2rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .content h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .content p {
-      margin-bottom: 1.1rem;
-    }
-
-    /* ── Lists ─────────────────────────────────────── */
-    .content ul, .content ol {
-      padding-left: 1.4rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .content li {
-      margin-bottom: 0.3rem;
-    }
-
-    .content li > ul, .content li > ol {
-      margin-top: 0.3rem;
-      margin-bottom: 0;
-    }
-
-    .content dl { margin-bottom: 1.1rem; }
-    .content dt { font-weight: 600; margin-top: 0.75rem; }
-    .content dd { margin-left: 1.4rem; margin-bottom: 0.5rem; }
-
-    /* ── Tables ────────────────────────────────────── */
-    .table-wrapper {
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .content table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    .content thead { border-bottom: 2px solid var(--c-border); }
-
-    .content thead th {
-      background: var(--c-table-header);
-      font-weight: 600;
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      white-space: nowrap;
-    }
-
-    .content tbody td {
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid var(--c-border-light);
-      vertical-align: top;
-    }
-
-    .content tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .content tbody tr:nth-child(even) {
-      background: var(--c-table-stripe);
-    }
-
-    /* ── Figures ────────────────────────────────────── */
-    .content figure {
-      margin: 1.5rem 0 2rem;
-    }
-
-    .content figcaption, .content caption {
-      font-size: 0.82rem;
-      color: var(--c-text-secondary);
-      line-height: 1.45;
-      margin-top: 0.5rem;
-    }
-
-    .content caption {
-      caption-side: top;
-      text-align: left;
-      padding-bottom: 0.6rem;
-      font-weight: 600;
-      color: var(--c-heading);
-    }
-
-    /* ── Blockquotes ───────────────────────────────── */
-    .content blockquote {
-      border-left: 3px solid var(--c-blockquote-border);
-      background: var(--c-blockquote-bg);
-      padding: 0.85rem 1.25rem;
-      margin: 1.25rem 0;
-      border-radius: 0 8px 8px 0;
-    }
-
-    .content blockquote p { margin-bottom: 0.4rem; }
-    .content blockquote p:last-child { margin-bottom: 0; }
-
-    /* ── Horizontal Rules ──────────────────────────── */
-    .content hr {
-      border: none;
-      border-top: 1px solid var(--c-border);
-      margin: 2.5rem auto;
-      max-width: 40%;
-    }
-
-    /* ── Part Navigation ───────────────────────────── */
-    .part-nav {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--c-border);
-    }
-
-    .nav-prev, .nav-next {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-      text-decoration: none;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--c-border);
-      border-radius: 10px;
-      background: var(--c-surface);
-      transition: border-color 0.15s, background 0.15s;
-      max-width: 48%;
-    }
-
-    .nav-prev:hover, .nav-next:hover {
-      border-color: var(--c-accent);
-      background: var(--c-accent-light);
-    }
-
-    .nav-next { text-align: right; margin-left: auto; }
-
-    .nav-dir {
-      font-size: 0.78rem;
-      color: var(--c-text-tertiary);
-      font-weight: 500;
-    }
-
-    .nav-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--c-heading);
-      line-height: 1.3;
-    }
-
-    /* ── Mobile Menu Toggle ────────────────────────── */
-    #menu-toggle {
-      display: none;
-      position: fixed;
-      top: 10px;
-      left: 12px;
-      z-index: 200;
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      font-family: var(--font-body);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      color: var(--c-text-secondary);
-    }
-
-    #menu-toggle:hover { background: var(--c-table-header); }
-
-    #sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.25);
-      z-index: 90;
-    }
-
-    /* ── Responsive ────────────────────────────────── */
-    @media (max-width: 960px) {
-      #menu-toggle { display: block; }
-
-      #sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.25s ease;
-        box-shadow: 2px 0 12px rgba(0,0,0,0.08);
-      }
-
-      #sidebar.open { transform: translateX(0); }
-      #sidebar-overlay.open { display: block; }
-
-      .main-content { margin-left: 0; }
-
-      .part-container {
-        padding: 3rem 1.25rem 4rem;
-      }
-    }
-
-    @media (max-width: 600px) {
-      html { font-size: 15.5px; }
-      .part-container { padding: 3rem 1rem 3rem; }
-      .part-header h1 { font-size: 1.5rem; }
-      .content h2 { font-size: 1.2rem; }
-      .content table { font-size: 0.78rem; }
-      .content thead th, .content tbody td { padding: 0.4rem 0.5rem; }
-      .part-nav { flex-direction: column; }
-      .nav-prev, .nav-next { max-width: 100%; }
-    }
-
-    /* ── Print ─────────────────────────────────────── */
-    @media print {
-      #progress-bar, #sidebar, #menu-toggle, #sidebar-overlay { display: none; }
-      .main-content { margin-left: 0; }
-      .part-container { max-width: 100%; padding: 0; }
-      .content h2 { page-break-after: avoid; }
-      .content table, .content figure { page-break-inside: avoid; }
-    }
-  </style>
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Sohail Mohammad" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<title>Appendix: Calculator Manual And Living Reference — Production Inference Economics</title>
+<link href="/theme/css/book-tokens.css" rel="stylesheet"/><link href="/theme/css/book.css" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/></head>
 <body>
-  <div id="progress-bar"></div>
-  <button id="menu-toggle" aria-label="Toggle table of contents">Contents</button>
-  <div id="sidebar-overlay"></div>
-
-  <div class="page-layout">
-    <nav id="sidebar">
-      <div class="sidebar-header">
-        <a class="back-link" href="/book/">&larr; All Parts</a>
-        <div class="part-label">Appendix</div>
-        <h2>Calculator Manual And Living Reference</h2>
-        
-      </div>
-      <ul class="sidebar-toc"><li><a href="#a.1-what-the-calculator-does">A.1 What The Calculator Does</a></li><li><a href="#a.2-calculator-views">A.2 Calculator Views</a></li><li><a href="#a.3-running-the-worked-examples">A.3 Running The Worked
+<div id="progress-bar"></div>
+<button aria-label="Toggle table of contents" id="menu-toggle">Contents</button>
+<div id="sidebar-overlay"></div>
+<div class="page-layout">
+<nav id="sidebar">
+<div class="sidebar-header">
+<a class="back-link" href="/book/">← All Parts</a>
+<div class="part-label">Appendix</div>
+<h2>Calculator Manual And Living Reference</h2>
+</div>
+<ul class="sidebar-toc"><li><a href="#a.1-what-the-calculator-does">A.1 What The Calculator Does</a></li><li><a href="#a.2-calculator-views">A.2 Calculator Views</a></li><li><a href="#a.3-running-the-worked-examples">A.3 Running The Worked
 Examples</a></li><li><a href="#a.4-source-snapshot-schema">A.4 Source Snapshot Schema</a></li><li><a href="#a.5-formulas-reference">A.5 Formulas Reference</a></li><li><a href="#a.6-glossary">A.6 Glossary</a></li><li><a href="#a.7-what-lives-in-the-repo">A.7 What Lives In The Repo</a></li></ul>
-      <div class="sidebar-nav">
-        <a href="/book/part-5/">&larr; Part 5: Operating The
+<div class="sidebar-nav">
+<a href="/book/part-5/">← Part 5: Operating The
 Decision</a>
-        
-      </div>
-    </nav>
-
-    <div class="main-content">
-      <div class="part-container">
-        <div class="part-header">
-          <div class="label">Appendix</div>
-          <h1>Calculator Manual And Living Reference</h1>
-          
-        </div>
-
-        <div class="content">
-          
-<hr />
+</div>
+</nav>
+<article class="book-part"><div class="main-content">
+<div class="part-container">
+<div class="part-header">
+<div class="label">Appendix</div>
+<h1>Calculator Manual And Living Reference</h1>
+</div>
+<div class="content">
+<hr/>
 <h2 id="a.1-what-the-calculator-does">A.1 What The Calculator Does</h2>
-<p>The calculator is the execution layer for this book. The body teaches
+<p class="has-dropcap">The calculator is the execution layer for this book. The body teaches
 the mechanism, wrong conclusion, and decision rule. The calculator
 carries the repeatable math: cost models, sensitivity analysis,
 break-even gates, and reconciliation views.</p>
@@ -571,11 +55,10 @@ the constraints the calculator evaluates against.</p></li>
 </ol>
 <p>The calculator produces views. Each view answers one question. For
 each view this appendix documents the formula, the inputs, the output,
-and when not to trust it. The companion app lives at <a
-href="https://inference-econ.streamlit.app">inference-econ.streamlit.app</a>.</p>
+and when not to trust it. The companion app lives at <a href="https://inference-econ.streamlit.app">inference-econ.streamlit.app</a>.</p>
 <p>Implementation status (which views the app exposes directly vs as
 templates) lives in the calculator's view registry, not in this prose.</p>
-<hr />
+<hr/>
 <h2 id="a.2-calculator-views">A.2 Calculator Views</h2>
 <p>The appendix documents fourteen book-facing calculator views. The
 companion app implements them across thirteen tabs (finance, usage,
@@ -585,7 +68,7 @@ by function; the calculator names each view in
 <h3 id="view-1-workload-profile">View 1: Workload Profile</h3>
 <p><strong>Internal name:</strong> <code>workload_profile</code> (registry: <code>Workload Profile v1</code>)</p>
 <p><strong>Body reference:</strong> “workload profile” or “workload
-identity” (Part 1 Ch 2, Part 3 Ch 10)</p>
+identity” (<a href="/book/part-1/">Part 1</a> Ch 2, <a href="/book/part-3/">Part 3</a> Ch 10)</p>
 <p><strong>What it does:</strong> Captures the canonical identity of one
 workload: class, SLO tier, accepted work unit, token distributions,
 security constraints, cache eligibility, batch eligibility, owner, and
@@ -662,11 +145,11 @@ every other calculator view.</p>
 from fewer than 100 traces, the p95 and p99 are unreliable. If the
 quality floor has not been validated with human review, the
 accepted-work denominator is wrong.</p>
-<hr />
+<hr/>
 <h3 id="view-2-trace-event-schema">View 2: Trace Event Schema</h3>
 <p><strong>Internal name:</strong> <code>trace_event_schema</code> (registry: <code>Trace Event Schema v1</code>)</p>
 <p><strong>Body reference:</strong> “trace event schema” or “request
-event fields” (Part 1 Ch 3, Part 5 Ch 25)</p>
+event fields” (<a href="/book/part-1/">Part 1</a> Ch 3, <a href="/book/part-5/">Part 5</a> Ch 25)</p>
 <p><strong>What it does:</strong> Defines the minimum fields per
 inference request needed for economics-grade analysis. This is a schema
 definition, not a dashboard.</p>
@@ -764,11 +247,11 @@ definition, not a dashboard.</p>
 <p><strong>When not to trust it:</strong> If <code>cached_input_tokens</code> is missing or always zero,
 cache economics calculations will be wrong. If <code>quality_label</code> is missing, the
 calculator cannot distinguish accepted work from raw throughput.</p>
-<hr />
+<hr/>
 <h3 id="view-3-latency-decomposition">View 3: Latency Decomposition</h3>
 <p><strong>Internal name:</strong> <code>latency_decomposition</code> (registry: <code>Latency Decomposition v1</code>)</p>
 <p><strong>Body reference:</strong> “latency decomposition” or “timing
-breakdown” (Part 2 Ch 4-7)</p>
+breakdown” (<a href="/book/part-2/">Part 2</a> Ch 4-7)</p>
 <p><strong>What it does:</strong> Breaks end-to-end latency into
 components: queue time, TTFT (prefill), inter-token latency (decode),
 tool execution, retrieval, and orchestration overhead.</p>
@@ -779,33 +262,32 @@ component dominates.</p>
 expose queue time separately, the calculator cannot distinguish queueing
 from prefill. If tool calls are asynchronous, T_tool may overlap with
 T_decode.</p>
-<hr />
+<hr/>
 <h3 id="view-4-slo-to-route-mapping">View 4: SLO-to-Route Mapping</h3>
 <p><strong>Internal name:</strong> <code>slo_to_route_mapping</code> (registry: <code>SLO-to-Route Mapping v1</code>)</p>
 <p><strong>Body reference:</strong> “SLO-to-route mapping” or “routing
-policy” (Part 3 Ch 10, Part 4 Ch 20)</p>
+policy” (<a href="/book/part-3/">Part 3</a> Ch 10, <a href="/book/part-4/">Part 4</a> Ch 20)</p>
 <p><strong>What it does:</strong> Maps each workload’s SLO constraints
 to eligible routes. A route is eligible only if it passes all gates:
 latency, quality, security, and cost.</p>
 <p><strong>Inputs:</strong> Workload profile (View 1), route candidates
 with measured latency and quality, security constraints.</p>
-<p><strong>Decision rule:</strong> A route is eligible if measured TTFT p95 &le; <code>ttft_slo_ms</code>, measured E2E p95 &le; <code>e2e_slo_ms</code>, measured eval pass rate &ge; <code>quality_floor</code>, and the route satisfies every security gate in the workload profile.</p>
+<p><strong>Decision rule:</strong> A route is eligible if measured TTFT p95 ≤ <code>ttft_slo_ms</code>, measured E2E p95 ≤ <code>e2e_slo_ms</code>, measured eval pass rate ≥ <code>quality_floor</code>, and the route satisfies every security gate in the workload profile.</p>
 <p><strong>Output:</strong> Eligible route set per workload, ranked by
 cost per accepted work.</p>
 <p><strong>When not to trust it:</strong> If latency was measured under
 synthetic load and production concurrency is higher, p99 will be worse
 than measured. If quality was measured on a different prompt
 distribution, eval pass rate may not transfer.</p>
-<hr />
-<h3 id="view-5-cost-per-accepted-work-lcpr">View 5: Cost Per Accepted
-Work (LCPR)</h3>
+<hr/>
+<h3 id="view-5-cost-per-accepted-work-lcpr">View 5: Cost Per Accepted Work (LCPR)</h3>
 <p><strong>Internal name:</strong> <code>cost_per_accepted_work</code> (registry: <code>Cost Per Accepted Work v1</code>; also exposed in the app as <code>LCPR</code> via the Compare tab)</p>
-<p><strong>Body reference:</strong> LCPR (Part 1 Ch 1-2, every
+<p><strong>Body reference:</strong> LCPR (<a href="/book/part-1/">Part 1</a> Ch 1-2, every
 worked example)</p>
 <p><strong>What it does:</strong> Calculates loaded cost per result,
 normalized to accepted output.</p>
 <p><strong>Formula (Derivation 6):</strong> <code>LCPR = (C_inference + C_eval + C_human + C_ops + delta) / A</code></p>
-<p>Where: <code>C_inference</code> is the sum of per-request costs from traces (first attempt + retry + repair, with cache pricing applied); <code>C_eval</code> is the eval-grader cost (LLM grader calls and rubric checks); <code>C_human</code> is human review, escalation, and repair labor; <code>C_ops</code> is amortized operational overhead (monitoring, on-call, deployment) allocated to the workload; <code>delta = C_invoice &minus; C_trace</code> is the discrepancy between trace-derived cost and the provider invoice for the same period; and <code>A</code> is accepted work units (requests passing quality, latency, and reliability gates).</p>
+<p>Where: <code>C_inference</code> is the sum of per-request costs from traces (first attempt + retry + repair, with cache pricing applied); <code>C_eval</code> is the eval-grader cost (LLM grader calls and rubric checks); <code>C_human</code> is human review, escalation, and repair labor; <code>C_ops</code> is amortized operational overhead (monitoring, on-call, deployment) allocated to the workload; <code>delta = C_invoice − C_trace</code> is the discrepancy between trace-derived cost and the provider invoice for the same period; and <code>A</code> is accepted work units (requests passing quality, latency, and reliability gates).</p>
 <p><strong>What the result means:</strong> LCPR is the real unit cost
 your business operates on. If LCPR exceeds revenue per accepted unit,
 the workload loses money regardless of what the token price page
@@ -814,12 +296,11 @@ says.</p>
 excluded, LCPR understates the real cost. If accepted work is defined
 loosely (no quality gate), LCPR overstates efficiency. If the invoice
 window does not match the trace window, delta will be noisy.</p>
-<hr />
-<h3 id="view-6-spend-movement-waterfall">View 6: Spend Movement
-Waterfall</h3>
+<hr/>
+<h3 id="view-6-spend-movement-waterfall">View 6: Spend Movement Waterfall</h3>
 <p><strong>Internal name:</strong> <code>spend_movement_waterfall</code> (registry: <code>Spend Movement Waterfall v1</code>)</p>
 <p><strong>Body reference:</strong> “spend movement waterfall” or
-“month-over-month spend” (Part 5 Ch 26)</p>
+“month-over-month spend” (<a href="/book/part-5/">Part 5</a> Ch 26)</p>
 <p><strong>What it does:</strong> Decomposes month-over-month spend
 change into contributing factors: volume, mix, price, cache rate,
 quality, retry rate, and new workloads.</p>
@@ -829,23 +310,22 @@ investigation target.</p>
 <p><strong>When not to trust it:</strong> If workload attribution is
 inconsistent across months, the mix column will absorb real changes as
 apparent mix shifts.</p>
-<hr />
-<h3 id="view-7-commitment-utilization">View 7: Commitment
-Utilization</h3>
+<hr/>
+<h3 id="view-7-commitment-utilization">View 7: Commitment Utilization</h3>
 <p><strong>Internal name:</strong> <code>commitment_utilization</code> (registry: <code>Commitment Utilization v1</code>)</p>
 <p><strong>Body reference:</strong> “commitment utilization” or “credit
-coverage” (Part 4 Ch 18, Part 5 Ch 26)</p>
+coverage” (<a href="/book/part-4/">Part 4</a> Ch 18, <a href="/book/part-5/">Part 5</a> Ch 26)</p>
 <p><strong>What it does:</strong> Tracks committed spend against actual
 usage. Shows burn rate, projected exhaustion date, overage exposure, and
 utilization percentage.</p>
 <p><strong>When not to trust it:</strong> If credits apply to some
 models but not others, and the calculator does not model credit scope,
 utilization will be wrong.</p>
-<hr />
+<hr/>
 <h3 id="view-8-variance-analysis">View 8: Variance Analysis</h3>
 <p><strong>Internal name:</strong> <code>variance_drilldown</code> (registry: <code>Variance Drilldown v1</code>)</p>
 <p><strong>Body reference:</strong> “variance analysis” or “cost/latency
-root cause” (Part 5 Ch 25, 26)</p>
+root cause” (<a href="/book/part-5/">Part 5</a> Ch 25, 26)</p>
 <p><strong>What it does:</strong> Identifies the top contributors to
 cost or latency variance between periods or between expected and actual.
 Decomposes variance into rate (price change), volume (traffic change),
@@ -854,23 +334,23 @@ length), and quality (eval pass rate change).</p>
 <p><strong>When not to trust it:</strong> If traces have inconsistent
 model aliases across periods, rate variance will appear where none
 exists.</p>
-<hr />
+<hr/>
 <h3 id="view-9-account-margin-model">View 9: Account Margin Model</h3>
 <p><strong>Internal name:</strong> <code>account_margin_model</code> (registry: <code>Account Margin Model v1</code>)</p>
 <p><strong>Body reference:</strong> “account margin model” or “account
-economics” (Part 5 Ch 25, 26)</p>
+economics” (<a href="/book/part-5/">Part 5</a> Ch 25, 26)</p>
 <p><strong>What it does:</strong> Joins LCPR, account revenue, support
 cost, and operational overhead to calculate gross margin per account or
 per workload.</p>
-<p><strong>Formula (Derivation 6 extended):</strong> <code>margin = (R_account &minus; LCPR &times; A &minus; C_support &minus; C_overhead_allocated) / R_account</code>, where <code>R_account</code> is account revenue, <code>A</code> is accepted work units, <code>C_support</code> is account-specific support cost, and <code>C_overhead_allocated</code> is the allocated share of platform overhead.</p>
+<p><strong>Formula (Derivation 6 extended):</strong> <code>margin = (R_account − LCPR × A − C_support − C_overhead_allocated) / R_account</code>, where <code>R_account</code> is account revenue, <code>A</code> is accepted work units, <code>C_support</code> is account-specific support cost, and <code>C_overhead_allocated</code> is the allocated share of platform overhead.</p>
 <p><strong>When not to trust it:</strong> If account revenue includes
 bundled products that are not inference-related, margin attribution is
 ambiguous.</p>
-<hr />
+<hr/>
 <h3 id="view-10-usage-signals">View 10: Usage Signals</h3>
 <p><strong>Internal name:</strong> <code>usage_signals</code> (registry: <code>Usage Signals v1</code>)</p>
 <p><strong>Body reference:</strong> “usage signals” or “expansion/risk
-signals” (Part 5 Ch 26)</p>
+signals” (<a href="/book/part-5/">Part 5</a> Ch 26)</p>
 <p><strong>What it does:</strong> Tracks leading indicators of workload
 health: volume trend, cache hit rate trend, retry rate trend, p95
 latency trend, eval drift, context length growth, and provider error
@@ -878,12 +358,11 @@ rate.</p>
 <p><strong>When not to trust it:</strong> If telemetry sampling rate
 changes between periods, volume trends will reflect sampling, not
 usage.</p>
-<hr />
-<h3 id="view-11-security-and-compliance-filter">View 11: Security and
-Compliance Filter</h3>
+<hr/>
+<h3 id="view-11-security-and-compliance-filter">View 11: Security and Compliance Filter</h3>
 <p><strong>Internal name:</strong> <code>security_compliance_filter</code> (registry: <code>Security and Compliance Filter v1</code>)</p>
 <p><strong>Body reference:</strong> “security/compliance route filter”
-(Part 3 Ch 10, Part 4 Ch 21)</p>
+(<a href="/book/part-3/">Part 3</a> Ch 10, <a href="/book/part-4/">Part 4</a> Ch 21)</p>
 <p><strong>What it does:</strong> Evaluates each candidate route against
 security constraints before any performance or cost comparison. A route
 that fails any security gate is ineligible regardless of price.</p>
@@ -893,11 +372,11 @@ networking, model license, logging/audit requirements, regulatory scope
 <p><strong>When not to trust it:</strong> If security requirements are
 assumed rather than confirmed with the compliance team, the filter may
 be too permissive or too restrictive.</p>
-<hr />
+<hr/>
 <h3 id="view-12-cache-break-even">View 12: Cache Break-Even</h3>
 <p><strong>Internal name:</strong> <code>cache_break_even</code> (registry: <code>Cache Policy Gate v1</code>)</p>
 <p><strong>Body reference:</strong> “cache break-even analysis” or
-“cache eligibility” (Part 2 Ch 7)</p>
+“cache eligibility” (<a href="/book/part-2/">Part 2</a> Ch 7)</p>
 <p><strong>What it does:</strong> Calculates how many requests must
 reuse a cached prefix within TTL for caching to save money.</p>
 <p><strong>Formula (Derivation 3):</strong> <code>N_break_even = P_write / (P_uncached − P_read)</code>, where <code>P_write</code> is the cache write premium per million input tokens, <code>P_uncached</code> is the standard input price per million tokens, and <code>P_read</code> is the cache read price per million tokens. Cache saves money only when the prefix is reused at least <code>N_break_even</code> times within TTL.</p>
@@ -909,11 +388,11 @@ within TTL is below break-even, caching costs more than it saves.</p>
 <p><strong>When not to trust it:</strong> If the prefix contains any
 volatile content (timestamps, request IDs, retrieval results before the
 static prefix), the effective hit rate will be lower than measured.</p>
-<hr />
+<hr/>
 <h3 id="view-13-kv-memory-sizing">View 13: KV Memory Sizing</h3>
 <p><strong>Internal name:</strong> <code>kv_memory_sizing</code> (registry: <code>KV Capacity Envelope v1</code>)</p>
 <p><strong>Body reference:</strong> “KV memory sizing” or
-“context-length capacity” (Part 2 Ch 6)</p>
+“context-length capacity” (<a href="/book/part-2/">Part 2</a> Ch 6)</p>
 <p><strong>What it does:</strong> Calculates maximum concurrent
 sequences at a given context length on a given GPU.</p>
 <p><strong>Formula (Derivation 2):</strong> <code>N_max = (HBM_total − M_weights − M_activations) / (2 × L × H_kv × d_head × ctx × bytes_per_elem)</code>, where <code>HBM_total</code> is per-GPU memory, <code>M_weights</code> is model weight memory, <code>M_activations</code> is per-sequence activation reserve, <code>L</code> is the number of transformer layers, <code>H_kv</code> is the number of KV heads (after GQA), <code>d_head</code> is per-head dimension, <code>ctx</code> is sequence context length, and <code>bytes_per_elem</code> reflects KV dtype (fp16 = 2, fp8 = 1).</p>
@@ -925,11 +404,11 @@ headroom, burst, and preemption avoidance.</p>
 sliding-window attention, or cross-request prefix sharing, the formula
 overestimates per-token KV cost. If beam search or n-sampling is active,
 live sequences multiply beyond user-facing concurrency.</p>
-<hr />
+<hr/>
 <h3 id="view-14-dedicated-break-even">View 14: Dedicated Break-Even</h3>
 <p><strong>Internal name:</strong> <code>dedicated_break_even</code> (registry: <code>Dedicated Utilization Gate v1</code>)</p>
 <p><strong>Body reference:</strong> “dedicated capacity break-even”
-(Part 4 Ch 18)</p>
+(<a href="/book/part-4/">Part 4</a> Ch 18)</p>
 <p><strong>What it does:</strong> Calculates the minimum utilization at
 which dedicated capacity is cheaper than serverless.</p>
 <p><strong>Formula (Derivation 4):</strong> <code>u_required = (C_dedicated_hourly + C_ops_hourly) / (G_slo × P_serverless × 3600)</code>, where <code>C_dedicated_hourly</code> is the dedicated capacity hourly rate, <code>C_ops_hourly</code> is allocated operational overhead per hour, <code>G_slo</code> is goodput in accepted requests per second under the SLO, and <code>P_serverless</code> is the equivalent serverless price per accepted request. Dedicated is cheaper only when actual utilization exceeds <code>u_required</code>.</p>
@@ -941,9 +420,8 @@ measured with synthetic traffic that does not match production
 prompt/output distributions, the break-even will be optimistic. If
 operational overhead (C_ops) excludes on-call, deployment tooling, and
 incident response, the gate is too permissive.</p>
-<hr />
-<h2 id="a.3-running-the-worked-examples">A.3 Running The Worked
-Examples</h2>
+<hr/>
+<h2 id="a.3-running-the-worked-examples">A.3 Running The Worked Examples</h2>
 <p>The companion repo contains three worked examples. Each has a calculator seed that
 provides the inputs and a workload identity file that describes the workload. To run an
 example:</p>
@@ -956,8 +434,7 @@ pricing data.</p></li>
 <li><p>Review the views listed in the seed’s
 <code>calculator_views</code> field.</p></li>
 </ol>
-<h3 id="example-1-support-answer-trace-to-margin">Example 1: Support
-Answer trace-to-loaded-cost</h3>
+<h3 id="example-1-support-answer-trace-to-margin">Example 1: Support Answer trace-to-loaded-cost</h3>
 <p><strong>Seed:</strong> <code>examples/support-answer.trace-margin.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> What does one accepted support
 answer actually cost after retries, eval failures, cache misses, and
@@ -968,8 +445,7 @@ human escalation?</p>
 vs actual 35%. The cache break-even view shows whether caching is still
 net positive at 35%. - Eval pass rate. Roughly one in four attempts does
 not produce accepted work, but every attempt costs money.</p>
-<h3 id="example-2-coding-agent-task-lifecycle">Example 2: Coding Agent
-Task Lifecycle</h3>
+<h3 id="example-2-coding-agent-task-lifecycle">Example 2: Coding Agent Task Lifecycle</h3>
 <p><strong>Seed:</strong> <code>examples/coding-agent.lifecycle.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> What does one accepted bug fix
 cost across an entire agent session with sub-agent calls, tool loops,
@@ -999,7 +475,7 @@ second under SLO). The missing metadata checklist in the seed documents
 exactly which methodology gaps created the false winner. - The eval pass
 rate gap: 72% (Route A) vs 91% (Route B). Quality is the largest
 contributor to the cost-per-accepted-work reversal.</p>
-<hr />
+<hr/>
 <h2 id="a.4-source-snapshot-schema">A.4 Source Snapshot Schema</h2>
 <p>Provider prices belong in dated snapshots, not in body prose. The
 snapshot schema lives in <code>source-snapshots/&lt;YYYY-MM-DD&gt;/providers.yaml</code> (alongside <code>hardware.yaml</code>, <code>cache-semantics.yaml</code>, <code>benchmark-sources.yaml</code>, and <code>model-licenses.yaml</code>).</p>
@@ -1098,140 +574,132 @@ record.</p></li>
 come from official pricing pages. If a price is inferred, modeled,
 reported by a third party, or unavailable, label it explicitly and add a
 note explaining the evidence source.</p>
-<hr />
+<hr/>
 <h2 id="a.5-formulas-reference">A.5 Formulas Reference</h2>
 <p>The six derivations in the body are the mathematical spine of the
 calculator. Each derivation kills a wrong conclusion that survives in
 naive analysis.</p>
-<h3
-id="derivation-1-batch-amortization-roofline-part-2-ch-4-5">Derivation
-1: Batch Amortization / Roofline (Part 2, Ch 4-5)</h3>
+<h3 id="derivation-1-batch-amortization-roofline-part-2-ch-4-5">Derivation 1: Batch Amortization / Roofline (Part 2, Ch 4-5)</h3>
 <p>Wrong conclusion: “GPU-hour divided by peak tokens/sec is my
 cost.”</p>
 <p>Calculator views: goodput frontier test, serving physics lens.</p>
-<h3 id="derivation-2-kv-cache-memory-sizing-part-2-ch-6">Derivation 2:
-KV Cache Memory Sizing (Part 2, Ch 6)</h3>
+<h3 id="derivation-2-kv-cache-memory-sizing-part-2-ch-6">Derivation 2: KV Cache Memory Sizing (Part 2, Ch 6)</h3>
 <p>Wrong conclusion: “Context length is just a model setting.”</p>
 <p>Calculator view: kv capacity envelope.</p>
-<h3 id="derivation-3-prompt-cache-break-even-part-2-ch-7">Derivation 3:
-Prompt-Cache Break-Even (Part 2, Ch 7)</h3>
+<h3 id="derivation-3-prompt-cache-break-even-part-2-ch-7">Derivation 3: Prompt-Cache Break-Even (Part 2, Ch 7)</h3>
 <p>Wrong conclusion: “Caching is a discount.”</p>
 <p>Calculator view: cache policy gate.</p>
-<h3 id="derivation-4-dedicated-utilization-part-4-ch-18">Derivation 4:
-Dedicated Utilization (Part 4, Ch 18)</h3>
+<h3 id="derivation-4-dedicated-utilization-part-4-ch-18">Derivation 4: Dedicated Utilization (Part 4, Ch 18)</h3>
 <p>Wrong conclusion: “Dedicated is cheaper because the hourly rate looks
 low.”</p>
 <p>Calculator view: dedicated utilization gate.</p>
-<h3 id="derivation-5-goodput-under-slo-part-5-ch-24">Derivation 5:
-Goodput Under SLO (Part 5, Ch 24)</h3>
+<h3 id="derivation-5-goodput-under-slo-part-5-ch-24">Derivation 5: Goodput Under SLO (Part 5, Ch 24)</h3>
 <p>Wrong conclusion: “Peak throughput is capacity.”</p>
 <p>Calculator view: goodput frontier test.</p>
-<h3
-id="derivation-6-trace-to-margin-reconciliation-part-5-ch-25">Derivation
-6: trace-to-loaded-cost Reconciliation (Part 5, Ch 25)</h3>
+<h3 id="derivation-6-trace-to-margin-reconciliation-part-5-ch-25">Derivation 6: trace-to-loaded-cost Reconciliation (Part 5, Ch 25)</h3>
 <p>Wrong conclusion: “The provider bill is my margin model.”</p>
 <p>Calculator view: trace-to-loaded-cost review.</p>
-<hr />
+<hr/>
 <h2 id="a.6-glossary">A.6 Glossary</h2>
 <p>Terms are defined at first use in the body. This glossary collects
 them for reference.</p>
 <p><strong>Accepted work unit.</strong> A completed inference result
 that passes all quality, latency, and reliability gates. The denominator
-for LCPR. Defined in Part 1 Ch 2.</p>
+for LCPR. Defined in <a href="/book/part-1/">Part 1</a> Ch 2.</p>
 <p><strong>Batch size.</strong> The number of sequences processed
 simultaneously in one scheduler step. Larger batches amortize weight
 fetch but increase KV memory pressure and can degrade tail latency.
-Defined in Part 2 Ch 5.</p>
+Defined in <a href="/book/part-2/">Part 2</a> Ch 5.</p>
 <p><strong>Cache hit rate.</strong> The fraction of input tokens served
 from prefix cache rather than recomputed. An economic variable, not only
-a performance metric. Defined in Part 2 Ch 7.</p>
+a performance metric. Defined in <a href="/book/part-2/">Part 2</a> Ch 7.</p>
 <p><strong>Compaction.</strong> Summarizing or truncating an agent’s
 conversation history to fit within the context window. A cost event
 (discards cached context, forces cache write) and a quality event
-(summary may lose information). Defined in Part 3 Ch 12.</p>
+(summary may lose information). Defined in <a href="/book/part-3/">Part 3</a> Ch 12.</p>
 <p><strong>Decode.</strong> The autoregressive generation phase where
 output tokens are produced one at a time. Often memory-bandwidth-bound.
-Defined in Part 2 Ch 5.</p>
+Defined in <a href="/book/part-2/">Part 2</a> Ch 5.</p>
 <p><strong>Delta.</strong> The discrepancy between trace-derived cost
 and provider invoice for the same period. Investigate if delta exceeds
-5%. Defined in Part 5 Ch 25.</p>
+5%. Defined in <a href="/book/part-5/">Part 5</a> Ch 25.</p>
 <p><strong>E2E latency.</strong> End-to-end latency from request arrival
-to last output token delivered. Defined in Part 2.</p>
+to last output token delivered. Defined in <a href="/book/part-2/">Part 2</a>.</p>
 <p><strong>Eval pass rate.</strong> The fraction of outputs passing the
 quality gate. Directly affects the accepted-work denominator and
-therefore LCPR. Defined in Part 5 Ch 23.</p>
+therefore LCPR. Defined in <a href="/book/part-5/">Part 5</a> Ch 23.</p>
 <p><strong>Goodput.</strong> Accepted requests per unit time, where
 “accepted” means passing latency, quality, and reliability gates. The
-correct capacity metric. Defined in Part 5 Ch 24.</p>
+correct capacity metric. Defined in <a href="/book/part-5/">Part 5</a> Ch 24.</p>
 <p><strong>GQA (Grouped Query Attention).</strong> An attention variant
 where multiple query heads share fewer KV heads, reducing KV cache
-memory. Defined in Part 2 Ch 6.</p>
+memory. Defined in <a href="/book/part-2/">Part 2</a> Ch 6.</p>
 <p><strong>HBM (High Bandwidth Memory).</strong> GPU memory. Capacity
 determines how many weights and KV cache entries fit. Bandwidth
-determines how fast they can be read. Defined in Part 2 Ch 4.</p>
+determines how fast they can be read. Defined in <a href="/book/part-2/">Part 2</a> Ch 4.</p>
 <p><strong>KV cache.</strong> Key and value tensors stored per layer per
 token for each live sequence. The hidden memory bill of inference.
-Defined in Part 2 Ch 6.</p>
+Defined in <a href="/book/part-2/">Part 2</a> Ch 6.</p>
 <p><strong>LCPR (Loaded Cost Per Result).</strong> The book’s core
 economic unit. Total loaded cost (inference + invoice delta + evals +
 repairs + human escalation + ops overhead) divided by accepted work
-units. Defined in Part 1 Ch 2.</p>
+units. Defined in <a href="/book/part-1/">Part 1</a> Ch 2.</p>
 <p><strong>MoE (Mixture of Experts).</strong> A model architecture where
 only a subset of parameters is active per token, improving compute
 efficiency but creating routing, all-to-all communication, and
-memory-capacity tradeoffs. Defined in Part 2 Ch 8.</p>
+memory-capacity tradeoffs. Defined in <a href="/book/part-2/">Part 2</a> Ch 8.</p>
 <p><strong>p99 latency.</strong> The latency at the 99th percentile. The
-tail that SLOs must account for. Averages hide p99. Defined in Part 2 Ch
+tail that SLOs must account for. Averages hide p99. Defined in <a href="/book/part-2/">Part 2</a> Ch
 4.</p>
 <p><strong>Prefill.</strong> The phase where all input tokens are
 processed in parallel to populate the KV cache. Compute-heavy. Defined
-in Part 2 Ch 5.</p>
+in <a href="/book/part-2/">Part 2</a> Ch 5.</p>
 <p><strong>Prefix caching.</strong> Reusing KV cache entries from a
 previous request that shares the same prompt prefix. An economic
-mechanism when reuse exceeds break-even. Defined in Part 2 Ch 7.</p>
+mechanism when reuse exceeds break-even. Defined in <a href="/book/part-2/">Part 2</a> Ch 7.</p>
 <p><strong>Roofline.</strong> A model that identifies whether a
 computation is limited by compute throughput or memory bandwidth.
 Applied to inference to explain why cost changes with batch size.
-Defined in Part 2 Ch 4.</p>
+Defined in <a href="/book/part-2/">Part 2</a> Ch 4.</p>
 <p><strong>Route.</strong> A specific combination of provider, model,
 serving mode, and configuration used to serve a workload. Defined in
-Part 3 Ch 10.</p>
+<a href="/book/part-3/">Part 3</a> Ch 10.</p>
 <p><strong>Routefit matrix.</strong> The framework for mapping
 workload identity and SLO constraints to eligible routes, ranked by cost
-per accepted work. Defined in Part 4 Ch 15.</p>
+per accepted work. Defined in <a href="/book/part-4/">Part 4</a> Ch 15.</p>
 <p><strong>Serving physics.</strong> The hardware and software
 constraints that determine inference cost and latency: memory bandwidth,
 compute throughput, KV capacity, batch scheduling, queueing, and
-topology. Defined in Part 2.</p>
+topology. Defined in <a href="/book/part-2/">Part 2</a>.</p>
 <p><strong>SLO (Service Level Objective).</strong> The internal target
 for latency, quality, and reliability. Not the same as an SLA
-(contractual commitment to customers). Defined in Part 1.</p>
+(contractual commitment to customers). Defined in <a href="/book/part-1/">Part 1</a>.</p>
 <p><strong>Snapshot.</strong> A dated record of provider prices,
 hardware specs, or model availability. Snapshots are immutable. New
 observations create new snapshots. Defined in this appendix.</p>
 <p><strong>TPOT (Time Per Output Token).</strong> Latency per generated
 token during decode. TPOT times output length determines decode
-duration. Defined in Part 2 Ch 5.</p>
+duration. Defined in <a href="/book/part-2/">Part 2</a> Ch 5.</p>
 <p><strong>Trace.</strong> A per-request record containing tokens,
 latency, cost, quality label, and routing metadata. The atomic unit of
-inference economics analysis. Defined in Part 1 Ch 3.</p>
+inference economics analysis. Defined in <a href="/book/part-1/">Part 1</a> Ch 3.</p>
 <p><strong>Trace autopsy.</strong> The diagnostic walkthrough from
 one trace to root cause. The book’s primary diagnostic framework.
 Defined in the Trace Autopsy article (see front matter cross-links).</p>
 <p><strong>Trace-to-margin review.</strong> The framework for joining
 traces, invoices, evals, and account data to calculate margin. The
-book’s reconciliation instrument. Defined in Part 5 Ch 25.</p>
+book’s reconciliation instrument. Defined in <a href="/book/part-5/">Part 5</a> Ch 25.</p>
 <p><strong>TTFT (Time To First Token).</strong> Latency from request
 arrival to first output token. Dominated by prefill computation and
-queue time. Defined in Part 2 Ch 5.</p>
+queue time. Defined in <a href="/book/part-2/">Part 2</a> Ch 5.</p>
 <p><strong>Utilization.</strong> The fraction of provisioned capacity
 that is doing productive work. High utilization can hide unproductive
 recomputation, allocation waste, or queueing. The correct metric is
-goodput, not utilization. Defined in Part 2 Ch 9.</p>
+goodput, not utilization. Defined in <a href="/book/part-2/">Part 2</a> Ch 9.</p>
 <p><strong>Workload class.</strong> A category of inference work where
 the economics, SLOs, failure modes, and operating decisions differ
-enough to justify separate treatment. Defined in Part 3 Ch 10.</p>
-<hr />
+enough to justify separate treatment. Defined in <a href="/book/part-3/">Part 3</a> Ch 10.</p>
+<hr/>
 <h2 id="a.7-what-lives-in-the-repo">A.7 What Lives In The Repo</h2>
 <p>The companion repo extends this appendix with material that does not
 belong in static pages:</p>
@@ -1285,18 +753,48 @@ calculator seed</p></td>
 DERIVED from assumptions shown in the body. All prices in source
 snapshots are PUBLIC. All worked example data is SYNTHETIC, shaped by
 public sources but not measured from production systems.</p>
-<hr />
+<hr/>
 <p><em>End of Appendix.</em></p>
-
-        </div>
-
-        <nav class="part-nav"><a href="/book/part-5/" class="nav-prev"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Part 5: Operating The
+</div>
+<nav class="part-nav"><a class="nav-prev" href="/book/part-5/"><span class="nav-dir">← Previous</span><span class="nav-title">Part 5: Operating The
 Decision</span></a><div></div></nav>
-      </div>
-    </div>
-  </div>
+</div>
+<section class="book-colophon" id="colophon">
+  <h2>Colophon</h2>
+  <p>The Inference Field Guide was set in three typefaces from Google Fonts: <em>Instrument Serif</em> (italic display, chapter titles), <em>Newsreader</em> (body), and <em>JetBrains Mono</em> (numerics, ruled labels, code).</p>
 
-  <script>
+  <dl>
+    <dt>Paper</dt>
+    <dd><code>#faf5e9</code> — parchment, warm cream</dd>
+
+    <dt>Primary ink (moss)</dt>
+    <dd><code>#3A4F2A</code> — headlines, rules, mad-libs chips, primary data, ornaments</dd>
+
+    <dt>Secondary ink (oxblood)</dt>
+    <dd><code>#5C2A1E</code> — sidenotes, "Where this breaks" callouts, evidence tags</dd>
+
+    <dt>Display face</dt>
+    <dd>Instrument Serif (italic) — chapter titles, landing</dd>
+
+    <dt>Body face</dt>
+    <dd>Newsreader (opsz 6–72) — running prose</dd>
+
+    <dt>Mono face</dt>
+    <dd>JetBrains Mono — data rows, variable chips, top-rule captions</dd>
+
+    <dt>Built with</dt>
+    <dd>Pelican (Python static site generator). Source: <a href="https://github.com/Sohailm25/Sohailm25.github.io">github.com/Sohailm25/Sohailm25.github.io</a>.</dd>
+
+    <dt>Companion calculator</dt>
+    <dd><a href="/book/calculator/">sohailmo.ai/book/calculator/</a> — Marimo notebook hosting the LCPR formulas, sensitivity sweeps, and break-even analysis used throughout this book.</dd>
+
+    <dt>Last revised</dt>
+    <dd id="colophon-date">2026-05-18</dd>
+  </dl>
+</section>
+</div></article>
+</div>
+<script>
     // ── Reading progress ──
     window.addEventListener('scroll', function() {
       var h = document.documentElement.scrollHeight - window.innerHeight;

@@ -4,312 +4,148 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Sohail Mohammad">
+  <title>The Inference Field Guide — Sohail Mohammad</title>
+  <meta name="description" content="Production inference economics. Loaded cost per accepted result, not price per million tokens.">
+
+  <link rel="stylesheet" href="/theme/css/book-tokens.css">
+  <link rel="stylesheet" href="/theme/css/book.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
 
-  <title>Production Inference Economics</title>
-  <meta name="description" content="How to measure, model, and operate production inference decisions. Loaded cost per accepted result, not price per million tokens.">
   <style>
-    /* ── Reset ─────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --c-bg: #faf9f6;
-      --c-surface: #ffffff;
-      --c-text: #1a1a1a;
-      --c-text-secondary: #5a5a5a;
-      --c-text-tertiary: #8a8a8a;
-      --c-heading: #0f0f0f;
-      --c-link: #5a8a60;
-      --c-link-hover: #4a7a50;
-      --c-border: #e0ddd6;
-      --c-border-light: #ebe9e3;
-      --c-code-bg: #f0eee8;
-      --c-table-header: #f4f3ef;
-      --c-table-stripe: #faf9f6;
-      --c-blockquote-border: #A7C080;
-      --c-blockquote-bg: #f4f3ef;
-      --c-accent: #83C092;
-      --c-accent-dark: #A7C080;
-      --c-accent-light: rgba(131, 192, 146, 0.1);
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-      --content-max: 700px;
+    /* Landing-only refinements; everything else inherits from book.css */
+    .book-landing {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4) var(--space-10);
     }
-
-    html {
-      font-size: 16.5px;
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-      scrollbar-gutter: stable;
+    .book-landing-h1 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 3rem;
+      letter-spacing: -0.005em;
+      line-height: 1.05;
+      margin: var(--space-5) 0 var(--space-2);
+      color: var(--text);
     }
-
-    body {
+    .book-landing-deck {
       font-family: var(--font-body);
-      color: var(--c-text);
-      background: var(--c-bg);
-      line-height: 1.75;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text-deck);
+      max-width: 56ch;
+      margin-bottom: var(--space-6);
     }
-
-    /* ── Links ─────────────────────────────────────── */
-    a {
-      color: var(--c-link);
-      text-decoration: none;
-      transition: color 0.15s;
+    .book-landing-meta {
+      font-family: var(--font-mono);
+      font-size: var(--fs-mono-meta);
+      color: var(--ink);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: var(--space-5);
     }
-    a:hover { color: var(--c-link-hover); }
-
-    /* ── Typography ────────────────────────────────── */
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--c-heading);
-      line-height: 1.3;
-      letter-spacing: -0.02em;
+    .toc-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: var(--space-3);
+      border-top: 1px solid var(--ink);
+      padding: var(--space-3) 0;
+      align-items: baseline;
+    }
+    .toc-row:last-child { border-bottom: 1px solid var(--ink); }
+    .toc-num {
+      font-family: var(--font-mono);
+      font-size: var(--fs-mono-label);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--brown);
       font-weight: 700;
     }
-
-    strong { font-weight: 600; }
-
-    /* ── Code ──────────────────────────────────────── */
-    code {
+    .toc-title {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .toc-title:hover { color: var(--ink); }
+    .toc-title-display {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+    }
+    .toc-pages {
       font-family: var(--font-mono);
-      font-size: 0.87em;
-      background: var(--c-code-bg);
-      padding: 0.15em 0.4em;
-      border-radius: 4px;
+      font-size: var(--fs-mono-meta);
+      color: var(--text-mute);
     }
-
-    pre {
-      background: var(--c-code-bg);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      overflow-x: auto;
-      margin-bottom: 1.5rem;
-      line-height: 1.55;
-    }
-
-    pre code {
-      background: none;
-      padding: 0;
-      font-size: 0.85rem;
-    }
-
-
-    /* ── Index Layout ──────────────────────────────── */
-    .index-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem 5rem;
-    }
-
-    /* ── Breadcrumb ────────────────────────────────── */
-    .breadcrumb {
-      font-size: 0.82rem;
-      color: var(--c-text-tertiary);
-      margin-bottom: 2.5rem;
-    }
-    .breadcrumb a {
-      color: var(--c-text-secondary);
-      text-decoration: none;
-    }
-    .breadcrumb a:hover { color: var(--c-link); }
-
-    /* ── Hero ───────────────────────────────────────── */
-    .hero {
-      margin-bottom: 3.5rem;
-    }
-
-    .hero h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.75rem;
-      line-height: 1.15;
-    }
-
-    .hero .subtitle {
-      font-size: 1.05rem;
-      color: var(--c-text-secondary);
-      line-height: 1.6;
-      max-width: 600px;
-    }
-
-    .hero .meta {
-      font-size: 0.85rem;
-      color: var(--c-text-tertiary);
-      margin-top: 1rem;
-    }
-
-    /* ── Part Cards ─────────────────────────────────── */
-    .parts-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      background: var(--c-border);
-      border: 1px solid var(--c-border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .part-card {
-      display: block;
-      background: var(--c-surface);
-      padding: 1.25rem 1.5rem;
-      text-decoration: none;
-      color: var(--c-text);
-      transition: background 0.15s;
-    }
-
-    .part-card:hover {
-      background: var(--c-table-header);
-      color: var(--c-text);
-    }
-
-    .part-card-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .part-label {
-      font-size: 0.78rem;
-      font-weight: 600;
+    .book-back-link {
+      font-family: var(--font-mono);
+      font-size: var(--fs-mono-meta);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--c-accent);
-    }
-
-    .part-chapters {
-      font-size: 0.75rem;
-      color: var(--c-text-tertiary);
-      font-weight: 400;
-    }
-
-    .part-card h3 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      letter-spacing: -0.01em;
-    }
-
-    .part-card p {
-      font-size: 0.88rem;
-      color: var(--c-text-secondary);
-      line-height: 1.55;
-      margin: 0;
-    }
-
-    /* ── Footer ────────────────────────────────────── */
-    .index-footer {
-      margin-top: 3rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--c-border);
-      font-size: 0.85rem;
-      color: var(--c-text-tertiary);
-      display: flex;
-      gap: 1.5rem;
-    }
-    .index-footer a {
-      color: var(--c-text-secondary);
-    }
-
-    @media (max-width: 600px) {
-      .index-container { padding: 2rem 1rem 3rem; }
-      .hero h1 { font-size: 1.7rem; }
-      .part-card { padding: 1rem 1.15rem; }
+      letter-spacing: 0.12em;
+      color: var(--text-deck);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <div class="index-container">
-    <div class="breadcrumb">
-      <a href="/pages/inference-economics/">Inference Economics</a> &rarr; Book
+  <div class="book-landing">
+    <header class="book-top-rule">
+      <span class="rule-anchor"><a href="/" class="book-back-link">← sohailmo.ai</a></span>
+      <span class="rule-title">The Inference Field Guide · MMXXVI</span>
+      <span class="rule-page">edition 1</span>
+    </header>
+
+    <div class="book-landing-meta">Sohail Mohammad</div>
+    <h1 class="book-landing-h1">Production Inference Economics</h1>
+    <p class="book-landing-deck">How to measure, model, and operate production inference decisions. Loaded cost per accepted result, not price per million tokens.</p>
+
+    <div class="book-toc">
+      <a class="toc-row" href="/book/opener/" style="text-decoration: none;">
+        <span class="toc-num">Opener</span>
+        <span class="toc-title toc-title-display">The Deterministic Gate</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/part-0/" style="text-decoration: none;">
+        <span class="toc-num">Part 0</span>
+        <span class="toc-title">How to Use This Book</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/part-1/" style="text-decoration: none;">
+        <span class="toc-num">Part 1</span>
+        <span class="toc-title">The Economic Unit</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/part-2/" style="text-decoration: none;">
+        <span class="toc-num">Part 2</span>
+        <span class="toc-title">Serving Physics</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/part-3/" style="text-decoration: none;">
+        <span class="toc-num">Part 3</span>
+        <span class="toc-title">Workload Economics</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/part-4/" style="text-decoration: none;">
+        <span class="toc-num">Part 4</span>
+        <span class="toc-title">Migration Gates</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/part-5/" style="text-decoration: none;">
+        <span class="toc-num">Part 5</span>
+        <span class="toc-title">Operating the Decision</span>
+        <span class="toc-pages"></span>
+      </a>
+      <a class="toc-row" href="/book/appendix/" style="text-decoration: none;">
+        <span class="toc-num">Appendix</span>
+        <span class="toc-title">Calculator Manual and Living Reference</span>
+        <span class="toc-pages"></span>
+      </a>
     </div>
 
-    <div class="hero">
-      <h1>Production Inference Economics</h1>
-      <p class="subtitle">How to measure, model, and operate production inference decisions so you choose the cheapest reliable architecture that still meets quality, latency, and reliability requirements.</p>
-      <p class="meta">Sohail Mohammad &middot; May 2026</p>
-    </div>
-
-    <div class="parts-grid">
-      <a href="/book/opener/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Opener</span>
-          
-        </div>
-        <h3>The Deterministic Gate</h3>
-        <p>A twelve-request trace reveals why switching to a 40% cheaper provider made the bill go up. The autopsy that motivates the entire book.</p>
-      </a>
-      <a href="/book/part-0/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Part 0</span>
-          
-        </div>
-        <h3>How To Use This Book</h3>
-        <p>Who this book is for, how evidence is labeled, which facts are volatile, and three reading paths based on your role.</p>
-      </a>
-      <a href="/book/part-1/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Part 1</span>
-          <span class="part-chapters">Chapters 1–3</span>
-        </div>
-        <h3>The Economic Unit</h3>
-        <p>The economic unit is the accepted work unit, not the token. LCPR (Loaded Cost Per Result) replaces price-per-million as the decision metric.</p>
-      </a>
-      <a href="/book/part-2/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Part 2</span>
-          <span class="part-chapters">Chapters 4–9</span>
-        </div>
-        <h3>Serving Physics</h3>
-        <p>Hardware cost floors, prefill vs decode economics, memory hierarchy, prompt caching, model architecture effects, and productive capacity.</p>
-      </a>
-      <a href="/book/part-3/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Part 3</span>
-          <span class="part-chapters">Chapters 10–14</span>
-        </div>
-        <h3>Workload Economics</h3>
-        <p>Per-workload LCPR for conversational, agentic, RAG, extraction, voice, and batch workloads. The cross-subsidy that blended averages hide.</p>
-      </a>
-      <a href="/book/part-4/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Part 4</span>
-          <span class="part-chapters">Chapters 15–22</span>
-        </div>
-        <h3>Migration Gates</h3>
-        <p>The model candidate funnel, routefit matrix, and migration playbooks: serverless, dedicated, self-managed, and multi-source architectures.</p>
-      </a>
-      <a href="/book/part-5/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Part 5</span>
-          <span class="part-chapters">Chapters 23–27</span>
-        </div>
-        <h3>Operating The
-Decision</h3>
-        <p>Baselines, evals, benchmarks, goodput, observability, trace-to-margin dashboards, incident review, and cost forecasting.</p>
-      </a>
-      <a href="/book/appendix/" class="part-card">
-        <div class="part-card-header">
-          <span class="part-label">Appendix</span>
-          
-        </div>
-        <h3>Calculator Manual And Living Reference</h3>
-        <p>Calculator manual, formula reference, and living reference tables for provider pricing, hardware specs, and workload parameters.</p>
-      </a>
-
-    </div>
-
-    <div class="index-footer">
-      <a href="/pages/inference-economics/">&larr; Back to Inference Economics</a>
-      <a href="https://inference-econ.streamlit.app">LCPR Calculator</a>
-    </div>
+    <div class="book-ornament">❦ &nbsp; ❦ &nbsp; ❦</div>
   </div>
 </body>
 </html>

@@ -291,3 +291,32 @@ def test_remove_legacy_font_links_preserves_unrelated_inter_substrings():
     out = remove_legacy_font_links(html)
     soup = _soup(out)
     assert soup.find("link") is not None
+
+
+def test_hyperlink_does_not_inject_into_title():
+    html = "<html><head><title>Part 1: The Field Problem</title></head><body><p>Hello.</p></body></html>"
+    out = hyperlink_cross_references(html)
+    soup = _soup(out)
+    title = soup.find("title")
+    # title must not contain an <a> tag, and must keep its plain text content
+    assert title.find("a") is None
+    assert "Part 1" in title.get_text()
+
+
+def test_hyperlink_does_not_inject_into_h2():
+    html = "<article><h2>Part 1 Summary</h2><p>Body.</p></article>"
+    out = hyperlink_cross_references(html)
+    soup = _soup(out)
+    h2 = soup.find("h2")
+    assert h2.find("a") is None
+    assert h2.get_text().strip() == "Part 1 Summary"
+
+
+def test_hyperlink_still_works_in_body_prose():
+    """Regression: ensure the new skip set didn't break body-prose hyperlinking."""
+    html = "<article><h1>Title</h1><p>See Part 2 for details.</p></article>"
+    out = hyperlink_cross_references(html)
+    soup = _soup(out)
+    link = soup.select_one("p > a")
+    assert link is not None
+    assert link.get("href") == "/book/part-2/"

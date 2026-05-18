@@ -178,7 +178,7 @@ def hyperlink_cross_references(html: str) -> str:
     for text_node in list(soup.find_all(string=True)):
         # Skip text inside existing <a>, <code>, <pre>, <style>, <script>
         ancestor_tags = {p.name for p in text_node.parents if p.name}
-        if ancestor_tags & {"a", "code", "pre", "style", "script"}:
+        if ancestor_tags & {"a", "code", "pre", "style", "script", "title", "h1", "h2", "h3", "h4", "h5", "h6"}:
             continue
         raw = str(text_node)
         if not _CROSS_REF_RE.search(raw):

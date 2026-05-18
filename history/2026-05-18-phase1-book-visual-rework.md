@@ -71,6 +71,13 @@ dev = [
     "pytest>=8.0",
 ]
 
+[tool.setuptools]
+# Repo root contains many non-Python top-level dirs (content/, theme/,
+# output/, extra/, scratch/, history/) which confuse setuptools'
+# flat-layout auto-discovery. Declare the two real Python packages
+# explicitly.
+packages = ["scripts", "tests"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
@@ -1024,6 +1031,10 @@ git commit -m "feat(scripts): implement clean_pandoc_artifacts.py + tests passin
 
 ## Task 7: Run `clean_pandoc_artifacts.py` against the book
 
+> **PLAN AMENDMENT during execution (2026-05-18):** When T7 first ran the full script, the `smarten_quotes` pass converted HTML attribute delimiters (`<html lang="en">` → `<html lang="en">`) and CSS string quotes (`'Inter'` → `'Inter'`), breaking document validity. The regex-based approach over-matches because `<style>`, `<script>`, and HTML tag attributes are not preserved scopes. Implementer correctly reverted before committing.
+>
+> **Resolution:** `clean_html_string()` is patched to skip the `smarten_quotes` call. The function remains in the module (and passes its unit tests) but is not invoked end-to-end. Smart-quote conversion is **deferred to a future polish pass** using a proper HTML parser (BeautifulSoup over text nodes only). Spec §16 A5+A6 (the title `\n` artifact + bare `--` em-dashes) are unaffected and still pass with `fix_title_newlines` + `convert_double_dashes` only.
+
 **Files:**
 - Modify (in place): `content/extra/book/{opener,part-0..5,appendix}/index.html`
 
@@ -1250,6 +1261,10 @@ git commit -m "test(scripts): add failing tests for migrate_book_markup"
 
 ## Task 9: Write `migrate_book_markup.py` — GREEN (implementation)
 
+> **PLAN AMENDMENT during execution (2026-05-18):** The plan's `add_book_part_class_to_article` only adds the `book-part` class to existing `<article>` tags. Verified that NONE of the real book HTML files in `content/extra/book/` have an `<article>` wrapper — body content is direct (h1, p, etc.). So the plan's verbatim function would silently do nothing on real pages, and the integration test `test_migrate_html_string_applies_all` (which asserts `soup.find("article", class_="book-part") is not None`) would fail.
+>
+> **Resolution:** `add_book_part_class_to_article` now creates an `<article class="book-part">` wrapper around `<body>` children when no `<article>` exists. Existing-article behavior preserved unchanged. All 13 unit tests pass. Verified during T9 execution.
+
 **Files:**
 - Create: `scripts/migrate_book_markup.py`
 
@@ -1456,6 +1471,16 @@ git commit -m "feat(scripts): implement migrate_book_markup.py + tests passing"
 
 ---
 
+## Task 9.5 (mid-execution amendment): Tighten article scope to wrap only div.main-content
+
+> Added 2026-05-18 after T10's code review surfaced that the original `add_book_part_class_to_article` wrapped ALL body children in `<article>` (including sidebar nav, progress bar, scripts) — semantically wrong. User authorized the fix before T12 fanned the pattern across 7 more pages. Verified all 8 book HTML files have a single `<div class="main-content">`; script now targets that div specifically.
+>
+> **Changes:** `add_book_part_class_to_article` rewritten to handle 4 cases (virgin div, correctly-wrapped, too-wide-article-needs-unwrap, neither). 3 new regression tests added. `canonical_part_html` fixture updated to mirror real part-page shape. Opener re-migrated to correct scope.
+>
+> **Commits:** `19076c8` (script + tests + fixture), `ced2854` (opener re-wrap). 27/27 tests passing. Paragraph count preserved 195→195.
+>
+> **Note for T12 reviewers:** lxml normalizes `<link>` tags during round-trip (self-closing slash, attribute order, `&` → `&amp;`). Expect incidental diff noise on the 7 remaining pages — not a bug.
+
 ## Task 10: Apply migration to one canonical page (opener) and review
 
 **Files:**
@@ -1657,7 +1682,20 @@ git commit -m "feat(scripts): auto-insert stylesheet links during migration"
 
 ---
 
+## Task 11.5 (mid-execution amendment): Exclude title + headings from cross-ref hyperlinking
+
+> Added 2026-05-18 during T12. The `hyperlink_cross_references` ancestor-skip set was `{a, code, pre, style, script}`. The opener's content didn't include "Part N" in its title or headings, so this defect didn't surface until T12 fanned the migration to 7 more part pages. Two defects:
+>
+> 1. **Title corruption (BLOCKER):** `<title>Part 1: ...</title>` became `<title><a href="/book/part-1/">Part 1</a>: ...</title>`. HTML5 `<title>` is a raw-text element — browser tabs literally show `<a href=...>Part N</a>: ...` text.
+> 2. **Self-links in `<h2>`s:** Each part's "Part N Summary" or "Evidence Notes for Part N" h2 contained a self-referential `<a href="/book/part-N/">Part N</a>`. Dead UI.
+>
+> **Resolution:** Extend the script's ancestor-skip set to include `title` + all heading tags (`h1` through `h6`). Cross-refs only get hyperlinked in body prose. New regression tests added.
+
 ## Task 12: Run migration on the 8 part pages (opener already done)
+
+> **Plan-text wart noted during T12:** Step 4's verification command `grep -c 'book.css\|book-tokens.css'` returns 1 (not 2) when the migration script writes both `<link>` tags on the same line. Content-wise both stylesheets ARE present; the line-counting grep is misleading. T15 verification should use `grep -oE '/theme/css/book[a-z-]*\.css' <file> | wc -l` instead.
+>
+> **Plan-text amendment noted during T15 (A4 scope tightened):** §8.3 A4 was amended from "every cross-reference is hyperlinked" to "every CROSS-PART reference is hyperlinked." Within-part bare "Chapter N" mentions are local nav aids and deferred to P4 polish (alongside chapter-anchor `id` attributes per §4 decision 19). The §16 Step 3 verification command was tightened to a BeautifulSoup-based Python script that only flags `Part N` / `Appendix X` references, skipping bare `Chapter N`.
 
 **Files:**
 - Modify: `content/extra/book/{part-0..5,appendix}/index.html`
@@ -1994,15 +2032,41 @@ grep -rE "font-family:.*Inter" theme/static/css/ content/extra/book/
 
 Expected: 0 results.
 
-- [ ] **Step 3: A4 — every cross-reference is hyperlinked**
+- [ ] **Step 3: A4 — every CROSS-PART cross-reference is hyperlinked**
 
 ```bash
-grep -rnE '(^|[^>])(see |See )?(Part [0-9]|Chapter [0-9]|Appendix [A-Z])([^<]|$)' content/extra/book/ \
-  | grep -v 'href' \
-  | grep -v '^Binary'
+# A4 — every CROSS-PART cross-reference is hyperlinked (amended scope:
+# excludes bare "Chapter N" which is within-part local nav; chapter
+# anchors deferred to P4 per §4 decision 19).
+.venv/bin/python3 -c "
+from pathlib import Path
+import re
+from bs4 import BeautifulSoup
+
+# Only flag CROSS-PART refs that are not hyperlinked.
+# Bare 'Chapter N' / 'Section N' without a leading 'Part N,' is excluded.
+PAT = re.compile(r'\b(Part\s+\d|Appendix\s+[A-Z])\b')
+SKIP = {'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'code', 'pre', 'script', 'style'}
+
+bad = []
+for f in sorted(Path('content/extra/book/').rglob('index.html')):
+    if f.parent.name == 'book':  # skip landing
+        continue
+    soup = BeautifulSoup(f.read_text(), 'lxml')
+    for text in soup.find_all(string=True):
+        ancestors = {p.name for p in text.parents if p.name}
+        if ancestors & SKIP:
+            continue
+        for m in PAT.finditer(str(text)):
+            bad.append(f'{f}: unhyperlinked {m.group(0)!r}')
+if bad:
+    for b in bad:
+        print(b)
+print('OK: no unhyperlinked cross-PART refs found' if not bad else f'FAIL: {len(bad)} cross-part refs not hyperlinked')
+"
 ```
 
-Expected: 0 results (or a few false positives that on manual inspection are inside `<title>`/`<h1>` and don't need hyperlinking — annotate any exceptions).
+Expected: prints `OK: no unhyperlinked cross-PART refs found`.
 
 - [ ] **Step 4: A5 — no `\n` literal in titles or h1**
 

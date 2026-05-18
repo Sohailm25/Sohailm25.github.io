@@ -70,3 +70,316 @@ strong { font-weight: 600; }
 .book-prose p { font-variation-settings: "opsz" 16; }
 .book-sidenote { font-variation-settings: "opsz" 10; }
 .book-deck { font-variation-settings: "opsz" 24; font-style: italic; font-size: var(--fs-h1-deck); color: var(--text-deck); max-width: 50ch; margin-bottom: var(--space-5); }
+
+/* ── Broadsheet top rule ──────────────────────── */
+.book-top-rule {
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: var(--space-2) 0;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: var(--space-5);
+}
+
+/* ── Prose grid: main column + sidenote column ── */
+.book-prose-grid {
+  display: grid;
+  grid-template-columns: 1fr var(--sidenote-col);
+  gap: var(--gutter);
+  align-items: start;
+}
+
+.book-prose { font-family: var(--font-body); }
+.book-prose p { font-size: var(--fs-body); margin-bottom: var(--space-4); max-width: var(--measure); }
+
+/* ── Drop cap ─────────────────────────────────── */
+.book-prose p.has-dropcap::first-letter {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  float: left;
+  font-size: 3.6rem;
+  line-height: 0.85;
+  padding-right: 0.08em;
+  padding-top: 0.05em;
+  color: var(--ink);
+}
+
+/* ── Sidenotes ────────────────────────────────── */
+.book-sidenote-col { padding-top: var(--space-1); }
+.book-sidenote {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--fs-sidenote);
+  color: var(--brown);
+  line-height: 1.55;
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--brown-soft);
+  margin-bottom: var(--space-4);
+}
+.book-sidenote code {
+  font-family: var(--font-mono);
+  background: var(--brown-tint);
+  color: var(--brown);
+  padding: 0 0.18em;
+  border-radius: 2px;
+  font-style: normal;
+}
+.book-sup, sup.book-sup {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-meta);
+  vertical-align: super;
+  font-weight: 700;
+  color: var(--brown);
+  text-decoration: none;
+}
+
+/* ── "Where this breaks" callout (oxblood) ────── */
+.book-break {
+  background: var(--brown-tint);
+  border-left: 3px solid var(--brown);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-4) 0;
+  font-style: italic;
+}
+.book-break-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: var(--fs-mono-label);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--brown);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+/* ── Decision rule callout (moss) ─────────────── */
+.book-decision-rule {
+  background: rgba(58, 79, 42, 0.06);
+  border-left: 3px solid var(--ink);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-4) 0;
+}
+.book-decision-rule-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+/* ── Mad-libs panel ───────────────────────────── */
+.book-madlibs {
+  background: var(--paper-tint);
+  border-left: 3px solid var(--ink);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-4) 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.7;
+}
+
+/* ── Variable chips ───────────────────────────── */
+.var-chip {
+  font-family: var(--font-mono);
+  font-style: normal;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 1px 5px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  font-size: var(--fs-mono-data);
+  font-weight: 600;
+}
+.var-active {
+  font-family: var(--font-mono);
+  font-style: normal;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: var(--fs-mono-data);
+  font-weight: 500;
+}
+
+/* ── Data row ─────────────────────────────────── */
+.book-data-row {
+  border-top: 1px solid var(--ink);
+  padding: var(--space-2) 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+.book-data-row:last-of-type { border-bottom: 1px solid var(--ink); }
+.book-data-strong { font-weight: 700; color: var(--ink); }
+
+.book-verdict-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-1);
+}
+
+/* ── Ornament ─────────────────────────────────── */
+.book-ornament {
+  text-align: center;
+  color: var(--ink);
+  letter-spacing: 0.7em;
+  margin: var(--space-5) 0;
+  font-size: var(--fs-mono-data);
+  opacity: 0.7;
+}
+
+/* ── Evidence block ───────────────────────────── */
+.book-evidence {
+  margin-top: var(--space-5);
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--brown-soft);
+}
+.book-evidence-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--brown);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+.book-evidence-tag {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-meta);
+  color: var(--brown);
+  line-height: 1.7;
+}
+
+/* ── Tabular numerics (apply globally to numeric contexts) ── */
+.var-chip, .var-active, .book-data-row, .book-data-strong, .book-evidence-tag,
+.book-plot text, .book-mono-data {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* ── Code blocks (preserve from existing) ──────── */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.87em;
+  background: var(--paper-tint);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+pre {
+  background: var(--paper-tint);
+  border: 1px solid var(--ink-soft);
+  border-radius: 8px;
+  padding: var(--space-4) var(--space-5);
+  overflow-x: auto;
+  margin-bottom: var(--space-5);
+  line-height: 1.55;
+}
+pre code { background: none; padding: 0; font-size: 0.85rem; }
+
+/* ── Blockquote ────────────────────────────────── */
+blockquote {
+  border-left: 3px solid var(--ink);
+  background: rgba(58, 79, 42, 0.04);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-4) 0;
+  font-style: italic;
+  color: var(--text-deck);
+}
+
+/* ── Tables (data; not the book-data-row component) ─ */
+table { border-collapse: collapse; width: 100%; margin: var(--space-4) 0; font-size: 0.92rem; }
+th, td { padding: var(--space-2) var(--space-3); text-align: left; border-bottom: 1px solid var(--ink-soft); }
+th { font-family: var(--font-mono); font-size: var(--fs-mono-label); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); background: var(--paper-tint); }
+tbody tr:hover { background: rgba(58, 79, 42, 0.03); }
+
+/* ── HR as section ornament (keep existing convention) ── */
+hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; margin: var(--space-6) auto; }
+
+/* ── Part navigation (prev/next) ──────────────── */
+.book-part-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ink-soft);
+}
+.book-part-nav a {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--ink-soft);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+}
+.book-part-nav a:hover { border-color: var(--ink); background: rgba(58, 79, 42, 0.04); }
+
+/* ── Sidebar (existing TOC) ────────────────────── */
+.book-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  padding: var(--space-6) var(--space-4);
+  background: var(--paper-tint);
+  border-right: 1px solid var(--ink-soft);
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+}
+.book-sidebar a { display: block; padding: var(--space-1) 0; color: var(--text-deck); text-decoration: none; }
+.book-sidebar a.active { color: var(--ink); font-weight: 700; }
+
+/* ── Reading progress bar (existing) ──────────── */
+.book-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--ink);
+  z-index: 100;
+  transition: width 50ms linear;
+}
+
+/* ── Article shell (offset for sidebar) ───────── */
+.book-part {
+  max-width: calc(var(--measure) + var(--sidenote-col) + var(--gutter) + var(--space-8));
+  margin-left: calc(280px + var(--space-8));
+  margin-right: var(--space-6);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-10);
+}
+
+/* ── Colophon ─────────────────────────────────── */
+.book-colophon {
+  margin-top: var(--space-10);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+  color: var(--text-deck);
+  line-height: 1.7;
+}
+.book-colophon dt { color: var(--ink); font-weight: 700; }
+.book-colophon dd { margin-left: 0; margin-bottom: var(--space-2); }

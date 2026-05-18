@@ -22,24 +22,70 @@ def strip_inline_style(html: str) -> str:
 
 
 def add_book_part_class_to_article(html: str) -> str:
+    """Ensure <article class="book-part"> wraps ONLY <div class="main-content">.
+
+    Semantically, the article is the self-contained prose body. Sidebar
+    chrome, progress bars, menu toggles, and inline scripts are NOT
+    article content and must remain as siblings of the article.
+
+    Four cases (idempotent):
+      1. <article class="book-part"> already wraps <div class="main-content">
+         directly → ensure class, no structural change.
+      2. <div class="main-content"> exists but is NOT inside an <article>
+         → wrap just the div in <article class="book-part">.
+      3. <div class="main-content"> exists but its ancestor is a too-wide
+         <article class="book-part"> that also holds sibling chrome
+         (sidebar, script, etc.) → unwrap the article, then wrap only the
+         div in a fresh <article class="book-part">.
+      4. No <div class="main-content"> AND no <article> → leave alone
+         (no semantic anchor to wrap; the page is not a book part).
+    """
     soup = _parse(html)
-    articles = soup.find_all("article")
-    if not articles and soup.body is not None:
-        # No <article> wrapper — create one around body content so the rest
-        # of the migration pipeline can target it. (BS edge case: lxml will
-        # not synthesize <article> for body-level content.)
-        article = soup.new_tag("article")
-        article["class"] = ["book-part"]
-        body_children = list(soup.body.children)
-        for child in body_children:
-            article.append(child.extract())
-        soup.body.append(article)
+    main = soup.find("div", class_="main-content")
+
+    if main is None:
+        # Case 4: no main-content anchor. If an article exists, still
+        # ensure its class. Otherwise no-op.
+        for article in soup.find_all("article"):
+            classes = article.get("class", [])
+            if "book-part" not in classes:
+                classes.append("book-part")
+                article["class"] = classes
         return str(soup)
-    for article in articles:
-        classes = article.get("class", [])
-        if "book-part" not in classes:
-            classes.append("book-part")
-            article["class"] = classes
+
+    parent = main.parent
+    # Walk up to find the nearest enclosing <article>, if any.
+    enclosing_article = main.find_parent("article")
+
+    if enclosing_article is not None:
+        # Case 1: article wraps main directly and has no other content.
+        # "Directly" means main is a direct child AND article has no other
+        # element/text children apart from whitespace.
+        article_children = [
+            c for c in enclosing_article.children
+            if not (isinstance(c, NavigableString) and not c.strip())
+        ]
+        direct_child = main.parent is enclosing_article
+        only_child = direct_child and len(article_children) == 1 and article_children[0] is main
+        if only_child:
+            classes = enclosing_article.get("class", [])
+            if "book-part" not in classes:
+                classes.append("book-part")
+                enclosing_article["class"] = classes
+            return str(soup)
+
+        # Case 3: too-wide article. Unwrap it so its children become
+        # siblings of where it sat, then fall through to wrap only `main`.
+        enclosing_article.unwrap()
+        # After unwrap, `main` is still in the tree; its parent is now
+        # whatever held the article (body, or another wrapper).
+
+    # Case 2 (or fall-through from Case 3): wrap just the main-content div.
+    new_article = soup.new_tag("article")
+    new_article["class"] = ["book-part"]
+    # Insert the new article where main currently sits, then move main inside.
+    main.insert_before(new_article)
+    new_article.append(main.extract())
     return str(soup)
 
 

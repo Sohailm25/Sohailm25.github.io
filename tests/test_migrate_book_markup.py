@@ -40,6 +40,102 @@ def test_add_book_part_class_to_article():
     assert "book-part" in article.get("class", [])
 
 
+def test_add_book_part_class_to_main_content_div():
+    """Virgin page with a main-content div but no article: wrap only the
+    div in <article class="book-part">. Siblings (sidebar, scripts) stay
+    as body children — they are NOT semantic article content."""
+    html = (
+        "<html><body>"
+        "<nav id=\"sidebar\">SIDE</nav>"
+        "<div class=\"main-content\"><h1>Title</h1><p>Body.</p></div>"
+        "<script>console.log('x');</script>"
+        "</body></html>"
+    )
+    out = add_book_part_class_to_article(html)
+    soup = _soup(out)
+    article = soup.find("article", class_="book-part")
+    assert article is not None
+    # Article wraps the main-content div
+    inner_div = article.find("div", class_="main-content")
+    assert inner_div is not None
+    assert "Body." in inner_div.get_text()
+    # Sidebar and script remain as body children (siblings of article)
+    body = soup.find("body")
+    sidebar = body.find("nav", id="sidebar")
+    script = body.find("script")
+    assert sidebar is not None
+    assert script is not None
+    assert sidebar.parent.name == "body"
+    assert script.parent.name == "body"
+    # Article is also a direct body child
+    assert article.parent.name == "body"
+
+
+def test_add_book_part_class_idempotent_on_correctly_wrapped():
+    """If <article class="book-part"> already wraps <div class="main-content">
+    directly (post-fix state), running again is a no-op."""
+    html = (
+        "<html><body>"
+        "<nav id=\"sidebar\">SIDE</nav>"
+        "<article class=\"book-part\"><div class=\"main-content\">"
+        "<h1>T</h1><p>Body.</p></div></article>"
+        "<script>x()</script>"
+        "</body></html>"
+    )
+    out = add_book_part_class_to_article(html)
+    soup = _soup(out)
+    # Exactly one article, exactly one main-content div, article wraps div
+    articles = soup.find_all("article")
+    assert len(articles) == 1
+    assert "book-part" in articles[0].get("class", [])
+    inner = articles[0].find("div", class_="main-content")
+    assert inner is not None
+    # Sidebar and script remain siblings of article
+    body = soup.find("body")
+    assert body.find("nav", id="sidebar").parent.name == "body"
+    assert body.find("script").parent.name == "body"
+    # No double-wrapping
+    assert articles[0].find("article") is None
+
+
+def test_add_book_part_class_unwraps_too_wide_article():
+    """If an existing <article class="book-part"> wraps both the main-content
+    div AND sibling chrome (sidebar, scripts), unwrap and re-wrap so only
+    the main-content div is inside the article."""
+    html = (
+        "<html><body>"
+        "<article class=\"book-part\">"
+        "<div id=\"progress-bar\"></div>"
+        "<nav id=\"sidebar\">SIDE</nav>"
+        "<div class=\"main-content\"><h1>T</h1><p>Body.</p></div>"
+        "<script>x()</script>"
+        "</article>"
+        "</body></html>"
+    )
+    out = add_book_part_class_to_article(html)
+    soup = _soup(out)
+    articles = soup.find_all("article")
+    assert len(articles) == 1
+    art = articles[0]
+    assert "book-part" in art.get("class", [])
+    # Article now contains ONLY the main-content div
+    inner = art.find("div", class_="main-content")
+    assert inner is not None
+    assert "Body." in inner.get_text()
+    # Sidebar, progress bar, script restored as body children
+    body = soup.find("body")
+    sidebar = body.find("nav", id="sidebar")
+    progress = body.find("div", id="progress-bar")
+    script = body.find("script")
+    assert sidebar is not None and sidebar.parent.name == "body"
+    assert progress is not None and progress.parent.name == "body"
+    assert script is not None and script.parent.name == "body"
+    # And those are NOT inside the article anymore
+    assert art.find("nav", id="sidebar") is None
+    assert art.find("div", id="progress-bar") is None
+    assert art.find("script") is None
+
+
 def test_promote_first_paragraph_letter_first():
     html = "<article><h1>Title</h1><p>Suppose you run a service.</p><p>Then.</p></article>"
     out = promote_first_paragraph_to_dropcap(html)

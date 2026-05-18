@@ -6,7 +6,12 @@ import pytest
 
 @pytest.fixture
 def canonical_part_html():
-    """Minimal HTML matching the structural pattern of every part page."""
+    """Minimal HTML matching the structural pattern of every part page.
+
+    Mirrors the real part HTML shape: sidebar chrome sits as a body
+    sibling of a <div class="main-content"> wrapper, which the migration
+    will rewrap in <article class="book-part">.
+    """
     return """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,13 +23,17 @@ def canonical_part_html():
   </style>
 </head>
 <body>
-  <h1>The Field Problem</h1>
-  <p>First sentence with a "quoted phrase" and an em -- dash.</p>
-  <h3>Where This Breaks</h3>
-  <p>At very low quality-gate pass rates.</p>
-  <h3>Decision Rule</h3>
-  <p>Pick serverless when monthly tokens stay below 42M/d.</p>
-  <p>See Part 2, Chapter 3 for the derivation.</p>
+  <nav id="sidebar">TOC</nav>
+  <div class="main-content">
+    <h1>The Field Problem</h1>
+    <p>First sentence with a "quoted phrase" and an em -- dash.</p>
+    <h3>Where This Breaks</h3>
+    <p>At very low quality-gate pass rates.</p>
+    <h3>Decision Rule</h3>
+    <p>Pick serverless when monthly tokens stay below 42M/d.</p>
+    <p>See Part 2, Chapter 3 for the derivation.</p>
+  </div>
+  <script>/* page chrome */</script>
 </body>
 </html>"""
 

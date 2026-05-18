@@ -111,6 +111,19 @@ strong { font-weight: 600; }
   color: var(--ink);
 }
 
+/* permissive drop-cap: works on top-level <p class="has-dropcap"> in current content */
+p.has-dropcap::first-letter {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  float: left;
+  font-size: 3.6rem;
+  line-height: 0.85;
+  padding-right: 0.08em;
+  padding-top: 0.05em;
+  color: var(--ink);
+}
+
 /* ── Sidenotes ────────────────────────────────── */
 .book-sidenote-col { padding-top: var(--space-1); }
 .book-sidenote {
@@ -384,6 +397,234 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
 .book-colophon dt { color: var(--ink); font-weight: 700; }
 .book-colophon dd { margin-left: 0; margin-bottom: var(--space-2); }
 
+/* ── Legacy DOM compatibility ─────────────────────────────────────────
+   The migrated book pages still emit the original Pandoc-generated DOM
+   (#sidebar, .page-layout, .part-container, .part-nav, etc.) rather
+   than the spec's planned new component classes (.book-sidebar,
+   .book-prose-grid, .book-part-nav). These selectors map the legacy
+   structure to the new palette and typography. To be removed in P4
+   polish when content is rewritten to the new vocabulary.
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Page layout: 2-column grid (sidebar + article) at desktop */
+.page-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+/* Legacy sidebar — desktop: grid column; mobile: fixed slide-in (see @media) */
+#sidebar {
+  width: 280px;
+  padding: var(--space-6) var(--space-4);
+  background: var(--paper-tint);
+  border-right: 1px solid var(--ink-soft);
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+}
+.sidebar-header {
+  border-bottom: 1px solid var(--ink-soft);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.sidebar-header h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.25rem;
+  color: var(--text);
+  margin: 0;
+}
+.back-link {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-deck);
+  text-decoration: none;
+  margin-bottom: var(--space-2);
+}
+.back-link:hover { color: var(--ink); }
+.part-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin-bottom: var(--space-1);
+}
+.part-label a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.part-label a:hover { color: var(--brown); }
+.chapters-info,
+.chapters-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-meta);
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: var(--space-1);
+}
+.sidebar-toc {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.sidebar-toc li { margin-bottom: var(--space-1); }
+.sidebar-toc a {
+  display: block;
+  padding: var(--space-1) 0;
+  color: var(--text-deck);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+}
+.sidebar-toc a:hover { color: var(--ink); }
+.sidebar-toc a.active {
+  color: var(--ink);
+  font-weight: 700;
+}
+.sidebar-nav {
+  border-top: 1px solid var(--ink-soft);
+  padding-top: var(--space-4);
+  margin-top: var(--space-4);
+}
+.sidebar-nav a {
+  display: block;
+  padding: var(--space-1) 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+  color: var(--text-deck);
+  text-decoration: none;
+}
+.sidebar-nav a:hover { color: var(--ink); }
+
+/* Progress bar + mobile menu toggle + overlay */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--ink);
+  z-index: 100;
+  transition: width 50ms linear;
+}
+#menu-toggle {
+  display: none; /* hidden at desktop; shown in @media */
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--paper);
+  border: 1px solid var(--ink-soft);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+  color: var(--ink);
+  cursor: pointer;
+  z-index: 95;
+}
+#sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(26, 26, 26, 0.35);
+  z-index: 85;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+#sidebar-overlay.is-open {
+  display: block;
+  opacity: 1;
+}
+
+/* Article container — when inside .page-layout, override the standalone .book-part offset */
+.page-layout .book-part {
+  margin: 0;
+  max-width: none;
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-10);
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+.main-content {
+  width: 100%;
+  max-width: none;
+}
+.part-container {
+  max-width: calc(var(--measure) + var(--space-8));
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+.part-header {
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.part-header h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-h1);
+  letter-spacing: -0.005em;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+.part-header .label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin-bottom: var(--space-1);
+}
+.part-header .label a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.part-header .label a:hover { color: var(--brown); }
+
+/* Legacy part-nav (prev/next at bottom of part) */
+.part-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ink-soft);
+}
+.part-nav .nav-prev,
+.part-nav .nav-next {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--ink-soft);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-data);
+}
+.part-nav .nav-prev:hover,
+.part-nav .nav-next:hover {
+  border-color: var(--ink);
+  background: rgba(58, 79, 42, 0.04);
+}
+.part-nav .nav-next { text-align: right; }
+.part-nav .nav-dir {
+  color: var(--text-mute);
+  margin: 0 var(--space-2);
+}
+.part-nav .nav-title { color: var(--ink); }
+
 /* ── Responsive: 3 breakpoints (spec §4 decision 18) ── */
 
 /* ≤ 960px — sidebar slides off-screen */
@@ -397,6 +638,27 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   .book-part {
     margin-left: var(--space-4);
     margin-right: var(--space-4);
+  }
+
+  /* Legacy DOM mobile rules */
+  .page-layout { grid-template-columns: 1fr; }
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 90;
+  }
+  #sidebar.is-open { transform: translateX(0); }
+  #menu-toggle { display: block; }
+  .page-layout .book-part {
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
   }
 }
 
@@ -431,8 +693,10 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
 
 /* ── Print stylesheet (preserve from existing) ── */
 @media print {
-  .book-sidebar, .book-progress, .book-part-nav { display: none; }
-  .book-part { margin: 0; max-width: none; }
+  .book-sidebar, .book-progress, .book-part-nav,
+  #sidebar, #progress-bar, #menu-toggle, #sidebar-overlay, .part-nav { display: none; }
+  .book-part, .page-layout .book-part { margin: 0; max-width: none; padding: 0; }
+  .page-layout { display: block; }
   .book-prose-grid { display: block; }
   .book-sidenote {
     display: block;

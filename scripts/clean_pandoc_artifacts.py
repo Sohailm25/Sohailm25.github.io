@@ -76,9 +76,16 @@ def convert_double_dashes(text: str) -> str:
 
 
 def clean_html_string(html: str) -> str:
-    """Apply all Pandoc-artifact cleanups in order."""
+    """Apply Pandoc-artifact cleanups: title newlines + em-dashes only.
+
+    Smart-quote conversion (smarten_quotes) is intentionally SKIPPED — the
+    current regex over-matches HTML attribute delimiters and CSS string quotes,
+    breaking document validity. The function remains in the module and passes
+    its unit tests in isolation, but is not called end-to-end. Smart quotes
+    will be reintroduced in a future polish pass using a proper HTML parser
+    (BeautifulSoup over text nodes only). See plan §Task 7 amendment.
+    """
     html = fix_title_newlines(html)
-    html = smarten_quotes(html)
     html = convert_double_dashes(html)
     return html
 

@@ -379,7 +379,7 @@ Current book CSS uses different variable names. Migration script must replace, p
 | `--font-body: 'Inter', …` | `--font-body: 'Newsreader', …` | **Critical replacement** |
 | `--content-max: 700px` | `--measure: 44ch` | Slightly narrower, char-based |
 
-## 8. Phase 1 — Book Visual Rework (ships first)
+## 8. Phase 1 — Book Visual Rework (✅ SHIPPED 2026-05-18 on branch `wip/p1-book-visual-rework`)
 
 ### 8.1 Scope
 

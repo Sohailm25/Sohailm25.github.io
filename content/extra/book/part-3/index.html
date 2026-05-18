@@ -566,8 +566,7 @@ they produce a routefit matrix: given this workload identity, which
 routes are feasible, which are wasteful, and which need measurement
 before committing.</p>
 <hr />
-<h2 id="chapter-10-workload-classes-that-change-treatment">Chapter 10:
-Workload Classes That Change Treatment</h2>
+<h2 id="chapter-10-workload-classes-that-change-treatment">Chapter 10: Workload Classes That Change Treatment</h2>
 <h3 id="the-field-problem">The field problem</h3>
 <p>Four inference workloads run through one API provider with one model:
 support chat, document extraction, nightly eval runs, and an
@@ -691,8 +690,7 @@ identities quarterly or when failure rates change.</p>
 workload identity fields to select the LCPR formula variant, route
 candidates, and sensitivity parameters.</p>
 <hr />
-<h2 id="chapter-11-conversational-workloads">Chapter 11: Conversational
-Workloads</h2>
+<h2 id="chapter-11-conversational-workloads">Chapter 11: Conversational Workloads</h2>
 <h3 id="the-field-problem-1">The field problem</h3>
 <p>A customer support system answers policy questions, looks up account
 state, and takes actions like issuing refunds or escalating tickets. The
@@ -994,8 +992,7 @@ moved was a percentile of a distribution the dashboard was not
 aggregating. The first thing to add to any agentic-workload dashboard
 is the per-task fanout distribution sliced by task size, not the
 mean.</p>
-<h3 id="code-generation-and-coding-agents">Code generation and coding
-agents</h3>
+<h3 id="code-generation-and-coding-agents">Code generation and coding agents</h3>
 <p>Code generation is the most visible agentic workload, and it
 illustrates all the economic pressures above in concentrated form.</p>
 <p>A coding agent processes 200 tasks per day. Each task is a GitHub
@@ -1151,8 +1148,7 @@ execution count, repair loop count, compaction events, acceptance rate
 by complexity tier. Sensitivity: fanout multiplier, cache hit rate,
 repair rate.</p>
 <hr />
-<h2 id="chapter-13-rag-and-document-extraction">Chapter 13: RAG And
-Document Extraction</h2>
+<h2 id="chapter-13-rag-and-document-extraction">Chapter 13: RAG And Document Extraction</h2>
 <h3 id="the-field-problem-3">The field problem</h3>
 <p>A retrieval-augmented generation pipeline retrieves 8-12 document
 chunks, constructs a prompt with the retrieved context, and generates an
@@ -1308,8 +1304,7 @@ cost (retrieved tokens as input), grounding check cost, batch discount
 for extraction. Sensitivity: chunk count, retrieval precision, batch
 eligibility.</p>
 <hr />
-<h2 id="chapter-14-offline-voice-and-specialized-workloads">Chapter 14:
-Offline, Voice, and Specialized Workloads</h2>
+<h2 id="chapter-14-offline-voice-and-specialized-workloads">Chapter 14: Offline, Voice, and Specialized Workloads</h2>
 <h3 id="the-field-problem-4">The field problem</h3>
 <p>A real-time conversational system (a voice agent in customer
 service, a clinical scheduling line, an in-vehicle assistant) runs
@@ -1363,8 +1358,7 @@ optimizing any single component.</p>
 feasible, which quantization levels are required, and whether dedicated
 capacity is needed to guarantee TTFT.</p>
 <p>The cost model for voice includes both paths:</p>
-<h3 id="embeddings-batch-evals-and-offline-workloads">Embeddings, Batch,
-Evals, and Offline Workloads</h3>
+<h3 id="embeddings-batch-evals-and-offline-workloads">Embeddings, Batch, Evals, and Offline Workloads</h3>
 <p>Three offline inference workloads share the same standard API:
 embedding generation for a RAG corpus (2M documents), nightly evaluation
 of model quality (5,000 test cases), and weekly batch extraction from

@@ -562,8 +562,7 @@ output tokens cost more than input tokens, why batch size sets the
 latency-cost frontier, or why “GPU utilization” can be high while
 productive work is low. The physics explains the economics.</p>
 <hr />
-<h2 id="chapter-4-the-hardware-cost-floor">Chapter 4: The Hardware Cost
-Floor</h2>
+<h2 id="chapter-4-the-hardware-cost-floor">Chapter 4: The Hardware Cost Floor</h2>
 <h3 id="field-problem-3">Field Problem</h3>
 <p>The benchmark says 4,000 tokens per second. Production delivers 800.
 The 7B model is deployed on an A100 80GB, same hardware the benchmark
@@ -908,8 +907,7 @@ boundary, the operating zone for your traffic, and infeasible batch
 points.</p>
 <hr />
 <h2
-id="chapter-5-prefill-decode-and-why-output-tokens-cost-more">Chapter 5:
-Prefill, Decode, and Why Output Tokens Cost More</h2>
+id="chapter-5-prefill-decode-and-why-output-tokens-cost-more">Chapter 5: Prefill, Decode, and Why Output Tokens Cost More</h2>
 <h3 id="field-problem-4">Field Problem</h3>
 <p>The prompt is long: 8,000 tokens of retrieved context plus a 500-token
 system prompt. The output is short, typically 150-300 tokens. This RAG
@@ -1186,8 +1184,7 @@ spiking, and running requests dropping simultaneously. The fix was
 workload-aware routing: short context to one pool, long context to
 another. Same hardware, different routing, different economics.</p>
 </blockquote>
-<h3 id="long-context-and-the-memory-wall">Long Context and the Memory
-Wall</h3>
+<h3 id="long-context-and-the-memory-wall">Long Context and the Memory Wall</h3>
 <p>The KV cache formula above changes when context length grows from
 conversation-scale to document-scale.</p>
 <p>Each document is 50-100 pages, tokenized to 30,000-80,000 tokens. The
@@ -1363,8 +1360,7 @@ and your context-length distribution. It outputs max concurrent
 sequences by context length, memory pressure alerts when your traffic
 would exceed capacity, and long-context cost multipliers.</p>
 <hr />
-<h2 id="chapter-7-prompt-caching-and-rematerialization">Chapter 7:
-Prompt Caching and Rematerialization</h2>
+<h2 id="chapter-7-prompt-caching-and-rematerialization">Chapter 7: Prompt Caching and Rematerialization</h2>
 <h3 id="field-problem-6">Field Problem</h3>
 <p>Cache hit rate starts at 85%. Over two weeks, it drops to 40%. Nobody
 notices because the dashboard shows “caching enabled.” The bill
@@ -1503,8 +1499,7 @@ tokens, expected reuse rate, and TTL. It outputs break-even calls,
 savings at given reuse, and waste when reuse fails. The sensitivity
 analysis shows how cache hit rate changes total cost.</p>
 <hr />
-<h2 id="chapter-8-model-architecture-and-cost">Chapter 8: Model
-Architecture and Cost</h2>
+<h2 id="chapter-8-model-architecture-and-cost">Chapter 8: Model Architecture and Cost</h2>
 <h3 id="field-problem-7">Field Problem</h3>
 <p>Inference latency is 3x higher than the benchmark predicted. The
 Mixture-of-Experts model—671B total parameters, 37B active per
@@ -1615,8 +1610,7 @@ communication that takes microseconds on NVLink can take milliseconds on
 Ethernet. This accumulates across layers.</p>
 <p><em>Quantitative latency depends on implementation, batch size, and
 actual routing patterns; the relative shape is robust.</em></p>
-<h3 id="disaggregated-prefilldecode-and-maturity-gates">Disaggregated
-Prefill/Decode and Maturity Gates</h3>
+<h3 id="disaggregated-prefilldecode-and-maturity-gates">Disaggregated Prefill/Decode and Maturity Gates</h3>
 <p>MoE is one architectural choice that changes serving economics.
 Disaggregated prefill/decode is another.</p>
 <p>The idea is compelling: separate prefill workers (compute-heavy) from
@@ -1826,8 +1820,7 @@ distribution, current TTFT/TPOT, interconnect bandwidth, and traffic
 volume. Output: expected TTFT improvement, KV transfer overhead, pool
 sizing, and pass/fail on each readiness condition.</p>
 <hr />
-<h2 id="chapter-9-productive-capacity-and-routing">Chapter 9: Productive
-Capacity and Routing</h2>
+<h2 id="chapter-9-productive-capacity-and-routing">Chapter 9: Productive Capacity and Routing</h2>
 <h3 id="field-problem-8">Field Problem</h3>
 <p>A capacity planning team reports 78% GPU utilization and calls the
 cluster “well utilized.” The product team reports that 30% of requests
@@ -2007,8 +2000,7 @@ goodput and cost per accepted result. A benchmark picks Route A. A
 goodput frontier test picks Route B.</p>
 <p><em>Illustrative; the goodput-frontier shape holds across most
 production routing decisions.</em></p>
-<h3 id="stateful-routing-and-cache-locality">Stateful Routing and Cache
-Locality</h3>
+<h3 id="stateful-routing-and-cache-locality">Stateful Routing and Cache Locality</h3>
 <p>One of the most impactful levers for productive capacity is where the
 work goes.</p>
 <p>Eight replicas behind a round-robin load balancer. Cache hit rate

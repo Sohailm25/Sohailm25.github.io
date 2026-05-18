@@ -8,8 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <title>Appendix:
-Calculator Manual And Living Reference — Production Inference Economics</title>
+  <title>Appendix: Calculator Manual And Living Reference — Production Inference Economics</title>
   <style>
     /* ── Reset ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -797,8 +796,7 @@ synthetic load and production concurrency is higher, p99 will be worse
 than measured. If quality was measured on a different prompt
 distribution, eval pass rate may not transfer.</p>
 <hr />
-<h3 id="view-5-cost-per-accepted-work-lcpr">View 5: Cost Per Accepted
-Work (LCPR)</h3>
+<h3 id="view-5-cost-per-accepted-work-lcpr">View 5: Cost Per Accepted Work (LCPR)</h3>
 <p><strong>Internal name:</strong> <code>cost_per_accepted_work</code> (registry: <code>Cost Per Accepted Work v1</code>; also exposed in the app as <code>LCPR</code> via the Compare tab)</p>
 <p><strong>Body reference:</strong> LCPR (Part 1 Ch 1-2, every
 worked example)</p>
@@ -815,8 +813,7 @@ excluded, LCPR understates the real cost. If accepted work is defined
 loosely (no quality gate), LCPR overstates efficiency. If the invoice
 window does not match the trace window, delta will be noisy.</p>
 <hr />
-<h3 id="view-6-spend-movement-waterfall">View 6: Spend Movement
-Waterfall</h3>
+<h3 id="view-6-spend-movement-waterfall">View 6: Spend Movement Waterfall</h3>
 <p><strong>Internal name:</strong> <code>spend_movement_waterfall</code> (registry: <code>Spend Movement Waterfall v1</code>)</p>
 <p><strong>Body reference:</strong> “spend movement waterfall” or
 “month-over-month spend” (Part 5 Ch 26)</p>
@@ -830,8 +827,7 @@ investigation target.</p>
 inconsistent across months, the mix column will absorb real changes as
 apparent mix shifts.</p>
 <hr />
-<h3 id="view-7-commitment-utilization">View 7: Commitment
-Utilization</h3>
+<h3 id="view-7-commitment-utilization">View 7: Commitment Utilization</h3>
 <p><strong>Internal name:</strong> <code>commitment_utilization</code> (registry: <code>Commitment Utilization v1</code>)</p>
 <p><strong>Body reference:</strong> “commitment utilization” or “credit
 coverage” (Part 4 Ch 18, Part 5 Ch 26)</p>
@@ -879,8 +875,7 @@ rate.</p>
 changes between periods, volume trends will reflect sampling, not
 usage.</p>
 <hr />
-<h3 id="view-11-security-and-compliance-filter">View 11: Security and
-Compliance Filter</h3>
+<h3 id="view-11-security-and-compliance-filter">View 11: Security and Compliance Filter</h3>
 <p><strong>Internal name:</strong> <code>security_compliance_filter</code> (registry: <code>Security and Compliance Filter v1</code>)</p>
 <p><strong>Body reference:</strong> “security/compliance route filter”
 (Part 3 Ch 10, Part 4 Ch 21)</p>
@@ -942,8 +937,7 @@ prompt/output distributions, the break-even will be optimistic. If
 operational overhead (C_ops) excludes on-call, deployment tooling, and
 incident response, the gate is too permissive.</p>
 <hr />
-<h2 id="a.3-running-the-worked-examples">A.3 Running The Worked
-Examples</h2>
+<h2 id="a.3-running-the-worked-examples">A.3 Running The Worked Examples</h2>
 <p>The companion repo contains three worked examples. Each has a calculator seed that
 provides the inputs and a workload identity file that describes the workload. To run an
 example:</p>
@@ -956,8 +950,7 @@ pricing data.</p></li>
 <li><p>Review the views listed in the seed’s
 <code>calculator_views</code> field.</p></li>
 </ol>
-<h3 id="example-1-support-answer-trace-to-margin">Example 1: Support
-Answer trace-to-loaded-cost</h3>
+<h3 id="example-1-support-answer-trace-to-margin">Example 1: Support Answer trace-to-loaded-cost</h3>
 <p><strong>Seed:</strong> <code>examples/support-answer.trace-margin.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> What does one accepted support
 answer actually cost after retries, eval failures, cache misses, and
@@ -968,8 +961,7 @@ human escalation?</p>
 vs actual 35%. The cache break-even view shows whether caching is still
 net positive at 35%. - Eval pass rate. Roughly one in four attempts does
 not produce accepted work, but every attempt costs money.</p>
-<h3 id="example-2-coding-agent-task-lifecycle">Example 2: Coding Agent
-Task Lifecycle</h3>
+<h3 id="example-2-coding-agent-task-lifecycle">Example 2: Coding Agent Task Lifecycle</h3>
 <p><strong>Seed:</strong> <code>examples/coding-agent.lifecycle.v1/calculator-seed.yaml</code></p>
 <p><strong>Question it answers:</strong> What does one accepted bug fix
 cost across an entire agent session with sub-agent calls, tool loops,
@@ -1104,31 +1096,25 @@ note explaining the evidence source.</p>
 calculator. Each derivation kills a wrong conclusion that survives in
 naive analysis.</p>
 <h3
-id="derivation-1-batch-amortization-roofline-part-2-ch-4-5">Derivation
-1: Batch Amortization / Roofline (Part 2, Ch 4-5)</h3>
+id="derivation-1-batch-amortization-roofline-part-2-ch-4-5">Derivation 1: Batch Amortization / Roofline (Part 2, Ch 4-5)</h3>
 <p>Wrong conclusion: “GPU-hour divided by peak tokens/sec is my
 cost.”</p>
 <p>Calculator views: goodput frontier test, serving physics lens.</p>
-<h3 id="derivation-2-kv-cache-memory-sizing-part-2-ch-6">Derivation 2:
-KV Cache Memory Sizing (Part 2, Ch 6)</h3>
+<h3 id="derivation-2-kv-cache-memory-sizing-part-2-ch-6">Derivation 2: KV Cache Memory Sizing (Part 2, Ch 6)</h3>
 <p>Wrong conclusion: “Context length is just a model setting.”</p>
 <p>Calculator view: kv capacity envelope.</p>
-<h3 id="derivation-3-prompt-cache-break-even-part-2-ch-7">Derivation 3:
-Prompt-Cache Break-Even (Part 2, Ch 7)</h3>
+<h3 id="derivation-3-prompt-cache-break-even-part-2-ch-7">Derivation 3: Prompt-Cache Break-Even (Part 2, Ch 7)</h3>
 <p>Wrong conclusion: “Caching is a discount.”</p>
 <p>Calculator view: cache policy gate.</p>
-<h3 id="derivation-4-dedicated-utilization-part-4-ch-18">Derivation 4:
-Dedicated Utilization (Part 4, Ch 18)</h3>
+<h3 id="derivation-4-dedicated-utilization-part-4-ch-18">Derivation 4: Dedicated Utilization (Part 4, Ch 18)</h3>
 <p>Wrong conclusion: “Dedicated is cheaper because the hourly rate looks
 low.”</p>
 <p>Calculator view: dedicated utilization gate.</p>
-<h3 id="derivation-5-goodput-under-slo-part-5-ch-24">Derivation 5:
-Goodput Under SLO (Part 5, Ch 24)</h3>
+<h3 id="derivation-5-goodput-under-slo-part-5-ch-24">Derivation 5: Goodput Under SLO (Part 5, Ch 24)</h3>
 <p>Wrong conclusion: “Peak throughput is capacity.”</p>
 <p>Calculator view: goodput frontier test.</p>
 <h3
-id="derivation-6-trace-to-margin-reconciliation-part-5-ch-25">Derivation
-6: trace-to-loaded-cost Reconciliation (Part 5, Ch 25)</h3>
+id="derivation-6-trace-to-margin-reconciliation-part-5-ch-25">Derivation 6: trace-to-loaded-cost Reconciliation (Part 5, Ch 25)</h3>
 <p>Wrong conclusion: “The provider bill is my margin model.”</p>
 <p>Calculator view: trace-to-loaded-cost review.</p>
 <hr />

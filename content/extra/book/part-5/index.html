@@ -8,8 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <title>Part 5: Operating The
-Decision — Production Inference Economics</title>
+  <title>Part 5: Operating The Decision — Production Inference Economics</title>
   <style>
     /* ── Reset ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -527,8 +526,7 @@ Decision — Production Inference Economics</title>
       <div class="sidebar-header">
         <a class="back-link" href="/book/">&larr; All Parts</a>
         <div class="part-label">Part 5</div>
-        <h2>Operating The
-Decision</h2>
+        <h2>Operating The Decision</h2>
         <div class="chapters-info">Chapters 23–27</div>
       </div>
       <ul class="sidebar-toc"><li><a href="#chapter-23-baselines-and-evals">Chapter 23: Baselines And
@@ -548,8 +546,7 @@ Calculator Manual And Living Reference &rarr;</a>
       <div class="part-container">
         <div class="part-header">
           <div class="label">Part 5</div>
-          <h1>Operating The
-Decision</h1>
+          <h1>Operating The Decision</h1>
           <div class="chapters-label">Chapters 23–27</div>
         </div>
 
@@ -571,8 +568,7 @@ measures tokens, cannot answer in dollars.</p>
 honest benchmarking, trace-to-invoice reconciliation, incident response,
 review discipline, and forecasting.</p>
 <hr />
-<h2 id="chapter-23-baselines-and-evals">Chapter 23: Baselines And
-Evals</h2>
+<h2 id="chapter-23-baselines-and-evals">Chapter 23: Baselines And Evals</h2>
 <h3 id="the-field-problem-12">The field problem</h3>
 <p>Two weeks after migrating a support chat workload to a new model, the
 product manager asks: “Is it better?” The engineer shows a chart of p99
@@ -659,8 +655,7 @@ baseline captured during Black Friday traffic is not comparable to a
 baseline during normal traffic. Record the traffic volume, prompt length
 distribution, output length distribution, and cache hit rate alongside
 the cost and quality metrics.</p>
-<h3 id="evals-as-an-economic-instrument">Evals as an economic
-instrument</h3>
+<h3 id="evals-as-an-economic-instrument">Evals as an economic instrument</h3>
 <p>The baseline depends on the eval to determine its denominator. An
 eval set built during initial development tends to over-represent the
 failure modes the team imagined at design time and under-represent the
@@ -731,8 +726,7 @@ comparison view shows delta between baseline and current state. The eval
 cost layer: deterministic check cost, model-grader cost, human review
 cost per sampled request.</p>
 <hr />
-<h2 id="chapter-24-benchmarks-and-goodput">Chapter 24: Benchmarks And
-Goodput</h2>
+<h2 id="chapter-24-benchmarks-and-goodput">Chapter 24: Benchmarks And Goodput</h2>
 <h3 id="the-field-problem-13">The field problem</h3>
 <p>“Model X achieves 2,500 tokens/sec on A100.” The published benchmark
 looks decisive. In production, the same model on the same hardware
@@ -865,8 +859,7 @@ from a load test. It outputs: goodput curve by request rate, cost per
 accepted result curve, capacity ceiling under SLO, and comparison across
 routes.</p>
 <hr />
-<h2 id="chapter-25-observability-and-trace-to-loaded-cost">Chapter 25:
-Observability And Trace-to-Loaded-Cost</h2>
+<h2 id="chapter-25-observability-and-trace-to-loaded-cost">Chapter 25: Observability And Trace-to-Loaded-Cost</h2>
 <h3 id="the-field-problem-14">The field problem</h3>
 <p>The dashboards show p99 latency, error rate, GPU utilization, and
 request volume. All the standard signals. The finance partner asks: “Why
@@ -969,8 +962,7 @@ increases by more than 10% week-over-week, cache hit rate drops by more
 than 15 percentage points, output length p95 increases by more than 25%,
 quality pass rate drops below the quality floor, or human escalation
 rate spikes.</p>
-<h3 id="trace-to-loaded-cost-reconciliation">Trace-to-loaded-cost
-reconciliation</h3>
+<h3 id="trace-to-loaded-cost-reconciliation">Trace-to-loaded-cost reconciliation</h3>
 <p>Observability answers "why did cost change?" Trace-to-loaded-cost
 reconciliation answers the harder question: "what is the true
 loaded cost, and does it match what the vendor billed?"</p>
@@ -985,8 +977,7 @@ investigate anything beyond 5%, add non-inference costs (eval grading,
 human escalation, ops allocation), calculate the accepted-output
 denominator, compute LCPR, and roll the loaded cost up against
 contracted unit rates.</p>
-<h3 id="worked-example-11">Worked example: mid-cap pharmacy,
-clinical-prior-auth drafting</h3>
+<h3 id="worked-example-11">Worked example: mid-cap pharmacy, clinical-prior-auth drafting</h3>
 <p>A mid-cap pharmacy chain runs a clinical-prior-auth answer-drafting
 workload. The LLM drafts the medical-necessity narrative that gets
 attached to payer prior-authorization submissions. Roughly 8,431 queries
@@ -1083,8 +1074,7 @@ unit economics of a workload, or a contract amendment has just gone
 into effect. Skip it when the invoice has been stable for three
 consecutive months and the workload shape has not shifted.</p>
 
-<h3 id="regulatory-observability">Regulatory observability for
-explanation LLMs</h3>
+<h3 id="regulatory-observability">Regulatory observability for explanation LLMs</h3>
 
 <p>The pharmacy example sat in a regulated workload but stopped short
 of the deepest cost driver in regulated inference: the audit and
@@ -1186,8 +1176,7 @@ takes traces, invoice, eval results, human costs, ops overhead, and
 contracted unit rates. It outputs: LCPR by workload, loaded-cost
 roll-up by account, delta analysis, and variance waterfall.</p>
 <hr />
-<h2 id="chapter-26-incidents-review-and-forecast">Chapter 26: Incidents,
-Review, And Forecast</h2>
+<h2 id="chapter-26-incidents-review-and-forecast">Chapter 26: Incidents, Review, And Forecast</h2>
 <h3 id="the-field-problem-15">The field problem</h3>
 <p>A model provider ships an update. The model version changes silently.
 Output format shifts subtly. JSON keys that were lowercase are now

@@ -576,8 +576,7 @@ latency tiers. The final chapter defines migration gates and reversion
 signals that apply to all transitions.</p>
 <hr />
 <h2
-id="chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter
-15: The Model Candidate Funnel And routefit matrix</h2>
+id="chapter-15-the-model-candidate-funnel-and-routefit-matrix">Chapter 15: The Model Candidate Funnel And routefit matrix</h2>
 <h3 id="the-field-problem-5">The field problem</h3>
 <p>Fourteen model-provider combinations. Three months of evaluation. At
 the end: a spreadsheet of benchmark scores, pricing tiers, and feature
@@ -762,8 +761,7 @@ surviving route candidate. Each cell populates from LCPR with
 workload-specific parameters. The calculator flags cells with estimated
 rather than measured LCPR.</p>
 <hr />
-<h2 id="chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A
-Decision</h2>
+<h2 id="chapter-16-do-nothing-is-a-decision">Chapter 16: Do Nothing Is A Decision</h2>
 <h3 id="the-field-problem-6">The field problem</h3>
 <p>Monthly bill: $85,000 across three workloads on a closed API.
 Back-of-envelope calculation: open models on serverless endpoints would
@@ -846,8 +844,7 @@ and the team has evals—migrate.</p>
 amortized over the payback period. The sensitivity analysis shows how
 engineering cost assumptions change the payback period.</p>
 <hr />
-<h2 id="chapter-17-move-workloads-to-serverless-open-models">Chapter 17:
-Move Workloads To Serverless Open Models</h2>
+<h2 id="chapter-17-move-workloads-to-serverless-open-models">Chapter 17: Move Workloads To Serverless Open Models</h2>
 <h3 id="the-field-problem-7">The field problem</h3>
 <p>Token price drops 60% after migrating a support chat workload from a
 closed API to a serverless open-model endpoint. Two weeks later,
@@ -1024,8 +1021,7 @@ route LCPR, candidate route LCPR, migration cost components. Output:
 payback period, monthly savings after payback, sensitivity to quality
 pass rate.</p>
 <hr />
-<h2 id="chapter-18-use-managed-dedicated">Chapter 18: Use Managed
-Dedicated</h2>
+<h2 id="chapter-18-use-managed-dedicated">Chapter 18: Use Managed Dedicated</h2>
 <h3 id="the-field-problem-8">The field problem</h3>
 <p>Two million requests per day through a serverless open-model
 endpoint. Monthly bill: $42,000. An inference platform engineer's recommendation: price the same model on managed dedicated — same provider, same weights, but on reserved GPUs at a representative H100 reserved rate around $3.20/GPU-hour (mid-2026 reserved rates run roughly $2.95-$4.30 across CoreWeave, Lambda, RunPod, and Together). At 800 accepted requests per hour per GPU, the projection is $28,000/month. A 33% savings. Two GPUs are provisioned.</p>
@@ -1045,8 +1041,7 @@ capacity rather than retail tokens.</p>
 <p>The economic risk: you pay for the GPU whether it is serving requests
 or sitting idle. Minimum replicas, warm-pool costs, and diurnal traffic
 patterns create utilization gaps that serverless does not have.</p>
-<h3 id="derivation-4-the-dedicated-utilization-gate">Derivation 4: The
-dedicated utilization gate</h3>
+<h3 id="derivation-4-the-dedicated-utilization-gate">Derivation 4: The dedicated utilization gate</h3>
 <p>The wrong conclusion this derivation kills:</p>
 <blockquote>
 <p>“Dedicated is cheaper because the hourly rate looks low.”</p>
@@ -1489,8 +1484,7 @@ direction.</p>
 allocation, measured goodput, incident cost. Sensitivity: engineering
 FTE cost, GPU utilization, goodput per GPU.</p>
 <hr />
-<h2 id="chapter-21-multi-source-and-background-agent-routing">Chapter
-21: Multi-Source And Background Agent Routing</h2>
+<h2 id="chapter-21-multi-source-and-background-agent-routing">Chapter 21: Multi-Source And Background Agent Routing</h2>
 <h3 id="the-field-problem-10">The field problem</h3>
 <p>Two providers serve the same open model. The routing layer sends 70%
 of traffic to the cheaper provider and 30% to the faster provider. The
@@ -1548,8 +1542,7 @@ providers. Requires: identical model (or model family with validated
 quality parity), per-provider quality measurement, per-provider cache
 strategy, and per-provider incident response. Measure: LCPR by provider
 for the same workload, including all hidden costs.</p>
-<h3 id="background-agents-and-memory-hierarchy-routing">Background
-agents and memory-hierarchy routing</h3>
+<h3 id="background-agents-and-memory-hierarchy-routing">Background agents and memory-hierarchy routing</h3>
 <p>Multi-source routing has a specific variant that applies to agent
 workloads: routing different steps of the same agent trajectory to
 different serving surfaces based on latency tolerance.</p>
@@ -1680,8 +1673,7 @@ step-level routing: per-step latency tier, batch discount eligibility,
 checkpoint cost, queue economics. Sensitivity: provider split ratio,
 batch-eligible share of model calls, latency tolerance by step.</p>
 <hr />
-<h2 id="chapter-22-migration-gates-and-reversion-signals">Chapter 22:
-Migration Gates And Reversion Signals</h2>
+<h2 id="chapter-22-migration-gates-and-reversion-signals">Chapter 22: Migration Gates And Reversion Signals</h2>
 <h3 id="the-field-problem-11">The field problem</h3>
 <p>Four months to migrate from a closed API to self-managed GPUs. Six
 months after that, the serving engine vendor releases a breaking change,

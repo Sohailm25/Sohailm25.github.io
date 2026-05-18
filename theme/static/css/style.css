@@ -279,6 +279,52 @@ nav a:hover {
 .corner-btn .corner.bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
 .corner-btn .corner.br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+/* Subscribe banner (writings page) */
+.subscribe-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.subscribe-banner-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.subscribe-banner-title {
+  font-family: var(--font-code);
+  color: var(--text-color);
+  font-size: 1em;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.subscribe-banner-sub {
+  font-size: 0.9em;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .subscribe-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+}
+
 /* Section Header */
 .section-header {
   display: flex;

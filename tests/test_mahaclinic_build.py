@@ -32,3 +32,32 @@ def test_robots_disallows_mahaclinic():
     assert "Disallow: /mahaclinic/" in text, \
         "robots.txt must explicitly disallow /mahaclinic/"
     assert "User-agent: *" in text, "must have a universal user-agent block"
+
+
+def test_home_shell_has_required_meta():
+    home = (OUTPUT / "mahaclinic" / "index.html").read_text()
+    assert 'name="robots"' in home and 'noindex' in home
+    assert 'rel="manifest"' in home
+    assert 'apple-touch-icon' in home
+    assert 'maha-search' in home
+    assert 'fonts.googleapis.com' in home
+
+
+def test_home_styles_reach_book_tokens():
+    """Ensures the @import URL in styles.css resolves to an actual built file.
+
+    Pelican's theme handler strips 'static/' from theme paths
+    (theme/static/css/foo.css -> output/theme/css/foo.css). If the
+    @import URL gets out of sync with this convention, the entire
+    moss/oxblood design vocabulary is unavailable at runtime.
+    """
+    styles = (OUTPUT / "mahaclinic" / "styles.css").read_text()
+    # The import URL must reference the actual published location
+    assert "../theme/css/book-tokens.css" in styles, \
+        "styles.css must @import ../theme/css/book-tokens.css (relative from /mahaclinic/)"
+    # Must NOT reference the static/ subpath (Pelican strips it)
+    assert "theme/static" not in styles, \
+        "styles.css must not reference theme/static/ — Pelican strips this segment at build"
+    # Verify the target actually exists in output
+    target = OUTPUT / "theme" / "css" / "book-tokens.css"
+    assert target.exists(), f"book-tokens.css must be at {target} for the @import to resolve"

@@ -5,9 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#3A4F2A">
+
   <title>Dermatology Dosing</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <p>Placeholder — implementation in progress.</p>
+<body class="maha-page">
+
+  <header class="maha-header">
+    <div class="maha-broadsheet-rule"></div>
+    <p class="maha-eyebrow">MAHA CLINIC · DERMATOLOGY DOSING</p>
+    <h1 class="maha-title">Dermatology Dosing.</h1>
+  </header>
+
+  <main class="maha-main">
+    <div class="maha-search-wrap">
+      <input
+        id="maha-search"
+        class="maha-search"
+        type="search"
+        placeholder="⌕  Search drug or condition…"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Search drug or condition">
+    </div>
+
+    <section id="maha-results" class="maha-results" aria-live="polite"></section>
+
+    <section id="maha-recents" class="maha-section" hidden>
+      <p class="maha-label">Recently viewed</p>
+      <div class="maha-pill-row" data-pill-row="recents"></div>
+    </section>
+
+    <section id="maha-most-used" class="maha-section">
+      <p class="maha-label">Most used in clinic</p>
+      <div class="maha-pill-row" data-pill-row="most-used"></div>
+    </section>
+
+    <p class="maha-dingbat">❦ ❦ ❦</p>
+
+    <p class="maha-footer-row">
+      <a href="about/" class="maha-link">About</a>
+      &nbsp;·&nbsp;
+      <a href="#" class="maha-link" data-show="all">See all</a>
+    </p>
+  </main>
+
+  <div id="maha-install-hint" class="maha-install-hint" hidden>
+    <p>For full-screen + offline: tap the Share button, then <strong>Add to Home Screen</strong>.</p>
+    <button class="maha-link" data-dismiss="install">Dismiss</button>
+  </div>
+
+  <script src="app.js" type="module"></script>
 </body>
 </html>

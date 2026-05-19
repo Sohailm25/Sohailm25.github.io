@@ -1,5 +1,7 @@
 # v2 Cutover Implementation Plan
 
+> **STATUS 2026-05-19: SHIPPED.** Executed on branch `wip/v2-cutover`. v2 is now canonical at root URLs (`/`, `/writings/`, `/<slug>/`, `/pages/<slug>/`); `/v2*` URLs return 404; `style.css` and `sections.js` deleted. See `## Shipped — Verification Snapshot` at the bottom of this doc for the final smoke results.
+
 > **For agentic workers:** Execute task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Promote v2 to canonical. The new design replaces the old at the existing live URLs (`/`, `/writings/`, `/<slug>/`, `/pages/<slug>/`). The v2 scaffolding (`/v2*` routes, `v2_*.html` templates, `v2_router` plugin) is retired. Inbound links to existing essays continue to resolve. Old `style.css` deleted.
@@ -872,3 +874,42 @@ git revert -m 1 <merge-commit-hash>
 git push origin master
 ```
 This restores the parallel state — old site at `/`, v2 at `/v2*` — within one GH Actions cycle.
+
+---
+
+## Shipped — Verification Snapshot
+
+Cutover executed 2026-05-19 on branch `wip/v2-cutover`.
+
+**Commits:**
+- Phase 1 — `feat(cutover): promote v2 design to canonical templates` — 11 files changed (+1085, -344)
+- Phase 2 — `chore(cutover): retire v2 scaffolding (templates + plugin + config)` — 10 files changed (+1, -428)
+- Phase 3 — `chore(cutover): retire style.css + sections.js; document cutover` — to be added by merge
+
+**Smoke test after Phase 2 (full rebuild):**
+- 46 articles + 4 pages rendered
+- All canonical URLs (`/`, `/writings/`, `/<slug>/`, `/pages/<slug>/`) → 200
+- All `/v2*` URLs → 404 (paths absent from `output/`)
+- `/book/` and `/book/opener/` → 200 (book is served via EXTRA_PATH_METADATA, unaffected)
+- `theme/static/css/style.css` deleted (was 1674 lines, 91 `!important` rules)
+- `theme/static/js/sections.js` deleted
+- `theme/static/js/lightbox.js` selector updated to `.article-prose img`
+- `theme/templates/book-part.html` comment block updated (was referencing the deleted `style.css`)
+
+**Files retired:**
+| File | Old size |
+|---|---|
+| `theme/static/css/style.css` | 1674 lines |
+| `theme/static/css/style.css.backup` | (backup) |
+| `theme/static/js/sections.js` | 100+ lines |
+| `theme/templates/base-v2.html` | ~60 lines |
+| `theme/templates/v2_index.html` | ~80 lines |
+| `theme/templates/v2_archives.html` | ~60 lines |
+| `theme/templates/v2_article.html` | ~16 lines |
+| `theme/templates/v2_longform_article.html` | ~48 lines |
+| `theme/templates/v2_page.html` | ~17 lines |
+| `theme/templates/v2_inference_economics.html` | ~16 lines |
+| `theme/templates/v2_theforge.html` | ~42 lines |
+| `plugins/v2_router.py` | ~60 lines |
+| `plugins/` (directory) | empty after removal |
+

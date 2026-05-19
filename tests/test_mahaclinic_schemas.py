@@ -67,3 +67,11 @@ def test_config_has_required_fields():
     valid_slugs = {entry["slug"] for entry in index}
     for slug in config["most_used"]:
         assert slug in valid_slugs, f"_config most_used has unknown slug {slug}"
+
+
+def test_pwa_assets_present():
+    base = DATA_DIR.parent
+    assert (base / "manifest.json").exists()
+    assert (base / "icons/icon-192.png").exists()
+    assert (base / "icons/icon-512.png").exists()
+    assert (base / "icons/apple-touch-icon.png").exists()

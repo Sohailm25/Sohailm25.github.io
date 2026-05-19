@@ -8,11 +8,17 @@ import pytest
 REPO = pathlib.Path(__file__).parent.parent
 OUTPUT = REPO / "output"
 
-def test_pelican_builds_mahaclinic_index():
+
+@pytest.fixture(scope="session", autouse=True)
+def pelican_build():
+    """Build Pelican once per session; all integration tests share this output."""
     subprocess.run(
         ["uv", "run", "pelican", "content", "-s", "pelicanconf.py"],
-        cwd=REPO, check=True
+        cwd=REPO, check=True,
     )
+
+
+def test_pelican_builds_mahaclinic_index():
     target = OUTPUT / "mahaclinic" / "index.html"
     assert target.exists(), f"Expected {target} to exist after Pelican build"
     assert target.read_text().startswith("<!DOCTYPE html>"), \
@@ -20,10 +26,6 @@ def test_pelican_builds_mahaclinic_index():
 
 
 def test_robots_disallows_mahaclinic():
-    subprocess.run(
-        ["uv", "run", "pelican", "content", "-s", "pelicanconf.py"],
-        cwd=REPO, check=True
-    )
     robots = OUTPUT / "robots.txt"
     assert robots.exists(), f"Expected {robots} after build"
     text = robots.read_text()

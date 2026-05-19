@@ -1,0 +1,18 @@
+/* ABOUTME: Palette overrides for Maha's portfolio. Inherits typography +
+   ABOUTME: spacing from book-tokens.css. Single source of truth — see spec §6.1. */
+
+@import url('book-tokens.css');
+
+:root {
+  /* Primary ink — Bordeaux (replaces moss) */
+  --ink:             #6B1F2B;
+  --ink-soft:        #c69d9d;     /* dusty rose for soft borders */
+  --ink-on-paper:    #4A131C;     /* deeper bordeaux for body emphasis */
+
+  /* Secondary ink — Sepia (replaces oxblood) */
+  --brown:           #5C3A1E;
+  --brown-soft:      #b3a190;
+  --brown-tint:      rgba(92, 58, 30, 0.10);
+
+  /* Everything else inherits: paper, paper-tint, text, type scale, spacing, layout */
+}

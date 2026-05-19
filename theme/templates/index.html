@@ -4,95 +4,78 @@
 {% block body_class %} class="home-page"{% endblock %}
 
 {% block content %}
-<div class="hero">
-  <div class="hero-wrapper">
-    <div class="hero-content">
-      <div class="hero-greeting">hi, i'm</div>
-      <h1 class="hero-name"><span class="highlight">sohail</span></h1>
-      <p class="hero-bio">tech and thoughts</p>
-      <div class="hero-actions">
-        <a href="mailto:sohailmo.ai@gmail.com" class="corner-btn">
-          <span class="corner tl"></span>
-          <span class="corner tr"></span>
-          <span class="corner bl"></span>
-          <span class="corner br"></span>
-          Contact
-        </a>
-        <a href="https://sohailmo.substack.com/subscribe" class="corner-btn" target="_blank" rel="noopener">
-          <span class="corner tl"></span>
-          <span class="corner tr"></span>
-          <span class="corner bl"></span>
-          <span class="corner br"></span>
-          Subscribe ↗
-        </a>
-      </div>
-    </div>
-    <div class="hero-image">
-      <img src="{{ SITEURL }}/theme/images/hero-avatar.jpg" alt="">
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-kicker">hi, i'm</p>
+    <h1 class="hero-name">Sohail Mohammad</h1>
+    <p class="hero-bio">Tech, AI infrastructure, and adjacent thinking. Notes from a working engineer.</p>
+    <div class="hero-actions">
+      <a href="mailto:sohailmo.ai@gmail.com" class="site-btn">Contact</a>
+      <a href="https://sohailmo.substack.com/subscribe" class="site-btn site-btn--soft" target="_blank" rel="noopener">Subscribe ↗</a>
     </div>
   </div>
-</div>
+  <div class="hero-image">
+    <img src="{{ SITEURL }}/theme/images/hero-avatar.jpg" alt="">
+  </div>
+</section>
 
 {% set featured_articles = articles|selectattr('featured', 'defined')|selectattr('featured')|list %}
 {% if featured_articles %}
-<div class="section-header">
-  <div class="section-title">> featured</div>
-</div>
-
-<div class="blog-list">
+<div class="section-rule"><span>Featured</span></div>
+<ul class="ruled-list">
   {% for article in featured_articles %}
-  <div class="blog-card">
-    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
-      <div class="card-content">
-        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-        <div class="card-title">{{ article.title }}</div>
-        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
-        <div class="card-meta" style="margin-top: var(--spacing-xs); opacity: 0.6; font-size: 0.9em;">{{ article.category }}</div>
+  <li class="ruled-row">
+    <a href="{{ SITEURL }}/{{ article.url }}">
+      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
+      <div class="ruled-body">
+        <div class="ruled-title">{{ article.title }}</div>
+        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
+        <div class="ruled-meta">{{ article.category }}</div>
       </div>
     </a>
-  </div>
+  </li>
   {% endfor %}
-</div>
+</ul>
 {% endif %}
 
-<div class="section-header">
-  <div class="section-title">> latest research</div>
-  <a href="{{ SITEURL }}/pages/research/" class="section-link">see all research</a>
-</div>
-
 {% set research = articles|selectattr('category', 'equalto', 'Research')|rejectattr('show_on_home', 'equalto', false)|rejectattr('show_on_home', 'equalto', 'false')|list %}
-<div class="blog-list">
+{% if research %}
+<div class="section-rule">
+  <span>Latest Research</span>
+  <a href="{{ SITEURL }}/pages/research/">see all →</a>
+</div>
+<ul class="ruled-list">
   {% for article in research[:3] %}
-  <div class="blog-card">
-    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
-      <div class="card-content">
-        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-        <div class="card-title">{{ article.title }}</div>
-        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
+  <li class="ruled-row">
+    <a href="{{ SITEURL }}/{{ article.url }}">
+      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
+      <div class="ruled-body">
+        <div class="ruled-title">{{ article.title }}</div>
+        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
       </div>
     </a>
-  </div>
+  </li>
   {% endfor %}
-</div>
-
-<div class="section-header">
-  <div class="section-title">> latest writings</div>
-  <a href="{{ SITEURL }}/writings/" class="section-link">see all writings</a>
-</div>
+</ul>
+{% endif %}
 
 {% set writings = articles|selectattr('category', 'ne', 'Poems')|selectattr('category', 'ne', 'The Forge')|selectattr('category', 'ne', 'Research')|rejectattr('show_on_home', 'equalto', false)|rejectattr('show_on_home', 'equalto', 'false')|list %}
-<div class="blog-list">
+<div class="section-rule">
+  <span>Latest Writings</span>
+  <a href="{{ SITEURL }}/writings/">see all →</a>
+</div>
+<ul class="ruled-list">
   {% for article in writings[:3] %}
-  <div class="blog-card">
-    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
-      <div class="card-content">
-        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-        <div class="card-title">{{ article.title }}</div>
-        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
+  <li class="ruled-row">
+    <a href="{{ SITEURL }}/{{ article.url }}">
+      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
+      <div class="ruled-body">
+        <div class="ruled-title">{{ article.title }}</div>
+        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
+        <div class="ruled-meta">{{ article.category }}</div>
       </div>
     </a>
-  </div>
+  </li>
   {% endfor %}
-</div>
-
+</ul>
 {% endblock %}

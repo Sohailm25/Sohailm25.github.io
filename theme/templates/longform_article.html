@@ -4,26 +4,26 @@
 {% block body_class %} class="post-page longform-page"{% endblock %}
 
 {% block content %}
-<div class="back-link">
-  <a href="{{ SITEURL }}/">&larr; Back</a>
-</div>
-<div class="page-header">
-  {% if article.category %}
-  <div class="article-category">{{ article.category }}</div>
-  {% endif %}
-  <h1 class="page-title">{{ article.title }}</h1>
-  <div class="page-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-</div>
+<a href="{{ SITEURL }}/" class="article-back">← Back</a>
+<header class="article-header">
+  {% if article.category %}<div class="article-kicker">{{ article.category }}</div>{% endif %}
+  <h1 class="article-title">{{ article.title }}</h1>
+  <div class="article-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+</header>
 
 <div class="longform-layout">
-  <div class="page-content longform-content">
+  <aside class="longform-toc">
+    <div class="toc-header">Contents</div>
+    {% if article.toc %}{{ article.toc }}{% endif %}
+  </aside>
+  <article class="article-prose longform-content">
     {{ article.content }}
-  </div>
+  </article>
 </div>
+
 <script>
-// Highlight active TOC section on scroll
 (function() {
-  var tocLinks = document.querySelectorAll('.toc-sidebar .toc a');
+  var tocLinks = document.querySelectorAll('.longform-toc a');
   if (!tocLinks.length) return;
   var headings = [];
   tocLinks.forEach(function(link) {
@@ -37,10 +37,7 @@
     var scrollPos = window.scrollY + 100;
     var active = null;
     for (var i = headings.length - 1; i >= 0; i--) {
-      if (headings[i].el.offsetTop <= scrollPos) {
-        active = headings[i];
-        break;
-      }
+      if (headings[i].el.offsetTop <= scrollPos) { active = headings[i]; break; }
     }
     tocLinks.forEach(function(l) { l.classList.remove('active'); });
     if (active) active.link.classList.add('active');

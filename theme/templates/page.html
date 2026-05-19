@@ -2,17 +2,15 @@
 
 {% block title %}{{ page.title }} - {{ SITENAME }}{% endblock %}
 {% block body_class %} class="post-page"{% endblock %}
-
 {% block nav_about %}{% if page.slug == 'about' %} class="active" aria-current="page"{% endif %}{% endblock %}
+{% block nav_research %}{% if page.slug == 'research' %} class="active" aria-current="page"{% endif %}{% endblock %}
 
 {% block content %}
-<div class="back-link">
-  <a href="{{ SITEURL }}/">&larr; Back</a>
-</div>
-<div class="page-header">
-  <h1 class="page-title">{{ page.title }}</h1>
-</div>
-<div class="page-content">
+<a href="{{ SITEURL }}/" class="article-back">← Back</a>
+<header class="article-header">
+  <h1 class="article-title">{{ page.title }}</h1>
+</header>
+<article class="article-prose">
   {{ page.content }}
-</div>
+</article>
 {% endblock %}

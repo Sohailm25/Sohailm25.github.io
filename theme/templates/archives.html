@@ -10,98 +10,47 @@
   |list %}
 
 <div class="subscribe-banner">
-  <div class="subscribe-banner-text">
+  <div>
     <div class="subscribe-banner-title">Get new writings in your inbox</div>
     <div class="subscribe-banner-sub">Long-form essays on tech, AI, and adjacent thinking. Managed on Substack.</div>
   </div>
-  <a href="https://sohailmo.substack.com/subscribe" class="corner-btn" target="_blank" rel="noopener">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-    Subscribe ↗
-  </a>
+  <a href="https://sohailmo.substack.com/subscribe" class="site-btn" target="_blank" rel="noopener">Subscribe ↗</a>
 </div>
 
-<div class="section-header">
-  <div class="section-title">> All Writings</div>
+<div class="section-rule"><span>All Writings</span></div>
+
+<div class="category-chips">
+  <button class="category-chip active" data-category="all" onclick="filterCategory('all')">All</button>
+  <button class="category-chip" data-category="Case Studies" onclick="filterCategory('Case Studies')">Case Studies</button>
+  <button class="category-chip" data-category="Notes &amp; Projects" onclick="filterCategory('Notes &amp; Projects')">Notes &amp; Projects</button>
+  <button class="category-chip" data-category="Thoughts" onclick="filterCategory('Thoughts')">Thoughts</button>
+  <button class="category-chip" data-category="Poems" onclick="filterCategory('Poems')">Poems</button>
 </div>
 
-<!-- Category filter tabs -->
-<div class="category-tabs" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
-  <button class="category-tab active" data-category="all" onclick="filterCategory('all')">All</button>
-  <button class="category-tab" data-category="Case Studies" onclick="filterCategory('Case Studies')">Case Studies</button>
-  <button class="category-tab" data-category="Notes & Projects" onclick="filterCategory('Notes & Projects')">Notes & Projects</button>
-  <button class="category-tab" data-category="Thoughts" onclick="filterCategory('Thoughts')">Thoughts</button>
-  <button class="category-tab" data-category="Poems" onclick="filterCategory('Poems')">Poems</button>
-</div>
-
-<div class="blog-list">
+<ul class="ruled-list" id="writings-list">
   {% for article in writings %}
   {% set tag_names = article.tags|map(attribute='name')|map('lower')|list if article.tags else [] %}
   {% if 'research' not in tag_names %}
-  <div class="blog-card" data-category="{{ article.category }}">
-    <a class="card-link" href="{{ SITEURL }}/{{ article.url }}">
-      <div class="card-content">
-        <div class="card-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-        <div class="card-title">{{ article.title }}</div>
-        <div class="card-excerpt">{{ article.summary|striptags|truncate(200) }}</div>
-        <div class="card-meta" style="margin-top: var(--spacing-xs); opacity: 0.6; font-size: 0.9em;">{{ article.category }}</div>
+  <li class="ruled-row" data-category="{{ article.category }}">
+    <a href="{{ SITEURL }}/{{ article.url }}">
+      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
+      <div class="ruled-body">
+        <div class="ruled-title">{{ article.title }}</div>
+        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
+        <div class="ruled-meta">{{ article.category }}</div>
       </div>
     </a>
-  </div>
+  </li>
   {% endif %}
   {% endfor %}
-</div>
-
-<style>
-.category-tab {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  transition: all 0.2s ease;
-}
-
-.category-tab:hover {
-  color: var(--text-primary);
-  border-color: var(--accent-color);
-}
-
-.category-tab.active {
-  background: var(--accent-color);
-  color: var(--bg-primary);
-  border-color: var(--accent-color);
-}
-
-.blog-card {
-  transition: opacity 0.3s ease;
-}
-
-.blog-card.hidden {
-  display: none;
-}
-</style>
+</ul>
 
 <script>
 function filterCategory(category) {
-  // Update active tab
-  document.querySelectorAll('.category-tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
+  document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
   document.querySelector(`[data-category="${category}"]`).classList.add('active');
-  
-  // Filter cards
-  document.querySelectorAll('.blog-card').forEach(card => {
-    if (category === 'all' || card.dataset.category === category) {
-      card.classList.remove('hidden');
-    } else {
-      card.classList.add('hidden');
-    }
+  document.querySelectorAll('#writings-list .ruled-row').forEach(row => {
+    row.style.display = (category === 'all' || row.dataset.category === category) ? '' : 'none';
   });
 }
 </script>

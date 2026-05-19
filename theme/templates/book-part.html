@@ -7,12 +7,11 @@
      1. Add `{% block extra_head %}{% endblock %}` before `</head>`
         (currently base.html has no extra_head block — the {% block extra_head %}
          below would be silently ignored).
-     2. Wrap the `<link rel="stylesheet" href=".../style.css">` at base.html:9
-        in a block (e.g. `{% block site_styles %}...{% endblock %}`) so this
-        template can override it. style.css contains !important rules on
-        html/body/h1-h6 that will clobber book.css unless suppressed on book pages.
-
-   Future work, not Phase 1 scope. See history/2026-05-18-phase1-book-visual-rework.md Task 4. #}
+     2. Decide how site.css interacts with book.css. site.css consumes
+        book-tokens.css and styles site chrome (nav, hero, ruled list);
+        book.css styles book components. Both can coexist if the book-part
+        template overrides .article-prose-level rules where they conflict
+        with book-prose. #}
 {% extends "base.html" %}
 
 {% block title %}{{ page.title }} — The Inference Field Guide{% endblock %}

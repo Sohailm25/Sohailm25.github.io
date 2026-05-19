@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeBtn = modal.querySelector('.lightbox-close');
 
   // Add click handlers to all content images
-  const contentImages = document.querySelectorAll('.page-content img');
+  const contentImages = document.querySelectorAll('.article-prose img');
   contentImages.forEach(img => {
     img.addEventListener('click', function() {
       modal.classList.add('active');

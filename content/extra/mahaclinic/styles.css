@@ -221,3 +221,231 @@ html, body {
   .maha-result-row { border-bottom: 1px solid #000; }
   body { background: #fff; color: #000; }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Drug page components (Task 10)
+   ════════════════════════════════════════════════════════════════════ */
+
+.maha-drug-page .maha-header { position: relative; }
+
+.maha-crumb {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--brown);
+  text-decoration: none;
+  margin-bottom: 8px;
+  min-height: 44px;
+  line-height: 44px;
+}
+
+.maha-drug-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--brown);
+  margin-top: -16px;
+  margin-bottom: 20px;
+}
+
+.maha-badge {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+
+.maha-badge--amber { color: var(--ink); background: #f0d896; border: 1px solid #b58a3b; }
+.maha-badge--green { color: var(--ink); background: #d9e1ce; border: 1px solid var(--ink); }
+
+.maha-disclaimer {
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  background: rgba(58, 79, 42, 0.03);
+}
+
+.maha-disclaimer-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.maha-disclaimer-body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.maha-trace { margin-bottom: 28px; }
+
+.maha-trace-band {
+  border-top: 1.5px solid var(--brown);
+  padding: 14px 0;
+  transition: opacity 0.18s, padding 0.18s;
+  cursor: pointer;
+}
+.maha-trace-band:last-child { border-bottom: 1.5px solid var(--brown); }
+
+.maha-trace-band--active {
+  background: rgba(58, 79, 42, 0.05);
+  padding: 14px 16px;
+  margin: 0 -16px;
+  border-left: 3px solid var(--ink);
+  border-right: 3px solid var(--ink);
+  cursor: default;
+}
+
+.maha-trace-band--dim { opacity: 0.45; }
+
+.maha-trace-band-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  min-height: 44px;
+}
+
+.maha-trace-band-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+.maha-trace-band--active .maha-trace-band-label { color: var(--ink); }
+
+.maha-trace-band-hint {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--brown);
+}
+
+.maha-trace-band-chev {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.maha-weight-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.maha-weight-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #d4cdb5;
+  border-radius: 4px;
+  background: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.maha-weight-row--selected {
+  border: 1.5px solid var(--ink);
+  background: rgba(58, 79, 42, 0.04);
+}
+
+.maha-weight-row-label { color: var(--brown); font-weight: 700; letter-spacing: 0.5px; }
+.maha-weight-row-metric { color: var(--brown); opacity: 0.6; font-size: 10px; }
+
+.maha-dose-card {
+  margin-top: 12px;
+  padding: 18px 20px 22px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 6px;
+}
+
+.maha-dose-card-row + .maha-dose-card-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(250, 245, 233, 0.18); }
+
+.maha-dose-card-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--paper);
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.maha-dose-card-value {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.maha-dose-card-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--paper);
+  opacity: 0.85;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.maha-dose-card-verify {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--paper);
+  opacity: 0.6;
+}
+
+.maha-supply-list {
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--brown);
+}
+.maha-supply-list li { margin-bottom: 6px; padding-left: 14px; position: relative; }
+.maha-supply-list li::before { content: "·"; position: absolute; left: 4px; }
+
+.maha-source-attribution {
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--brown);
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.maha-report-issue {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1px solid var(--brown);
+  border-radius: 4px;
+  color: var(--brown);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  min-height: 44px;
+  line-height: 24px;
+}

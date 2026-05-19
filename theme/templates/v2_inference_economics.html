@@ -1,0 +1,15 @@
+{% extends "base-v2.html" %}
+
+{% block title %}{{ page.title }} — {{ SITENAME }} v2{% endblock %}
+{% block body_class %} class="post-page"{% endblock %}
+{% block nav_inference_economics %} class="active" aria-current="page"{% endblock %}
+
+{% block content %}
+<a href="{{ SITEURL }}/v2home/" class="article-back">← Back</a>
+<header class="article-header">
+  <h1 class="article-title">{{ page.title }}</h1>
+</header>
+<article class="article-prose">
+  {{ page.content }}
+</article>
+{% endblock %}

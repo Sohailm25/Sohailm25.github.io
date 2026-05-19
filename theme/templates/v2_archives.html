@@ -1,0 +1,57 @@
+{% extends "base-v2.html" %}
+
+{% block title %}Writings — {{ SITENAME }} v2{% endblock %}
+{% block nav_writings %} class="active" aria-current="page"{% endblock %}
+
+{% block content %}
+{% set writings = dates
+  |selectattr('category', 'ne', 'The Forge')
+  |rejectattr('slug', 'equalto', 'research/failures/b6-negative-result')
+  |list %}
+
+<div class="subscribe-banner">
+  <div>
+    <div class="subscribe-banner-title">Get new writings in your inbox</div>
+    <div class="subscribe-banner-sub">Long-form essays on tech, AI, and adjacent thinking. Managed on Substack.</div>
+  </div>
+  <a href="https://sohailmo.substack.com/subscribe" class="site-btn" target="_blank" rel="noopener">Subscribe ↗</a>
+</div>
+
+<div class="section-rule"><span>All Writings</span></div>
+
+<div class="category-chips">
+  <button class="category-chip active" data-category="all" onclick="filterV2Category('all')">All</button>
+  <button class="category-chip" data-category="Case Studies" onclick="filterV2Category('Case Studies')">Case Studies</button>
+  <button class="category-chip" data-category="Notes &amp; Projects" onclick="filterV2Category('Notes &amp; Projects')">Notes &amp; Projects</button>
+  <button class="category-chip" data-category="Thoughts" onclick="filterV2Category('Thoughts')">Thoughts</button>
+  <button class="category-chip" data-category="Poems" onclick="filterV2Category('Poems')">Poems</button>
+</div>
+
+<ul class="ruled-list" id="v2-writings-list">
+  {% for article in writings %}
+  {% set tag_names = article.tags|map(attribute='name')|map('lower')|list if article.tags else [] %}
+  {% if 'research' not in tag_names %}
+  <li class="ruled-row" data-category="{{ article.category }}">
+    <a href="{{ SITEURL }}/v2/{{ article.slug }}/">
+      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
+      <div class="ruled-body">
+        <div class="ruled-title">{{ article.title }}</div>
+        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
+        <div class="ruled-meta">{{ article.category }}</div>
+      </div>
+    </a>
+  </li>
+  {% endif %}
+  {% endfor %}
+</ul>
+
+<script>
+function filterV2Category(category) {
+  document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-category="${category}"]`).classList.add('active');
+  document.querySelectorAll('#v2-writings-list .ruled-row').forEach(row => {
+    row.style.display = (category === 'all' || row.dataset.category === category) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

@@ -446,8 +446,12 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
    shrink. Same for the sidebar (so sticky-area can scroll internally). */
 .page-layout > * { min-width: 0; }
 /* Belt-and-suspenders against any rogue element forcing horizontal scroll
-   on mobile. body should never exceed viewport width. */
-html, body { overflow-x: hidden; }
+   on mobile. Use `clip` (not `hidden`) — `overflow: hidden` on body/html
+   creates a scrolling context that breaks `position: sticky` on descendant
+   elements (the desktop sidebar). `overflow-x: clip` clips overflow without
+   creating that context, so sticky keeps working.
+   Supported in Chrome 90+, Firefox 81+, Safari 16+. */
+html, body { overflow-x: clip; }
 
 /* Legacy sidebar — desktop: STICKY in the grid column (scrolls with viewport).
    Mobile: fixed slide-in (see @media at the bottom). */
@@ -615,12 +619,12 @@ html, body { overflow-x: hidden; }
   max-width: none;
 }
 .part-container {
-  /* Use up to 78ch (~860px at 17px body) but always 100% of available space
-     on smaller viewports. Previous 65ch was too narrow against the empty
-     desktop gutter. The `width:100%` is critical for mobile — without it,
-     `max-width` alone won't shrink below 65ch when long words/tables exist. */
+  /* Use up to 88ch (~970px at 17px body) but always 100% of available space
+     on smaller viewports. The `width:100%` is critical for mobile — without
+     it, `max-width` alone won't shrink below 88ch when long words/tables
+     exist. */
   width: 100%;
-  max-width: 78ch;
+  max-width: 88ch;
   margin: 0 auto;
   padding: var(--space-4) var(--space-6);
 }

@@ -531,13 +531,16 @@ a:hover { color: var(--brown); text-decoration-color: var(--brown); }
 }
 @media (max-width: 700px) {
   .site-header-inner {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
   }
-  .site-logo { align-self: center; }
-  .site-nav { flex: none; width: 100%; }
+  .site-logo { flex: 0 0 auto; }
+  .site-social { flex: 0 0 auto; justify-content: flex-end; }
+  .site-nav { flex: 1 1 100%; order: 3; }
   .site-nav ul {
     flex-wrap: wrap;
     justify-content: center;
@@ -545,7 +548,6 @@ a:hover { color: var(--brown); text-decoration-color: var(--brown); }
   }
   .site-nav li { white-space: nowrap; }
   .site-nav a { white-space: nowrap; font-size: 0.78rem; }
-  .site-social { justify-content: center; }
   .site-main { padding: var(--space-5) var(--space-4); }
   .hero {
     flex-direction: column-reverse;

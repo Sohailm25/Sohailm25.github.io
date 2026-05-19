@@ -261,3 +261,63 @@ def test_mahaclinic_drug_theme_color_bordeaux():
     # Allow multiple occurrences — all must be bordeaux
     assert '<meta name="theme-color" content="#3A4F2A">' not in src
     assert '<meta name="theme-color" content="#6B1F2B">' in src
+
+
+# ── Acceptance-criteria grep checks (spec §11) ──────────────────────
+
+def test_no_moss_in_maha_tree():
+    """M2: no #3A4F2A anywhere in maha source or maha CSS."""
+    targets = [
+        REPO / "theme" / "static" / "css" / "maha-tokens.css",
+        REPO / "theme" / "static" / "css" / "maha.css",
+    ] + list((REPO / "content" / "extra" / "maha").rglob("*.html"))
+    for f in targets:
+        text = f.read_text(errors='ignore')
+        assert "#3A4F2A" not in text.upper() and "#3a4f2a" not in text.lower(), \
+            f"moss color #3A4F2A found in {f}"
+
+def test_no_moss_in_mahaclinic_styles():
+    """M2: mahaclinic styles must not contain moss after palette sync."""
+    css = (REPO / "content" / "extra" / "mahaclinic" / "styles.css").read_text()
+    assert "#3A4F2A" not in css.upper(), \
+        "mahaclinic styles.css must not reference moss after sync"
+
+def test_no_inter_font_in_maha():
+    """M3: no font-family: 'Inter' anywhere in maha CSS or HTML."""
+    targets = [
+        REPO / "theme" / "static" / "css" / "maha-tokens.css",
+        REPO / "theme" / "static" / "css" / "maha.css",
+    ] + list((REPO / "content" / "extra" / "maha").rglob("*.html"))
+    for f in targets:
+        text = f.read_text(errors='ignore')
+        assert "Inter" not in text, f"'Inter' font referenced in {f}"
+
+def test_no_public_gpa_or_mcat_score():
+    """M11: GPA never mentioned; MCAT only as a verb ('studying MCAT'), never with a score."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    about = (OUTPUT / "maha" / "about" / "index.html").read_text()
+    for text, name in [(home, "home"), (about, "about")]:
+        assert re.search(r"\bGPA\b", text) is None, f"GPA mentioned in {name}"
+        score_pattern = re.compile(r"MCAT.{0,15}(\b\d{3}\b)")
+        assert score_pattern.search(text) is None, f"MCAT score appears in {name}"
+
+def test_no_specialty_fixation():
+    """M12: 'I want to be a dermatologist' or equivalent must not appear."""
+    targets = list((REPO / "content" / "extra" / "maha").rglob("*.html"))
+    for f in targets:
+        text = f.read_text(errors='ignore').lower()
+        bad_phrases = [
+            "want to be a dermatologist",
+            "i want to specialize in",
+            "going into dermatology",
+        ]
+        for phrase in bad_phrases:
+            assert phrase not in text, f"specialty-fixation phrase {phrase!r} in {f}"
+
+def test_no_third_party_tracking():
+    """M20: no analytics scripts loaded."""
+    targets = list((REPO / "content" / "extra" / "maha").rglob("*.html"))
+    for f in targets:
+        text = f.read_text(errors='ignore').lower()
+        for token in ["ga.js", "gtag", "google-analytics", "hotjar", "fbq("]:
+            assert token not in text, f"tracking token {token!r} in {f}"

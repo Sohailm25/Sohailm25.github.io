@@ -43,21 +43,31 @@ def test_home_shell_has_required_meta():
     assert 'fonts.googleapis.com' in home
 
 
-def test_home_styles_reach_book_tokens():
+def test_home_styles_reach_maha_tokens():
     """Ensures the @import URL in styles.css resolves to an actual built file.
 
     Pelican's theme handler strips 'static/' from theme paths
     (theme/static/css/foo.css -> output/theme/css/foo.css). If the
     @import URL gets out of sync with this convention, the entire
-    moss/oxblood design vocabulary is unavailable at runtime.
+    design vocabulary is unavailable at runtime.
+
+    Note: per spec 2026-05-19-maha-portfolio-design §6.6, mahaclinic's
+    palette was synced to bordeaux+sepia by switching this @import from
+    book-tokens.css to maha-tokens.css. maha-tokens.css itself imports
+    book-tokens.css, so the chain still reaches the parent typography
+    + spacing tokens — palette is just overridden.
     """
     styles = (OUTPUT / "mahaclinic" / "styles.css").read_text()
     # The import URL must reference the actual published location
-    assert "../theme/css/book-tokens.css" in styles, \
-        "styles.css must @import ../theme/css/book-tokens.css (relative from /mahaclinic/)"
+    assert "../theme/css/maha-tokens.css" in styles, \
+        "styles.css must @import ../theme/css/maha-tokens.css (relative from /mahaclinic/) — per spec §6.6"
     # Must NOT reference the static/ subpath (Pelican strips it)
     assert "theme/static" not in styles, \
         "styles.css must not reference theme/static/ — Pelican strips this segment at build"
     # Verify the target actually exists in output
-    target = OUTPUT / "theme" / "css" / "book-tokens.css"
-    assert target.exists(), f"book-tokens.css must be at {target} for the @import to resolve"
+    target = OUTPUT / "theme" / "css" / "maha-tokens.css"
+    assert target.exists(), f"maha-tokens.css must be at {target} for the @import to resolve"
+    # Verify the transitive chain — maha-tokens imports book-tokens, both must build
+    book_tokens_target = OUTPUT / "theme" / "css" / "book-tokens.css"
+    assert book_tokens_target.exists(), \
+        f"book-tokens.css must still build at {book_tokens_target} (maha-tokens imports it)"

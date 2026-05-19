@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6B1F2B">
+  <title>Mahaclinic — case study · Maha Mohammad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/theme/css/maha-tokens.css">
+  <link rel="stylesheet" href="/theme/css/maha.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/maha/" class="site-logo">Maha Mohammad</a>
+      <nav class="site-nav" aria-label="Primary">
+        <ul>
+          <li><a href="/maha/about/">About</a></li>
+          <li><a href="/maha/mahaclinic/" aria-current="page">Mahaclinic</a></li>
+          <li><a href="/maha/competencies/">Competencies</a></li>
+          <li><a href="/maha/now/">Now</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <a href="/maha/" class="article-back">← back</a>
+
+    <header class="article-header">
+      <p class="article-kicker">CASE STUDY · 2026</p>
+      <h1 class="article-title">Mahaclinic — biologic dosing, search-first.</h1>
+      <p class="article-date">Live at <a href="/mahaclinic/">sohailmo.ai/mahaclinic</a></p>
+    </header>
+
+    <article class="article-prose">
+
+      <h2>The problem</h2>
+      <p>Our practice manages a few hundred patients on biologic therapy for chronic skin disease — psoriasis, atopic dermatitis, hidradenitis suppurativa, chronic urticaria. Twenty-four FDA-approved biologics across those indications, each with its own loading schedule, maintenance interval, weight-based dose, age cutoff, and contraindication list. The reference for all of this lived in a print binder on the counter outside the exam rooms.</p>
+
+      <p>Flipping through the binder mid-visit took 20–40 seconds — long enough for a parent to start asking another question, long enough to lose continuity, long enough to make the decision feel hurried. The information was always correct. The retrieval was always slow.</p>
+
+      <h2>What I built</h2>
+      <p>Mahaclinic is a search-first dosing reference. You type the drug name or the condition; the right flow appears. The flow shows: indication, age range, weight-based or fixed dose, loading schedule, maintenance interval, contraindications, monitoring, and the exact FDA-label citation. It is offline-capable and iPad-friendly. The whole thing is a PWA — install it once, use it forever, no app store.</p>
+
+      <h2>What it intentionally does not do</h2>
+      <p><strong>No PHI is stored. No diagnoses are made. No recommendations are issued beyond what the FDA label already says.</strong> Mahaclinic is a reference tool, not a decision-support tool. It surfaces information faster. It does not make the decision; the clinician does.</p>
+
+      <p>That restraint is a design decision, not a limitation. A reference tool with no PHI has no auditable patient record, no consent burden, no IRB question, no MDR liability tail. It can be used by any clinician in any room without becoming part of the medical record. It does one job, narrowly defined, and refuses to drift into adjacent jobs.</p>
+
+      <h2>The decisions</h2>
+
+      <h3>Search-first, not navigation-first</h3>
+      <p>The print binder was navigation-first: indication tabs, then drug, then dose. Most of the lookups were drug-first ("what's the maintenance dose for taltz again?") or symptom-first ("what biologics are approved for HS?"). Inverting the structure to put search at the top of every page cut the median lookup to under five seconds.</p>
+
+      <h3>PWA, not native app</h3>
+      <p>An iOS app would have required App Store review, a developer account, and updates per device. A PWA installs from Safari with two taps, updates instantly, and works offline once cached. For a tool consumed by a fixed set of clinicians, a PWA is the correct delivery surface.</p>
+
+      <h3>One source of truth for content</h3>
+      <p>Every dose flow was hand-extracted from the team-authored print flowcharts that the practice had already produced and reviewed. The tool does not paraphrase, summarize, or generate. It reproduces what the team already wrote, in a searchable surface.</p>
+
+      <h2>Who uses it</h2>
+      <p>Clinicians across three practice locations since 2026. The tool surfaces a "report an issue" link on every drug page; corrections route back to the team that authored the original flowcharts.</p>
+
+      <h2>What's next</h2>
+      <ul>
+        <li>Two additional flows in development: bimzelx HS pediatric and tremfya HS.</li>
+        <li>A "what changed since last visit" view for prior-auth turn-around.</li>
+        <li>A no-PHI calculation panel for weight-based loading doses (still FDA-label-derived only).</li>
+      </ul>
+
+      <h2>Open the tool</h2>
+      <p><a href="/mahaclinic/">sohailmo.ai/mahaclinic →</a></p>
+    </article>
+
+    <footer class="site-colophon">
+      <span>Maha Mohammad · 2026</span>
+      <span><a href="/maha/">home</a></span>
+    </footer>
+  </main>
+</body>
+</html>

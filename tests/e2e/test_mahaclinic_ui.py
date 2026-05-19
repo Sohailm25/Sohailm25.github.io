@@ -85,3 +85,28 @@ def test_about_page_renders(site_server, page):
     assert "Maintainer" in text or "Report" in text
     rows = page.locator(".maha-about-drug-row")
     assert rows.count() >= 20
+
+def test_service_worker_registers(site_server, page):
+    page.goto(f"{site_server}/mahaclinic/")
+    page.wait_for_timeout(800)  # SW registration is async
+    sw_state = page.evaluate("""
+        async () => {
+            if (!navigator.serviceWorker) return 'unsupported';
+            const reg = await navigator.serviceWorker.getRegistration('/mahaclinic/');
+            if (!reg) return 'not-registered';
+            return 'registered';
+        }
+    """)
+    assert sw_state == "registered", f"SW state: {sw_state}"
+
+def test_offline_drug_page_loads(site_server, page, context):
+    # First, online visit to populate cache
+    page.goto(f"{site_server}/mahaclinic/dupixent-ad/")
+    page.wait_for_selector(".maha-trace-band")
+    page.wait_for_timeout(2000)  # Give SW time to populate cache
+    # Now go offline and reload
+    context.set_offline(True)
+    page.reload()
+    page.wait_for_selector(".maha-trace-band", timeout=5000)
+    assert "Dupixent" in page.inner_text("#maha-drug-title")
+    context.set_offline(False)

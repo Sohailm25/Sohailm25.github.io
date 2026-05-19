@@ -4,18 +4,13 @@
 {% block body_class %} class="post-page"{% endblock %}
 
 {% block content %}
-<div class="back-link">
-  <a href="{{ SITEURL }}/">&larr; Back</a>
-</div>
-<div class="page-header">
-  {% if article.category %}
-  <div class="article-category">{{ article.category }}</div>
-  {% endif %}
-  <h1 class="page-title">{{ article.title }}</h1>
-  <div class="page-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-</div>
-
-<div class="page-content">
+<a href="{{ SITEURL }}/" class="article-back">← Back</a>
+<header class="article-header">
+  {% if article.category %}<div class="article-kicker">{{ article.category }}</div>{% endif %}
+  <h1 class="article-title">{{ article.title }}</h1>
+  <div class="article-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+</header>
+<article class="article-prose">
   {{ article.content }}
-</div>
+</article>
 {% endblock %}

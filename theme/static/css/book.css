@@ -63,7 +63,10 @@ h2 { font-size: var(--fs-h2); margin-top: var(--space-6); margin-bottom: var(--s
 h3 { font-size: var(--fs-h3); margin-top: var(--space-5); margin-bottom: var(--space-2); color: var(--ink); }
 h4 { font-size: var(--fs-h4); margin-top: var(--space-4); margin-bottom: var(--space-2); color: var(--ink); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono); }
 
-p { margin-bottom: var(--space-4); max-width: var(--measure); }
+/* Paragraphs use 100% width of their container — the .part-container sets the
+   actual reading measure (65ch) at the section level, which is more reliable
+   than constraining every p individually (which broke wide elements). */
+p { margin-bottom: var(--space-4); }
 strong { font-weight: 600; }
 
 /* Opsz axis for Newsreader */
@@ -172,6 +175,20 @@ p.has-dropcap::first-letter {
   font-weight: 700;
   margin-bottom: var(--space-1);
 }
+/* Bullets inside the callout need space from the left edge */
+.book-break ul, .book-break ol {
+  padding-left: var(--space-5);
+  margin-top: var(--space-2);
+}
+.book-break li { margin-bottom: var(--space-2); }
+.book-break li:last-child { margin-bottom: 0; }
+/* Same for decision-rule callout */
+.book-decision-rule ul, .book-decision-rule ol {
+  padding-left: var(--space-5);
+  margin-top: var(--space-2);
+}
+.book-decision-rule li { margin-bottom: var(--space-2); }
+.book-decision-rule li:last-child { margin-bottom: 0; }
 
 /* ── Decision rule callout (moss) ─────────────── */
 .book-decision-rule {
@@ -318,8 +335,18 @@ blockquote {
 }
 
 /* ── Tables (data; not the book-data-row component) ─ */
-table { border-collapse: collapse; width: 100%; margin: var(--space-4) 0; font-size: 0.92rem; }
-th, td { padding: var(--space-2) var(--space-3); text-align: left; border-bottom: 1px solid var(--ink-soft); }
+/* Wrap tables so they scroll horizontally on mobile instead of pushing the
+   whole page wider than the viewport. */
+.content table, .book-prose table, table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+  font-size: 0.92rem;
+  -webkit-overflow-scrolling: touch;
+}
+th, td { padding: var(--space-2) var(--space-3); text-align: left; border-bottom: 1px solid var(--ink-soft); white-space: normal; }
 th { font-family: var(--font-mono); font-size: var(--fs-mono-label); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); background: var(--paper-tint); }
 tbody tr:hover { background: rgba(58, 79, 42, 0.03); }
 
@@ -414,15 +441,20 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   background: var(--paper);
 }
 
-/* Legacy sidebar — desktop: grid column; mobile: fixed slide-in (see @media) */
+/* Legacy sidebar — desktop: STICKY in the grid column (scrolls with viewport).
+   Mobile: fixed slide-in (see @media at the bottom). */
 #sidebar {
   width: 280px;
   padding: var(--space-6) var(--space-4);
   background: var(--paper-tint);
   border-right: 1px solid var(--ink-soft);
-  overflow-y: auto;
   font-family: var(--font-mono);
   font-size: var(--fs-mono-data);
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
 }
 .sidebar-header {
   border-bottom: 1px solid var(--ink-soft);
@@ -489,20 +521,30 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   color: var(--ink);
   font-weight: 700;
 }
+/* sidebar-nav (prev/next part) — visually distinct from .sidebar-toc chapter list:
+   reduced opacity, smaller font, indented in a box-ish way so the arrows read
+   as separate navigation rather than just two more chapter items. */
 .sidebar-nav {
-  border-top: 1px solid var(--ink-soft);
-  padding-top: var(--space-4);
-  margin-top: var(--space-4);
+  border-top: 2px solid var(--ink);
+  padding-top: var(--space-3);
+  margin-top: var(--space-5);
 }
 .sidebar-nav a {
   display: block;
-  padding: var(--space-1) 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono-data);
-  color: var(--text-deck);
+  padding: var(--space-2) var(--space-2);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--brown);
   text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: border-color 0.15s, color 0.15s;
 }
-.sidebar-nav a:hover { color: var(--ink); }
+.sidebar-nav a:hover {
+  color: var(--ink);
+  border-left-color: var(--ink);
+  background: rgba(58, 79, 42, 0.04);
+}
 
 /* Progress bar + mobile menu toggle + overlay */
 #progress-bar {
@@ -542,7 +584,11 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   opacity: 0;
   transition: opacity 0.2s ease;
 }
-#sidebar-overlay.is-open {
+/* Support both .is-open (spec) and .open (legacy page script toggles 'open' — see
+   the inline <script> blocks in content/extra/book/*/index.html). Keep both
+   selectors so the toggle works regardless of which name JavaScript uses. */
+#sidebar-overlay.is-open,
+#sidebar-overlay.open {
   display: block;
   opacity: 1;
 }
@@ -561,9 +607,11 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   max-width: none;
 }
 .part-container {
-  max-width: calc(var(--measure) + var(--space-8));
+  /* Wider measure on desktop — 44ch felt too skinny against the empty right
+     gutter. 65ch (~720px at 17px body) is a comfortable book-typesetting width. */
+  max-width: 65ch;
   margin: 0 auto;
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-6);
 }
 .part-header {
   border-bottom: 1px solid var(--ink);
@@ -652,13 +700,22 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
     transition: transform 0.2s ease;
     z-index: 90;
   }
-  #sidebar.is-open { transform: translateX(0); }
+  /* Both selectors — script toggles 'open', spec uses 'is-open'. */
+  #sidebar.is-open,
+  #sidebar.open { transform: translateX(0); }
   #menu-toggle { display: block; }
+  /* On mobile, sticky sidebar reverts to fixed slide-in (height already 100vh, top:0).
+     Override the desktop sticky/align-self so nothing fights the fixed positioning. */
+  #sidebar { position: fixed; align-self: auto; }
   .page-layout .book-part {
     margin-left: var(--space-4);
     margin-right: var(--space-4);
     padding-left: var(--space-3);
     padding-right: var(--space-3);
+  }
+  .part-container {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
   }
 }
 

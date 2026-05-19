@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MahaclinicDrugIndication",
+  "type": "object",
+  "required": ["slug", "drug", "indication", "indication_short", "age_bands", "source"],
+  "properties": {
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "drug": { "type": "string", "minLength": 1 },
+    "indication": { "type": "string", "minLength": 1 },
+    "indication_short": { "type": "string", "minLength": 1, "maxLength": 16 },
+    "vial_sizes": { "type": "array", "items": { "type": "string" } },
+    "route": { "type": "string", "enum": ["subcutaneous", "intravenous", "oral", "topical", "intramuscular"] },
+    "age_bands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["label", "weights"],
+        "properties": {
+          "label": { "type": "string" },
+          "label_short": { "type": "string" },
+          "hint": { "type": "string" },
+          "weights": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["label", "maintenance"],
+              "properties": {
+                "label": { "type": "string" },
+                "label_metric": { "type": "string" },
+                "loading": {
+                  "oneOf": [
+                    { "type": "null" },
+                    {
+                      "type": "object",
+                      "required": ["value"],
+                      "properties": {
+                        "value": { "type": "string" },
+                        "n_injections": { "type": "integer", "minimum": 1 },
+                        "notes": { "type": "string" }
+                      }
+                    }
+                  ]
+                },
+                "maintenance": {
+                  "type": "object",
+                  "required": ["value", "frequency"],
+                  "properties": {
+                    "value": { "type": "string" },
+                    "frequency": { "type": "string" },
+                    "n_injections": { "type": "integer", "minimum": 1 },
+                    "notes": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "supply_notes": { "type": "array", "items": { "type": "string" } },
+    "source": {
+      "type": "object",
+      "required": ["file", "extracted_on"],
+      "properties": {
+        "file": { "type": "string" },
+        "extracted_on": { "type": "string", "format": "date" }
+      }
+    },
+    "reviewed": {
+      "type": "object",
+      "properties": {
+        "by": { "type": ["string", "null"] },
+        "date": { "type": ["string", "null"], "format": "date" }
+      }
+    }
+  }
+}

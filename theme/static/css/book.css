@@ -440,6 +440,14 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   min-height: 100vh;
   background: var(--paper);
 }
+/* CSS Grid items default to min-width:auto which means they refuse to shrink
+   below their content's min-size. Long URLs, code spans, and pre blocks then
+   push the article column wider than the viewport. min-width:0 lets them
+   shrink. Same for the sidebar (so sticky-area can scroll internally). */
+.page-layout > * { min-width: 0; }
+/* Belt-and-suspenders against any rogue element forcing horizontal scroll
+   on mobile. body should never exceed viewport width. */
+html, body { overflow-x: hidden; }
 
 /* Legacy sidebar — desktop: STICKY in the grid column (scrolls with viewport).
    Mobile: fixed slide-in (see @media at the bottom). */
@@ -607,12 +615,31 @@ hr { border: none; height: 1px; background: var(--ink-soft); max-width: 40%; mar
   max-width: none;
 }
 .part-container {
-  /* Wider measure on desktop — 44ch felt too skinny against the empty right
-     gutter. 65ch (~720px at 17px body) is a comfortable book-typesetting width. */
-  max-width: 65ch;
+  /* Use up to 78ch (~860px at 17px body) but always 100% of available space
+     on smaller viewports. Previous 65ch was too narrow against the empty
+     desktop gutter. The `width:100%` is critical for mobile — without it,
+     `max-width` alone won't shrink below 65ch when long words/tables exist. */
+  width: 100%;
+  max-width: 78ch;
   margin: 0 auto;
   padding: var(--space-4) var(--space-6);
 }
+/* Defensive: anything inside the article that's intrinsically wide
+   (images, embeds, code blocks) must cap at 100% of container. */
+.part-container img,
+.part-container video,
+.part-container iframe,
+.part-container svg { max-width: 100%; height: auto; }
+.part-container pre,
+.part-container code { max-width: 100%; overflow-wrap: break-word; }
+.part-container pre { overflow-x: auto; }
+/* Break long unbroken words/URLs so they don't push the column wider */
+.part-container p,
+.part-container li,
+.part-container h1,
+.part-container h2,
+.part-container h3,
+.part-container h4 { overflow-wrap: break-word; }
 .part-header {
   border-bottom: 1px solid var(--ink);
   padding-bottom: var(--space-4);

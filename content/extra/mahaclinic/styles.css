@@ -505,3 +505,41 @@ html, body {
   color: var(--brown);
   margin-bottom: 6px;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Print — drug page expansion (Task 14)
+   ════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  @page { margin: 18mm; size: letter portrait; }
+
+  body, .maha-page { background: #fff; color: #000; }
+
+  .maha-report-issue,
+  .maha-crumb,
+  .maha-badge { display: none !important; }
+
+  /* Expand all trace bands so the whole tree prints */
+  .maha-trace-band {
+    border-top: 1px solid #000;
+    opacity: 1 !important;
+    background: transparent !important;
+    padding: 8px 0 !important;
+    margin: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    page-break-inside: avoid;
+  }
+  .maha-trace-band .maha-weight-list { display: block !important; }
+  .maha-weight-row { background: transparent; border: 1px solid #000; }
+  .maha-dose-card {
+    background: transparent !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .maha-dose-card-label,
+  .maha-dose-card-meta,
+  .maha-dose-card-verify { color: #000 !important; opacity: 1 !important; }
+
+  .maha-disclaimer { border: 1px solid #000; background: #fff; }
+}

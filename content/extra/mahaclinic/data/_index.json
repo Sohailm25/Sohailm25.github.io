@@ -1,0 +1,198 @@
+[
+  {
+    "slug": "adbry-ad-adult",
+    "drug": "Adbry",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "adbry-ad-peds",
+    "drug": "Adbry",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "bimzelx-hs",
+    "drug": "Bimzelx",
+    "indication": "Hidradenitis Suppurativa",
+    "indication_short": "HS",
+    "reviewed": false
+  },
+  {
+    "slug": "bimzelx-pso",
+    "drug": "Bimzelx",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "cibinqo-ad",
+    "drug": "Cibinqo",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "cosentyx-hs",
+    "drug": "Cosentyx",
+    "indication": "Hidradenitis Suppurativa",
+    "indication_short": "HS",
+    "reviewed": false
+  },
+  {
+    "slug": "cosentyx-pso",
+    "drug": "Cosentyx",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "dupixent-ad",
+    "drug": "Dupixent",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "dupixent-bp",
+    "drug": "Dupixent",
+    "indication": "Bullous Pemphigoid",
+    "indication_short": "BP",
+    "reviewed": false
+  },
+  {
+    "slug": "dupixent-pn",
+    "drug": "Dupixent",
+    "indication": "Prurigo Nodularis",
+    "indication_short": "PN",
+    "reviewed": false
+  },
+  {
+    "slug": "dupixent-urticaria",
+    "drug": "Dupixent",
+    "indication": "Chronic Spontaneous Urticaria",
+    "indication_short": "Urticaria",
+    "reviewed": false
+  },
+  {
+    "slug": "ebglyss-ad",
+    "drug": "Ebglyss",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "humira-hs",
+    "drug": "Humira",
+    "indication": "Hidradenitis Suppurativa",
+    "indication_short": "HS",
+    "reviewed": false
+  },
+  {
+    "slug": "humira-pso",
+    "drug": "Humira",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "icotyde-pso",
+    "drug": "Icotyde",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "leqselvi-aa",
+    "drug": "Leqselvi",
+    "indication": "Alopecia Areata",
+    "indication_short": "AA",
+    "reviewed": false
+  },
+  {
+    "slug": "litfulo-aa",
+    "drug": "Litfulo",
+    "indication": "Alopecia Areata",
+    "indication_short": "AA",
+    "reviewed": false
+  },
+  {
+    "slug": "nemluvio-ad",
+    "drug": "Nemluvio",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "nemluvio-pn",
+    "drug": "Nemluvio",
+    "indication": "Prurigo Nodularis",
+    "indication_short": "PN",
+    "reviewed": false
+  },
+  {
+    "slug": "olumiant-aa",
+    "drug": "Olumiant",
+    "indication": "Alopecia Areata",
+    "indication_short": "AA",
+    "reviewed": false
+  },
+  {
+    "slug": "otezla-pso",
+    "drug": "Otezla",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "rhapsido-urticaria",
+    "drug": "Rhapsido",
+    "indication": "Chronic Spontaneous Urticaria",
+    "indication_short": "Urticaria",
+    "reviewed": false
+  },
+  {
+    "slug": "rinvoq-ad",
+    "drug": "Rinvoq",
+    "indication": "Atopic Dermatitis",
+    "indication_short": "AD",
+    "reviewed": false
+  },
+  {
+    "slug": "skyrizi-pso",
+    "drug": "Skyrizi",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "sotyktu-pso",
+    "drug": "Sotyktu",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "taltz-pso-adult",
+    "drug": "Taltz",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "taltz-pso-peds",
+    "drug": "Taltz",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  },
+  {
+    "slug": "tremfya-pso",
+    "drug": "Tremfya",
+    "indication": "Plaque Psoriasis",
+    "indication_short": "PsO",
+    "reviewed": false
+  }
+]

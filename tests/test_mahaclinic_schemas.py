@@ -44,3 +44,26 @@ def test_all_drug_jsons_validate(schema):
             jsonschema.validate(data, schema)
         except jsonschema.ValidationError as e:
             pytest.fail(f"{f.name} fails schema: {e.message} at path {list(e.absolute_path)}")
+
+
+def test_index_lists_match_actual_files():
+    index = json.loads((DATA_DIR / "_index.json").read_text())
+    slugs_in_index = {entry["slug"] for entry in index}
+    slugs_on_disk = {
+        f.stem for f in DATA_DIR.glob("*.json")
+        if not f.stem.startswith("_")
+    }
+    assert slugs_in_index == slugs_on_disk, \
+        f"Mismatch: in-index-only={slugs_in_index - slugs_on_disk}, " \
+        f"on-disk-only={slugs_on_disk - slugs_in_index}"
+
+
+def test_config_has_required_fields():
+    config = json.loads((DATA_DIR / "_config.json").read_text())
+    assert "version" in config
+    assert "most_used" in config
+    assert "maintainer_email" in config
+    index = json.loads((DATA_DIR / "_index.json").read_text())
+    valid_slugs = {entry["slug"] for entry in index}
+    for slug in config["most_used"]:
+        assert slug in valid_slugs, f"_config most_used has unknown slug {slug}"

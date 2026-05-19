@@ -45,8 +45,22 @@ PAGE_URL = "pages/{slug}/"
 PAGE_SAVE_AS = "pages/{slug}/index.html"
 ARTICLE_URL = "{slug}/"
 ARTICLE_SAVE_AS = "{slug}/index.html"
-DIRECT_TEMPLATES = ("index", "archives")
+DIRECT_TEMPLATES = ("index", "archives", "v2_index", "v2_archives", "v2_theforge")
 ARCHIVES_SAVE_AS = "writings/index.html"
+
+# v2 parallel deployment — same article/page data, rendered through v2_*.html templates
+# at /v2home/, /v2writings/, /v2theforge/, plus per-article /v2/<slug>/ via the
+# v2_router plugin. Old site remains unchanged.
+V2_INDEX_SAVE_AS = "v2home/index.html"
+V2_INDEX_URL = "v2home/"
+V2_ARCHIVES_SAVE_AS = "v2writings/index.html"
+V2_ARCHIVES_URL = "v2writings/"
+V2_THEFORGE_SAVE_AS = "v2theforge/index.html"
+V2_THEFORGE_URL = "v2theforge/"
+
+PLUGIN_PATHS = ["plugins"]
+PLUGINS = ["v2_router"]
+
 TAG_SAVE_AS = ""
 CATEGORY_SAVE_AS = ""
 AUTHOR_SAVE_AS = ""

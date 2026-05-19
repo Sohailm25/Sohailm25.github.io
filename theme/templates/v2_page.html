@@ -1,0 +1,16 @@
+{% extends "base-v2.html" %}
+
+{% block title %}{{ page.title }} — {{ SITENAME }} v2{% endblock %}
+{% block body_class %} class="post-page"{% endblock %}
+{% block nav_about %}{% if page.slug == 'about' %} class="active" aria-current="page"{% endif %}{% endblock %}
+{% block nav_research %}{% if page.slug == 'research' %} class="active" aria-current="page"{% endif %}{% endblock %}
+
+{% block content %}
+<a href="{{ SITEURL }}/v2home/" class="article-back">← Back</a>
+<header class="article-header">
+  <h1 class="article-title">{{ page.title }}</h1>
+</header>
+<article class="article-prose">
+  {{ page.content }}
+</article>
+{% endblock %}

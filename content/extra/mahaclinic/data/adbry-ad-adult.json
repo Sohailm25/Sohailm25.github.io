@@ -1,8 +1,8 @@
 {
   "slug": "adbry-ad-adult",
   "drug": "Adbry",
-  "indication": "Atopic Dermatitis",
-  "indication_short": "AD",
+  "indication": "Atopic Dermatitis (Adult)",
+  "indication_short": "AD Adult",
   "vial_sizes": [
     "150 mg / mL",
     "300 mg / 2 mL"

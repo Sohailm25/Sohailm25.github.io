@@ -1,8 +1,8 @@
 {
   "slug": "taltz-pso-adult",
   "drug": "Taltz",
-  "indication": "Plaque Psoriasis",
-  "indication_short": "PsO",
+  "indication": "Plaque Psoriasis (Adult)",
+  "indication_short": "PsO Adult",
   "vial_sizes": [
     "80 mg / mL"
   ],

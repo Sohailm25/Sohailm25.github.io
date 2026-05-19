@@ -1,8 +1,8 @@
 {
   "slug": "taltz-pso-peds",
   "drug": "Taltz",
-  "indication": "Plaque Psoriasis",
-  "indication_short": "PsO",
+  "indication": "Plaque Psoriasis (Pediatric)",
+  "indication_short": "PsO Peds",
   "vial_sizes": [
     "20 mg / mL",
     "40 mg / mL",

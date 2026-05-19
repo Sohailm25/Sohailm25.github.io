@@ -1,8 +1,8 @@
 {
   "slug": "adbry-ad-peds",
   "drug": "Adbry",
-  "indication": "Atopic Dermatitis",
-  "indication_short": "AD",
+  "indication": "Atopic Dermatitis (Pediatric)",
+  "indication_short": "AD Peds",
   "vial_sizes": [
     "150 mg / mL"
   ],

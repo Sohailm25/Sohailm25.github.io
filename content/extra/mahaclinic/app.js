@@ -136,6 +136,174 @@ async function renderHome() {
   }
 }
 
+// ── Drug page logic ──────────────────────────────────────────────────
+
+function slugFromPath() {
+  const m = location.pathname.match(/^\/mahaclinic\/([^/]+)\/?$/);
+  if (!m || m[1] === "about") return null;
+  return m[1];
+}
+
+function renderDrugHeader(data) {
+  document.title = `${data.drug} ${data.indication_short} · Dermatology Dosing`;
+  document.getElementById("maha-drug-eyebrow").textContent = data.indication.toUpperCase();
+  const titleEl = document.getElementById("maha-drug-title");
+  titleEl.textContent = data.drug + ".";
+  titleEl.style.fontStyle = "italic";
+  if (data.vial_sizes && data.vial_sizes.length) {
+    document.getElementById("maha-drug-subtitle").textContent =
+      data.vial_sizes.join(" · ") + " · " + data.route;
+  }
+  const badge = document.getElementById("maha-review-badge");
+  if (data.reviewed && data.reviewed.date) {
+    badge.className = "maha-badge maha-badge--green";
+    badge.textContent = `REVIEWED · ${data.reviewed.date}` + (data.reviewed.by ? ` · ${data.reviewed.by}` : "");
+  } else {
+    badge.className = "maha-badge maha-badge--amber";
+    badge.textContent = "AUTO-EXTRACTED";
+  }
+  badge.hidden = false;
+}
+
+function renderDoseCardHTML(weight) {
+  const parts = [];
+  if (weight.loading) {
+    parts.push(`
+      <div class="maha-dose-card-row">
+        <p class="maha-dose-card-label">Loading</p>
+        <p class="maha-dose-card-value">${weight.loading.value}</p>
+        ${weight.loading.notes ? `<p class="maha-dose-card-meta">${weight.loading.notes}</p>` : ""}
+      </div>
+    `);
+  }
+  parts.push(`
+    <div class="maha-dose-card-row">
+      <p class="maha-dose-card-label">Maintenance</p>
+      <p class="maha-dose-card-value">${weight.maintenance.value} · ${weight.maintenance.frequency}</p>
+      ${weight.maintenance.notes ? `<p class="maha-dose-card-meta">${weight.maintenance.notes}</p>` : ""}
+    </div>
+  `);
+  parts.push(`<p class="maha-dose-card-verify">verify with current label</p>`);
+  return parts.join("");
+}
+
+function renderTraceTree(data) {
+  const trace = document.getElementById("maha-trace");
+  trace.innerHTML = "";
+  data.age_bands.forEach((band, idx) => {
+    const el = document.createElement("section");
+    el.className = "maha-trace-band";
+    el.dataset.bandIdx = idx;
+    el.innerHTML = `
+      <div class="maha-trace-band-header">
+        <span class="maha-trace-band-label">${band.label}</span>
+        <span class="maha-trace-band-hint">${band.hint || ""}</span>
+        <span class="maha-trace-band-chev">›</span>
+      </div>
+      <div class="maha-weight-list" hidden></div>
+    `;
+    trace.appendChild(el);
+
+    el.addEventListener("click", (e) => {
+      if (el.classList.contains("maha-trace-band--active") && e.target.closest(".maha-weight-row")) {
+        return;
+      }
+      if (el.classList.contains("maha-trace-band--active")) {
+        trace.querySelectorAll(".maha-trace-band").forEach(b => {
+          b.classList.remove("maha-trace-band--active", "maha-trace-band--dim");
+          b.querySelector(".maha-weight-list").hidden = true;
+          b.querySelector(".maha-trace-band-chev").textContent = "›";
+        });
+        return;
+      }
+      trace.querySelectorAll(".maha-trace-band").forEach(b => {
+        if (b === el) {
+          b.classList.add("maha-trace-band--active");
+          b.classList.remove("maha-trace-band--dim");
+          b.querySelector(".maha-weight-list").hidden = false;
+          b.querySelector(".maha-trace-band-chev").textContent = "⌄";
+        } else {
+          b.classList.remove("maha-trace-band--active");
+          b.classList.add("maha-trace-band--dim");
+          b.querySelector(".maha-weight-list").hidden = true;
+          b.querySelector(".maha-trace-band-chev").textContent = "›";
+        }
+      });
+
+      const list = el.querySelector(".maha-weight-list");
+      if (!list.children.length) {
+        band.weights.forEach((w, wIdx) => {
+          const row = document.createElement("div");
+          row.className = "maha-weight-row";
+          row.dataset.weightIdx = wIdx;
+          row.innerHTML = `
+            <span class="maha-weight-row-label">${w.label}</span>
+            ${w.label_metric ? `<span class="maha-weight-row-metric">${w.label_metric}</span>` : ""}
+          `;
+          row.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            list.querySelectorAll(".maha-weight-row").forEach(r => r.classList.remove("maha-weight-row--selected"));
+            row.classList.add("maha-weight-row--selected");
+            let card = list.querySelector(".maha-dose-card");
+            if (card) card.remove();
+            card = document.createElement("div");
+            card.className = "maha-dose-card";
+            card.innerHTML = renderDoseCardHTML(w);
+            row.after(card);
+          });
+          list.appendChild(row);
+        });
+      }
+    });
+  });
+}
+
+function renderSupply(data) {
+  if (!data.supply_notes || !data.supply_notes.length) return;
+  const section = document.getElementById("maha-supply");
+  const list = document.getElementById("maha-supply-list");
+  list.innerHTML = "";
+  data.supply_notes.forEach(note => {
+    const li = document.createElement("li");
+    li.textContent = note;
+    list.appendChild(li);
+  });
+  section.hidden = false;
+}
+
+function renderSource(data) {
+  const el = document.getElementById("maha-source");
+  el.textContent = `Extracted from "${data.source.file}" on ${data.source.extracted_on}. Verify with current FDA label.`;
+}
+
+function renderReportIssue(data) {
+  const el = document.getElementById("maha-report");
+  const url = location.href;
+  const subject = encodeURIComponent(`[mahaclinic] ${data.slug}: <describe>`);
+  const body = encodeURIComponent(`URL: ${url}\n\nIssue: <describe what's wrong>\n`);
+  loadConfig().then(cfg => {
+    el.href = `mailto:${cfg.maintainer_email}?subject=${subject}&body=${body}`;
+  });
+}
+
+async function renderDrug() {
+  const slug = slugFromPath();
+  if (!slug) return;
+  try {
+    const data = await loadDrug(slug);
+    renderDrugHeader(data);
+    renderTraceTree(data);
+    renderSupply(data);
+    renderSource(data);
+    renderReportIssue(data);
+    pushRecent(slug);
+  } catch (err) {
+    console.error("drug render failed", err);
+    document.getElementById("maha-trace").innerHTML =
+      `<p>Drug not found. <a href="../">Back to search.</a></p>`;
+  }
+}
+
 // ── Service worker registration ──────────────────────────────────────
 
 if ("serviceWorker" in navigator) {
@@ -145,8 +313,10 @@ if ("serviceWorker" in navigator) {
 
 // ── Bootstrap ────────────────────────────────────────────────────────
 
-const path = location.pathname;
-if (path === BASE || path === BASE + "index.html" || path === BASE.slice(0, -1)) {
+const _path = location.pathname;
+if (_path === BASE || _path === BASE + "index.html" || _path === BASE.slice(0, -1)) {
   renderHome().catch(err => console.error("home render failed", err));
+} else if (slugFromPath()) {
+  renderDrug();
 }
-// (drug.html and about.html branches added in Tasks 11 and 12)
+// about.html branch is added in Task 12

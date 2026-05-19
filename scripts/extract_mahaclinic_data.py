@@ -131,7 +131,12 @@ def extract_dose_from_card(card: Tag) -> dict[str, Any]:
             result["loading"] = entry
         elif "maintenance" in label:
             normalized = normalize_frequency(detail_text)
-            freq_match = re.search(r"every\s+\d+\s+weeks?", normalized, re.I)
+            # Match 'every N weeks', 'every other week', and bare 'every week'.
+            freq_match = (
+                re.search(r"every\s+\d+\s+weeks?", normalized, re.I)
+                or re.search(r"every\s+other\s+weeks?", normalized, re.I)
+                or re.search(r"every\s+weeks?", normalized, re.I)
+            )
             freq = freq_match.group(0).lower() if freq_match else "as directed"
             result["maintenance"] = {
                 "value": value,
@@ -146,17 +151,18 @@ def extract_weight_branches(branch_col: Tag) -> list[dict[str, Any]]:
     # Single dose card path (e.g., adults — no sub-branches).
     sub_branches = branch_col.select(".sub-branch-col")
     if not sub_branches:
-        direct_card = branch_col.select_one(".dose-card")
-        if direct_card:
+        # Some flowcharts (e.g. humira-hs) split loading / maintenance /
+        # dispense info across multiple sibling dose-cards. Pass the entire
+        # branch so every dose-section is considered.
+        if branch_col.select_one(".dose-section"):
             row = {"label": "all weights"}
-            row.update(extract_dose_from_card(direct_card))
+            row.update(extract_dose_from_card(branch_col))
             rows.append(row)
         return rows
 
     for sub in sub_branches:
         weight_label_el = sub.select_one(".weight-label, .circle-label")
-        card = sub.select_one(".dose-card")
-        if not card:
+        if not sub.select_one(".dose-section"):
             continue
         weight_label = (
             weight_label_el.get_text(" ", strip=True).replace("\xa0", " ")
@@ -164,7 +170,9 @@ def extract_weight_branches(branch_col: Tag) -> list[dict[str, Any]]:
             else "unspecified"
         )
         row: dict[str, Any] = {"label": weight_label}
-        row.update(extract_dose_from_card(card))
+        # Same aggregation rationale: walk every dose-section under this
+        # sub-branch so multi-card layouts work uniformly.
+        row.update(extract_dose_from_card(sub))
         rows.append(row)
     return rows
 
@@ -175,15 +183,27 @@ def extract_one_html(path: pathlib.Path) -> dict[str, Any]:
 
     drug_el = soup.select_one(".drug-title")
     drug_raw = drug_el.get_text(" ", strip=True) if drug_el else "Unknown"
-    drug = drug_raw if drug_raw.istitle() else " ".join(w.capitalize() for w in drug_raw.split())
-
-    indication_el = soup.select_one(".drug-indication")
-    indication_raw = indication_el.get_text(" ", strip=True) if indication_el else "Unknown"
-    indication = re.sub(r"\s*\([A-Z]+\)\s*$", "", indication_raw).strip().title()
-    indication_short = indication_short_for(indication)
+    # Some titles embed an indication acronym ('Humira (HS)'), an age range
+    # ('Adbry (12-17 Years)'), or other qualifiers — strip any trailing
+    # parenthetical so the drug name itself is clean.
+    drug_clean = re.sub(r"\s*\([^)]*\)\s*$", "", drug_raw).strip()
+    drug = drug_clean if drug_clean.istitle() else " ".join(
+        w.capitalize() for w in drug_clean.split()
+    )
 
     subtitle_el = soup.select_one(".drug-subtitle")
     subtitle_text = subtitle_el.get_text(" ", strip=True) if subtitle_el else None
+
+    indication_el = soup.select_one(".drug-indication")
+    indication_raw = indication_el.get_text(" ", strip=True) if indication_el else ""
+    if not indication_raw and subtitle_text:
+        # Fallback: some flowcharts put the indication name in .drug-subtitle
+        # (e.g. humira-hs.html) when .drug-indication is absent.
+        indication_raw = subtitle_text
+    if not indication_raw:
+        indication_raw = "Unknown"
+    indication = re.sub(r"\s*\([A-Z]+\)\s*$", "", indication_raw).strip().title()
+    indication_short = indication_short_for(indication)
 
     age_bands: list[dict[str, Any]] = []
     for branch in soup.select(".branch-col, .branch-col-wide"):
@@ -195,6 +215,32 @@ def extract_one_html(path: pathlib.Path) -> dict[str, Any]:
             "label": label,
             "label_short": short_age_label(label),
             "weights": extract_weight_branches(branch),
+        })
+
+    # Fallback: some flowcharts (Dupixent BP/PN, Ebglyss, Bimzelx, Skyrizi,
+    # adbry-peds) have no age-band branches because they cover a single
+    # population. Synthesize one age band drawing the population label from
+    # the indication text if the document still has at least one dose-section.
+    if not age_bands and soup.select_one(".dose-section"):
+        age_label_source = " ".join(
+            t for t in (indication_raw, subtitle_text, drug_raw) if t
+        )
+        # 'Adults', 'Pediatric', etc. — short_age_label handles the keyword
+        # lookup; default to 'Adults' if nothing matched.
+        label_short = short_age_label(age_label_source)
+        if label_short not in {"Adults", "Children", "Infants", "Pediatric"}:
+            label_short = "Adults"
+        # Capture an age-range qualifier verbatim for the long label.
+        m = re.search(
+            r"\d+\s*[+\-–to ]+\s*\d*\s*Years?(?:\s*Only)?",
+            age_label_source,
+            re.I,
+        )
+        age_long = m.group(0).strip() if m else label_short
+        age_bands.append({
+            "label": age_long,
+            "label_short": label_short,
+            "weights": extract_weight_branches(soup),
         })
 
     supply_notes_el = soup.select_one(".supply-note")
@@ -238,6 +284,12 @@ def main():
             data = extract_one_html(html_path)
         except Exception as e:
             print(f"FAILED on {html_path.name}: {e}")
+            continue
+        # Skip files where we found no dosing structure at all (e.g. image-only
+        # print pages, JAK-inhibitor patient infographics). These need to be
+        # hand-authored against the source HTML/PNG/PDF.
+        if not data["age_bands"]:
+            print(f"SKIP {html_path.name}: no age bands extracted — hand-author")
             continue
         target = out / f"{data['slug']}.json"
         target.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")

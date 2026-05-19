@@ -1,0 +1,40 @@
+{
+  "slug": "litfulo-aa",
+  "drug": "Litfulo",
+  "indication": "Alopecia Areata",
+  "indication_short": "AA",
+  "vial_sizes": [
+    "50 mg tablet"
+  ],
+  "route": "oral",
+  "age_bands": [
+    {
+      "label": "Adults and adolescents 12+ years (patient quick reference)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": null,
+          "maintenance": {
+            "value": "50 mg",
+            "frequency": "once daily",
+            "n_injections": 1,
+            "notes": "50 mg once daily tablet."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Take with or without food. No dietary restrictions.",
+    "Swallow the tablet whole. Do NOT split, crush, or chew."
+  ],
+  "source": {
+    "file": "litfulo_infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

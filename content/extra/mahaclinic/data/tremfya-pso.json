@@ -1,0 +1,42 @@
+{
+  "slug": "tremfya-pso",
+  "drug": "Tremfya",
+  "indication": "Plaque Psoriasis",
+  "indication_short": "PsO",
+  "vial_sizes": [
+    "100 mg / mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adults and pediatric patients 6+ years and ≥ 40 kg",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "100 mg",
+            "n_injections": 1,
+            "notes": "Inject 100 mg/mL SC at week 0 and week 4."
+          },
+          "maintenance": {
+            "value": "100 mg",
+            "frequency": "every 8 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Same dosing regardless of device preference (One Press, syringe, or pen)."
+  ],
+  "source": {
+    "file": "tremfya-flowchart-print.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

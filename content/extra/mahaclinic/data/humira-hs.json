@@ -1,0 +1,55 @@
+{
+  "slug": "humira-hs",
+  "drug": "Humira",
+  "indication": "Hidradenitis Suppurativa",
+  "indication_short": "HS",
+  "vial_sizes": [],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adult",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "160 mg",
+            "n_injections": 1
+          },
+          "maintenance": {
+            "value": "40 mg",
+            "frequency": "every other week",
+            "n_injections": 1
+          }
+        }
+      ]
+    },
+    {
+      "label": "Adolescent",
+      "label_short": "Children",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "80 mg",
+            "n_injections": 1
+          },
+          "maintenance": {
+            "value": "40 mg",
+            "frequency": "every other week",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [],
+  "source": {
+    "file": "humira-hs.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

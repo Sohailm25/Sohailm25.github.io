@@ -1,0 +1,40 @@
+{
+  "slug": "leqselvi-aa",
+  "drug": "Leqselvi",
+  "indication": "Alopecia Areata",
+  "indication_short": "AA",
+  "vial_sizes": [
+    "8 mg tablet"
+  ],
+  "route": "oral",
+  "age_bands": [
+    {
+      "label": "Adults (patient quick reference)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": null,
+          "maintenance": {
+            "value": "8 mg",
+            "frequency": "twice daily",
+            "n_injections": 2,
+            "notes": "8 mg twice daily tablet."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Take with or without food. No dietary restrictions.",
+    "Swallow the tablet whole."
+  ],
+  "source": {
+    "file": "leqselvi_infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

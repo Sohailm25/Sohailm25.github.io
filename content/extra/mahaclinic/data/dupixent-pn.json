@@ -1,0 +1,42 @@
+{
+  "slug": "dupixent-pn",
+  "drug": "Dupixent",
+  "indication": "Prurigo Nodularis",
+  "indication_short": "PN",
+  "vial_sizes": [
+    "300 mg / 2 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "18+ Years Only",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Available as 300 mg/2 mL pen or syringe"
+  ],
+  "source": {
+    "file": "Dupixent PN.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

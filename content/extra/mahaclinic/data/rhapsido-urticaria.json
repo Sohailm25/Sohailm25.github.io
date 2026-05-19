@@ -1,0 +1,40 @@
+{
+  "slug": "rhapsido-urticaria",
+  "drug": "Rhapsido",
+  "indication": "Chronic Spontaneous Urticaria",
+  "indication_short": "Urticaria",
+  "vial_sizes": [
+    "25 mg tablet"
+  ],
+  "route": "oral",
+  "age_bands": [
+    {
+      "label": "Adults (patient quick reference)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": null,
+          "maintenance": {
+            "value": "25 mg",
+            "frequency": "twice daily",
+            "n_injections": 2,
+            "notes": "25 mg twice daily tablet."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Take with or without food. No dietary restrictions.",
+    "Swallow the tablets whole. Do NOT split, crush, or chew."
+  ],
+  "source": {
+    "file": "rhapsido_infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

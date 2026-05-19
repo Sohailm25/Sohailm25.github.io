@@ -1,0 +1,43 @@
+{
+  "slug": "taltz-pso-adult",
+  "drug": "Taltz",
+  "indication": "Plaque Psoriasis",
+  "indication_short": "PsO",
+  "vial_sizes": [
+    "80 mg / mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adults (18+ Years)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "160 mg",
+            "n_injections": 2,
+            "notes": "Get Started — Week 0: 1 starter dose of two 80 mg injections on the same day (160 mg total)."
+          },
+          "maintenance": {
+            "value": "80 mg",
+            "frequency": "every 4 weeks",
+            "n_injections": 1,
+            "notes": "Keep Going — Weeks 2, 4, 6, 8, 10, 12: 1 injection of 80 mg every 2 weeks. Maintain — Week 16 and on: 1 injection of 80 mg every 4 weeks for the rest of treatment."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Source: Taltz Adults dosing schedule infographic (Taltz Adults.png)."
+  ],
+  "source": {
+    "file": "taltz-adults-print.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

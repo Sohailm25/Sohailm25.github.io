@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUMIRA Dosing - Hidradenitis Suppurativa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F0E8DE;
+    color: #3D1E1E;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .page {
+    background: #FFFAF6;
+    border: 1px solid #E4D6CA;
+    width: 612px;
+    padding: 50px 50px 40px;
+    min-height: 792px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 30px rgba(100, 60, 40, 0.08);
+  }
+
+  /* -- Title -- */
+  .drug-title {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-weight: 900;
+    font-size: 40px;
+    letter-spacing: 2px;
+    color: #3D1E1E;
+    text-align: center;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    line-height: 1.15;
+  }
+
+  .drug-subtitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #8B6B60;
+    text-align: center;
+    letter-spacing: 0.3px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+
+  /* -- SVG Connectors -- */
+  .connector {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* -- Question / Statement Box -- */
+  .question-box {
+    background: #FFF0E8;
+    border: 2px solid #E8C4B0;
+    border-radius: 14px;
+    padding: 22px 32px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: #3D1E1E;
+    line-height: 1.45;
+    width: 480px;
+    max-width: 100%;
+  }
+
+  /* -- Dose Card -- */
+  .dose-card {
+    background: #FFFFFF;
+    border: 1.5px solid #E8D4C8;
+    border-radius: 12px;
+    padding: 16px 20px 20px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 2px 14px rgba(139, 94, 82, 0.06);
+  }
+
+  .dose-section {
+    padding: 4px 0;
+  }
+
+  .dose-section + .dose-section {
+    border-top: 1px solid #E8D4C8;
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+
+  .dose-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3D1E1E;
+    margin-bottom: 4px;
+  }
+
+  .dose-detail {
+    font-size: 12px;
+    font-weight: 400;
+    color: #5A3D35;
+    line-height: 1.55;
+  }
+
+  /* -- Branch Layout (main Adult/Adolescent split - now vertical) -- */
+  .branch-row {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .branch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .branch-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+    background: #B85A4D;
+    padding: 6px 20px;
+    border-radius: 20px;
+  }
+
+  .or-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8B6B60;
+    margin: 4px 0;
+  }
+
+  /* -- Pen/syringe horizontal sub-split (stays horizontal) -- */
+  .pen-syringe-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* -- Weight sub-columns (now vertical) -- */
+  .weight-branch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  @media print {
+    @page {
+      size: letter portrait;
+      margin: 0;
+    }
+    html, body {
+      height: 100%;
+      background: #F0E8DE;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      padding: 30px 0 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .page {
+      width: 1200px;
+      max-width: none;
+      min-height: 0;
+      box-shadow: none;
+      border: 1px solid #E4D6CA;
+      border-radius: 20px;
+      padding: 25px 35px 20px;
+      zoom: 0.58;
+    }
+    .branch-row { gap: 10px !important; }
+    .drug-title { font-size: 40px; }
+    .dose-card, .question-box { page-break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Title -->
+  <div class="drug-title">Humira (HS)</div>
+  <div class="drug-subtitle">Hidradenitis Suppurativa</div>
+
+  <div style="height: 36px;"></div>
+
+  <!-- Question: Adult or Adolescent? -->
+  <div class="question-box">
+    Is the patient an adult or adolescent?
+  </div>
+
+  <!-- Simple vertical arrow (replaces horizontal branching SVG) -->
+  <svg class="connector" width="40" height="50" viewBox="0 0 40 50" style="display:block; margin:0 auto;">
+    <line x1="20" y1="0" x2="20" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="20,50 12,38 28,38" fill="#B85A4D"/>
+  </svg>
+
+  <!-- Branch Row: Adult (top) and Adolescent (bottom) - now stacked vertically -->
+  <div class="branch-row" style="align-items: center;">
+
+    <!-- ADULT -->
+    <div class="branch-col">
+      <div class="branch-label">Adult</div>
+
+      <svg class="connector" width="480" height="36" viewBox="0 0 480 36" style="display:block; margin:0 auto;">
+        <line x1="240" y1="0" x2="240" y2="24" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="240,36 232,24 248,24" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Loading Dose Schedule -->
+      <div class="dose-card">
+        <div class="dose-section">
+          <div class="dose-label">Loading Dose</div>
+          <div class="dose-detail">
+            <strong>Day 1:</strong> 160 mg<br>
+            <span style="font-size: 11px; color: #8B6B60;">(given in one day or split over two consecutive days)</span><br>
+            <strong>Day 15:</strong> 80 mg
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrow to pen/syringe question -->
+      <svg class="connector" width="480" height="36" viewBox="0 0 480 36" style="display:block; margin:0 auto;">
+        <line x1="240" y1="0" x2="240" y2="24" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="240,36 232,24 248,24" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Pen vs Syringe question (Loading) -->
+      <div class="question-box" style="width: 100%; padding: 12px 20px; font-size: 14px;">
+        Does the patient prefer a pen or syringe?
+      </div>
+
+      <!-- Split arrows for pen/syringe -->
+      <svg class="connector" width="480" height="50" viewBox="0 0 480 50" style="display:block; margin:0 auto;">
+        <line x1="240" y1="0" x2="240" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="240" y1="16" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="120" y1="16" x2="120" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="120,50 112,38 128,38" fill="#B85A4D"/>
+        <line x1="240" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="360" y1="16" x2="360" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="360,50 352,38 368,38" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Pen / Syringe Loading Dispensing -->
+      <div class="pen-syringe-row">
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+          <div class="dose-card" style="font-size: 11px;">
+            <div style="background: #B85A4D; color: #FFFFFF; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 6px 14px; border-radius: 10px 10px 0 0; margin: -16px -20px 12px -20px;">Pen</div>
+            <div class="dose-section">
+              <div class="dose-label" style="font-size: 12px;">Dispense as:</div>
+              <div class="dose-detail" style="font-size: 11px;">
+                <span style="white-space: nowrap;">PEN HUMIRA Starter Pack (CF)</span><br>
+                <strong>80 mg/0.8 mL</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+          <div class="dose-card" style="font-size: 11px;">
+            <div style="background: #B85A4D; color: #FFFFFF; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 6px 14px; border-radius: 10px 10px 0 0; margin: -16px -20px 12px -20px;">Syringe</div>
+            <div class="dose-section">
+              <div class="dose-label" style="font-size: 12px;">Dispense as:</div>
+              <div class="dose-detail" style="font-size: 11px;">
+                SYRINGE HUMIRA (CF)<br>
+                <strong>40 mg/0.4 mL</strong>
+                <div class="or-text">OR</div>
+                SYRINGE HUMIRA<br>
+                <strong>40 mg/0.8 mL</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Merge arrows back to center -->
+      <svg class="connector" width="480" height="50" viewBox="0 0 480 50" style="display:block; margin:0 auto;">
+        <line x1="120" y1="0" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="120" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="360" y1="0" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="240" y1="16" x2="240" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="240,50 232,38 248,38" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Maintenance Dose Schedule -->
+      <div class="dose-card">
+        <div class="dose-section">
+          <div class="dose-label">Maintenance Dose</div>
+          <div class="dose-detail">
+            <strong>Day 29 and subsequent doses:</strong><br>
+            40 mg SC injection every week
+            <div class="or-text">OR</div>
+            80 mg SC injection every other week
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrow to pen/syringe question -->
+      <svg class="connector" width="480" height="36" viewBox="0 0 480 36" style="display:block; margin:0 auto;">
+        <line x1="240" y1="0" x2="240" y2="24" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="240,36 232,24 248,24" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Pen vs Syringe question (Maintenance) -->
+      <div class="question-box" style="width: 100%; padding: 12px 20px; font-size: 14px;">
+        Does the patient prefer a pen or syringe?
+      </div>
+
+      <!-- Split arrows -->
+      <svg class="connector" width="480" height="50" viewBox="0 0 480 50" style="display:block; margin:0 auto;">
+        <line x1="240" y1="0" x2="240" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="240" y1="16" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="120" y1="16" x2="120" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="120,50 112,38 128,38" fill="#B85A4D"/>
+        <line x1="240" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="360" y1="16" x2="360" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="360,50 352,38 368,38" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Pen / Syringe Maintenance Dispensing -->
+      <div class="pen-syringe-row">
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+          <div class="dose-card" style="font-size: 11px;">
+            <div style="background: #B85A4D; color: #FFFFFF; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 6px 14px; border-radius: 10px 10px 0 0; margin: -16px -20px 12px -20px;">Pen</div>
+            <div class="dose-section">
+              <div class="dose-label" style="font-size: 12px;">Dispense as:</div>
+              <div class="dose-detail" style="font-size: 11px;">
+                PEN HUMIRA (CF)<br>
+                <strong>80 mg/0.8 mL</strong>
+                <div class="or-text">OR</div>
+                PEN HUMIRA (CF)<br>
+                <strong>40 mg/0.4 mL</strong>
+                <div class="or-text">OR</div>
+                PEN HUMIRA<br>
+                <strong>40 mg/0.8 mL</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+          <div class="dose-card" style="font-size: 11px;">
+            <div style="background: #B85A4D; color: #FFFFFF; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 6px 14px; border-radius: 10px 10px 0 0; margin: -16px -20px 12px -20px;">Syringe</div>
+            <div class="dose-section">
+              <div class="dose-label" style="font-size: 12px;">Dispense as:</div>
+              <div class="dose-detail" style="font-size: 11px;">
+                SYRINGE HUMIRA (CF)<br>
+                <strong>40 mg/0.4 mL</strong>
+                <div class="or-text">OR</div>
+                SYRINGE HUMIRA<br>
+                <strong>40 mg/0.8 mL</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADOLESCENT -->
+    <div class="branch-col">
+      <div class="branch-label">Adolescent</div>
+
+      <svg class="connector" width="480" height="36" viewBox="0 0 480 36" style="display:block; margin:0 auto;">
+        <line x1="240" y1="0" x2="240" y2="24" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="240,36 232,24 248,24" fill="#B85A4D"/>
+      </svg>
+
+      <div class="question-box" style="width: 100%; padding: 16px 20px;">
+        <div style="font-size: 14px;">What is the patient's weight?</div>
+      </div>
+
+      <!-- Vertical arrow from weight question -->
+      <svg class="connector" width="40" height="50" viewBox="0 0 40 50" style="display:block; margin:0 auto;">
+        <line x1="20" y1="0" x2="20" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="20,50 12,38 28,38" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Weight sub-columns - now stacked vertically -->
+
+      <!-- 66 to <132 lbs -->
+      <div class="weight-branch-col">
+        <div class="branch-label" style="font-size: 11px; padding: 5px 10px; white-space: nowrap;">66 to &lt;132 lbs</div>
+
+        <svg class="connector" width="480" height="30" viewBox="0 0 480 30" style="display:block; margin:0 auto;">
+          <line x1="240" y1="0" x2="240" y2="18" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="240,30 232,18 248,18" fill="#B85A4D"/>
+        </svg>
+
+        <!-- Loading Dose Schedule -->
+        <div class="dose-card" style="font-size: 11px;">
+          <div class="dose-section">
+            <div class="dose-label" style="font-size: 12px;">Loading Dose</div>
+            <div class="dose-detail" style="font-size: 11px;">
+              <strong>Day 1:</strong> 80 mg<br>
+              <strong>Day 8:</strong> 40 mg
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow to pen/syringe question -->
+        <svg class="connector" width="480" height="30" viewBox="0 0 480 30" style="display:block; margin:0 auto;">
+          <line x1="240" y1="0" x2="240" y2="18" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="240,30 232,18 248,18" fill="#B85A4D"/>
+        </svg>
+
+        <!-- Pen vs Syringe question (Loading) -->
+        <div class="question-box" style="width: 100%; padding: 10px 14px; font-size: 11px;">
+          Does the patient prefer a pen or syringe?
+        </div>
+
+        <!-- Split arrows -->
+        <svg class="connector" width="480" height="50" viewBox="0 0 480 50" style="display:block; margin:0 auto;">
+          <line x1="240" y1="0" x2="240" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="240" y1="16" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="120" y1="16" x2="120" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="120,50 112,38 128,38" fill="#B85A4D"/>
+          <line x1="240" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="360" y1="16" x2="360" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="360,50 352,38 368,38" fill="#B85A4D"/>
+        </svg>
+
+        <!-- Pen / Syringe Loading Dispensing -->
+        <div class="pen-syringe-row" style="gap: 8px;">
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div class="dose-card" style="font-size: 10px;">
+              <div style="background: #B85A4D; color: #FFFFFF; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 5px 10px; border-radius: 10px 10px 0 0; margin: -16px -20px 10px -20px;">Pen</div>
+              <div class="dose-section">
+                <div class="dose-label" style="font-size: 11px;">Dispense as:</div>
+                <div class="dose-detail" style="font-size: 10px;">
+                  <span style="white-space: nowrap;">PEN HUMIRA Starter Pack (CF)</span><br>
+                  <strong>80 mg/0.8 mL, 40 mg/0.4 mL</strong>
+                  <div class="or-text">OR</div>
+                  <span style="white-space: nowrap;">PEN HUMIRA Starter Pack (CF)</span><br>
+                  <strong>40 mg/0.4 mL</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex: 1.3; display: flex; flex-direction: column; align-items: center;">
+            <div class="dose-card" style="font-size: 10px;">
+              <div style="background: #B85A4D; color: #FFFFFF; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 5px 10px; border-radius: 10px 10px 0 0; margin: -16px -20px 10px -20px;">Syringe</div>
+              <div class="dose-section">
+                <div class="dose-label" style="font-size: 11px;">Dispense as:</div>
+                <div class="dose-detail" style="font-size: 10px;">
+                  <span style="white-space: nowrap;">SYRINGE HUMIRA (CF)</span><br>
+                  <strong>40 mg/0.4 mL</strong>
+                  <div class="or-text">OR</div>
+                  SYRINGE HUMIRA<br>
+                  <strong>40 mg/0.8 mL</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Merge arrows back to center -->
+        <svg class="connector" width="480" height="50" viewBox="0 0 480 50" style="display:block; margin:0 auto;">
+          <line x1="120" y1="0" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="120" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="360" y1="0" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="240" y1="16" x2="240" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="240,50 232,38 248,38" fill="#B85A4D"/>
+        </svg>
+
+        <!-- Maintenance Dose Schedule -->
+        <div class="dose-card" style="font-size: 11px;">
+          <div class="dose-section">
+            <div class="dose-label" style="font-size: 12px;">Maintenance Dose</div>
+            <div class="dose-detail" style="font-size: 11px;">
+              <strong>Day 22 and subsequent:</strong><br>
+              40 mg SC injection every other week
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow to pen/syringe question -->
+        <svg class="connector" width="480" height="30" viewBox="0 0 480 30" style="display:block; margin:0 auto;">
+          <line x1="240" y1="0" x2="240" y2="18" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="240,30 232,18 248,18" fill="#B85A4D"/>
+        </svg>
+
+        <!-- Pen vs Syringe question (Maintenance) -->
+        <div class="question-box" style="width: 100%; padding: 10px 14px; font-size: 11px;">
+          Does the patient prefer a pen or syringe?
+        </div>
+
+        <!-- Split arrows -->
+        <svg class="connector" width="480" height="50" viewBox="0 0 480 50" style="display:block; margin:0 auto;">
+          <line x1="240" y1="0" x2="240" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="240" y1="16" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="120" y1="16" x2="120" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="120,50 112,38 128,38" fill="#B85A4D"/>
+          <line x1="240" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="360" y1="16" x2="360" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="360,50 352,38 368,38" fill="#B85A4D"/>
+        </svg>
+
+        <!-- Pen / Syringe Maintenance Dispensing -->
+        <div class="pen-syringe-row" style="gap: 8px;">
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div class="dose-card" style="font-size: 10px;">
+              <div style="background: #B85A4D; color: #FFFFFF; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 5px 10px; border-radius: 10px 10px 0 0; margin: -16px -20px 10px -20px;">Pen</div>
+              <div class="dose-section">
+                <div class="dose-label" style="font-size: 11px;">Dispense as:</div>
+                <div class="dose-detail" style="font-size: 10px;">
+                  PEN HUMIRA (CF)<br>
+                  <strong>40 mg/0.4 mL</strong>
+                  <div class="or-text">OR</div>
+                  PEN HUMIRA<br>
+                  <strong>40 mg/0.8 mL</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div class="dose-card" style="font-size: 10px;">
+              <div style="background: #B85A4D; color: #FFFFFF; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; padding: 5px 10px; border-radius: 10px 10px 0 0; margin: -16px -20px 10px -20px;">Syringe</div>
+              <div class="dose-section">
+                <div class="dose-label" style="font-size: 11px;">Dispense as:</div>
+                <div class="dose-detail" style="font-size: 10px;">
+                  <span style="white-space: nowrap;">SYRINGE HUMIRA (CF)</span><br>
+                  <strong>40 mg/0.4 mL</strong>
+                  <div class="or-text">OR</div>
+                  SYRINGE HUMIRA<br>
+                  <strong>40 mg/0.8 mL</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacer between weight branches -->
+      <div style="height: 24px;"></div>
+
+      <!-- Vertical arrow to next weight branch -->
+      <svg class="connector" width="40" height="50" viewBox="0 0 40 50" style="display:block; margin:0 auto;">
+        <line x1="20" y1="0" x2="20" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="20,50 12,38 28,38" fill="#B85A4D"/>
+      </svg>
+
+      <!-- >=132 lbs -->
+      <div class="weight-branch-col">
+        <div class="branch-label" style="font-size: 11px; padding: 5px 10px; white-space: nowrap;">&ge;132 lbs</div>
+
+        <svg class="connector" width="480" height="30" viewBox="0 0 480 30" style="display:block; margin:0 auto;">
+          <line x1="240" y1="0" x2="240" y2="18" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="240,30 232,18 248,18" fill="#B85A4D"/>
+        </svg>
+
+        <div class="dose-card" style="font-size: 11px; text-align: center; padding: 20px;">
+          <div style="font-size: 13px; font-weight: 600; color: #3D1E1E;">Follow Adult Dosing</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+</div>
+
+</body>
+</html>

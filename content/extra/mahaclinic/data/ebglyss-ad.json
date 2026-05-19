@@ -1,0 +1,41 @@
+{
+  "slug": "ebglyss-ad",
+  "drug": "Ebglyss",
+  "indication": "Atopic Dermatitis",
+  "indication_short": "AD",
+  "vial_sizes": [
+    "250 mg / 2 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adults and pediatrics 12+ years and ≥40 kg",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "500 mg",
+            "n_injections": 2,
+            "notes": "Initial dose: 2 × 250 mg (500 mg) at weeks 0 and 2. Induction phase: 1 × 250 mg every 2 weeks at weeks 4 through 14."
+          },
+          "maintenance": {
+            "value": "250 mg",
+            "frequency": "every 4 weeks",
+            "n_injections": 1,
+            "notes": "Starting at week 16."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [],
+  "source": {
+    "file": "Ebglyss.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

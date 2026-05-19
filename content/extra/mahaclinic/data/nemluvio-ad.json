@@ -1,0 +1,42 @@
+{
+  "slug": "nemluvio-ad",
+  "drug": "Nemluvio",
+  "indication": "Atopic Dermatitis",
+  "indication_short": "AD",
+  "vial_sizes": [
+    "30 mg / 0.49 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adults",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "60 mg",
+            "n_injections": 2,
+            "notes": "2 × 30 mg autoinjectors (60 mg)"
+          },
+          "maintenance": {
+            "value": "30 mg",
+            "frequency": "every 4 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Nemluvio is only available as an autoinjector."
+  ],
+  "source": {
+    "file": "Nemluvio.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

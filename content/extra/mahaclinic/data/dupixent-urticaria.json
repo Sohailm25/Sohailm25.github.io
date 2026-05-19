@@ -1,0 +1,75 @@
+{
+  "slug": "dupixent-urticaria",
+  "drug": "Dupixent",
+  "indication": "Chronic Spontaneous Urticaria",
+  "indication_short": "Urticaria",
+  "vial_sizes": [
+    "200 mg / 1.14 mL",
+    "300 mg / 2 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adolescents (12–17 Years)",
+      "label_short": "Children",
+      "weights": [
+        {
+          "label": "66 to <132 lbs",
+          "loading": {
+            "value": "400 mg",
+            "n_injections": 2,
+            "notes": "2 × 200 mg (400 mg)"
+          },
+          "maintenance": {
+            "value": "200 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        },
+        {
+          "label": "≥ 132 lbs",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    },
+    {
+      "label": "Adults (18+ Years)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Available in a 200 mg and 300 mg pen vs syringe for patients 12+ years of age."
+  ],
+  "source": {
+    "file": "Dupixent Urticaria.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

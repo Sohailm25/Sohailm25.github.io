@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSENTYX Hidradenitis Suppurativa Dosing Flowchart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F0E8DE;
+    color: #3D1E1E;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .page {
+    background: #FFFAF6;
+    border: 1px solid #E4D6CA;
+    width: 612px;
+    min-height: 792px;
+    padding: 50px 50px 40px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 30px rgba(100, 60, 40, 0.08);
+  }
+
+  /* ── Title ── */
+  .drug-title {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-weight: 900;
+    font-size: 46px;
+    letter-spacing: 2px;
+    color: #3D1E1E;
+    text-align: center;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    line-height: 1.15;
+  }
+
+  .drug-subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    color: #8B6B60;
+    text-align: center;
+    letter-spacing: 0.3px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+
+  .drug-indication {
+    font-size: 13px;
+    font-weight: 600;
+    color: #B85A4D;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* ── SVG Connectors ── */
+  .connector {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* ── Question / Statement Box ── */
+  .question-box {
+    background: #FFF0E8;
+    border: 2px solid #E8C4B0;
+    border-radius: 14px;
+    padding: 22px 32px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: #3D1E1E;
+    line-height: 1.45;
+    width: 480px;
+    max-width: 100%;
+  }
+
+  .question-box-sm {
+    background: #FFF0E8;
+    border: 2px solid #E8C4B0;
+    border-radius: 14px;
+    padding: 18px 24px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #3D1E1E;
+    line-height: 1.45;
+    width: 100%;
+  }
+
+  /* ── Dose Card ── */
+  .dose-card-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .device-badge {
+    position: absolute;
+    top: -11px;
+    left: 18px;
+    background: #B85A4D;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  .dose-card {
+    background: #FFFFFF;
+    border: 1.5px solid #E8D4C8;
+    border-radius: 12px;
+    padding: 16px 20px 20px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 2px 14px rgba(139, 94, 82, 0.06);
+  }
+
+  .dose-section {
+    padding: 4px 0;
+  }
+
+  .dose-section + .dose-section {
+    border-top: 1px solid #E8D4C8;
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+
+  .dose-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3D1E1E;
+    margin-bottom: 4px;
+  }
+
+  .dose-detail {
+    font-size: 12px;
+    font-weight: 400;
+    color: #5A3D35;
+    line-height: 1.55;
+  }
+
+  /* ── Branch Layout ── */
+  .branch-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    gap: 36px;
+    align-items: center;
+  }
+
+  .branch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .branch-col-wide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 2;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .branch-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+    background: #B85A4D;
+    padding: 6px 20px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .weight-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #B85A4D;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #FFF0E8;
+    border: 2px solid #E8C4B0;
+    padding: 5px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-bottom: 2px;
+  }
+
+  .circle-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #FFF0E8;
+    border: 2px solid #E8C4B0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #B85A4D;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+  }
+
+  /* ── Sub-branches ── */
+  .sub-branch-row {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .sub-branch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 230px;
+  }
+
+  .sub-branch-row-3 {
+    display: flex;
+    width: 110%;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  /* ── Supply Note ── */
+  .supply-note {
+    margin-top: 30px;
+    background: #FFF0E8;
+    border: 1.5px solid #E8C4B0;
+    border-radius: 12px;
+    padding: 16px 28px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #5A3D35;
+    line-height: 1.6;
+    max-width: 480px;
+  }
+
+  .supply-note strong {
+    font-weight: 700;
+    color: #3D1E1E;
+  }
+
+  /* ── Escalation Note ── */
+  .escalation-note {
+    background: #FFF7F0;
+    border: 1.5px dashed #E8C4B0;
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #5A3D35;
+    line-height: 1.55;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .escalation-note strong {
+    font-weight: 700;
+    color: #B85A4D;
+  }
+
+  @media print {
+    @page {
+      size: letter portrait;
+      margin: 0;
+    }
+    html, body {
+      height: 100%;
+      background: #F0E8DE;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      padding: 30px 0 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .page {
+      width: 612px;
+      box-shadow: none;
+      border: 1px solid #E4D6CA;
+      border-radius: 20px;
+      padding: 50px 50px 40px;
+      zoom: 0.75;
+    }
+    .drug-title { font-size: 40px; }
+    .dose-card, .question-box { page-break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Title -->
+  <div class="drug-title">Cosentyx</div>
+  <div class="drug-indication">Hidradenitis Suppurativa (HS)</div>
+
+  <div style="height: 32px;"></div>
+
+  <!-- Age Question -->
+  <div class="question-box">
+    What is the patient&rsquo;s age?
+  </div>
+
+  <!-- Vertical arrow down -->
+  <svg class="connector" width="40" height="50" viewBox="0 0 40 50" style="display:block; margin:0 auto;">
+    <line x1="20" y1="0" x2="20" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="20,50 12,38 28,38" fill="#B85A4D"/>
+  </svg>
+
+  <!-- Branch Row -->
+  <div class="branch-row">
+
+    <!-- LEFT: Pediatric 12+ Years -->
+    <div class="branch-col">
+      <div class="branch-label">Pediatric (12+ Years)</div>
+
+      <!-- Sub-branching arrows: 2-way split -->
+      <svg class="connector" width="480" height="54" viewBox="0 0 480 54">
+        <line x1="240" y1="0" x2="240" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <!-- Left: 66-198 lbs -->
+        <line x1="240" y1="16" x2="120" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="120" y1="16" x2="120" y2="42" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="120,54 112,42 128,42" fill="#B85A4D"/>
+        <!-- Right: >=198 lbs -->
+        <line x1="240" y1="16" x2="360" y2="16" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <line x1="360" y1="16" x2="360" y2="42" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="360,54 352,42 368,42" fill="#B85A4D"/>
+      </svg>
+
+      <div class="sub-branch-row">
+
+        <!-- 66–198 lbs (≥30 kg and <90 kg) -->
+        <div class="sub-branch-col">
+          <div class="weight-label">66&ndash;198 lbs</div>
+          <svg class="connector" width="100%" height="26" viewBox="0 0 178 26">
+            <line x1="89" y1="0" x2="89" y2="14" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="89,26 81,14 97,14" fill="#B85A4D"/>
+          </svg>
+          <div class="dose-card-wrapper">
+            <div class="dose-card">
+              <div class="dose-section">
+                <div class="dose-label">Loading Dose</div>
+                <div class="dose-detail">150 mg at Weeks 0, 1, 2, 3, and 4</div>
+              </div>
+              <div class="dose-section">
+                <div class="dose-label">Maintenance Dose</div>
+                <div class="dose-detail">150 mg every 4 weeks</div>
+              </div>
+            </div>
+          </div>
+          <svg class="connector" width="100%" height="26" viewBox="0 0 178 26">
+            <line x1="89" y1="0" x2="89" y2="14" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="89,26 81,14 97,14" fill="#B85A4D"/>
+          </svg>
+          <div class="question-box-sm" style="font-size: 12px; white-space: nowrap; width: auto;">
+            <strong>Dispensed as:</strong><br>
+            1 &times; 150 mg/mL SensoReady Pen<br>
+            1 &times; 150 mg/mL Prefilled Syringe
+          </div>
+        </div>
+
+        <!-- ≥198 lbs (≥90 kg) -->
+        <div class="sub-branch-col">
+          <div class="weight-label">&ge; 198 lbs</div>
+          <svg class="connector" width="100%" height="26" viewBox="0 0 178 26">
+            <line x1="89" y1="0" x2="89" y2="14" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="89,26 81,14 97,14" fill="#B85A4D"/>
+          </svg>
+          <div class="dose-card-wrapper">
+            <div class="dose-card">
+              <div class="dose-section">
+                <div class="dose-label">Loading Dose</div>
+                <div class="dose-detail">300 mg at Weeks 0, 1, 2, 3, and 4</div>
+              </div>
+              <div class="dose-section">
+                <div class="dose-label">Maintenance Dose</div>
+                <div class="dose-detail">300 mg every 4 weeks</div>
+              </div>
+            </div>
+          </div>
+          <svg class="connector" width="100%" height="26" viewBox="0 0 178 26">
+            <line x1="89" y1="0" x2="89" y2="14" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="89,26 81,14 97,14" fill="#B85A4D"/>
+          </svg>
+          <div class="question-box-sm" style="font-size: 12px; white-space: nowrap; width: auto;">
+            <strong>Dispensed as:</strong><br>
+            1 &times; 300 mg/2 mL UnoReady Pen<br>
+            2 &times; 150 mg/mL SensoReady Pen<br>
+            2 &times; 150 mg/mL Prefilled Syringe
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Adults 18+ -->
+    <div class="branch-col">
+      <div class="branch-label">Adults (18+ Years)</div>
+
+      <svg class="connector" width="40" height="50" viewBox="0 0 40 50" style="display: block; margin: 0 auto;">
+        <line x1="20" y1="0" x2="20" y2="38" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="20,50 12,38 28,38" fill="#B85A4D"/>
+      </svg>
+
+      <div class="dose-card-wrapper" style="max-width: 480px;">
+        <div class="dose-card">
+          <div class="dose-section">
+            <div class="dose-label">Loading Dose</div>
+            <div class="dose-detail">300 mg at Weeks 0, 1, 2, 3, and 4</div>
+          </div>
+          <div class="dose-section">
+            <div class="dose-label">Maintenance Dose</div>
+            <div class="dose-detail">300 mg every 4 weeks</div>
+          </div>
+        </div>
+      </div>
+
+      <svg class="connector" width="40" height="26" viewBox="0 0 40 26" style="display: block; margin: 0 auto;">
+        <line x1="20" y1="0" x2="20" y2="14" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="20,26 12,14 28,14" fill="#B85A4D"/>
+      </svg>
+
+      <!-- Escalation note -->
+      <div class="escalation-note" style="max-width: 480px;">
+        <strong>If inadequate response:</strong><br>
+        Consider increasing to 300 mg every 2 weeks
+      </div>
+
+      <svg class="connector" width="40" height="26" viewBox="0 0 40 26" style="display: block; margin: 0 auto;">
+        <line x1="20" y1="0" x2="20" y2="14" stroke="#B85A4D" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="20,26 12,14 28,14" fill="#B85A4D"/>
+      </svg>
+
+      <div class="question-box-sm" style="font-size: 12px; white-space: nowrap; width: auto;">
+        <strong>Dispensed as:</strong><br>
+        1 &times; 300 mg/2 mL UnoReady Pen<br>
+        2 &times; 150 mg/mL SensoReady Pen<br>
+        2 &times; 150 mg/mL Prefilled Syringe
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Supply Note -->
+  <div class="supply-note">
+    <strong>UnoReady Pen:</strong> 300 mg/2 mL &nbsp;&bull;&nbsp;
+    <strong>SensoReady Pen:</strong> 150 mg/mL &nbsp;&bull;&nbsp;
+    <strong>Prefilled Syringe:</strong> 150 mg/mL or 75 mg/0.5 mL
+  </div>
+
+</div>
+
+</body>
+</html>

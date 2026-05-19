@@ -1,0 +1,67 @@
+{
+  "slug": "otezla-pso",
+  "drug": "Otezla",
+  "indication": "Plaque Psoriasis",
+  "indication_short": "PsO",
+  "vial_sizes": [
+    "20 mg tablet",
+    "30 mg tablet"
+  ],
+  "route": "oral",
+  "age_bands": [
+    {
+      "label": "Adults (patient quick reference)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": null,
+          "maintenance": {
+            "value": "30 mg",
+            "frequency": "twice daily",
+            "n_injections": 2,
+            "notes": "30 mg twice daily tablet."
+          }
+        }
+      ]
+    },
+    {
+      "label": "Pediatric (patient quick reference)",
+      "label_short": "Pediatric",
+      "weights": [
+        {
+          "label": "> 110 lbs",
+          "loading": null,
+          "maintenance": {
+            "value": "30 mg",
+            "frequency": "twice daily",
+            "n_injections": 2,
+            "notes": "30 mg twice daily tablet."
+          }
+        },
+        {
+          "label": "44–110 lbs",
+          "loading": null,
+          "maintenance": {
+            "value": "20 mg",
+            "frequency": "twice daily",
+            "n_injections": 2,
+            "notes": "20 mg twice daily tablet."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Take with or without food.",
+    "Swallow the tablet whole."
+  ],
+  "source": {
+    "file": "otezla_infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

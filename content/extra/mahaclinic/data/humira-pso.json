@@ -1,0 +1,48 @@
+{
+  "slug": "humira-pso",
+  "drug": "Humira",
+  "indication": "Plaque Psoriasis",
+  "indication_short": "PsO",
+  "vial_sizes": [
+    "40 mg / 0.4 mL",
+    "40 mg / 0.8 mL",
+    "80 mg / 0.8 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adults (18+ Years)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "80 mg",
+            "n_injections": 1,
+            "notes": "Day 1: 80 mg SC. Day 8 and Day 22: 40 mg SC."
+          },
+          "maintenance": {
+            "value": "40 mg",
+            "frequency": "every other week",
+            "n_injections": 1,
+            "notes": "Starting after the Day 22 loading dose."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Pen (Loading): HUMIRA Starter Pack (CF) 80 mg/0.8 mL & 40 mg/0.4 mL.",
+    "Syringe (Loading): HUMIRA (CF) 40 mg/0.4 mL OR HUMIRA 40 mg/0.8 mL.",
+    "Pen (Maintenance): PEN HUMIRA (CF) 40 mg/0.4 mL OR PEN HUMIRA 40 mg/0.8 mL.",
+    "Syringe (Maintenance): SYRINGE HUMIRA (CF) 40 mg/0.4 mL OR SYRINGE HUMIRA 40 mg/0.8 mL."
+  ],
+  "source": {
+    "file": "humira-psoriasis.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

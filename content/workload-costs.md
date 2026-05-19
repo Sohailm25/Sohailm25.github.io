@@ -18,6 +18,7 @@ Status: published
 ---
 
 Four inference workloads run through one API provider account with one model: support chat, document extraction, nightly eval runs, and an experimental coding agent. Same billing surface, same rate limits, same cost model. The monthly bill arrives. Finance divides total spend by total requests and reports an average cost per request.
+{: .has-dropcap}
 
 That average describes none of the four workloads accurately.
 

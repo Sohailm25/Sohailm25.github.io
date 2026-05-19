@@ -476,7 +476,12 @@ a:hover { color: var(--brown); text-decoration-color: var(--brown); }
 .longform-toc a.active { color: var(--ink); font-weight: 700; }
 
 .longform-content { max-width: 65ch; }
-.longform-content p.has-dropcap::first-letter {
+
+/* Drop cap: opt-in via `.has-dropcap` class on a paragraph inside any
+   .article-prose (short-form or long-form). Markdown authors apply it
+   via attr_list: append `{: .has-dropcap}` on a line directly after
+   the paragraph. */
+.article-prose p.has-dropcap::first-letter {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;

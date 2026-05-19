@@ -12,6 +12,7 @@ Status: published
 ## Part 0: The Cost Illusion
 
 I work at Together AI. Together is one of the providers named in the worked examples in this essay, alongside OpenAI, Anthropic, Google, Fireworks, Baseten, DeepInfra, Anyscale, Replicate, Modal, Lambda, RunPod, and CoreWeave. Read every Together-named price, performance number, and customer outcome with that affiliation in mind. The LCPR math is provider-neutral by construction; the choice of which providers appear in worked examples is not. Technical details have been generalized from production work; no proprietary information from any organization is disclosed.
+{: .has-dropcap}
 
 Speculative decoding speeds single-request latency. At production batch sizes, the speedup vanishes.
 

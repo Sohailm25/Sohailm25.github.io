@@ -20,6 +20,7 @@ The full framework is in *Production Inference Economics: A Field Guide*. Chapte
 ---
 
 A support team runs an answer-drafting workload. Roughly 1,000 tickets a day. Each ticket triggers RAG retrieval, an LLM generation pass, and a quality check. The system works. The margins are fine. Then someone opens the procurement spreadsheet.
+{: .has-dropcap}
 
 Route A (the current provider) charges $3.00 per million input tokens and $15.00 per million output tokens. Route B charges $1.80 per million input and $8.00 per million output. That is 40% cheaper on input and 47% cheaper on output. The spreadsheet says: switch to Route B, save roughly $4,200 per month.
 

@@ -18,6 +18,7 @@ Status: published
 ---
 
 The LCPR Calculator implements the loaded-cost framework from [The Denominator Problem]({filename}/denominator-problem.md) as a Python tool. Trace data, provider invoice, eval results, and contract terms go in. LCPR, margin, cache-break-even, and sensitivity surfaces come out.
+{: .has-dropcap}
 
 Open source. MIT licensed. Three worked examples with seed YAML you can reproduce.
 

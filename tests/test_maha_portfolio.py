@@ -222,3 +222,20 @@ def test_competencies_has_at_least_15_rows():
 def test_competencies_cites_aamc():
     comp = (OUTPUT / "maha" / "competencies" / "index.html").read_text()
     assert "AAMC" in comp
+
+
+# ── Static assets (CV PDF + screenshot) ─────────────────────────────
+
+def test_cv_pdf_ships():
+    assert (OUTPUT / "maha" / "cv.pdf").exists()
+
+def test_cv_pdf_is_real_pdf():
+    head = (OUTPUT / "maha" / "cv.pdf").read_bytes()[:8]
+    assert head.startswith(b"%PDF-"), "cv.pdf must be a valid PDF (magic bytes)"
+
+def test_screenshot_ships():
+    assert (OUTPUT / "maha" / "images" / "mahaclinic-screenshot.png").exists()
+
+def test_screenshot_is_png():
+    head = (OUTPUT / "maha" / "images" / "mahaclinic-screenshot.png").read_bytes()[:8]
+    assert head.startswith(b"\x89PNG"), "screenshot must be a valid PNG"

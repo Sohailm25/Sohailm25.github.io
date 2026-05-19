@@ -31,6 +31,7 @@ READERS = {"html": None}
 STATIC_PATHS = ["images", "extra", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
+    "extra/robots.txt": {"path": "robots.txt"},
 }
 # Map research and book directories to root-level paths
 import os

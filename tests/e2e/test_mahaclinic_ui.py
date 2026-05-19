@@ -76,3 +76,12 @@ def test_drug_page_has_noindex(site_server, page):
     page.goto(f"{site_server}/mahaclinic/dupixent-ad/")
     robots = page.locator('meta[name="robots"]').get_attribute("content")
     assert "noindex" in robots
+
+def test_about_page_renders(site_server, page):
+    page.goto(f"{site_server}/mahaclinic/about/")
+    page.wait_for_selector(".maha-about-disclaimer")
+    text = page.inner_text("body")
+    assert "Reference only" in text
+    assert "Maintainer" in text or "Report" in text
+    rows = page.locator(".maha-about-drug-row")
+    assert rows.count() >= 20

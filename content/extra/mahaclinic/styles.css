@@ -449,3 +449,59 @@ html, body {
   min-height: 44px;
   line-height: 24px;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   About page (Task 12)
+   ════════════════════════════════════════════════════════════════════ */
+
+.maha-about-intro {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  margin-bottom: 28px;
+  max-width: 56ch;
+}
+
+.maha-about-disclaimer {
+  border: 2px solid var(--brown);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-bottom: 36px;
+  background: rgba(92, 42, 30, 0.04);
+}
+
+.maha-about-drug-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 24px;
+  margin-bottom: 32px;
+}
+
+.maha-about-drug-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 0.5px dotted var(--brown);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.maha-about-drug-row .nm { letter-spacing: 0.5px; }
+.maha-about-drug-row .ind { color: var(--brown); font-size: 9px; letter-spacing: 1.3px; }
+.maha-about-drug-row .dot {
+  display: inline-block;
+  width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.maha-about-drug-row .dot--amber { background: #d4a747; }
+.maha-about-drug-row .dot--green { background: var(--ink); }
+
+.maha-about-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--brown);
+  margin-bottom: 6px;
+}

@@ -304,6 +304,27 @@ async function renderDrug() {
   }
 }
 
+async function renderAbout() {
+  const [index, config] = await Promise.all([loadIndex(), loadConfig()]);
+  const list = document.getElementById("maha-about-drug-list");
+  list.innerHTML = "";
+  index.sort((a, b) => a.drug.localeCompare(b.drug)).forEach(entry => {
+    const row = document.createElement("a");
+    row.className = "maha-about-drug-row";
+    row.href = "../" + entry.slug + "/";
+    const dotClass = entry.reviewed ? "dot--green" : "dot--amber";
+    row.innerHTML = `
+      <span><span class="dot ${dotClass}"></span><span class="nm">${entry.drug}</span></span>
+      <span class="ind">${entry.indication_short}</span>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById("maha-about-maintainer").textContent =
+    "Report errors to: " + config.maintainer_email;
+  document.getElementById("maha-about-version").textContent =
+    `Version ${config.version} · last built ${config.last_built}`;
+}
+
 // ── Service worker registration ──────────────────────────────────────
 
 if ("serviceWorker" in navigator) {
@@ -316,6 +337,8 @@ if ("serviceWorker" in navigator) {
 const _path = location.pathname;
 if (_path === BASE || _path === BASE + "index.html" || _path === BASE.slice(0, -1)) {
   renderHome().catch(err => console.error("home render failed", err));
+} else if (_path.endsWith("/about/") || _path.endsWith("/about/index.html")) {
+  renderAbout().catch(err => console.error("about render failed", err));
 } else if (slugFromPath()) {
   renderDrug();
 }

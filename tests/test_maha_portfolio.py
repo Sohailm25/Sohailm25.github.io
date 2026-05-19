@@ -239,3 +239,25 @@ def test_screenshot_ships():
 def test_screenshot_is_png():
     head = (OUTPUT / "maha" / "images" / "mahaclinic-screenshot.png").read_bytes()[:8]
     assert head.startswith(b"\x89PNG"), "screenshot must be a valid PNG"
+
+
+# ── Mahaclinic palette sync ─────────────────────────────────────────
+
+def test_mahaclinic_imports_maha_tokens():
+    css = (REPO / "content" / "extra" / "mahaclinic" / "styles.css").read_text()
+    assert "@import url('../theme/css/maha-tokens.css')" in css, \
+        "mahaclinic styles.css must @import maha-tokens.css (not book-tokens.css)"
+
+def test_mahaclinic_index_theme_color_bordeaux():
+    src = (REPO / "content" / "extra" / "mahaclinic" / "index.html").read_text()
+    assert '<meta name="theme-color" content="#6B1F2B">' in src
+
+def test_mahaclinic_about_theme_color_bordeaux():
+    src = (REPO / "content" / "extra" / "mahaclinic" / "about" / "index.html").read_text()
+    assert '<meta name="theme-color" content="#6B1F2B">' in src
+
+def test_mahaclinic_drug_theme_color_bordeaux():
+    src = (REPO / "content" / "extra" / "mahaclinic" / "drug.html").read_text()
+    # Allow multiple occurrences — all must be bordeaux
+    assert '<meta name="theme-color" content="#3A4F2A">' not in src
+    assert '<meta name="theme-color" content="#6B1F2B">' in src

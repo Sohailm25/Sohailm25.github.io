@@ -1,7 +1,7 @@
 /* ABOUTME: Mahaclinic-specific component styles; imports book design tokens.
    ABOUTME: All classes prefixed .maha- to avoid any collision with book/page CSS. */
 
-@import url('../theme/css/book-tokens.css');
+@import url('../theme/css/maha-tokens.css');
 
 /* ── Reset ─────────────────────────────────────────────────────────── */
 

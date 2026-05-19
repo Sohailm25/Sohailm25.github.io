@@ -1,0 +1,58 @@
+{
+  "slug": "adbry-ad-adult",
+  "drug": "Adbry",
+  "indication": "Atopic Dermatitis (Adult)",
+  "indication_short": "AD Adult",
+  "vial_sizes": [
+    "150 mg / mL",
+    "300 mg / 2 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Adults (18+ Years)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "autoinjector",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg autoinjectors (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every other week",
+            "n_injections": 1,
+            "notes": "1 × 300 mg autoinjector every other week. At 16 weeks, if patient weighs < 220 lb AND skin is clear or almost clear, consider reducing to 1 × 300 mg autoinjector every four weeks."
+          }
+        },
+        {
+          "label": "syringe",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 4,
+            "notes": "4 × 150 mg syringes (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every other week",
+            "n_injections": 2,
+            "notes": "2 × 150 mg syringes (300 mg) every other week. At 16 weeks, if patient weighs < 220 lb AND skin is clear or almost clear, consider reducing to 2 × 150 mg syringes every four weeks."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Source: ADBRY (18+ Years) — Dosing pathway by patient device preference."
+  ],
+  "source": {
+    "file": "adbry-adult-print.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

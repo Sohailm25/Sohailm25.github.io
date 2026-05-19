@@ -1,0 +1,40 @@
+{
+  "slug": "adbry-ad-peds",
+  "drug": "Adbry",
+  "indication": "Atopic Dermatitis (Pediatric)",
+  "indication_short": "AD Peds",
+  "vial_sizes": [
+    "150 mg / mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "12-17 Years",
+      "label_short": "Pediatric",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "300 mg",
+            "n_injections": 2,
+            "notes": "2 × 150 mg syringes (300 mg)"
+          },
+          "maintenance": {
+            "value": "150 mg",
+            "frequency": "every other week",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [],
+  "source": {
+    "file": "adbry-peds-infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

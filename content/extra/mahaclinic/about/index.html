@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#3A4F2A">
+  <title>About · Dermatology Dosing</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="maha-page maha-about-page">
+  <header>
+    <div class="maha-broadsheet-rule"></div>
+    <a href="../" class="maha-crumb">← Search</a>
+    <p class="maha-eyebrow">MAHA CLINIC · ABOUT</p>
+    <h1 class="maha-title">About this tool.</h1>
+  </header>
+
+  <main class="maha-main">
+
+    <p class="maha-about-intro">
+      A search-first dermatology dosing reference for the practice's medical assistants.
+      Replaces the print-flowchart binder with an iPad-friendly, offline-capable web tool.
+    </p>
+
+    <div class="maha-about-disclaimer">
+      <p class="maha-disclaimer-title">Reference only.</p>
+      <p class="maha-disclaimer-body">
+        Every dose displayed here was auto-extracted from team-authored print flowcharts.
+        These extractions have not been clinically reviewed.
+        <strong>Always verify against the current FDA prescribing label before administering.</strong>
+        If you find an error, use the "Report an issue" link on the drug page.
+      </p>
+    </div>
+
+    <section>
+      <p class="maha-label">Drugs in this tool</p>
+      <div id="maha-about-drug-list" class="maha-about-drug-list"></div>
+    </section>
+
+    <section>
+      <p class="maha-label">Maintainer</p>
+      <p id="maha-about-maintainer" class="maha-about-meta"></p>
+      <p id="maha-about-version" class="maha-about-meta"></p>
+    </section>
+
+  </main>
+
+  <script src="../app.js" type="module"></script>
+</body>
+</html>

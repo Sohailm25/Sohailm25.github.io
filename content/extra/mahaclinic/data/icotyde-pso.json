@@ -1,0 +1,41 @@
+{
+  "slug": "icotyde-pso",
+  "drug": "Icotyde",
+  "indication": "Plaque Psoriasis",
+  "indication_short": "PsO",
+  "vial_sizes": [
+    "200 mg tablet"
+  ],
+  "route": "oral",
+  "age_bands": [
+    {
+      "label": "Adults (patient quick reference)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": null,
+          "maintenance": {
+            "value": "200 mg",
+            "frequency": "once daily",
+            "n_injections": 1,
+            "notes": "200 mg once daily tablet."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Take on an empty stomach with water upon waking up.",
+    "Wait 30 minutes before eating food.",
+    "Swallow the tablet whole. Do NOT split, crush, or chew."
+  ],
+  "source": {
+    "file": "icotyde_infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

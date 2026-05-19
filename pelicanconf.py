@@ -31,10 +31,11 @@ READERS = {"html": None}
 STATIC_PATHS = ["images", "extra", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
+    "extra/robots.txt": {"path": "robots.txt"},
 }
 # Map research and book directories to root-level paths
 import os
-for static_dir in ["content/extra/research", "content/extra/book"]:
+for static_dir in ["content/extra/research", "content/extra/book", "content/extra/mahaclinic"]:
     for root, dirs, files in os.walk(static_dir):
         for file in files:
             filepath = os.path.join(root, file)

@@ -1,0 +1,72 @@
+{
+  "slug": "dupixent-ad",
+  "drug": "Dupixent",
+  "indication": "Atopic Dermatitis",
+  "indication_short": "AD",
+  "vial_sizes": ["200 mg / 1.14 mL", "300 mg / 2 mL"],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Infants 6 mo–5 yr",
+      "label_short": "Infants",
+      "hint": "no loading dose",
+      "weights": [
+        {
+          "label": "11–<33 lbs",
+          "label_metric": "5–<15 kg",
+          "loading": null,
+          "maintenance": { "value": "200 mg", "frequency": "every 4 weeks", "n_injections": 1 }
+        },
+        {
+          "label": "33–<66 lbs",
+          "label_metric": "15–<30 kg",
+          "loading": null,
+          "maintenance": { "value": "300 mg", "frequency": "every 4 weeks", "n_injections": 1 }
+        }
+      ]
+    },
+    {
+      "label": "Children & Adolescents 6–17 yr",
+      "label_short": "Children",
+      "hint": "load + maintain",
+      "weights": [
+        {
+          "label": "33–<66 lbs",
+          "label_metric": "15–<30 kg",
+          "loading": { "value": "600 mg", "n_injections": 2, "notes": "2 × 300 mg" },
+          "maintenance": { "value": "300 mg", "frequency": "every 4 weeks", "n_injections": 1 }
+        },
+        {
+          "label": "66–<132 lbs",
+          "label_metric": "30–<60 kg",
+          "loading": { "value": "400 mg", "n_injections": 2, "notes": "2 × 200 mg" },
+          "maintenance": { "value": "200 mg", "frequency": "every 2 weeks", "n_injections": 1 }
+        },
+        {
+          "label": "≥132 lbs",
+          "label_metric": "≥60 kg",
+          "loading": { "value": "600 mg", "n_injections": 2, "notes": "2 × 300 mg" },
+          "maintenance": { "value": "300 mg", "frequency": "every 2 weeks", "n_injections": 1 }
+        }
+      ]
+    },
+    {
+      "label": "Adults 18+",
+      "label_short": "Adults",
+      "hint": "load + maintain",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": { "value": "600 mg", "n_injections": 2, "notes": "2 × 300 mg" },
+          "maintenance": { "value": "300 mg", "frequency": "every 2 weeks", "n_injections": 1 }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Patients 2+ years: autoinjector or syringe.",
+    "Patients 6 months to <2 years: syringes only."
+  ],
+  "source": { "file": "Dupixent AD.html", "extracted_on": "2026-05-19" },
+  "reviewed": { "by": null, "date": null }
+}

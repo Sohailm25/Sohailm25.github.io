@@ -1,0 +1,113 @@
+{
+  "slug": "dupixent-ad",
+  "drug": "Dupixent",
+  "indication": "Atopic Dermatitis",
+  "indication_short": "AD",
+  "vial_sizes": [
+    "200 mg / 1.14 mL",
+    "300 mg / 2 mL"
+  ],
+  "route": "subcutaneous",
+  "age_bands": [
+    {
+      "label": "Infants (6 Mo–5 Years)",
+      "label_short": "Infants",
+      "weights": [
+        {
+          "label": "11 to <33 lbs",
+          "loading": null,
+          "maintenance": {
+            "value": "200 mg",
+            "frequency": "every 4 weeks",
+            "n_injections": 1
+          }
+        },
+        {
+          "label": "33 to <66 lbs",
+          "loading": null,
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 4 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    },
+    {
+      "label": "Children & Adolescents (6–17 Years)",
+      "label_short": "Children",
+      "weights": [
+        {
+          "label": "33 to <66 lbs",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 4 weeks",
+            "n_injections": 1
+          }
+        },
+        {
+          "label": "66 to <132 lbs",
+          "loading": {
+            "value": "400 mg",
+            "n_injections": 2,
+            "notes": "2 × 200 mg (400 mg)"
+          },
+          "maintenance": {
+            "value": "200 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        },
+        {
+          "label": "≥ 132 lbs",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    },
+    {
+      "label": "Adults (18+ Years)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "all weights",
+          "loading": {
+            "value": "600 mg",
+            "n_injections": 2,
+            "notes": "2 × 300 mg (600 mg)"
+          },
+          "maintenance": {
+            "value": "300 mg",
+            "frequency": "every 2 weeks",
+            "n_injections": 1
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Autoinjector or syringe can be prescribed for all patients 2+ years of age.",
+    "Patients 6+ months to less than 2 years can only be given syringes."
+  ],
+  "source": {
+    "file": "Dupixent AD.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "slug": "cibinqo-ad",
+  "drug": "Cibinqo",
+  "indication": "Atopic Dermatitis",
+  "indication_short": "AD",
+  "vial_sizes": [
+    "100 mg tablet",
+    "200 mg tablet"
+  ],
+  "route": "oral",
+  "age_bands": [
+    {
+      "label": "Adults (patient quick reference)",
+      "label_short": "Adults",
+      "weights": [
+        {
+          "label": "starting dose",
+          "loading": null,
+          "maintenance": {
+            "value": "100 mg",
+            "frequency": "once daily",
+            "n_injections": 1,
+            "notes": "100 mg once daily tablet."
+          }
+        },
+        {
+          "label": "escalated dose",
+          "loading": null,
+          "maintenance": {
+            "value": "200 mg",
+            "frequency": "once daily",
+            "n_injections": 1,
+            "notes": "200 mg once daily tablet."
+          }
+        }
+      ]
+    }
+  ],
+  "supply_notes": [
+    "Take with or without food.",
+    "Swallow the tablet whole. Do NOT split, crush, or chew."
+  ],
+  "source": {
+    "file": "cibinqo_infographic.html",
+    "extracted_on": "2026-05-19"
+  },
+  "reviewed": {
+    "by": null,
+    "date": null
+  }
+}

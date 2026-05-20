@@ -197,13 +197,61 @@ def test_home_record_strip_dropped_rows():
     assert "Biologic dosing flows shipped" not in home
     assert "Practice sites using the tool" not in home
 
+
+# ── V2 keyword pass (per research v2 brief §6) ──────────────────────
+
+def test_home_uses_longitudinal_keyword():
+    """V2 brief §2: 'longitudinal' is a high-signal phrase for 2025-2026 admissions."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "longitudinal" in home.lower()
+
+def test_home_uses_interprofessional_keyword():
+    """V2 brief §2."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "interprofessional" in home.lower()
+
+def test_home_uses_patient_centered_keyword():
+    """V2 brief §2 + §6F."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "patient-centered" in home.lower() or "patient centered" in home.lower()
+
+def test_home_lead_ma_mentions_training_others():
+    """V2 brief §4: surface the 'training other MAs' angle."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    # Should mention training in the Lead MA exp row
+    assert "trained" in home or "training" in home
+    assert "MAs" in home or "medical assistants" in home
+
+def test_about_uses_longitudinal_keyword():
+    about = (OUTPUT / "maha" / "about" / "index.html").read_text()
+    assert "longitudinal" in about.lower()
+
+def test_about_uses_interprofessional_keyword():
+    about = (OUTPUT / "maha" / "about" / "index.html").read_text()
+    assert "interprofessional" in about.lower()
+
+def test_competencies_teamwork_mentions_training():
+    """V2 brief §6E: Teamwork & Collaboration row should surface the training-MAs angle."""
+    comp = (OUTPUT / "maha" / "competencies" / "index.html").read_text()
+    # Find the Teamwork row and check it mentions training
+    assert "training ~10" in comp or "trained ~10" in comp or "training 10" in comp
+
+def test_case_study_has_patient_centered_intro():
+    """V2 brief §6D: prepend a patient-centered intro line."""
+    cs = (OUTPUT / "maha" / "mahaclinic" / "index.html").read_text()
+    assert "patient-centered" in cs.lower() or "patient centered" in cs.lower()
+
 def test_home_no_moss_color():
     home = (OUTPUT / "maha" / "index.html").read_text()
     assert "#3A4F2A" not in home.upper() and "#3a4f2a" not in home.lower()
 
 def test_home_no_inter_font():
     home = (OUTPUT / "maha" / "index.html").read_text()
-    assert "Inter" not in home
+    # Only block the Inter typeface — must NOT match "Interprofessional" etc.
+    assert re.search(r"font-family[^;]*['\"]Inter['\"]", home) is None, \
+        "Inter font referenced in home"
+    assert "'Inter'" not in home and '"Inter"' not in home, \
+        "Inter font referenced in home"
 
 def test_home_theme_color_bordeaux():
     home = (OUTPUT / "maha" / "index.html").read_text()
@@ -316,14 +364,19 @@ def test_no_moss_in_mahaclinic_styles():
         "mahaclinic styles.css must not reference moss after sync"
 
 def test_no_inter_font_in_maha():
-    """M3: no font-family: 'Inter' anywhere in maha CSS or HTML."""
+    """M3: no font-family: 'Inter' anywhere in maha CSS or HTML.
+    Must match only the Inter typeface, NOT substrings like 'Interprofessional'.
+    """
     targets = [
         REPO / "theme" / "static" / "css" / "maha-tokens.css",
         REPO / "theme" / "static" / "css" / "maha.css",
     ] + list((REPO / "content" / "extra" / "maha").rglob("*.html"))
     for f in targets:
         text = f.read_text(errors='ignore')
-        assert "Inter" not in text, f"'Inter' font referenced in {f}"
+        assert re.search(r"font-family[^;]*['\"]Inter['\"]", text) is None, \
+            f"Inter font referenced in {f}"
+        assert "'Inter'" not in text and '"Inter"' not in text, \
+            f"Inter font referenced in {f}"
 
 def test_no_public_gpa_or_mcat_score():
     """M11: GPA never mentioned; MCAT only as a verb ('studying MCAT'), never with a score."""

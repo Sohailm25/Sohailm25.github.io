@@ -563,3 +563,46 @@ a:hover { color: var(--brown); text-decoration-color: var(--brown); }
   .subscribe-banner { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
   .site-colophon { flex-direction: column; gap: var(--space-2); }
 }
+
+/* ── Lightbox modal (image zoom) ─────────────── */
+/* lightbox.js appends this modal to <body>. Without `display: none` the
+   empty <img> renders its alt text ("Enlarged view") on every page. */
+.lightbox-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.lightbox-modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lightbox-fade-in 0.2s ease;
+}
+.lightbox-content {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  border: 1px solid var(--ink-soft);
+  background: var(--paper);
+}
+.lightbox-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-5);
+  color: var(--paper);
+  font-size: 2rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  line-height: 1;
+  z-index: 10001;
+}
+.lightbox-close:hover { color: var(--brown-soft); }
+
+@keyframes lightbox-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

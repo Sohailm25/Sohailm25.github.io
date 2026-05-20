@@ -119,9 +119,14 @@ def test_home_has_doctype_and_lang():
     assert home.startswith("<!DOCTYPE html>")
     assert 'lang="en"' in home
 
-def test_home_title_is_clinician_builder():
+def test_home_title():
     home = (OUTPUT / "maha" / "index.html").read_text()
-    assert "<title>Maha Mohammad — clinician + builder</title>" in home
+    assert "<title>Maha Nadeem — Lead Medical Assistant</title>" in home
+
+def test_home_name_is_nadeem():
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "Maha Nadeem" in home
+    assert "Maha Mohammad" not in home
 
 def test_home_loads_both_stylesheets():
     home = (OUTPUT / "maha" / "index.html").read_text()
@@ -130,12 +135,13 @@ def test_home_loads_both_stylesheets():
 
 def test_home_hero_kicker():
     home = (OUTPUT / "maha" / "index.html").read_text()
-    assert "CLINICIAN · BUILDER · DALLAS, TX" in home
+    assert "LEAD MEDICAL ASSISTANT · DALLAS, TX" in home
 
-def test_home_hero_tagline():
+def test_home_hero_no_imposter_terms():
+    """User feedback: 'clinician' overclaims (MA is not a licensed clinician), 'builder' is removed."""
     home = (OUTPUT / "maha" / "index.html").read_text()
-    assert "Five years at the bedside" in home
-    assert "One tool my physicians actually use" in home
+    assert "CLINICIAN · BUILDER" not in home
+    assert "hero-deck" not in home, "tagline deck removed per user feedback"
 
 def test_home_hero_has_no_portrait_class():
     home = (OUTPUT / "maha" / "index.html").read_text()
@@ -144,13 +150,18 @@ def test_home_hero_has_no_portrait_class():
     assert hero_block, "must have a .hero section"
     assert "<img" not in hero_block.group(1), "v1 hero must not contain an <img>"
 
+def test_home_now_section_removed():
+    """User feedback: remove Now section entirely."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "NOW · Q2 2026" not in home
+    assert "now-list" not in home  # no now-list ul should render either
+
 def test_home_sections_in_order():
     home = (OUTPUT / "maha" / "index.html").read_text()
     sections = [
-        "CLINICIAN · BUILDER",
+        "LEAD MEDICAL ASSISTANT",   # hero kicker
         "ON THE RECORD",
         "FEATURED · 2026",
-        "NOW · Q2 2026",
         "EXPERIENCE",
         "AAMC PREMED COMPETENCIES",
         "SELECTED WORK",
@@ -163,6 +174,28 @@ def test_home_sections_in_order():
         assert pos > -1, f"section marker {s!r} not found"
         assert pos > last_pos, f"section {s!r} out of order"
         last_pos = pos
+
+def test_home_experience_supervisor_links():
+    """User feedback: credit supervising physicians with linked profiles."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "Dr. Darlene Gou" in home
+    assert "innovative-dermatology.com/physician/darlene-gou-md-faad" in home
+    assert "Dr. Khoshnood Ahmad" in home
+    assert "childrens.com/doctor-profile/khoshnood-ahmad" in home
+
+def test_home_record_strip_has_mas_trained():
+    """User feedback: add 'Medical assistants trained: 10' as a metric."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "Medical assistants trained" in home
+    assert ">10<" in home  # value cell
+
+def test_home_record_strip_dropped_rows():
+    """User feedback: drop 4 specific rows (years post-grad, encounters, flows, sites)."""
+    home = (OUTPUT / "maha" / "index.html").read_text()
+    assert "Years post-graduate clinical" not in home
+    assert "Patient encounters" not in home
+    assert "Biologic dosing flows shipped" not in home
+    assert "Practice sites using the tool" not in home
 
 def test_home_no_moss_color():
     home = (OUTPUT / "maha" / "index.html").read_text()

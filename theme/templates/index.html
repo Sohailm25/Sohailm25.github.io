@@ -17,7 +17,7 @@
     <p class="hero-bio">Forward deployed engineer at Together AI. Notes on inference economics, post-training, systems, and adjacent thoughts.</p>
     <div class="hero-actions">
       <a href="{{ SITEURL }}/pages/inference-economics/" class="site-btn">Inference Economics</a>
-      <a href="/inference-field-guide/" class="site-btn site-btn--soft">Read the Field Guide</a>
+      <a href="{{ SITEURL }}/book/" class="site-btn site-btn--soft">Read the Field Guide</a>
       <a href="mailto:sohailmo.ai@gmail.com" class="site-btn site-btn--soft">Email</a>
     </div>
   </div>
@@ -41,40 +41,17 @@
     <strong>Production Inference Economics</strong>
     <span>A field guide, calculator, and essay series for measuring AI systems by loaded cost per accepted result.</span>
   </a>
-  <a class="start-card" href="/inference-field-guide/">
+  <a class="start-card" href="{{ SITEURL }}/book/">
     <span class="start-card-kicker">Book</span>
     <strong>The Honest Field Guide to Production Inference</strong>
     <span>How to reason about provider choice, routing, retries, quality gates, serving, and migration economics.</span>
   </a>
-  <a class="start-card" href="https://inference-econ.streamlit.app/" target="_blank" rel="noopener">
+  <a class="start-card" href="{{ SITEURL }}/book/calculator/">
     <span class="start-card-kicker">Tool</span>
-    <strong>LCPR Calculator ↗</strong>
+    <strong>LCPR Calculator</strong>
     <span>Run the loaded-cost math on your own workload instead of trusting token-price theater.</span>
   </a>
 </div>
-
-{% set inference_slugs = ['goodput', 'denominator-problem', 'workload-costs', 'trace-autopsy'] %}
-{% set inference_articles = articles|selectattr('slug', 'in', inference_slugs)|list %}
-{% if inference_articles %}
-<div class="section-rule">
-  <span>Inference Economics</span>
-  <a href="{{ SITEURL }}/pages/inference-economics/">see all →</a>
-</div>
-<ul class="ruled-list">
-  {% for article in inference_articles %}
-  <li class="ruled-row">
-    <a href="{{ SITEURL }}/{{ article.url }}">
-      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
-      <div class="ruled-body">
-        <div class="ruled-title">{{ article.title }}</div>
-        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
-        <div class="ruled-meta">{{ article.category }}</div>
-      </div>
-    </a>
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
 
 {% set featured_articles = articles|selectattr('featured', 'defined')|selectattr('featured')|list %}
 {% if featured_articles %}
@@ -82,7 +59,7 @@
 <ul class="ruled-list">
   {% for article in featured_articles[:4] %}
   <li class="ruled-row">
-    <a href="{{ SITEURL }}/{{ article.url }}">
+    <a href="{% if article.slug == 'lcpr-calculator-v2' %}{{ SITEURL }}/book/calculator/{% else %}{{ SITEURL }}/{{ article.url }}{% endif %}">
       <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
       <div class="ruled-body">
         <div class="ruled-title">{{ article.title }}</div>

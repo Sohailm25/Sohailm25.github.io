@@ -1,15 +1,18 @@
 Title: About
 Slug: about
+Summary: Sohail Mohammad is a forward deployed engineer at Together AI working on inference optimization, post-training, and production AI systems.
 
 ![with maha]({static}/images/maha-sohail.jpg)
 
-i'm sohail. i'm a forward deployed engineer at together ai, working on inference optimization and post-training with enterprise customers.
+I'm Sohail Mohammad, a forward deployed engineer at Together AI. I work with enterprise customers on inference optimization, post-training, and production AI systems where cost, latency, reliability, and quality all interact.
 
-before this i built agent platforms for 1.5m+ employees at amazon, a rag system at jpmorgan chase that went from 0 to 10k+ users, genai in the drive-thru at wendy's, gpu stuff at jack henry, and ml systems at capgemini.
+Before Together, I built AI and ML systems across large enterprise environments: agent platforms for 1.5M+ employees at Amazon, a JPMorgan Chase RAG system that grew from 0 to 10k+ users, GenAI drive-thru systems at Wendy's, GPU infrastructure at Jack Henry, and ML systems at Capgemini.
 
-i love my wife. i love the gym. i love our cats.
+My writing focuses on the parts of AI deployment that pricing pages and benchmarks miss: retries, evals, quality gates, routing, cache behavior, human escalation, and loaded cost per accepted result.
 
-contributed to unsloth, mlx-lm, and some rlhf stuff.
+I also publish research notes and negative results around post-training, activation steering, interpretability, and model behavior. I've contributed to Unsloth, mlx-lm, and RLHF-related tooling.
+
+I love my wife. I love the gym. I love our cats.
 
 [github](https://github.com/sohailm25) · [linkedin](https://linkedin.com/in/sohail-mo) · [x](https://x.com/Sohailm25)
 

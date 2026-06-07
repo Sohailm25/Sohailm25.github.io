@@ -1,12 +1,19 @@
 AUTHOR = "Sohail Mohammad"
 SITENAME = "Sohail Mohammad"
 SITEURL = ""
+CANONICAL_SITEURL = "https://sohailmo.ai"
+SITEDESCRIPTION = (
+    "Sohail Mohammad is a forward deployed engineer at Together AI writing about "
+    "production inference, post-training, AI infrastructure, and loaded cost per accepted result."
+)
+DEFAULT_OG_IMAGE = f"{CANONICAL_SITEURL}/theme/images/hero-avatar.jpg"
 
 PATH = "content"
 TIMEZONE = "America/Chicago"
 DEFAULT_LANG = "en"
 
-FEED_ALL_ATOM = None
+FEED_ALL_ATOM = "feed.xml"
+FEED_ALL_RSS = None
 CATEGORY_FEED_ATOM = None
 TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
@@ -46,8 +53,10 @@ PAGE_URL = "pages/{slug}/"
 PAGE_SAVE_AS = "pages/{slug}/index.html"
 ARTICLE_URL = "{slug}/"
 ARTICLE_SAVE_AS = "{slug}/index.html"
-DIRECT_TEMPLATES = ("index", "archives")
+DIRECT_TEMPLATES = ("index", "archives", "sitemap", "llms")
 ARCHIVES_SAVE_AS = "writings/index.html"
+SITEMAP_SAVE_AS = "sitemap.xml"
+LLMS_SAVE_AS = "llms.txt"
 
 TAG_SAVE_AS = ""
 CATEGORY_SAVE_AS = ""

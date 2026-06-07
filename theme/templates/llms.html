@@ -1,0 +1,25 @@
+# Sohail Mohammad
+
+Sohail Mohammad is a forward deployed engineer at Together AI working on production inference, post-training, and AI infrastructure.
+
+## Core pages
+
+- Home: {{ CANONICAL_SITEURL }}/
+- About: {{ CANONICAL_SITEURL }}/pages/about/
+- Writings: {{ CANONICAL_SITEURL }}/writings/
+- Research: {{ CANONICAL_SITEURL }}/pages/research/
+- Inference Economics: {{ CANONICAL_SITEURL }}/pages/inference-economics/
+
+## Start here
+
+- The Honest Field Guide to Production Inference: {{ CANONICAL_SITEURL }}/inference-field-guide/
+- Goodput or It Didn't Happen: {{ CANONICAL_SITEURL }}/goodput/
+- The Denominator Problem: {{ CANONICAL_SITEURL }}/denominator-problem/
+- What Your Workload Actually Costs: {{ CANONICAL_SITEURL }}/workload-costs/
+- LCPR Calculator: https://inference-econ.streamlit.app/
+
+## Recent writing
+
+{% for article in articles[:20] -%}
+- {{ article.title }}: {{ CANONICAL_SITEURL }}/{{ article.url }}
+{% endfor %}

@@ -4,7 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
-  <meta name="description" content="{{ SITEDESCRIPTION|default('') }}">
+  <meta name="description" content="{% block meta_description %}{{ SITEDESCRIPTION }}{% endblock %}">
+  <link rel="canonical" href="{% block canonical_url %}{{ CANONICAL_SITEURL }}/{% endblock %}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ SITENAME }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ SITEDESCRIPTION }}{% endblock %}">
+  <meta property="og:url" content="{% block og_url %}{{ CANONICAL_SITEURL }}/{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ DEFAULT_OG_IMAGE }}{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}{{ SITENAME }}{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}{{ SITEDESCRIPTION }}{% endblock %}">
+  <meta name="twitter:image" content="{% block twitter_image %}{{ DEFAULT_OG_IMAGE }}{% endblock %}">
+  <link rel="alternate" type="application/atom+xml" title="{{ SITENAME }} feed" href="{{ CANONICAL_SITEURL }}/feed.xml">
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Sohail Mohammad",
+    "url": "{{ CANONICAL_SITEURL }}/",
+    "jobTitle": "Forward Deployed Engineer",
+    "worksFor": {"@type": "Organization", "name": "Together AI"},
+    "sameAs": [{% for name, url in SOCIAL if name != 'email' %}"{{ url }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+  }
+  </script>
+  {% endblock %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">

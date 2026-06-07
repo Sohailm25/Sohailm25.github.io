@@ -46,7 +46,8 @@ def fix_title_newlines(html: str) -> str:
     """Collapse \\n inside <title> and <h1>..<h6> tags to a single space."""
     def collapse(m: re.Match) -> str:
         tag_open, content, tag_close = m.group(1), m.group(2), m.group(3)
-        return f"{tag_open}{re.sub(r'\s*\n\s*', ' ', content)}{tag_close}"
+        collapsed = re.sub(r"\s*\n\s*", " ", content)
+        return f"{tag_open}{collapsed}{tag_close}"
 
     pattern = re.compile(
         r"(<(?:title|h[1-6])[^>]*>)(.*?)(</(?:title|h[1-6])>)",

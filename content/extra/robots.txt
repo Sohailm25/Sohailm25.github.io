@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: /mahaclinic/
+
+Sitemap: https://sohailmo.ai/sitemap.xml

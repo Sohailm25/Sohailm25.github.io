@@ -8,6 +8,6 @@ SITEURL = "https://sohailmo.ai"
 RELATIVE_URLS = False
 DELETE_OUTPUT_DIRECTORY = True
 
-# Feeds stay disabled in production too
-FEED_ALL_ATOM = None
+# Site discovery surfaces
+FEED_ALL_ATOM = "feed.xml"
 CATEGORY_FEED_ATOM = None

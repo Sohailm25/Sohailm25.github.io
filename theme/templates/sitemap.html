@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>{{ CANONICAL_SITEURL }}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>{{ CANONICAL_SITEURL }}/writings/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+{% for page in pages %}
+  <url>
+    <loc>{{ CANONICAL_SITEURL }}/{{ page.url }}</loc>
+    {% if page.modified %}<lastmod>{{ page.modified.strftime('%Y-%m-%d') }}</lastmod>{% endif %}
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+{% endfor %}
+{% for article in articles %}
+  <url>
+    <loc>{{ CANONICAL_SITEURL }}/{{ article.url }}</loc>
+    <lastmod>{{ article.modified.strftime('%Y-%m-%d') if article.modified else article.date.strftime('%Y-%m-%d') }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+{% endfor %}
+</urlset>

@@ -1,29 +1,87 @@
 {% extends "base.html" %}
 
+{% block title %}Sohail Mohammad - Production AI Infrastructure{% endblock %}
+{% block meta_description %}Forward deployed engineer at Together AI working on production inference, post-training, and AI infrastructure. Essays on latency tails, evals, routing, GPU utilization, and loaded cost per accepted result.{% endblock %}
+{% block og_title %}Sohail Mohammad - Production AI Infrastructure{% endblock %}
+{% block og_description %}Forward deployed engineer at Together AI writing about production inference, post-training, AI infrastructure, and loaded cost per accepted result.{% endblock %}
+{% block twitter_title %}Sohail Mohammad - Production AI Infrastructure{% endblock %}
+{% block twitter_description %}Forward deployed engineer at Together AI writing about production inference, post-training, AI infrastructure, and loaded cost per accepted result.{% endblock %}
 {% block nav_home %} class="active" aria-current="page"{% endblock %}
 {% block body_class %} class="home-page"{% endblock %}
 
 {% block content %}
-<section class="hero">
+<section class="hero hero--positioning">
   <div class="hero-content">
-    <p class="hero-kicker">hi, i'm</p>
-    <h1 class="hero-name">Sohail Mohammad</h1>
-    <p class="hero-bio">Tech, AI infrastructure, and adjacent thinking. Notes from a working engineer.</p>
+    <p class="hero-kicker">Sohail Mohammad</p>
+    <h1 class="hero-name">Production AI infrastructure, after the demo works.</h1>
+    <p class="hero-bio">Forward deployed engineer at Together AI working on production inference, post-training, and AI infrastructure.</p>
+    <p class="hero-detail">I write about the parts of AI deployment that show up after the demo works: latency tails, retries, evals, routing, GPU utilization, quality gates, and loaded cost per accepted result.</p>
     <div class="hero-actions">
-      <a href="mailto:sohailmo.ai@gmail.com" class="site-btn">Contact</a>
-      <a href="https://sohailmo.substack.com/subscribe" class="site-btn site-btn--soft" target="_blank" rel="noopener">Subscribe ↗</a>
+      <a href="{{ SITEURL }}/pages/inference-economics/" class="site-btn">Inference Economics</a>
+      <a href="/inference-field-guide/" class="site-btn site-btn--soft">Read the Field Guide</a>
+      <a href="mailto:sohailmo.ai@gmail.com" class="site-btn site-btn--soft">Email</a>
     </div>
   </div>
   <div class="hero-image">
-    <img src="{{ SITEURL }}/theme/images/hero-avatar.jpg" alt="">
+    <img src="{{ SITEURL }}/theme/images/hero-avatar.jpg" alt="" width="180" height="180" fetchpriority="high" decoding="async">
   </div>
 </section>
 
+<section class="proof-strip" aria-label="Selected proof points">
+  <div><strong>Together AI</strong><span>Inference optimization and post-training with enterprise customers</span></div>
+  <div><strong>Amazon</strong><span>Agent platforms for 1.5M+ employees</span></div>
+  <div><strong>JPMorgan Chase</strong><span>RAG system from 0 to 10k+ users</span></div>
+  <div><strong>Wendy's</strong><span>GenAI drive-thru systems</span></div>
+  <div><strong>Jack Henry</strong><span>GPU infrastructure</span></div>
+</section>
+
+<div class="section-rule"><span>Start Here</span></div>
+<div class="start-grid">
+  <a class="start-card" href="{{ SITEURL }}/pages/inference-economics/">
+    <span class="start-card-kicker">Flagship</span>
+    <strong>Production Inference Economics</strong>
+    <span>A field guide, calculator, and essay series for measuring AI systems by loaded cost per accepted result.</span>
+  </a>
+  <a class="start-card" href="/inference-field-guide/">
+    <span class="start-card-kicker">Book</span>
+    <strong>The Honest Field Guide to Production Inference</strong>
+    <span>How to reason about provider choice, routing, retries, quality gates, serving, and migration economics.</span>
+  </a>
+  <a class="start-card" href="https://inference-econ.streamlit.app/" target="_blank" rel="noopener">
+    <span class="start-card-kicker">Tool</span>
+    <strong>LCPR Calculator ↗</strong>
+    <span>Run the loaded-cost math on your own workload instead of trusting token-price theater.</span>
+  </a>
+</div>
+
+{% set inference_slugs = ['goodput', 'denominator-problem', 'workload-costs', 'trace-autopsy'] %}
+{% set inference_articles = articles|selectattr('slug', 'in', inference_slugs)|list %}
+{% if inference_articles %}
+<div class="section-rule">
+  <span>Inference Economics</span>
+  <a href="{{ SITEURL }}/pages/inference-economics/">see all →</a>
+</div>
+<ul class="ruled-list">
+  {% for article in inference_articles %}
+  <li class="ruled-row">
+    <a href="{{ SITEURL }}/{{ article.url }}">
+      <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>
+      <div class="ruled-body">
+        <div class="ruled-title">{{ article.title }}</div>
+        <div class="ruled-excerpt">{{ article.summary|striptags|truncate(180) }}</div>
+        <div class="ruled-meta">{{ article.category }}</div>
+      </div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 {% set featured_articles = articles|selectattr('featured', 'defined')|selectattr('featured')|list %}
 {% if featured_articles %}
-<div class="section-rule"><span>Featured</span></div>
+<div class="section-rule"><span>Selected Work</span></div>
 <ul class="ruled-list">
-  {% for article in featured_articles %}
+  {% for article in featured_articles[:4] %}
   <li class="ruled-row">
     <a href="{{ SITEURL }}/{{ article.url }}">
       <span class="ruled-date">{{ article.date.strftime('%Y-%m-%d') }}</span>

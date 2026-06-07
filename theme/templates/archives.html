@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %}Writings - {{ SITENAME }}{% endblock %}
+{% block meta_description %}Essays, research notes, case studies, and field notes from Sohail Mohammad on production AI infrastructure, inference economics, post-training, and adjacent thinking.{% endblock %}
+{% block canonical_url %}{{ CANONICAL_SITEURL }}/writings/{% endblock %}
+{% block og_title %}Writings - {{ SITENAME }}{% endblock %}
+{% block og_description %}Essays, research notes, case studies, and field notes from Sohail Mohammad on production AI infrastructure and inference economics.{% endblock %}
+{% block og_url %}{{ CANONICAL_SITEURL }}/writings/{% endblock %}
+{% block twitter_title %}Writings - {{ SITENAME }}{% endblock %}
+{% block twitter_description %}Essays, research notes, case studies, and field notes from Sohail Mohammad on production AI infrastructure and inference economics.{% endblock %}
 {% block nav_writings %} class="active" aria-current="page"{% endblock %}
 
 {% block content %}
@@ -17,14 +24,14 @@
   <a href="https://sohailmo.substack.com/subscribe" class="site-btn" target="_blank" rel="noopener">Subscribe ↗</a>
 </div>
 
-<div class="section-rule"><span>All Writings</span></div>
+<div class="section-rule"><h1>All Writings</h1></div>
 
-<div class="category-chips">
-  <button class="category-chip active" data-category="all" onclick="filterCategory('all')">All</button>
-  <button class="category-chip" data-category="Case Studies" onclick="filterCategory('Case Studies')">Case Studies</button>
-  <button class="category-chip" data-category="Notes &amp; Projects" onclick="filterCategory('Notes &amp; Projects')">Notes &amp; Projects</button>
-  <button class="category-chip" data-category="Thoughts" onclick="filterCategory('Thoughts')">Thoughts</button>
-  <button class="category-chip" data-category="Poems" onclick="filterCategory('Poems')">Poems</button>
+<div class="category-chips" aria-label="Filter writings by category">
+  <button class="category-chip active" data-category="all" aria-pressed="true" onclick="filterCategory('all')">All</button>
+  <button class="category-chip" data-category="Case Studies" aria-pressed="false" onclick="filterCategory('Case Studies')">Case Studies</button>
+  <button class="category-chip" data-category="Notes &amp; Projects" aria-pressed="false" onclick="filterCategory('Notes &amp; Projects')">Notes &amp; Projects</button>
+  <button class="category-chip" data-category="Thoughts" aria-pressed="false" onclick="filterCategory('Thoughts')">Thoughts</button>
+  <button class="category-chip" data-category="Poems" aria-pressed="false" onclick="filterCategory('Poems')">Poems</button>
 </div>
 
 <ul class="ruled-list" id="writings-list">
@@ -47,8 +54,11 @@
 
 <script>
 function filterCategory(category) {
-  document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-  document.querySelector(`[data-category="${category}"]`).classList.add('active');
+  document.querySelectorAll('.category-chip').forEach(c => {
+    const isActive = c.dataset.category === category;
+    c.classList.toggle('active', isActive);
+    c.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
   document.querySelectorAll('#writings-list .ruled-row').forEach(row => {
     row.style.display = (category === 'all' || row.dataset.category === category) ? '' : 'none';
   });

@@ -3,6 +3,7 @@ Date: 2026-01-31 12:00
 Category: Case Studies
 Slug: rag-infrastructure-pgvector
 Summary: Patterns and tradeoffs from building RAG infrastructure in regulated environments.
+Featured: true
 
 **Disclaimer:** This post reflects general patterns and lessons learned from building enterprise RAG systems. Technical details have been generalized, and no proprietary information from any specific organization is disclosed.
 

@@ -3,7 +3,6 @@ Date: 2026-04-15
 Category: Writings
 Slug: denominator-problem
 Summary: The most common mistake in inference economics is dividing by the wrong number. LCPR (loaded cost per accepted result) reveals a 12x gap between naive token cost and actual production cost.
-Featured: true
 Template: longform_article
 Status: published
 

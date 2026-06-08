@@ -158,6 +158,19 @@ a:hover { color: var(--brown); text-decoration-color: var(--brown); }
   line-height: 1.6;
 }
 .hero-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.hero-social {
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+.hero-social a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
 .hero--positioning .hero-name { max-width: 16ch; }
 
 .proof-strip {

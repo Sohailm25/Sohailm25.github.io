@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Workload labels make the queue schedulable</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,600;6..72,700&display=swap" rel="stylesheet">
+<style>
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#111416}.deck-viewport{position:fixed;inset:0;overflow:hidden;background:#111416}.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:#f4f0e6}.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:#f4f0e6}.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1}img,video,canvas,svg{max-width:100%;max-height:100%}@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important}}
+:root{--paper:#f4f0e6;--ink:#151719;--muted:#756d61;--line:rgba(21,23,25,.22);--faint:rgba(21,23,25,.08);--accent:#8b432c;--blue:#315d70;--green:#596b49;--gold:#8a6b2f}
+*{box-sizing:border-box}body{font-family:"IBM Plex Mono",ui-monospace,monospace}.slide{color:var(--ink);background:radial-gradient(circle at 8% 12%,rgba(139,67,44,.12),transparent 25%),radial-gradient(circle at 92% 86%,rgba(49,93,112,.11),transparent 29%),linear-gradient(180deg,#f8f3e9 0%,#eee7d7 100%)}.slide:before{content:"";position:absolute;inset:46px;border:1px solid rgba(21,23,25,.17);pointer-events:none}.slide:after{content:"";position:absolute;inset:0;opacity:.18;background-image:linear-gradient(rgba(21,23,25,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(21,23,25,.035) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,transparent 0%,black 18%,black 86%,transparent 100%);pointer-events:none}.eyebrow{position:absolute;left:96px;top:78px;font-size:23px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted);z-index:2}.brand{position:absolute;right:96px;bottom:72px;font-size:20px;color:var(--muted);z-index:2}.title{position:absolute;left:96px;top:140px;width:1120px;margin:0;font-family:"Newsreader",Georgia,serif;font-weight:700;font-size:76px;line-height:.96;letter-spacing:-.035em;z-index:2}.subtitle{position:absolute;left:100px;top:300px;width:1060px;margin:0;font-size:27px;line-height:1.42;color:#3b3933;z-index:2}.diagram{position:absolute;left:96px;right:96px;top:420px;height:500px;z-index:2}.panel{position:absolute;top:0;height:500px;border:1.5px solid var(--line);background:rgba(255,255,255,.43);box-shadow:0 22px 52px rgba(52,43,30,.08)}.raw{left:0;width:455px}.labelled{left:610px;width:520px}.scheduler{right:0;width:545px}.step{position:absolute;left:28px;top:24px;display:flex;align-items:center;gap:13px}.num{display:grid;place-items:center;width:34px;height:34px;border:1.5px solid var(--line);border-radius:50%;font-size:17px;font-weight:700;color:var(--muted)}.step-title{font-size:22px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.note{position:absolute;left:28px;right:28px;bottom:26px;font-size:18px;line-height:1.32;color:#4e4a43}.tokens{position:absolute;left:54px;right:54px;top:130px}.token-row{height:44px;margin-bottom:18px;border:1px solid rgba(21,23,25,.18);background:repeating-linear-gradient(90deg,rgba(21,23,25,.08) 0 15px,rgba(21,23,25,.02) 15px 32px);position:relative}.token-row:after{content:"tokens only";position:absolute;right:12px;top:10px;font-size:16px;color:rgba(21,23,25,.36)}.jar{position:absolute;left:72px;right:72px;bottom:110px;height:68px;border:1.5px solid rgba(139,67,44,.32);border-top:none;border-radius:0 0 34px 34px;background:rgba(139,67,44,.08);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;letter-spacing:.02em;color:var(--accent)}.arrow{position:absolute;top:222px;height:2px;background:rgba(21,23,25,.34)}.arrow:after{content:"";position:absolute;right:-2px;top:-7px;width:14px;height:14px;border-top:2px solid rgba(21,23,25,.38);border-right:2px solid rgba(21,23,25,.38);transform:rotate(45deg)}.arrow.one{left:485px;width:92px}.arrow.two{left:1162px;width:88px}.arrow-label{display:none}.labelled .note,.scheduler .note{display:none}.work-items{position:absolute;left:40px;right:40px;top:105px}.work{position:relative;height:74px;margin-bottom:17px;border:1.5px solid rgba(21,23,25,.18);background:rgba(244,240,230,.78);display:grid;grid-template-columns:160px 1fr;align-items:center;padding:0 18px;column-gap:16px}.work strong{font-family:"Newsreader",Georgia,serif;font-size:30px;line-height:.96;letter-spacing:-.03em}.tag{display:inline-flex;align-items:center;justify-content:center;height:34px;border-radius:18px;border:1.5px solid currentColor;font-size:16px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.tag.blue{color:var(--blue);background:rgba(49,93,112,.08)}.tag.green{color:var(--green);background:rgba(89,107,73,.08)}.tag.gold{color:var(--gold);background:rgba(138,107,47,.08)}.tag.red{color:var(--accent);background:rgba(139,67,44,.08)}.routes{position:absolute;left:42px;right:42px;top:116px}.route{height:86px;margin-bottom:22px;display:grid;grid-template-columns:62px 1fr;align-items:center;border-left:7px solid currentColor;background:rgba(244,240,230,.72);box-shadow:inset 0 0 0 1px rgba(21,23,25,.13)}.route .icon{margin-left:18px;width:28px;height:28px;border-radius:50%;border:1.5px solid currentColor;box-shadow:inset 0 0 0 8px rgba(255,255,255,.55);background:currentColor}.route strong{font-family:"Newsreader",Georgia,serif;font-size:36px;line-height:1;letter-spacing:-.025em}.route span{display:block;margin-top:6px;font-size:17px;color:#504b43}.blue{color:var(--blue)}.green{color:var(--green)}.gold{color:var(--gold)}.red{color:var(--accent)}.caption{position:absolute;left:96px;bottom:68px;margin:0;font-family:"Newsreader",Georgia,serif;font-size:46px;font-weight:700;letter-spacing:-.035em;z-index:2}.caption em{font-style:normal;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="deck-viewport"><main class="deck-stage" id="stage"><section class="slide active">
+  <div class="eyebrow">Inference control plane</div>
+  <h1 class="title">A queue is not enough information.</h1>
+  <p class="subtitle">The scheduler can act only after each request carries workload intent: who is waiting, how flexible it is, and when the work loses value.</p>
+
+  <div class="diagram" aria-label="Diagram showing how raw queued tokens become schedulable after workload labels are added">
+    <div class="panel raw">
+      <div class="step"><div class="num">1</div><div class="step-title">Raw queue</div></div>
+      <div class="tokens">
+        <div class="token-row"></div>
+        <div class="token-row"></div>
+        <div class="token-row"></div>
+        <div class="token-row"></div>
+      </div>
+      <div class="jar">same-looking demand</div>
+      <div class="note">The system sees tokens, but not why they matter.</div>
+    </div>
+
+    <div class="arrow one"></div><div class="arrow-label one">attach<br>intent</div>
+
+    <div class="panel labelled">
+      <div class="step"><div class="num">2</div><div class="step-title">Workload labels</div></div>
+      <div class="work-items">
+        <div class="work"><strong>chat</strong><span class="tag blue">human waiting</span></div>
+        <div class="work"><strong>batch</strong><span class="tag green">deadline</span></div>
+        <div class="work"><strong>agent</strong><span class="tag gold">budget flexible</span></div>
+        <div class="work"><strong>eval</strong><span class="tag red">gatekeeper</span></div>
+      </div>
+      <div class="note">Labels turn anonymous tokens into schedulable work.</div>
+    </div>
+
+    <div class="arrow two"></div><div class="arrow-label two">choose<br>route</div>
+
+    <div class="panel scheduler">
+      <div class="step"><div class="num">3</div><div class="step-title">Scheduler actions</div></div>
+      <div class="routes">
+        <div class="route blue"><div class="icon"></div><div><strong>warm capacity</strong><span>serve now for interactive paths</span></div></div>
+        <div class="route green"><div class="icon"></div><div><strong>batch window</strong><span>delay when time has value</span></div></div>
+        <div class="route red"><div class="icon"></div><div><strong>stop or escalate</strong><span>avoid work that misses its gate</span></div></div>
+      </div>
+      <div class="note">Different labels produce different scheduling decisions.</div>
+    </div>
+  </div>
+
+  <p class="caption">Workload metadata is the <em>label</em>.</p>
+  <div class="brand">sohailmo.ai</div>
+</section></main></div>
+<script>function fitStage(){const s=document.getElementById('stage');const scale=Math.min(innerWidth/1920,innerHeight/1080);const x=(innerWidth-1920*scale)/2;const y=(innerHeight-1080*scale)/2;s.style.transform=`translate(${x}px, ${y}px) scale(${scale})`}addEventListener('resize',fitStage);fitStage()</script>
+</body>
+</html>

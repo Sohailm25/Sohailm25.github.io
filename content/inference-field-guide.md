@@ -3,7 +3,6 @@ Date: 2026-04-08
 Category: Writings
 Slug: inference-field-guide
 Summary: TCO frameworks, vendor evaluation, and architecture patterns for teams adopting open-model inference. Includes the LCPR calculator, migration gates, and a staged playbook from API to dedicated GPU.
-Featured: true
 Template: longform_article
 Status: published
 

@@ -3,7 +3,6 @@ Date: 2026-05-06
 Category: Writings
 Slug: workload-costs
 Summary: Not all inference is the same. Per-workload LCPR exposes the cross-subsidy that blended averages hide, with cost models for conversational, agentic, RAG, extraction, voice, and batch workloads.
-Featured: true
 Template: longform_article
 Status: published
 

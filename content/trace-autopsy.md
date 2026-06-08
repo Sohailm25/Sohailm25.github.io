@@ -3,7 +3,6 @@ Date: 2026-04-22
 Category: Writings
 Slug: trace-autopsy
 Summary: A repeatable diagnostic for going from raw trace events to loaded cost per accepted result. Twelve requests, four data sources, five cost mechanisms, and the reconciliation protocol.
-Featured: true
 Template: longform_article
 Status: published
 

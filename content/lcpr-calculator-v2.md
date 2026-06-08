@@ -3,7 +3,6 @@ Date: 2026-04-29
 Category: Writings
 Slug: lcpr-calculator-v2
 Summary: Open-source calculator for loaded cost per result. Three worked examples, cache break-even analysis, and KV memory sizing.
-Featured: true
 Template: longform_article
 Status: published
 

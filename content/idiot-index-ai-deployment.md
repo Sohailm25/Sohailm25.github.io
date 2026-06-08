@@ -4,6 +4,7 @@ Author: Sohail Mohammad
 Category: Essays
 Slug: idiot-index-ai-deployment
 Summary: The gap between what a model is supposed to do and what it actually does in production is enormous. Forward-deployed engineering exists to close it. Here's why i left Amazon for inference.
+Featured: true
 
 ---
 

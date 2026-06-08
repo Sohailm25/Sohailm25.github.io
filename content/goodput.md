@@ -3,7 +3,6 @@ Date: 2026-05-13
 Category: Writings
 Slug: goodput
 Summary: GPU utilization can be 78% while 30% of requests fail SLO constraints. The goodput frontier test replaces single-number benchmarks with decision-grade surfaces that measure accepted results, not raw throughput.
-Featured: true
 Template: longform_article
 Status: published
 

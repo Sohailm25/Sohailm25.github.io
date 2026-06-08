@@ -3,6 +3,7 @@ Date: 2026-06-08
 Category: Writings
 Slug: inference-flexibility-starts-in-the-api
 Summary: A response to Mario Souto's clay jar essay: energy orchestration only works if inference systems expose workload class, latency tolerance, and value per accepted result.
+Featured: true
 Template: longform_article
 
 

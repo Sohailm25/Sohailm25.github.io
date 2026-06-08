@@ -8,6 +8,10 @@ Template: longform_article
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 
+![Diagram showing how workload metadata turns queued tokens into scheduling decisions](/images/inference-flexibility-queue-label.png)
+
+*The scheduler cannot act on "queued tokens" alone. It needs labels that describe who is waiting, what can move, and when the work loses value.*
+
 Mario Souto's [The Clay Jar and the Data Center](https://mariohsouto.github.io/essays/the-clay-jar-and-the-data-center.html) gets the framing right: AI energy is not only a procurement problem. The missing layer is not only where the electrons come from. It is which inference work should consume them now, which work can wait, and which work should not run at all.
 {: .has-dropcap}
 
@@ -124,10 +128,6 @@ But storage only works if the operator knows what is stored.
 Seed grain, wet grain, tax grain, and dinner grain are not interchangeable. The jar creates optionality. The label determines whether using that optionality is useful or destructive.
 
 Inference has the same shape. The queue is the jar. Workload metadata is the label.
-
-![Diagram showing how workload metadata turns queued tokens into scheduling decisions](/images/inference-flexibility-queue-label.png)
-
-*The scheduler cannot act on "queued tokens" alone. It needs labels that describe who is waiting, what can move, and when the work loses value.*
 
 A scheduler that sees "a large queue of tokens" knows almost nothing. A scheduler that sees "batch documents due before morning reconciliation, background agent steps with no human waiting, real-time voice turns, and support escalations inside a declared p95 SLO" can make economic decisions.
 

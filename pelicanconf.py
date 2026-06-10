@@ -42,7 +42,7 @@ EXTRA_PATH_METADATA = {
 }
 # Map research and book directories to root-level paths
 import os
-for static_dir in ["content/extra/research", "content/extra/book", "content/extra/mahaclinic", "content/extra/maha"]:
+for static_dir in ["content/extra/research", "content/extra/book", "content/extra/mahaclinic", "content/extra/maha", "content/extra/together"]:
     for root, dirs, files in os.walk(static_dir):
         for file in files:
             filepath = os.path.join(root, file)

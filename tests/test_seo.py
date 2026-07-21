@@ -119,6 +119,35 @@ def test_llms_txt_covers_book_and_research(output):
     assert "streamlit.app" not in llms
 
 
+def test_static_tree_heads(output):
+    """Book and research static pages carry description/canonical/OG."""
+    paths = ["book"] + [f"book/{p}" for p in (
+        "opener", "part-0", "part-1", "part-2", "part-3", "part-4",
+        "part-5", "appendix", "calculator",
+    )] + [f"research/{p}" for p in (
+        "activation-steering", "escape-velocity", "ftle",
+        "latent-depth-routing", "prediction-market-trader", "rlhf-entropy",
+    )]
+    bad = []
+    for p in paths:
+        html = (output / p / "index.html").read_text()
+        url = f"{SITE}/{p}/"
+        for needle in (
+            '<meta name="description"',
+            f'<link rel="canonical" href="{url}">',
+            '<meta property="og:title"',
+            '<html lang="en"',
+        ):
+            if needle not in html:
+                bad.append((p, needle))
+    assert not bad, f"static pages missing head tags: {bad}"
+
+
+def test_calculator_title(output):
+    html = (output / "book" / "calculator" / "index.html").read_text()
+    assert "<title>LCPR Calculator" in html
+
+
 def _pelican_pages(output):
     """All Pelican-rendered pages (skip the raw static trees)."""
     static_roots = {"book", "extra", "mahaclinic", "maha", "together", "theme", "images", "papers"}

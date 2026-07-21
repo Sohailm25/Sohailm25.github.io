@@ -1,0 +1,17 @@
+{# Article structured data shared by article.html and longform_article.html. #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{% if article.category|string in ('Writings', 'Case Studies', 'Research', 'The Forge') %}TechArticle{% else %}BlogPosting{% endif %}",
+  "headline": {{ article.title|tojson }},
+  "description": {{ article.summary|striptags|tojson }},
+  "url": "{{ CANONICAL_SITEURL }}/{{ article.url }}",
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "{{ CANONICAL_SITEURL }}/{{ article.url }}"},
+  "image": "{% if article.image %}{{ CANONICAL_SITEURL }}{{ article.image }}{% else %}{{ DEFAULT_OG_IMAGE }}{% endif %}",
+  "datePublished": "{{ article.date.isoformat() }}",
+  "dateModified": "{{ (article.modified or article.date).isoformat() }}",
+  "inLanguage": "en",
+  "author": {"@type": "Person", "@id": "{{ CANONICAL_SITEURL }}/#person", "name": "Sohail Mohammad", "url": "{{ CANONICAL_SITEURL }}/"},
+  "publisher": {"@type": "Person", "@id": "{{ CANONICAL_SITEURL }}/#person", "name": "Sohail Mohammad", "url": "{{ CANONICAL_SITEURL }}/"}
+}
+</script>

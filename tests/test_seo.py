@@ -154,6 +154,40 @@ def test_jsonld_parses_everywhere(output):
     assert not bad, f"invalid JSON-LD: {bad}"
 
 
+def test_article_structured_data(output):
+    """Article pages carry Person + WebSite + TechArticle/BlogPosting JSON-LD."""
+    for slug in ("goodput", "inference-field-guide", "the-forge-issue-1", "for-its-own-sake"):
+        f = next((output / "writings").glob(f"{slug}/index.html"), None) or output / slug / "index.html"
+        if slug == "for-its-own-sake":
+            f = output / "writings" / "for-its-own-sake" / "index.html"
+        html = f.read_text()
+        blocks = [
+            json.loads(b)
+            for b in re.findall(
+                r'<script type="application/ld\+json">(.*?)</script>', html, re.S
+            )
+        ]
+        types = {b["@type"] for b in blocks}
+        assert "Person" in types, (slug, types)
+        assert "WebSite" in types, (slug, types)
+        article = next(b for b in blocks if b["@type"] in ("TechArticle", "BlogPosting"))
+        assert article["datePublished"], slug
+        assert article["dateModified"], slug
+        assert article["image"].startswith("https://"), slug
+        assert article["mainEntityOfPage"]["@id"].startswith(SITE), slug
+    # Poems are BlogPosting, technical categories are TechArticle.
+    poem = (output / "writings" / "for-its-own-sake" / "index.html").read_text()
+    assert '"@type": "BlogPosting"' in poem
+    tech = (output / "goodput" / "index.html").read_text()
+    assert '"@type": "TechArticle"' in tech
+
+
+def test_visible_machine_readable_timestamps(output):
+    html = (output / "goodput" / "index.html").read_text()
+    assert re.search(r'<time datetime="20\d\d-\d\d-\d\d[^"]*">', html)
+    assert '<meta property="article:published_time"' in html
+
+
 def test_meta_descriptions_clean(output):
     """No truncation ellipses, TOC pilcrows, or double-escaped entities."""
     bad = []

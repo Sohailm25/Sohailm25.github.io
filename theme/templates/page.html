@@ -9,6 +9,7 @@
 {% block twitter_title %}{{ page.title|e }} - {{ SITENAME }}{% endblock %}
 {% block twitter_description %}{{ page.summary|striptags|e if page.summary else SITEDESCRIPTION }}{% endblock %}
 {% block structured_data %}
+{{ super() }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

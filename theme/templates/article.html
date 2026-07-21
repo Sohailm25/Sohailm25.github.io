@@ -9,19 +9,17 @@
 {% block og_url %}{{ CANONICAL_SITEURL }}/{{ article.url }}{% endblock %}
 {% block twitter_title %}{{ article.title|e }} - {{ SITENAME }}{% endblock %}
 {% block twitter_description %}{{ article.summary|striptags|e }}{% endblock %}
+{% block og_image %}{% if article.image %}{{ CANONICAL_SITEURL }}{{ article.image }}{% else %}{{ DEFAULT_OG_IMAGE }}{% endif %}{% endblock %}
+{% block twitter_image %}{% if article.image %}{{ CANONICAL_SITEURL }}{{ article.image }}{% else %}{{ DEFAULT_OG_IMAGE }}{% endif %}{% endblock %}
+{% block twitter_card %}{% if article.image %}summary_large_image{% else %}summary{% endif %}{% endblock %}
+{% block extra_head %}
+  <meta property="article:published_time" content="{{ article.date.isoformat() }}">
+  {% if article.modified %}<meta property="article:modified_time" content="{{ article.modified.isoformat() }}">{% endif %}
+  <meta property="article:author" content="{{ CANONICAL_SITEURL }}/">
+{% endblock %}
 {% block structured_data %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": {{ article.title|tojson }},
-  "description": {{ article.summary|striptags|tojson }},
-  "url": "{{ CANONICAL_SITEURL }}/{{ article.url }}",
-  "datePublished": "{{ article.date.isoformat() }}",
-  "author": {"@type": "Person", "name": "Sohail Mohammad", "url": "{{ CANONICAL_SITEURL }}/"},
-  "publisher": {"@type": "Person", "name": "Sohail Mohammad", "url": "{{ CANONICAL_SITEURL }}/"}
-}
-</script>
+{{ super() }}
+{% include "_article_jsonld.html" %}
 {% endblock %}
 {% block body_class %} class="post-page"{% endblock %}
 
@@ -30,7 +28,7 @@
 <header class="article-header">
   {% if article.category %}<div class="article-kicker">{{ article.category }}</div>{% endif %}
   <h1 class="article-title">{{ article.title }}</h1>
-  <div class="article-date">{{ article.date.strftime('%Y-%m-%d') }}</div>
+  <div class="article-date"><time datetime="{{ article.date.isoformat() }}">{{ article.date.strftime('%Y-%m-%d') }}</time>{% if article.modified %} · Updated <time datetime="{{ article.modified.isoformat() }}">{{ article.modified.strftime('%Y-%m-%d') }}</time>{% endif %}</div>
 </header>
 <article class="article-prose">
   {{ article.content }}

@@ -28,11 +28,23 @@
   {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": "{{ CANONICAL_SITEURL }}/#person",
     "name": "Sohail Mohammad",
     "url": "{{ CANONICAL_SITEURL }}/",
     "jobTitle": "Forward Deployed Engineer",
     "worksFor": {"@type": "Organization", "name": "Together AI"},
     "sameAs": [{% for name, url in SOCIAL if name != 'email' %}"{{ url }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "{{ SITENAME }}",
+    "url": "{{ CANONICAL_SITEURL }}/",
+    "description": "{{ SITEDESCRIPTION }}",
+    "inLanguage": "en",
+    "publisher": {"@id": "{{ CANONICAL_SITEURL }}/#person"}
   }
   </script>
   {% endblock %}

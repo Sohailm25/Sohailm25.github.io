@@ -3,7 +3,7 @@ Date: 2026-02-20
 Slug: the-forge-issue-3
 Category: The Forge
 Tags: ai, research, architecture, robotics, security, agents, tooling
-Summary: ClawHub's malware marketplace exposes agent security gaps, Gemini 3.1 Pro doubles ARC-AGI-2 scores, Qwen 3.5 forks away from every other frontier architecture, AI drug discovery burns $15B learning that correlation isn't causation, and robotics quietly crosses the "actually works on cheap hardware" threshold.
+Summary: ClawHub's malware marketplace exposes agent security gaps, Gemini 3.1 Pro doubles ARC-AGI-2 scores, Qwen 3.5 forks from every other frontier architecture, AI drug discovery burns $15B on correlation-not-causation, and robotics crosses the cheap-hardware threshold.
 
 # The Forge #3 | February 20, 2026
 

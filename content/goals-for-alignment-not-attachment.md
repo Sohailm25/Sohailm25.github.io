@@ -2,7 +2,7 @@ Title: Goals for Alignment, Not Attachment
 Date: 2026-02-23 06:44
 Category: Thoughts
 Slug: goals-for-alignment-not-attachment
-Summary: goals are useful for alignment. attachment to timeline and route is what creates stress, rigidity, and worse decisions.
+Summary: Goals are useful for alignment. Attachment to timeline and route is what creates stress, rigidity, and worse decisions.
 
 most plans fail.
 

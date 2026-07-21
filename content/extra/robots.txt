@@ -1,4 +1,9 @@
+# Deliberate policy: all crawlers welcome, including AI search bots
+# (OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot)
+# and AI training bots (GPTBot, ClaudeBot, CCBot, Google-Extended).
+# Do not add blocking rules without revisiting that decision.
 User-agent: *
 Disallow: /mahaclinic/
+Disallow: /extra/
 
 Sitemap: https://sohailmo.ai/sitemap.xml

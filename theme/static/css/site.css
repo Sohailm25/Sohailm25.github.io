@@ -469,6 +469,20 @@ a:hover { color: var(--brown); text-decoration-color: var(--brown); }
   margin-top: var(--space-4);
   margin-bottom: var(--space-2);
 }
+.related-posts { margin-top: var(--space-8); max-width: 65ch; }
+.related-list { list-style: none; padding: 0; margin: var(--space-3) 0; }
+.related-list li { padding: var(--space-1) 0; border-bottom: 1px solid var(--ink-soft); }
+.related-list a { color: var(--ink); }
+.related-date { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-deck); margin-left: var(--space-2); }
+.related-all { font-size: 0.9rem; }
+.article-prose .tldr {
+  border: 1px solid var(--ink-soft);
+  border-left: 3px solid var(--ink);
+  background: rgba(58,79,42,0.04);
+  padding: var(--space-3) var(--space-4);
+  margin: 0 0 var(--space-5);
+}
+.article-prose .tldr p { margin-bottom: 0; }
 .article-prose blockquote {
   border-left: 3px solid var(--ink);
   background: rgba(58,79,42,0.04);

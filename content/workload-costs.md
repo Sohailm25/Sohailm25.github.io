@@ -5,6 +5,11 @@ Slug: workload-costs
 Summary: Not all inference is the same. Per-workload LCPR exposes the cross-subsidy that blended averages hide, with cost models for conversational, agentic, RAG, extraction, voice, and batch workloads.
 Template: longform_article
 Status: published
+Modified: 2026-07-21
+
+<div class="tldr" markdown="1">
+**TL;DR:** A blended average cost per request describes no workload accurately. In one four-month case, support chat ran 40% cheaper than the blended number suggested, the coding agent 3x more expensive, and an eval job consumed 12% of spend without ever justifying it. Per-workload LCPR across a minimum taxonomy (conversational, agentic, RAG, extraction, voice, batch) exposes the cross-subsidy; a workload class is only real if it changes routing, SLO, quality gate, billing surface, or owner.
+</div>
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 

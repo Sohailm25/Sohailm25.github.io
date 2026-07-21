@@ -5,6 +5,11 @@ Slug: trace-autopsy
 Summary: A repeatable diagnostic for going from raw trace events to loaded cost per accepted result. Twelve requests, four data sources, five cost mechanisms, and the reconciliation protocol.
 Template: longform_article
 Status: published
+Modified: 2026-07-21
+
+<div class="tldr" markdown="1">
+**TL;DR:** The Trace Autopsy is a repeatable protocol for reconciling raw request traces against the provider invoice to compute loaded cost per accepted result. In the worked example, eight planned customer tickets generated twelve requests; the four extra (retries, quality-gate regenerations, eval grader calls) are the gap between the pricing page and the P&L. Four data sources, five cost mechanisms, one auditable number.
+</div>
 
 *This article is a companion to Chapter 25 of *Production Inference Economics: A Field Guide*, which develops the trace-to-loaded-cost reconciliation method on a different anonymized workload (a regulated clinical-prior-auth deployment) and adds a regulatory observability extension. The synthetic walkthrough below is the simpler teaching version.*
 

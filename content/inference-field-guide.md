@@ -5,6 +5,11 @@ Slug: inference-field-guide
 Summary: TCO frameworks, vendor evaluation, and architecture patterns for teams adopting open-model inference. Includes the LCPR calculator, migration gates, and a staged playbook from API to dedicated GPU.
 Template: longform_article
 Status: published
+Modified: 2026-07-21
+
+<div class="tldr" markdown="1">
+**TL;DR:** Token pricing is a component, not a cost. Production systems also pay for retries, schema failures, quality-gate rejections, and engineering time, and the gap between advertised and true cost is AI deployment's idiot index. This guide develops LCPR (loaded cost per accepted result), migration gates, and a staged playbook from closed API to serverless open-weights to dedicated GPU. Serverless open-weights runs 5-10x cheaper at total cost for non-reasoning workloads, within 5-15% quality on most benchmarks; the ratio shifts with retry rate, output length, and engineering overhead.
+</div>
 
 ---
 

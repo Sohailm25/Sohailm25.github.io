@@ -154,6 +154,39 @@ def test_jsonld_parses_everywhere(output):
     assert not bad, f"invalid JSON-LD: {bad}"
 
 
+def test_meta_descriptions_clean(output):
+    """No truncation ellipses, TOC pilcrows, or double-escaped entities."""
+    bad = []
+    for f in _pelican_pages(output):
+        html = f.read_text()
+        if 'http-equiv="refresh"' in html:
+            continue
+        m = re.search(r'<meta name="description" content="(.*?)"', html)
+        if not m:
+            bad.append((str(f.relative_to(output)), "missing description"))
+            continue
+        desc = m.group(1)
+        for artifact in ("...", "…", "¶", "&amp;amp;"):
+            if artifact in desc:
+                bad.append((str(f.relative_to(output)), f"{artifact!r} in description"))
+    assert not bad, f"dirty descriptions: {bad}"
+
+
+def test_favicons_at_root(output):
+    for name in ("favicon.ico", "favicon-32.png", "apple-touch-icon.png", "icon-192.png"):
+        assert (output / name).exists(), name
+    home = (output / "index.html").read_text()
+    assert 'rel="icon"' in home
+    assert 'rel="apple-touch-icon"' in home
+
+
+def test_social_meta(output):
+    home = (output / "index.html").read_text()
+    assert '<meta property="og:site_name"' in home
+    assert '<meta name="twitter:site" content="@Sohailm25">' in home
+    assert '<meta property="og:locale" content="en_US">' in home
+
+
 def test_single_canonical_everywhere(output):
     bad = []
     for f in _pelican_pages(output):

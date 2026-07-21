@@ -5,7 +5,7 @@ Category: Research
 Tags: persona-circuits, glp, activation-steering, mechanistic-interpretability, llm-research
 Slug: research/experiments/glp-persona-circuits-current-state
 Authors: Sohail Mohammad
-Summary: Branch report on using Generative Latent Priors (GLP) for activation repair in persona steering: public-checkpoint transfer failed in this setting, matched checkpoints were more stable but still nonselective, and mixed clean+edited training is now the key unresolved test.
+Summary: Branch report on Generative Latent Priors (GLP) for activation repair in persona steering: public-checkpoint transfer failed, matched checkpoints were more stable but still nonselective, and mixed clean+edited training is the key unresolved test.
 Status: published
 
 ---

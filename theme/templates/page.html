@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}{{ page.title }} - {{ SITENAME }}{% endblock %}
-{% block meta_description %}{{ page.summary|striptags|truncate(160)|e if page.summary else SITEDESCRIPTION }}{% endblock %}
+{% block meta_description %}{{ page.summary|striptags|e if page.summary else SITEDESCRIPTION }}{% endblock %}
 {% block canonical_url %}{{ CANONICAL_SITEURL }}/{{ page.url }}{% endblock %}
 {% block og_title %}{{ page.title|e }} - {{ SITENAME }}{% endblock %}
-{% block og_description %}{{ page.summary|striptags|truncate(160)|e if page.summary else SITEDESCRIPTION }}{% endblock %}
+{% block og_description %}{{ page.summary|striptags|e if page.summary else SITEDESCRIPTION }}{% endblock %}
 {% block og_url %}{{ CANONICAL_SITEURL }}/{{ page.url }}{% endblock %}
 {% block twitter_title %}{{ page.title|e }} - {{ SITENAME }}{% endblock %}
-{% block twitter_description %}{{ page.summary|striptags|truncate(160)|e if page.summary else SITEDESCRIPTION }}{% endblock %}
+{% block twitter_description %}{{ page.summary|striptags|e if page.summary else SITEDESCRIPTION }}{% endblock %}
 {% block structured_data %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": {{ page.title|tojson }},
-  "description": {{ (page.summary|striptags|truncate(160) if page.summary else SITEDESCRIPTION)|tojson }},
+  "description": {{ (page.summary|striptags if page.summary else SITEDESCRIPTION)|tojson }},
   "url": "{{ CANONICAL_SITEURL }}/{{ page.url }}"
 }
 </script>

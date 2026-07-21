@@ -11,11 +11,18 @@
   <meta property="og:description" content="{% block og_description %}{{ SITEDESCRIPTION }}{% endblock %}">
   <meta property="og:url" content="{% block og_url %}{{ CANONICAL_SITEURL }}/{% endblock %}">
   <meta property="og:image" content="{% block og_image %}{{ DEFAULT_OG_IMAGE }}{% endblock %}">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:site_name" content="{{ SITENAME }}">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="{% block twitter_card %}summary{% endblock %}">
+  <meta name="twitter:site" content="@Sohailm25">
+  <meta name="twitter:creator" content="@Sohailm25">
   <meta name="twitter:title" content="{% block twitter_title %}{{ SITENAME }}{% endblock %}">
   <meta name="twitter:description" content="{% block twitter_description %}{{ SITEDESCRIPTION }}{% endblock %}">
   <meta name="twitter:image" content="{% block twitter_image %}{{ DEFAULT_OG_IMAGE }}{% endblock %}">
   <link rel="alternate" type="application/atom+xml" title="{{ SITENAME }} feed" href="{{ CANONICAL_SITEURL }}/feed.xml">
+  <link rel="icon" href="{{ SITEURL }}/favicon.ico" sizes="32x32">
+  <link rel="icon" href="{{ SITEURL }}/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="{{ SITEURL }}/apple-touch-icon.png">
   {% block structured_data %}
   <script type="application/ld+json">
   {

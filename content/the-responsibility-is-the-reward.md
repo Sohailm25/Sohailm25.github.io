@@ -2,7 +2,7 @@ Title: Why Responsibility Feels Like a Reward
 Date: 2026-02-24 07:06
 Category: Thoughts
 Slug: the-responsibility-is-the-reward
-Summary: responsibility is often its own reward, whether in crisis operations or self-funded interpretability research.
+Summary: Responsibility is often its own reward, whether in crisis operations or self-funded interpretability research.
 
 this reflection started after reading DHH’s essay, *“The responsibility is the reward.”*
 <https://world.hey.com/dhh/the-responsibility-is-the-reward-69e5b73f>

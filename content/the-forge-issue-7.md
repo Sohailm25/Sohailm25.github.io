@@ -3,7 +3,7 @@ Date: 2026-03-06
 Slug: the-forge-issue-7
 Category: The Forge
 Tags: ai, agents, infrastructure, reliability, tooling, research
-Summary: enterprise agent adoption is accelerating, but the real signal is operational friction: context quality, security controls, eval discipline, and infra choices are now deciding who ships durable systems.
+Summary: Enterprise agent adoption is accelerating, but the real signal is operational friction: context quality, security controls, eval discipline, and infra choices are now deciding who ships durable systems.
 
 # The Forge #7 | March 6, 2026
 

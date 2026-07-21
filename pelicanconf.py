@@ -41,6 +41,11 @@ EXTRA_PATH_METADATA = {
     # The research index moved from /pages/research/ to /research/; keep the
     # old URL alive as a redirect stub.
     "extra/redirects/pages-research.html": {"path": "pages/research/index.html"},
+    # Root-level favicons: browsers and crawlers probe /favicon.ico blindly.
+    "extra/favicon.ico": {"path": "favicon.ico"},
+    "extra/favicon-32.png": {"path": "favicon-32.png"},
+    "extra/apple-touch-icon.png": {"path": "apple-touch-icon.png"},
+    "extra/icon-192.png": {"path": "icon-192.png"},
 }
 # Map research and book directories to root-level paths
 import os

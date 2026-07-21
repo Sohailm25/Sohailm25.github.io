@@ -1,6 +1,7 @@
 Title: Inference Economics
 Slug: inference-economics
 Template: inference-economics
+Summary: The math, diagnostics, and tools for measuring what production LLM inference actually costs: loaded cost per accepted result (LCPR), not price per million tokens. Includes the Field Guide book and the LCPR calculator.
 
 Production inference costs more than your token bill suggests. This work develops the math, the diagnostics, and the tools to measure what inference actually costs --- loaded cost per accepted result, not price per million tokens.
 

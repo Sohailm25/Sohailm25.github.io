@@ -10,6 +10,9 @@ DEFAULT_OG_IMAGE = f"{CANONICAL_SITEURL}/theme/images/hero-avatar.jpg"
 
 PATH = "content"
 TIMEZONE = "America/Chicago"
+
+PLUGIN_PATHS = ["plugins"]
+PLUGINS = ["lazy_images"]
 DEFAULT_LANG = "en"
 
 FEED_ALL_ATOM = "feed.xml"

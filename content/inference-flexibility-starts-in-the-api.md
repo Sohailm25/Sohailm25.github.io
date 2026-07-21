@@ -5,7 +5,11 @@ Slug: inference-flexibility-starts-in-the-api
 Summary: A response to Mario Souto's clay jar essay: energy orchestration only works if inference systems expose workload class, latency tolerance, and value per accepted result.
 Featured: true
 Template: longform_article
+Modified: 2026-07-21
 
+<div class="tldr" markdown="1">
+**TL;DR:** Energy-aware orchestration of inference only works if the API exposes workload class, latency tolerance, and value per accepted result. A scheduler cannot infer from token counts whether a request is a human waiting on a support answer or a batch job due tomorrow morning, and that distinction changes the route. The economically meaningful unit is the accepted work unit, not the request. A response to Mario Souto's "The Clay Jar and the Data Center."
+</div>
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 

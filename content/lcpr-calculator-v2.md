@@ -5,6 +5,11 @@ Slug: lcpr-calculator-v2
 Summary: Open-source calculator for loaded cost per result. Three worked examples, cache break-even analysis, and KV memory sizing.
 Template: longform_article
 Status: published
+Modified: 2026-07-21
+
+<div class="tldr" markdown="1">
+**TL;DR:** The LCPR Calculator is an open-source (MIT) Python tool implementing the loaded-cost framework: trace data, provider invoice, eval results, and contract terms go in; LCPR, margin, cache break-even, and sensitivity surfaces come out. Seven computations, three reproducible worked examples. On quality-sensitive workloads, a 10-point drop in eval pass rate moves LCPR more than a 2x change in per-token pricing.
+</div>
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 

@@ -5,6 +5,11 @@ Slug: goodput
 Summary: GPU utilization can be 78% while 30% of requests fail SLO constraints. The goodput frontier test replaces single-number benchmarks with decision-grade surfaces that measure accepted results, not raw throughput.
 Template: longform_article
 Status: published
+Modified: 2026-07-21
+
+<div class="tldr" markdown="1">
+**TL;DR:** Utilization measures GPU busyness, not value: a GPU can run at 78% utilization while 30% of requests miss their latency SLO. Goodput counts only accepted results, requests that pass latency, quality, and reliability thresholds, and it is the number that belongs in the LCPR denominator, capacity plans, and benchmark comparisons. If you track one serving metric, make it accepted results per second, not tokens per second.
+</div>
 
 *This article is excerpted from Chapter 9 of *Production Inference Economics: A Field Guide*. The full chapter develops the productive-capacity and cache-local routing framework in more depth.*
 

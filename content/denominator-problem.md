@@ -5,6 +5,11 @@ Slug: denominator-problem
 Summary: The most common mistake in inference economics is dividing by the wrong number. LCPR (loaded cost per accepted result) reveals a 12x gap between naive token cost and actual production cost.
 Template: longform_article
 Status: published
+Modified: 2026-07-21
+
+<div class="tldr" markdown="1">
+**TL;DR:** A per-token spreadsheet answers "which provider charges less per token?" The question that matters is "which provider produces accepted work at a lower total cost?" LCPR (loaded cost per accepted result) divides all costs (tokens, retries, quality failures, eval graders, engineering time) by accepted results only. Across audited workloads the gap between naive token cost and loaded cost reached 12x, which is how the cheaper-per-token provider raises your bill.
+</div>
 
 *I work at Together AI. Technical details have been generalized from production experience; no proprietary information from any organization is disclosed.*
 

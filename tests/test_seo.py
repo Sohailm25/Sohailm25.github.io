@@ -188,6 +188,32 @@ def test_visible_machine_readable_timestamps(output):
     assert '<meta property="article:published_time"' in html
 
 
+FLAGSHIP_SLUGS = (
+    "inference-field-guide",
+    "goodput",
+    "trace-autopsy",
+    "workload-costs",
+    "denominator-problem",
+    "inference-flexibility-starts-in-the-api",
+    "lcpr-calculator-v2",
+)
+
+
+def test_flagship_essays_have_tldr(output):
+    for slug in FLAGSHIP_SLUGS:
+        html = (output / slug / "index.html").read_text()
+        assert '<div class="tldr">' in html, slug
+        assert "TL;DR:" in html, slug
+        # TL;DR is rendered markdown, not a raw markdown="1" attribute leak.
+        assert 'markdown="1"' not in html, slug
+
+
+def test_related_posts_on_articles(output):
+    html = (output / "goodput" / "index.html").read_text()
+    assert 'class="related-posts"' in html
+    assert "All writings" in html
+
+
 def test_meta_descriptions_clean(output):
     """No truncation ellipses, TOC pilcrows, or double-escaped entities."""
     bad = []

@@ -1,0 +1,17 @@
+{# Related-posts block shared by article.html and longform_article.html. #}
+{% set related = articles
+    |selectattr('category', 'equalto', article.category)
+    |rejectattr('slug', 'equalto', article.slug)
+    |sort(attribute='date', reverse=True)
+    |list %}
+{% if related %}
+<nav class="related-posts" aria-label="Related writing">
+  <div class="section-rule"><span>More in {{ article.category }}</span></div>
+  <ul class="related-list">
+    {% for rel in related[:3] %}
+    <li><a href="{{ SITEURL }}/{{ rel.url }}">{{ rel.title }}</a> <span class="related-date">{{ rel.date.strftime('%Y-%m-%d') }}</span></li>
+    {% endfor %}
+  </ul>
+  <p class="related-all"><a href="{{ SITEURL }}/writings/">All writings →</a></p>
+</nav>
+{% endif %}

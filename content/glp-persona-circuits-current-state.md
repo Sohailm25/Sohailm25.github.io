@@ -291,5 +291,5 @@ We tested GLP as a geometry disambiguation tool for persona steering. The public
 
 ## Project Links
 
-- Research hub: <https://sohailmo.ai/pages/research/>
+- Research hub: <https://sohailmo.ai/research/>
 - Code and artifacts: <https://github.com/Sohailm25/persona-circuits>

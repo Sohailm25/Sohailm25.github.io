@@ -1,6 +1,9 @@
 Title: Research
 Slug: research
 Template: page
+Url: research/
+Save_as: research/index.html
+Summary: Publications, experiments, pilots, and negative results from Sohail Mohammad's independent research on LLM interpretability, activation steering, and multi-turn conversation dynamics.
 
 A curated index of publications, experiments, and negative results.
 

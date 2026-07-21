@@ -30,7 +30,6 @@ SOCIAL = (
 
 CLOUDFLARE_ANALYTICS_TOKEN = ""
 
-DEFAULT_PAGINATION = 10
 RELATIVE_URLS = True
 
 READERS = {"html": None}
@@ -39,24 +38,45 @@ STATIC_PATHS = ["images", "extra", "papers"]
 EXTRA_PATH_METADATA = {
     "extra/CNAME": {"path": "CNAME"},
     "extra/robots.txt": {"path": "robots.txt"},
+    # The research index moved from /pages/research/ to /research/; keep the
+    # old URL alive as a redirect stub.
+    "extra/redirects/pages-research.html": {"path": "pages/research/index.html"},
 }
 # Map research and book directories to root-level paths
 import os
+
+# Standalone pages under book/ and research/ that belong in sitemap.xml.
+# Legacy paper-* paths are redirect stubs, not canonical pages.
+_SITEMAP_EXCLUDED_DIRS = {"research/paper-a-escape-velocity", "research/paper-b-ftle"}
+EXTRA_SITEMAP_URLS = []
 for static_dir in ["content/extra/research", "content/extra/book", "content/extra/mahaclinic", "content/extra/maha", "content/extra/together"]:
     for root, dirs, files in os.walk(static_dir):
         for file in files:
             filepath = os.path.join(root, file)
             relpath = os.path.relpath(filepath, "content/extra")
             EXTRA_PATH_METADATA[os.path.relpath(filepath, "content")] = {"path": relpath}
+            reldir = os.path.dirname(relpath)
+            if (
+                file == "index.html"
+                and reldir.split("/")[0] in ("book", "research")
+                and reldir not in _SITEMAP_EXCLUDED_DIRS
+            ):
+                EXTRA_SITEMAP_URLS.append(reldir + "/")
+EXTRA_SITEMAP_URLS.sort()
 
 PAGE_URL = "pages/{slug}/"
 PAGE_SAVE_AS = "pages/{slug}/index.html"
 ARTICLE_URL = "{slug}/"
 ARTICLE_SAVE_AS = "{slug}/index.html"
-DIRECT_TEMPLATES = ("index", "archives", "sitemap", "llms")
+DIRECT_TEMPLATES = ("index", "archives", "sitemap", "llms", "404", "theforge")
 ARCHIVES_SAVE_AS = "writings/index.html"
 SITEMAP_SAVE_AS = "sitemap.xml"
 LLMS_SAVE_AS = "llms.txt"
+THEFORGE_SAVE_AS = "the-forge/index.html"
+
+# The index template renders curated sections from the full article list;
+# pagination would only emit unlinked index2.html... duplicates of it.
+DEFAULT_PAGINATION = False
 
 TAG_SAVE_AS = ""
 CATEGORY_SAVE_AS = ""

@@ -271,5 +271,5 @@ That is not the cleanest possible narrative. It is the most accurate one from th
 
 ## Project Links
 
-- Research hub: <https://sohailmo.ai/pages/research/>
+- Research hub: <https://sohailmo.ai/research/>
 - Code and artifacts: <https://github.com/Sohailm25/persona-circuits>

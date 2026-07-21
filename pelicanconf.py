@@ -31,7 +31,7 @@ SOCIAL = (
     ("email", "mailto:sohailmo.ai@gmail.com"),
 )
 
-CLOUDFLARE_ANALYTICS_TOKEN = ""
+CLOUDFLARE_ANALYTICS_TOKEN = "2b79882684cd4f4aa938847b472c148e"
 
 RELATIVE_URLS = True
 

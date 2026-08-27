@@ -312,7 +312,7 @@
     <div class="gauges">
       <div class="gauge wide">
         <div class="lab">Raised toward the car</div>
-        <div class="big"><span class="mono" id="raised">$0</span> <small>of $150,000</small></div>
+        <div class="big"><span class="mono" id="raised">$0</span> <small>of $134,000</small></div>
         <div class="meter"><i id="meterfill" data-pct="21.5"></i></div>
       </div>
       <div class="gauge">
@@ -510,18 +510,18 @@
   };
 
   var SIZE = ["","S","M","L","XL"];
-  var GOAL = 150000;
+  var GOAL = 134000;
 
   var LOC = [
-    {no:1, n:"Hood",              size:4, photo:"front", fx:37, fy:41, split:false, tag:"The headliner. The LC's long clamshell hood, seen at every valet and stoplight.", units:[{price:30000,claimed:false}]},
-    {no:2, n:"Front lip",         size:2, photo:"front", fx:15, fy:74, split:false, tag:"Low, and first into frame at every crosswalk.", units:[{price:9000,claimed:false}]},
-    {no:3, n:"Windscreen banner", size:2, photo:"front", fx:53, fy:31, split:false, tag:"A slim strip across the top of the glass. Eyes-up branding.", units:[{price:8500,claimed:false}]},
-    {no:4, n:"Mirror caps",       size:1, photo:"front", fx:52, fy:48, split:false, tag:"A matched pair. Small, tasteful, always in the shot.", units:[{price:5500,claimed:false}]},
-    {no:5, n:"Door",              size:4, photo:"front", fx:60, fy:62, split:true,  tag:"Full side impact. Sold per side, so one brand can take just the driver or the passenger door.", units:[{side:"Driver",price:16000,claimed:false},{side:"Passenger",price:16000,claimed:false}]},
-    {no:6, n:"Rocker",            size:2, photo:"front", fx:44, fy:82, split:true,  tag:"The lower side stripe that runs the length of the car. One side at a time.", units:[{side:"Driver",price:5500,claimed:false},{side:"Passenger",price:5500,claimed:false}]},
-    {no:7, n:"Rear quarter",      size:3, photo:"rear",  fx:78, fy:44, split:true,  tag:"The rear arch, the last thing the car behind you reads. Sold per side.", units:[{side:"Driver",price:8500,claimed:false},{side:"Passenger",price:8500,claimed:false}]},
-    {no:8, n:"Decklid",           size:3, photo:"rear",  fx:40, fy:38, split:false, tag:"The trunk face, framed by the full-width tail light.", units:[{price:12000,claimed:false}]},
-    {no:9, n:"Rear valance",      size:2, photo:"rear",  fx:47, fy:74, split:false, tag:"The chasing view in traffic, at eye level for the car behind.", units:[{price:9000,claimed:false}]}
+    {no:1, n:"Hood",              size:4, photo:"front", fx:32, fy:38, split:false, tag:"The headliner. The LC's long clamshell hood, seen at every valet and stoplight.", units:[{price:30000,claimed:false}]},
+    {no:2, n:"Front lip",         size:2, photo:"front", fx:14, fy:73, split:false, tag:"Low, and first into frame at every crosswalk.", units:[{price:9000,claimed:false}]},
+    {no:3, n:"Windscreen banner", size:2, photo:"front", fx:54, fy:20, split:false, tag:"A slim strip across the top of the glass. Eyes-up branding.", units:[{price:8500,claimed:false}]},
+    {no:4, n:"Mirror caps",       size:1, photo:"front", fx:68, fy:43, split:false, tag:"A matched pair. Small, tasteful, always in the shot.", units:[{price:5500,claimed:false}]},
+    {no:5, n:"Door",              size:4, photo:"front", fx:82, fy:48, split:true,  tag:"Full side impact. Sold per side, so one brand can take just the driver or the passenger door.", units:[{side:"Driver",price:16000,claimed:false},{side:"Passenger",price:16000,claimed:false}]},
+    {no:6, n:"Rocker",            size:2, photo:"front", fx:80, fy:69, split:true,  tag:"The lower side stripe that runs the length of the car. One side at a time.", units:[{side:"Driver",price:5500,claimed:false},{side:"Passenger",price:5500,claimed:false}]},
+    {no:7, n:"Rear quarter",      size:3, photo:"rear",  fx:62, fy:37, split:true,  tag:"The rear arch, the last thing the car behind you reads. Sold per side.", units:[{side:"Driver",price:8500,claimed:false},{side:"Passenger",price:8500,claimed:false}]},
+    {no:8, n:"Decklid",           size:3, photo:"rear",  fx:32, fy:28, split:false, tag:"The trunk face, framed by the full-width tail light.", units:[{price:12000,claimed:false}]},
+    {no:9, n:"Rear valance",      size:2, photo:"rear",  fx:33, fy:64, split:false, tag:"The chasing view in traffic, at eye level for the car behind.", units:[{price:9000,claimed:false}]}
   ];
 
   var fmt = function(v){ return "$" + v.toLocaleString("en-US"); };

@@ -57,7 +57,7 @@ import os
 # Legacy paper-* paths are redirect stubs, not canonical pages.
 _SITEMAP_EXCLUDED_DIRS = {"research/paper-a-escape-velocity", "research/paper-b-ftle"}
 EXTRA_SITEMAP_URLS = []
-for static_dir in ["content/extra/research", "content/extra/book", "content/extra/mahaclinic", "content/extra/maha", "content/extra/together"]:
+for static_dir in ["content/extra/research", "content/extra/book", "content/extra/mahaclinic", "content/extra/maha", "content/extra/together", "content/extra/lc500"]:
     for root, dirs, files in os.walk(static_dir):
         for file in files:
             filepath = os.path.join(root, file)
